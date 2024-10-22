@@ -8,18 +8,27 @@
 }
 
 body{
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   background-color: var(--body-bg);
   font-family: 'Roboto', sans-serif;
 }
 
+
 .content{
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 }
+
 
 .leaflet-container{
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   margin-left:auto;
+}
+
+.leaflet-control-zoom {
+  position: absolute;
+  top: 25px;
+  left: 440px;
 }

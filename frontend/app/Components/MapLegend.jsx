@@ -4,11 +4,11 @@ import { Button } from "@nextui-org/react";
 import { Building, TriangleAlert, Truck, Warehouse } from "lucide-react";
 import { useState } from "react";
 
-export default function MapLegend({position}){
+export default function MapLegend(){
     const [hideLegend, setHideLegend] = useState(true);
     return (
         <>
-            {!hideLegend ? (<div className={"bg-white w-[180px] "+position}>
+            {!hideLegend ? (<div className={"bg-white w-[180px] absolute bottom-6 right-6"}>
                 <div>
                     <div>
                         <div>Leyenda</div>
@@ -49,14 +49,22 @@ export default function MapLegend({position}){
                         </div>
                     </div>
                 </div>
-            </div>):<></>
+                <div className={"bg-white w-[180px] text-center "}>
+                    <Button disableRipple={true} onClick={()=>{setHideLegend((prev)=>!prev)}}>
+                        Ocultar leyenda
+                    </Button>
+                </div>
+            </div>):
+            (
+                <div className={"bg-white w-[180px] text-center absolute bottom-6 right-6"}>
+                    <Button disableRipple={true} onClick={()=>{setHideLegend((prev)=>!prev)}}>
+                        Mostrar leyenda
+                    </Button>
+                </div>
+            )
             }
 
-            <div className={"bg-white w-[180px] text-center "+position}>
-                <Button disableRipple={true} onClick={()=>{setHideLegend((prev)=>!prev)}}>
-                    {hideLegend?"Mostrar leyenda":"Ocultar leyenda"}
-                </Button>
-            </div>
+            
         </>
 
     )

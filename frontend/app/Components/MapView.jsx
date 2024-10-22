@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function MapView() {
   
-  const bounds = [[1, -81.4],[-19, -68.0]]
+  const bounds = [[0, -106.4],[-20, -43.0]]
 
   
   const oficinaIcon = new Icon(
@@ -94,7 +94,7 @@ export default function MapView() {
         current[1] + direccionLon * paso,
       ]);
 
-    }, 1000)
+    }, 1000*60)
     return () => clearInterval(intervalId)
   }, []);
 
@@ -103,7 +103,7 @@ export default function MapView() {
   return (
   <div className="w-full h-full relative">
     <MapContainer
-    center={[-20, -70]}
+    center={[-10, -78]}
     zoom={7}
     scrollWheelZoom={true}
     dragging={true}
@@ -158,6 +158,7 @@ export default function MapView() {
         )
     }
         <Marker
+            
             position={ubicacionCamionSeleccionado}
             icon={camionIconSeleccionado}
         ></Marker>
