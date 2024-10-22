@@ -2,9 +2,10 @@
 import PanelSimulacion from "@/app/Components/PanelSimulacion"
 import MapView from "@/app/Components/MapView"
 import MapLegend from "@/app/Components/MapLegend"
-export default function Home() {
-  return (
-  <div className="flex justify-between">
+
+export default function App(){
+  return(
+    <div className="flex justify-between">
       <div className="w-[20%] 100vh">
         <PanelSimulacion />
       </div>
@@ -13,5 +14,6 @@ export default function Home() {
         <MapLegend position={"absolute bottom-6 right-6 z-10"}/>
       </div>
     </div>
-  );
+  )
+
 }

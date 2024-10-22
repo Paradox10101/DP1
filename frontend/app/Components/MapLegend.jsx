@@ -1,6 +1,6 @@
 "use client"
 
-
+import { Button } from "@nextui-org/react";
 import { Building, TriangleAlert, Truck, Warehouse } from "lucide-react";
 import { useState } from "react";
 
@@ -14,7 +14,6 @@ export default function MapLegend({position}){
                         <div>Leyenda</div>
                         <div>
                             <div>
-                                <Building />
                                 <Warehouse className="inline-block"/>
                                 <div className="inline-block">Almacén</div>
                             </div>
