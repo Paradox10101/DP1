@@ -67,9 +67,34 @@ export default function MapView() {
 
   useEffect(()=>{
     const intervalId = setInterval(()=>{
-      setUbicacionCamionSeleccionado((current)=>(current=[current[0], current[1]+0.001]))
-      console.log(ubicacionCamionSeleccionado)
-    }, 1)
+      const [latOrigen, lonOrigen] = ubicacionCamionSeleccionado;
+      const [latDestino, lonDestino] = destinoSeleccionado.geocode;
+
+      // Calcular la distancia total en kilómetros entre origen y destino
+      const distancia = Math.sqrt(
+        Math.pow((latDestino - latOrigen) * 111, 2) + // 1 grado de latitud ≈ 111 km
+        Math.pow((lonDestino - lonOrigen) * 111 * Math.cos(latOrigen * (Math.PI / 180)), 2) // 1 grado de longitud ajustado
+      );
+      
+      // Si la distancia es menor a un umbral, significa que hemos llegado al destino
+      const umbral = 0.001;
+      if (distancia <= umbral) { // Aproximadamente 1 metro
+        clearInterval(intervalId);
+        setUbicacionCamionSeleccionado(destinoSeleccionado.geocode); // Asegúrate de establecer la ubicación final
+        return () => clearInterval(intervalId)
+      }
+
+      // Calcular el paso en cada dirección
+      const paso = 1000 / 111; // Aproximadamente 1 km en grados
+      const direccionLat = (latDestino - latOrigen) / distancia; // Normalizar la dirección
+      const direccionLon = (lonDestino - lonOrigen) / distancia;
+      
+      setUbicacionCamionSeleccionado((current) => [
+        current[0] + direccionLat * paso,
+        current[1] + direccionLon * paso,
+      ]);
+
+    }, 1000)
     return () => clearInterval(intervalId)
   }, []);
 
