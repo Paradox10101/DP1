@@ -1,21 +1,25 @@
 "use client"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css"
-import { Icon } from "leaflet";
+import { divIcon, Icon } from "leaflet";
 import { useEffect, useState } from "react";
+import ReactDOMServer from 'react-dom/server';
+import { Building } from "lucide-react";
 
 
 export default function MapView() {
   
-  const bounds = [[0, -106.4],[-20, -43.0]]
+  const bounds = [[0, -96.4],[-20, -63.0]]
 
   
-  const oficinaIcon = new Icon(
+  const oficinaIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ODI4ZTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1idWlsZGluZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjIwIiB4PSI0IiB5PSIyIiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNOSAyMnYtNGg2djQiLz48cGF0aCBkPSJNOCA2aC4wMSIvPjxwYXRoIGQ9Ik0xNiA2aC4wMSIvPjxwYXRoIGQ9Ik0xMiA2aC4wMSIvPjxwYXRoIGQ9Ik0xMiAxMGguMDEiLz48cGF0aCBkPSJNMTIgMTRoLjAxIi8+PHBhdGggZD0iTTE2IDEwaC4wMSIvPjxwYXRoIGQ9Ik0xNiAxNGguMDEiLz48cGF0aCBkPSJNOCAxMGguMDEiLz48cGF0aCBkPSJNOCAxNGguMDEiLz48L3N2Zz4=`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<div className="bg-blue-300 w-[40px] h-[40px] relative rounded-full flex items-center justify-center">
+        <Building className="stroke-blanco" />
+      </div>),
+      iconAnchor: [16,16],
+      className: 'stroke-red-500'
     }
   )
 
@@ -167,7 +171,7 @@ export default function MapView() {
 
         <Polyline pathOptions={{color:'purple'}} positions={ejemploRuta}/>
         <Polyline pathOptions={{color:'purple'}} positions={[camionSeleccionado.geocode, destinoSeleccionado.geocode]}/>
-
+        
     </MapContainer>
   </div>
   );
