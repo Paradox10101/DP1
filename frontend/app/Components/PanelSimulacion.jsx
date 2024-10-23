@@ -3,16 +3,18 @@ import { Button, Card, CardBody, DateInput, Tab, Tabs, DatePicker, calendar } fr
 import { debounce } from "lodash";
 import { Calendar, Calendar1, ChartColumnIncreasing, Clock, MoveLeft, Pause, Play, Square, Truck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
-
+import OpcionSimulacion from "@/app/Components/OpcionSimulacion"
+import OpcionEnvios from "@/app/Components/OpcionEnvios"
+import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 
 export default function PanelSimulacion(){
     const [currentTime, setCurrentTime] = useState(new Date())
-    const [opcionActiva, setOpcionActiva] = useState(1)
+    const [opcionSimulacionActiva, setOpcionSimulacionActiva] = useState(1)
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
     const [tiemposSimulacion, setTiemposSimulacion] = useState(null)
     const [fechaError, setFechaError] = useState(false);
     const [date, setDate] = useState(null)
+    const [opcionSeleccionada, setOpcionSelecionada] = useState(1)
 
     useEffect(()=>{
         const intervalId = setInterval(()=>{
@@ -50,132 +52,43 @@ export default function PanelSimulacion(){
             <div>
                 <Tabs
                     className="bg-grisFondo flex flex-col px-[5px] py-[5px] rounded h-full"
-                    selectedKey={opcionActiva}
-                    onSelectionChange={setOpcionActiva}
-                    
+                    selectedKey={opcionSeleccionada}
+                    onSelectionChange={setOpcionSelecionada}
                 >
-                    <Tab key="1" title={"Datos de Simulación"}
-                        className={`${opcionActiva!=="1"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-fit"}>
+                    <Tab key="1" title={"Simulación"}
+                        className={`${opcionSeleccionada!=="1"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-fit pequenno"}
+                        onClick={()=>{setOpcionSelecionada(1)}}
+                        >
+                            
                     </Tab>
                     <Tab key="2" title={"Envíos"}
-                        className={`${opcionActiva!=="2"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full"}>
+                        className={`${opcionSeleccionada!=="2"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full pequenno"}
+                        onClick={()=>{setOpcionSelecionada(2)}}
+                        >
                     </Tab>
                     <Tab key="3" title={"Almacenes"}
-                        className={`${opcionActiva!=="3"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full"}>
+                        className={`${opcionSeleccionada!=="3"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full pequenno"}
+                        onClick={()=>{setOpcionSelecionada(3)}}
+                        >
+                    </Tab>
+                    <Tab key="4" title={"Rutas"}
+                        className={`${opcionSeleccionada!=="4"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full pequenno"}
+                        onClick={()=>{setOpcionSelecionada(4)}}
+                        >
                     </Tab>
                 </Tabs>
             </div>
         </div>
-        <div className="h-full flex flex-col justify-between">
-            <div className="flex flex-col gap-3 justify-between">
-                <div className="w-full flex flex-col gap-2 justify-between">
-                    <div >
-                        <span className="encabezado">Tipo de Simulación</span>
-                    </div>
-                    <Tabs
-                        className="bg-grisFondo flex flex-col rounded border-2 border-black"
-                        selectedKey={tipoSimulacion}
-                        onSelectionChange={setTipoSimulacion}
-                    >
-                        <Tab key="1" title={"Semanal"} className={`${tipoSimulacion==="1"?"bg-principal text-blanco":'bg-blanco text-negro'}`+" rounded focus:outline-none"}>
-                        </Tab>
-                        <Tab key="2" title={"Colapso"} className={`${tipoSimulacion==="2"?"bg-principal text-blanco":'bg-blanco text-negro'}`+" rounded focus:outline-none"}>
-                        </Tab>
-                    </Tabs>
-                </div>
-                
-                <div className="w-full flex flex-col gap-1">
-                    <div>
-                        <span className="encabezado">Fecha de Inicio</span>
-                    </div>
-                    <div className="flex w-full gap-4">
-                        <div className="flex flex-col gap-1">
-                            <div>
-                            <input
-                                id="date-input"
-                                type="date"
-                                value={date}
-                                className="border-2 stroke-black rounded-2xl w-[180px] px-2"
-                            />
-                            </div>
-                            <div className={`text-red-500 regular h-4`}>{fechaError?"Error en la fecha ingresada":" "}</div>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex w-full flex-col gap-3">
-                    <div>
-                        <span className="encabezado">Ejecución</span>
-                    </div>
-                    <div className="flex justify-around w-full flex-row ">
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadDisponible"
-                                onClick={()=>{alert("INICIADO")}}>
-                                <Play color="white" />
-                            </button>
-                            <div className="subEncabezado text-capacidadDisponible">
-                                Inicio
-                            </div>
-                        </div>
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadSaturada"
-                                onClick={()=>{alert("PAUSA")}}>
-                                <Pause color="white" />
-                            </button>
-                            <div className="subEncabezado text-capacidadSaturada">
-                                Pausa
-                            </div>
-                        </div>
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadLlena"
-                                onClick={()=>{alert("TERMINADO")}}>
-                                <Square color="white" />
-                            </button>
-                            <div className="subEncabezado text-capacidadLlena">
-                                Terminar
-                            </div>
-                        </div>
-                    </div>    
-                </div>
-                
-                <div className="flex flex-col gap-3">
-                    <div>
-                        <span className="regular_bold">Resumen de la simulación</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Calendar
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Inicio de la simulacion: {tiemposSimulacion===null?"--/--/---- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Calendar
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Fin de la simulacion: {tiemposSimulacion===null?"--/--/---- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Clock
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Tiempo simulado: {tiemposSimulacion===null?"-- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Clock
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Tiempo real en simulación: {tiemposSimulacion===null?"-- --:--":""}</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div>
-                <Button disableRipple={true} className="bg-placeholder text-blanco w-full rounded regular py-[12px]" startContent={<ChartColumnIncreasing />}>
-                    Visualizar Reporte
-                </Button>    
-            </div>
-        </div>
+        {
+            opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion} date={date} fechaError={fechaError} tiemposSimulacion={tiemposSimulacion}/>
+            :
+            opcionSeleccionada==2 ? <OpcionEnvios />
+            :
+            opcionSeleccionada==3 ? <OpcionAlmacenes />
+            :
+            opcionSeleccionada==4 ? <div>Rutas</div>:
+            <></>
+        }
         
     </div>
     )

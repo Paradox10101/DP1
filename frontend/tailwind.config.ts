@@ -45,6 +45,10 @@ const config: Config = {
         '.pequenno':{
           fontSize: '13px',
         },
+        '.pequenno_bold':{
+          fontSize: '13px',
+          fontWeight: 'bold'
+        },
 
 
       }
