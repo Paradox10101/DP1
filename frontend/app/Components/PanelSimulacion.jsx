@@ -1,7 +1,9 @@
 "use client"
-import { Button, Card, CardBody, DatePicker, Tab, Tabs } from "@nextui-org/react";
-import { Calendar, ChartColumnIncreasing, Clock, MoveLeft, Pause, Play, Square, Truck } from "lucide-react";
+import { Button, Card, CardBody, DateInput, Tab, Tabs, DatePicker, calendar } from "@nextui-org/react";
+import { debounce } from "lodash";
+import { Calendar, Calendar1, ChartColumnIncreasing, Clock, MoveLeft, Pause, Play, Square, Truck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
 
 
 export default function PanelSimulacion(){
@@ -9,6 +11,8 @@ export default function PanelSimulacion(){
     const [opcionActiva, setOpcionActiva] = useState(1)
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
     const [tiemposSimulacion, setTiemposSimulacion] = useState(null)
+    const [fechaError, setFechaError] = useState(false);
+    const [date, setDate] = useState(null)
 
     useEffect(()=>{
         const intervalId = setInterval(()=>{
@@ -17,6 +21,7 @@ export default function PanelSimulacion(){
         return () => clearInterval(intervalId)
     }, []);
 
+    
     
     return(
     <div className="bg-blanco w-30vw h-[95%] p-[22px] flex flex-col gap-3 absolute left-5 z-50 top-1/2 transform -translate-y-1/2 rounded">
@@ -28,7 +33,7 @@ export default function PanelSimulacion(){
                     <span className="text-principal">Pack</span>
                 </div>
             </div>
-            <div className="inline-flex bg-grisFondo rounded px-3 py-2">
+            <div className="inline-flex bg-grisFondo rounded px-3 py-2 gap-2">
                 <Clock className="inline-block"/>
                 <span>{currentTime.getDate()}/{String(currentTime.getMonth()+1).padStart(2, '0')}/{currentTime.getFullYear()}
                 , {String(currentTime.getHours()).padStart(2,'0')}:{String(currentTime.getMinutes()).padStart(2,'0')}:{String(currentTime.getSeconds()).padStart(2,'0')}</span>
@@ -79,15 +84,22 @@ export default function PanelSimulacion(){
                     </Tabs>
                 </div>
                 
-                <div className="w-full flex flex-col gap-2">
+                <div className="w-full flex flex-col gap-1">
                     <div>
                         <span className="encabezado">Fecha de Inicio</span>
                     </div>
                     <div className="flex w-full gap-4">
-                        <DatePicker
-                            className="border max-w-[150px] border-black rounded z-30 px-2"
-                            
-                        />
+                        <div className="flex flex-col gap-1">
+                            <div>
+                            <input
+                                id="date-input"
+                                type="date"
+                                value={date}
+                                className="border-2 stroke-black rounded-2xl w-[180px] px-2"
+                            />
+                            </div>
+                            <div className={`text-red-500 regular h-4`}>{fechaError?"Error en la fecha ingresada":" "}</div>
+                        </div>
                     </div>
                 </div>
                 <div className="flex w-full flex-col gap-3">

@@ -167,9 +167,6 @@ export default function MapView() {
             icon={camionIconSeleccionado}
         ></Marker>
 
-
-
-        <Polyline pathOptions={{color:'purple'}} positions={ejemploRuta}/>
         <Polyline pathOptions={{color:'purple'}} positions={[camionSeleccionado.geocode, destinoSeleccionado.geocode]}/>
         
     </MapContainer>
