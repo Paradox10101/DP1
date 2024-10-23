@@ -4,7 +4,9 @@ import "leaflet/dist/leaflet.css"
 import { divIcon, Icon } from "leaflet";
 import { useEffect, useState } from "react";
 import ReactDOMServer from 'react-dom/server';
-import { Building } from "lucide-react";
+import IconoEstado from "@/app/Components/IconoEstado"
+import { Building, Truck, Warehouse } from "lucide-react";
+
 
 
 export default function MapView() {
@@ -15,29 +17,27 @@ export default function MapView() {
   const oficinaIcon = new divIcon(
     { 
       iconSize: [20, 20],
-      html: ReactDOMServer.renderToStaticMarkup(<div className="bg-blue-300 w-[40px] h-[40px] relative rounded-full flex items-center justify-center">
-        <Building className="stroke-blanco" />
-      </div>),
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Building} classNameContenedor={"bg-blue-500 w-[20px] h-[20px] relative rounded-full flex items-center justify-center z-10"} classNameContenido={"w-[16px] h-[16px] stroke-blanco z-20"}/>),
       iconAnchor: [16,16],
-      className: 'stroke-red-500'
+      className: ''
     }
   )
 
-  const almacenIcon = new Icon(
+  const almacenIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwODcyM2IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS13YXJlaG91c2UiPjxwYXRoIGQ9Ik0yMiA4LjM1VjIwYTIgMiAwIDAgMS0yIDJINGEyIDIgMCAwIDEtMi0yVjguMzVBMiAyIDAgMCAxIDMuMjYgNi41bDgtMy4yYTIgMiAwIDAgMSAxLjQ4IDBsOCAzLjJBMiAyIDAgMCAxIDIyIDguMzVaIi8+PHBhdGggZD0iTTYgMThoMTIiLz48cGF0aCBkPSJNNiAxNGgxMiIvPjxyZWN0IHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgeD0iNiIgeT0iMTAiLz48L3N2Zz4=`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center z-30"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-40"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
 
-  const camionIcon = new Icon(
+  const camionIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNiZjA4MDgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS10cnVjayI+PHBhdGggZD0iTTE0IDE4VjZhMiAyIDAgMCAwLTItMkg0YTIgMiAwIDAgMC0yIDJ2MTFhMSAxIDAgMCAwIDEgMWgyIi8+PHBhdGggZD0iTTE1IDE4SDkiLz48cGF0aCBkPSJNMTkgMThoMmExIDEgMCAwIDAgMS0xdi0zLjY1YTEgMSAwIDAgMC0uMjItLjYyNGwtMy40OC00LjM1QTEgMSAwIDAgMCAxNy41MiA4SDE0Ii8+PGNpcmNsZSBjeD0iMTciIGN5PSIxOCIgcj0iMiIvPjxjaXJjbGUgY3g9IjciIGN5PSIxOCIgcj0iMiIvPjwvc3ZnPg==`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Truck} classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
 

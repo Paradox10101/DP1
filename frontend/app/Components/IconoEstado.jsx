@@ -1,8 +1,12 @@
-"use client"
-export default function IconoEstado({Icono, classNameIconoContenedor, classNameIconoContenido}){
+import { AlertTriangle } from "lucide-react";
+
+const IconoEstado = ({Icono, classNameContenedor, classNameContenido, alerta=false, alertClassname=""}) =>{
     return (
-        <div className={classNameIconoContenedor}>
-            <Icono className={classNameIconoContenido}/>
+        <div className={classNameContenedor}>
+            {alerta&&<AlertTriangle className={alertClassname}/>}
+            <Icono className={classNameContenido}/>
         </div>
     )
 }
+
+export default IconoEstado;
