@@ -1,39 +1,43 @@
 "use client"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css"
-import { Icon } from "leaflet";
+import { divIcon, Icon } from "leaflet";
 import { useEffect, useState } from "react";
+import ReactDOMServer from 'react-dom/server';
+import IconoEstado from "@/app/Components/IconoEstado"
+import { Building, Truck, Warehouse } from "lucide-react";
+
 
 
 export default function MapView() {
   
-  const bounds = [[1, -81.4],[-19, -68.0]]
+  const bounds = [[0, -96.4],[-20, -63.0]]
 
   
-  const oficinaIcon = new Icon(
+  const oficinaIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0ODI4ZTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1idWlsZGluZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjIwIiB4PSI0IiB5PSIyIiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNOSAyMnYtNGg2djQiLz48cGF0aCBkPSJNOCA2aC4wMSIvPjxwYXRoIGQ9Ik0xNiA2aC4wMSIvPjxwYXRoIGQ9Ik0xMiA2aC4wMSIvPjxwYXRoIGQ9Ik0xMiAxMGguMDEiLz48cGF0aCBkPSJNMTIgMTRoLjAxIi8+PHBhdGggZD0iTTE2IDEwaC4wMSIvPjxwYXRoIGQ9Ik0xNiAxNGguMDEiLz48cGF0aCBkPSJNOCAxMGguMDEiLz48cGF0aCBkPSJNOCAxNGguMDEiLz48L3N2Zz4=`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Building} classNameContenedor={"bg-blue-500 w-[20px] h-[20px] relative rounded-full flex items-center justify-center z-10"} classNameContenido={"w-[16px] h-[16px] stroke-blanco z-20"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
 
-  const almacenIcon = new Icon(
+  const almacenIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwODcyM2IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS13YXJlaG91c2UiPjxwYXRoIGQ9Ik0yMiA4LjM1VjIwYTIgMiAwIDAgMS0yIDJINGEyIDIgMCAwIDEtMi0yVjguMzVBMiAyIDAgMCAxIDMuMjYgNi41bDgtMy4yYTIgMiAwIDAgMSAxLjQ4IDBsOCAzLjJBMiAyIDAgMCAxIDIyIDguMzVaIi8+PHBhdGggZD0iTTYgMThoMTIiLz48cGF0aCBkPSJNNiAxNGgxMiIvPjxyZWN0IHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgeD0iNiIgeT0iMTAiLz48L3N2Zz4=`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center z-30"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-40"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
 
-  const camionIcon = new Icon(
+  const camionIcon = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNiZjA4MDgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS10cnVjayI+PHBhdGggZD0iTTE0IDE4VjZhMiAyIDAgMCAwLTItMkg0YTIgMiAwIDAgMC0yIDJ2MTFhMSAxIDAgMCAwIDEgMWgyIi8+PHBhdGggZD0iTTE1IDE4SDkiLz48cGF0aCBkPSJNMTkgMThoMmExIDEgMCAwIDAgMS0xdi0zLjY1YTEgMSAwIDAgMC0uMjItLjYyNGwtMy40OC00LjM1QTEgMSAwIDAgMCAxNy41MiA4SDE0Ii8+PGNpcmNsZSBjeD0iMTciIGN5PSIxOCIgcj0iMiIvPjxjaXJjbGUgY3g9IjciIGN5PSIxOCIgcj0iMiIvPjwvc3ZnPg==`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Truck} classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
 
@@ -94,7 +98,7 @@ export default function MapView() {
         current[1] + direccionLon * paso,
       ]);
 
-    }, 1000)
+    }, 1000*60)
     return () => clearInterval(intervalId)
   }, []);
 
@@ -103,7 +107,7 @@ export default function MapView() {
   return (
   <div className="w-full h-full relative">
     <MapContainer
-    center={[-20, -70]}
+    center={[-10, -78]}
     zoom={7}
     scrollWheelZoom={true}
     dragging={true}
@@ -158,15 +162,13 @@ export default function MapView() {
         )
     }
         <Marker
+            
             position={ubicacionCamionSeleccionado}
             icon={camionIconSeleccionado}
         ></Marker>
 
-
-
-        <Polyline pathOptions={{color:'purple'}} positions={ejemploRuta}/>
         <Polyline pathOptions={{color:'purple'}} positions={[camionSeleccionado.geocode, destinoSeleccionado.geocode]}/>
-
+        
     </MapContainer>
   </div>
   );

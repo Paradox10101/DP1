@@ -17,6 +17,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".", // Asegúrate de que el baseUrl esté configurado
     "paths": {
       "@/*": ["./*"]
     }

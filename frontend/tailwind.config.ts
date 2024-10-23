@@ -34,7 +34,7 @@ const config: Config = {
         },
         '.regular':{
           fontSize: '16px',
-        },
+        },        
         '.subEncabezado':{
           fontSize: '22px',
         },
@@ -42,7 +42,9 @@ const config: Config = {
           fontSize: '18px',
           fontWeight: 'bold'
         },
-
+        '.pequenno':{
+          fontSize: '13px',
+        },
 
 
       }
