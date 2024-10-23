@@ -9,7 +9,7 @@ import { Building, Truck, Warehouse } from "lucide-react";
 
 
 
-export default function MapView({datos}) {
+export default function MapView({datos, mostrarRutas, estadoSimulacion}) {
   
   const bounds = [[0, -96.4],[-20, -63.0]]
 
@@ -152,7 +152,8 @@ export default function MapView({datos}) {
 
     {
         datos && datos.vehiculos && datos.vehiculos.map((vehiculo)=>
-            <Marker
+          <>
+          <Marker
             key={vehiculo.id}
             position={vehiculo.geocode}
             icon={camionIcon}
@@ -161,9 +162,11 @@ export default function MapView({datos}) {
             <Popup>
                 <h2><b>Vehiculo</b></h2>
             </Popup>
-        </Marker> 
-        )
-      
+          </Marker> 
+          {(mostrarRutas==="1"&&estadoSimulacion!=="INICIAL")&&<Polyline key={vehiculo.id} pathOptions={{color:'purple'}} positions={[vehiculo.geocode, [-2.4471967, -72.66825]]}/>}
+        </>
+      )
+        
     }
         <Marker
             
@@ -171,7 +174,7 @@ export default function MapView({datos}) {
             icon={camionIconSeleccionado}
         ></Marker>
 
-        <Polyline pathOptions={{color:'purple'}} positions={[camionSeleccionado.geocode, destinoSeleccionado.geocode]}/>
+        
         
     </MapContainer>
   </div>

@@ -8,7 +8,7 @@ import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
 
-export default function PanelSimulacion({estadoSimulacion, setEstadoSimulacion, vehiculos}){
+export default function PanelSimulacion({estadoSimulacion, setEstadoSimulacion, datos}){
     const [currentTime, setCurrentTime] = useState(new Date())
     const [opcionSimulacionActiva, setOpcionSimulacionActiva] = useState(1)
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
@@ -87,7 +87,7 @@ export default function PanelSimulacion({estadoSimulacion, setEstadoSimulacion, 
             :
             opcionSeleccionada==3 ? <OpcionAlmacenes />
             :
-            opcionSeleccionada==4 ? <OpcionVehiculos />
+            opcionSeleccionada==4 ? <OpcionVehiculos vehiculos = {datos.vehiculos}/>
             :
             <></>
         }

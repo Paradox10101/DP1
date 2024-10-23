@@ -9,7 +9,7 @@ export default function MapLegend(){
     const [hideLegend, setHideLegend] = useState(true);
     return (
         <>
-            <div className={"bg-white w-fit absolute bottom-6 right-10 p-3 rounded"}>
+            <div className={"bg-white w-fit p-3 rounded"}>
                 <div className="flex flex-col justify-between gap-4">
                 {!hideLegend&&(
                     <div className="flex flex-col justify-between gap-4">
