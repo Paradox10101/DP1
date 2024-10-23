@@ -41,12 +41,12 @@ export default function MapView() {
     }
   )
 
-  const camionIconSeleccionado = new Icon(
+  const camionIconSeleccionado = new divIcon(
     { 
-      iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNjMjE0NjAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS10cnVjayI+PHBhdGggZD0iTTE0IDE4VjZhMiAyIDAgMCAwLTItMkg0YTIgMiAwIDAgMC0yIDJ2MTFhMSAxIDAgMCAwIDEgMWgyIi8+PHBhdGggZD0iTTE1IDE4SDkiLz48cGF0aCBkPSJNMTkgMThoMmExIDEgMCAwIDAgMS0xdi0zLjY1YTEgMSAwIDAgMC0uMjItLjYyNGwtMy40OC00LjM1QTEgMSAwIDAgMCAxNy41MiA4SDE0Ii8+PGNpcmNsZSBjeD0iMTciIGN5PSIxOCIgcj0iMiIvPjxjaXJjbGUgY3g9IjciIGN5PSIxOCIgcj0iMiIvPjwvc3ZnPg==`,
       iconSize: [20, 20],
-      //className: "bg-blue-600 text-white-100"
-       //tamanho del icono
+      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Truck} classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>),
+      iconAnchor: [16,16],
+      className: ''
     }
   )
   
@@ -98,7 +98,7 @@ export default function MapView() {
         current[1] + direccionLon * paso,
       ]);
 
-    }, 1000*60)
+    }, 1000)
     return () => clearInterval(intervalId)
   }, []);
 
