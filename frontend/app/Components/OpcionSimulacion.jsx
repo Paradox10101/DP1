@@ -1,7 +1,7 @@
 import { Button, Tab, Tabs } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 
-export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion}){
+export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion, estadoSimulacion, setEstadoSimulacion}){
 
 return (
 
@@ -48,7 +48,7 @@ return (
                     <div className="flex justify-around w-full flex-row ">
                         <div className="flex flex-col w-full text-center items-center">
                             <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadDisponible"
-                                onClick={()=>{alert("INICIADO")}}>
+                                onClick={()=>{setEstadoSimulacion("EJECUCION")}}>
                                 <Play color="white" />
                             </button>
                             <div className="subEncabezado text-capacidadDisponible">
@@ -57,7 +57,7 @@ return (
                         </div>
                         <div className="flex flex-col w-full text-center items-center">
                             <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadSaturada"
-                                onClick={()=>{alert("PAUSA")}}>
+                                onClick={()=>{setEstadoSimulacion("INICIAL")}}>
                                 <Pause color="white" />
                             </button>
                             <div className="subEncabezado text-capacidadSaturada">
@@ -66,7 +66,7 @@ return (
                         </div>
                         <div className="flex flex-col w-full text-center items-center">
                             <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadLlena"
-                                onClick={()=>{alert("TERMINADO")}}>
+                                onClick={()=>{setEstadoSimulacion("INICIAL")}}>
                                 <Square color="white" />
                             </button>
                             <div className="subEncabezado text-capacidadLlena">

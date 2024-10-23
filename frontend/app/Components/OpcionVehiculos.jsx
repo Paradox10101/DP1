@@ -7,8 +7,8 @@ import CardAlmacen from "./CardAlmacen";
 import BarraProgreso from "./BarraProgreso";
 import CardVehiculo from "@/app/Components/CardVehiculo";
 
-export default function OpcionVehiculos(){
-const [vehiculos, setVehiculos] = useState([])
+export default function OpcionVehiculos({vehiculos}){
+//const [vehiculos, setVehiculos] = useState([])
 
 const capacidadUsadaTotal = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
 const capacidadTotalMaxima = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
@@ -77,10 +77,11 @@ const vehiculosEjemplo = [
     
 ]
 
-
+/*
 useEffect(()=>{
-    setVehiculos(vehiculosEjemplo);
+    setVehiculos(vehiculos);
 }, [])
+*/
 
 return (
         <div className="h-full">
