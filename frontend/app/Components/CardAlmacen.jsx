@@ -1,5 +1,5 @@
 import { NextUIProvider, Progress } from "@nextui-org/react";
-import { Clock, Hash, MapPin, Package, Warehouse } from "lucide-react";
+import { Building, Clock, Hash, MapPin, Package, Warehouse } from "lucide-react";
 import BarraProgreso from "@/app/Components/BarraProgreso"
 
 export default function CardAlmacen({almacen}){
@@ -7,7 +7,11 @@ export default function CardAlmacen({almacen}){
         <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
-                    <Warehouse size={16}/>
+                    {almacen.tipo=="Oficina"?
+                    <Building size={16} className="stroke-blue-500"/>
+                    :
+                    <Warehouse size={16} />
+                    }
                     <div className="pequenno_bold">
                         {(almacen.tipo=="Almacén"?"Almacén Principal: ":"Oficina: ") + almacen.ciudad}
                     </div>
@@ -36,11 +40,10 @@ export default function CardAlmacen({almacen}){
                 </div>
                 <div className="flex flex-col gap-1">
                     <BarraProgreso porcentaje={almacen.capacidadUsada/almacen.capacidadMaxima*100}/>
-                    <span className="pequenno text-[#555555]">{almacen.capacidadUsada/almacen.capacidadMaxima*100}% ocupado</span>
+                    <span className="pequenno text-[#555555]">{parseFloat((almacen.capacidadUsada/almacen.capacidadMaxima*100).toFixed(2))}% ocupado</span>
                 </div>
                 </>
             }    
         </div>
     )
 }
-//<Progress value={almacen.capacidadUsada/almacen.capacidadMaxima*100} color="blue"/>

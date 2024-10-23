@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import OpcionSimulacion from "@/app/Components/OpcionSimulacion"
 import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
+import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
 
 export default function PanelSimulacion(){
     const [currentTime, setCurrentTime] = useState(new Date())
@@ -71,7 +72,7 @@ export default function PanelSimulacion(){
                         onClick={()=>{setOpcionSelecionada(3)}}
                         >
                     </Tab>
-                    <Tab key="4" title={"Rutas"}
+                    <Tab key="4" title={"Vehiculos"}
                         className={`${opcionSeleccionada!=="4"?" ":'bg-blanco text-negro'}` + "rounded focus:outline-none h-full pequenno"}
                         onClick={()=>{setOpcionSelecionada(4)}}
                         >
@@ -86,7 +87,8 @@ export default function PanelSimulacion(){
             :
             opcionSeleccionada==3 ? <OpcionAlmacenes />
             :
-            opcionSeleccionada==4 ? <div>Rutas</div>:
+            opcionSeleccionada==4 ? <OpcionVehiculos />
+            :
             <></>
         }
         

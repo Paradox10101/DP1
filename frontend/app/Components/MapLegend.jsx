@@ -44,7 +44,7 @@ export default function MapLegend(){
                                     <div className="inline-block">Vehiculo Tipo 3</div>
                                 </div>
                                 <div className="flex flex-row gap-2">
-                                    <IconoEstado Icono={Truck} classNameContenedor={"bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"} alerta={true} alertClassname="stroke-red-600 absolute w-[18px] h-[18px] z-20 stroke-[3]"/>
+                                    <IconoEstado Icono={Truck} classNameContenedor={"bg-yellow-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"} alerta={true} alertClassname="stroke-red-600 absolute w-[18px] h-[18px] z-20 stroke-[3]"/>
                                     <div className="inline-block">Camion averiado</div>
                                 </div>
                             </div>

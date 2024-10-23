@@ -5,70 +5,81 @@ import CardEnvio from "@/app/Components/CardEnvio"
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import CardAlmacen from "./CardAlmacen";
 import BarraProgreso from "./BarraProgreso";
+import CardVehiculo from "@/app/Components/CardVehiculo";
 
+export default function OpcionVehiculos(){
+const [vehiculos, setVehiculos] = useState([])
 
+const capacidadUsadaTotal = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
+const capacidadTotalMaxima = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
 
-export default function OpcionAlmacenes(){
-const [almacenes, setAlmacenes] = useState([])
-
-const capacidadUsadaTotal = almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadUsada || 0)}, 0) 
-const capacidadTotalMaxima = almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadMaxima|| 0)}, 0)
-
-const almacenesEjemplo = [
+const vehiculosEjemplo = [
     {
-        ciudad: "Lima",
-        ubigeo: "150101",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Arequipa",
-        ubigeo: "028492",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Trujillo",
-        ubigeo: "028495",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Piura",
-        ubigeo: "028495",
-        tipo: "Oficina",
-        capacidadUsada: 90,
-        capacidadMaxima: 100
-    },
-    {
-        ciudad: "Cuzco",
-        ubigeo: "028495",
-        tipo: "Oficina",
+        codigo: "A001",
+        ubicacionActual: "Piura",
+        ubicacionSiguiente: "Trujillo",
+        tipo: "A",
         capacidadUsada: 10,
-        capacidadMaxima: 100
+        capacidadMaxima: 20,
+        estado: "En Tránsito",
+        velocidad: 30
     },
     {
-        ciudad: "Ayacucho",
-        ubigeo: "028495",
-        tipo: "Oficina",
-        capacidadUsada: 150,
-        capacidadMaxima: 200
+        codigo: "A002",
+        ubicacionActual: "Piura",
+        ubicacionSiguiente: "",
+        tipo: "A",
+        capacidadUsada: 0,
+        capacidadMaxima: 20,
+        estado: "En Mantenimiento",
+        velocidad: 0
     },
     {
-        ciudad: "Huancayo",
-        ubigeo: "028499",
-        tipo: "Oficina",
-        capacidadUsada: 140,
-        capacidadMaxima: 200
+        codigo: "A003",
+        ubicacionActual: "Piura",
+        ubicacionSiguiente: "Arequipa",
+        tipo: "A",
+        capacidadUsada: 10,
+        capacidadMaxima: 20,
+        estado: "Averiado",
+        velocidad: 0
     },
+    {
+        codigo: "B001",
+        ubicacionActual: "Lima",
+        ubicacionSiguiente: "",
+        tipo: "B",
+        capacidadUsada: 10,
+        capacidadMaxima: 60,
+        estado: "En Preparación",
+        velocidad: 0
+    },
+    {
+        codigo: "B002",
+        ubicacionActual: "Piura",
+        ubicacionSiguiente: "Trujillo",
+        tipo: "B",
+        capacidadUsada: 0,
+        capacidadMaxima: 60,
+        estado: "En Tránsito",
+        velocidad: 30
+    },
+    {
+        codigo: "C001",
+        ubicacionActual: "Piura",
+        ubicacionSiguiente: "Trujillo",
+        tipo: "C",
+        capacidadUsada: 20,
+        capacidadMaxima: 90,
+        estado: "En Tránsito",
+        velocidad: 30
+    },
+    
 ]
 
 
 useEffect(()=>{
-    setAlmacenes(almacenesEjemplo);
+    setVehiculos(vehiculosEjemplo);
 }, [])
 
 return (
@@ -76,7 +87,7 @@ return (
             <div className="flex justify-between flex-row items-center">
                 <Input
                 type="text"
-                placeholder="Buscar por nombre o ubigeo"
+                placeholder="Buscar por código"
                 className="focus:outline-none border-2 stroke-black rounded-2xl h-8 pequenno w-[77%]"
                 startContent={<Map className="mr-2"/>}
                 />
@@ -89,11 +100,11 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de almacenes: {almacenes.length}
+                Cantidad de vehículos: {vehiculos.length}
             </div>
             <div className="flex flex-col gap-2">
                 <div className="pequenno_bold text-center">
-                    Capacidad Total de las Oficinas
+                    Capacidad Total de los Vehículos
                 </div>
                 <div className="flex flex-col gap-1">
                     <BarraProgreso
@@ -112,9 +123,9 @@ return (
                 </div>
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-                {almacenes.map((almacen)=>{
+                {vehiculos.map((vehiculo)=>{
                     return(
-                        <CardAlmacen almacen={almacen} />
+                        <CardVehiculo vehiculo={vehiculo} />
                     )
                     }
                 )}
