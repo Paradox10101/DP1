@@ -81,7 +81,7 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
         markerDiv.style.textAlign = 'center'; // Alineación del texto
         markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
         const popupContent = `<h1>Código: ${almacen.provincia}</h1>`;
-        const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+        const popup = new maplibregl.Popup({ offset: 25, closeButton: true, closeOnClick: true, anchor: 'left' }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
         const marker = new maplibregl.Marker({ element: markerDiv })
           .setLngLat(almacen.geocode) // Establece la ubicación del marcador
