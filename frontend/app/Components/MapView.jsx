@@ -123,29 +123,53 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
             .setLngLat(vehiculo.geocode) // Establece la ubicación del marcador
             .addTo(map)
             .setPopup(popup); // Añade el marcador al mapa
-          if (mostrarRutas === "1" && estadoSimulacion !== "INICIAL") {
-            map.addLayer({
-              id: `ruta-${vehiculo.id}`,
-              type: "line",
-              source: {
-                type: "geojson",
-                data: {
+        });
+      }
+
+      map.on('load', () => {
+        // Suponiendo que tienes una colección de vehículos
+        if (datos && datos.vehiculos) {
+          datos.vehiculos.forEach(vehiculo => {
+            const lineData = {
+              type: "FeatureCollection",
+              features: [
+                {
                   type: "Feature",
                   geometry: {
                     type: "LineString",
-                    coordinates: [vehiculo.geocode, [-72.66825, -2.4471967]], // Coordenadas ejemplo
+                    coordinates: [vehiculo.geocode, [-72.66825, -2.4471967]], // Coordenadas
+                  },
+                  properties: {
+                    // Puedes agregar propiedades adicionales si es necesario
                   },
                 },
+              ],
+            };
+      
+            // Agregar la fuente de datos
+            map.addSource(`ruta-${vehiculo.id}`, {
+              type: "geojson",
+              data: lineData,
+            });
+      
+            // Agregar la capa de la línea
+            map.addLayer({
+              id: `ruta-${vehiculo.id}`,
+              type: "line",
+              source: `ruta-${vehiculo.id}`, // Asegúrate de usar el nombre de la fuente correcta
+              layout: {
+                "line-join": "round", // Esquinas redondeadas
+                "line-cap": "round", // Extremos redondeados
               },
-              layout: {},
               paint: {
-                "line-color": "purple",
-                "line-width": 3,
+                "line-color": "purple", // Color de la línea (morado)
+                "line-width": 2, // Grosor de la línea
               },
             });
-          }
-        });
-      }
+          });
+        }
+      });
+      
 
       // Limpiar el mapa al desmontar el componente
       return () => {
