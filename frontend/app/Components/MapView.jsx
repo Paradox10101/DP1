@@ -1,177 +1,196 @@
-"use client"
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css"
-import { divIcon, Icon } from "leaflet";
-import { useEffect, useState } from "react";
-import ReactDOMServer from 'react-dom/server';
-import IconoEstado from "@/app/Components/IconoEstado"
+"use client";
+import { useEffect, useRef, useState } from "react";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+import ReactDOMServer from "react-dom/server";
+import IconoEstado from "@/app/Components/IconoEstado";
 import { Building, Truck, Warehouse } from "lucide-react";
 
+export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
+  const mapContainerRef = useRef(null); 
+  const mapRef = useRef(null);
 
+  // Estado para asegurarse de que el componente se renderice solo en el cliente
+  const [isClient, setIsClient] = useState(false);
 
-export default function MapView({datos, mostrarRutas, estadoSimulacion}) {
-  
-  const bounds = [[0, -96.4],[-20, -63.0]]
+  // Definición de los iconos usando divIcon
+  const oficinaIconHtmlString = ReactDOMServer.renderToStaticMarkup(
+    <IconoEstado
+      Icono={Building}
+      classNameContenedor={"bg-blue-500 w-[20px] h-[20px] relative rounded-full flex items-center justify-center z-10"}
+      classNameContenido={"w-[16px] h-[16px] stroke-blanco z-20"}
+    />
+  );
 
-  const oficinaIcon = new divIcon(
-    { 
-      iconSize: [20, 20],
-      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Building} classNameContenedor={"bg-blue-500 w-[20px] h-[20px] relative rounded-full flex items-center justify-center z-10"} classNameContenido={"w-[16px] h-[16px] stroke-blanco z-20"}/>),
-      iconAnchor: [16,16],
-      className: ''
-    }
-  )
+  const almacenIconHtmlString = ReactDOMServer.renderToStaticMarkup(
+    <IconoEstado
+      Icono={Warehouse}
+      classNameContenedor={"bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center z-30"}
+      classNameContenido={"w-[15px] h-[15px] stroke-blanco z-40"}
+    />
+  );
 
-  const almacenIcon = new divIcon(
-    { 
-      iconSize: [20, 20],
-      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center z-30"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-40"}/>),
-      iconAnchor: [16,16],
-      className: ''
-    }
-  )
+  const vehiculoIconHtmlString = ReactDOMServer.renderToStaticMarkup(
+    <IconoEstado
+      Icono={Truck}
+      classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"}
+      classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}
+    />
+  );
 
-  const camionIcon = new divIcon(
-    { 
-      iconSize: [20, 20],
-      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Truck} classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>),
-      iconAnchor: [16,16],
-      className: ''
-    }
-  )
+  // useEffect para verificar si el componente ya se ha montado (solo en el cliente)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  const camionIconSeleccionado = new divIcon(
-    { 
-      iconSize: [20, 20],
-      html: ReactDOMServer.renderToStaticMarkup(<IconoEstado Icono={Truck} classNameContenedor={"bg-capacidadDisponible w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>),
-      iconAnchor: [16,16],
-      className: ''
-    }
-  )
-  
-  const ejemploRuta = [
-    [-13.637346, -72.878876],
-    [-13.656409, -73.38991],
-    [-14.364756, -72.87779],
+  useEffect(() => {
+    try {
+      // Solo inicializar el mapa si estamos en el cliente
+      if (!isClient) return;
 
-  ]
-  
-  
-  
-
-  const oficinas = [{geocode: [-13.637346, -72.878876], popup: 'ABANCAY', capacidadUtilizada: 0, capacidadMaxima: 103}, {geocode: [-13.656409, -73.38991], popup: 'ANDAHUAYLAS', capacidadUtilizada: 0, capacidadMaxima: 31}, {geocode: [-14.364756, -72.87779], popup: 'ANTABAMBA', capacidadUtilizada: 0, capacidadMaxima: 30}, {geocode: [-14.294712, -73.24427], popup: 'AYMARAES', capacidadUtilizada: 0, capacidadMaxima: 15}, {geocode: [-13.518027, -73.7228], popup: 'CHINCHEROS', capacidadUtilizada: 0, capacidadMaxima: 94}, {geocode: [-13.946195, -72.174446], popup: 'COTABAMBAS', capacidadUtilizada: 0, capacidadMaxima: 76}, {geocode: [-14.10538, -72.70764], popup: 'GRAU', capacidadUtilizada: 0, capacidadMaxima: 94}, {geocode: [-16.624918, -72.71162], popup: 'CAMANA', capacidadUtilizada: 0, capacidadMaxima: 58}, {geocode: [-15.772139, -73.36541], popup: 'CARAVELI', capacidadUtilizada: 0, capacidadMaxima: 237}, {geocode: [-16.076603, -72.49209], popup: 'CASTILLA', capacidadUtilizada: 0, capacidadMaxima: 158}, {geocode: [-15.636742, -71.60198], popup: 'CAYLLOMA', capacidadUtilizada: 0, capacidadMaxima: 247}, {geocode: [-15.839238, -72.65147], popup: 'CONDESUYOS', capacidadUtilizada: 0, capacidadMaxima: 21}, {geocode: [-17.029276, -72.01544], popup: 'ISLAY', capacidadUtilizada: 0, capacidadMaxima: 139}, {geocode: [-15.212908, -72.88816], popup: 'LA UNION', capacidadUtilizada: 0, capacidadMaxima: 228}, {geocode: [-13.629325, -74.14368], popup: 'CANGALLO', capacidadUtilizada: 0, capacidadMaxima: 37}, {geocode: [-13.160271, -74.22578], popup: 'HUAMANGA', capacidadUtilizada: 0, capacidadMaxima: 66}, {geocode: [-13.919884, -74.333885], popup: 'HUANCA SANCOS', capacidadUtilizada: 0, capacidadMaxima: 20}, {geocode: [-12.939914, -74.247894], popup: 'HUANTA', capacidadUtilizada: 0, capacidadMaxima: 89}, {geocode: [-13.012666, -73.98111], popup: 'LA MAR', capacidadUtilizada: 0, capacidadMaxima: 103}, {geocode: [-14.694042, -74.1242], popup: 'LUCANAS', capacidadUtilizada: 0, capacidadMaxima: 57}, {geocode: [-15.016977, -73.78089], popup: 'PARINACOCHAS', capacidadUtilizada: 0, capacidadMaxima: 32}, {geocode: [-15.278873, -73.34436], popup: 'PAUCAR DEL SARA SARA', capacidadUtilizada: 0, capacidadMaxima: 39}, {geocode: [-14.011257, -73.838844], popup: 'SUCRE', capacidadUtilizada: 0, capacidadMaxima: 85}, {geocode: [-13.752455, -74.0663], popup: 'VICTOR FAJARDO', capacidadUtilizada: 0, capacidadMaxima: 107}, {geocode: [-13.653027, -73.953865], popup: 'VILCAS HUAMAN', capacidadUtilizada: 0, capacidadMaxima: 89}, {geocode: [-13.919203, -71.683495], popup: 'ACOMAYO', capacidadUtilizada: 0, capacidadMaxima: 103}, {geocode: [-13.471593, -72.14879], popup: 'ANTA', capacidadUtilizada: 0, capacidadMaxima: 88}, {geocode: [-13.321749, -71.95605], popup: 'CALCA', capacidadUtilizada: 0, capacidadMaxima: 93}, {geocode: [-14.216944, -71.43203], popup: 'CANAS', capacidadUtilizada: 0, capacidadMaxima: 27}, {geocode: [-14.272991, -71.2265], popup: 'CANCHIS', capacidadUtilizada: 0, capacidadMaxima: 64}, {geocode: [-14.450169, -72.082085], popup: 'CHUMBIVILCAS', capacidadUtilizada: 0, capacidadMaxima: 41}, {geocode: [-13.516702, -71.97876], popup: 'CUSCO', capacidadUtilizada: 0, capacidadMaxima: 56}, {geocode: [-14.793119, -71.41288], popup: 'ESPINAR', capacidadUtilizada: 0, capacidadMaxima: 28}, {geocode: [-12.863322, -72.69288], popup: 'LA CONVENCION', capacidadUtilizada: 0, capacidadMaxima: 107}, {geocode: [-13.761323, -71.84744], popup: 'PARURO', capacidadUtilizada: 0, capacidadMaxima: 46}, {geocode: [-13.317805, -71.596725], popup: 'PAUCARTAMBO', capacidadUtilizada: 0, capacidadMaxima: 21}, {geocode: [-13.687855, -71.62558], popup: 'QUISPICANCHI', capacidadUtilizada: 0, capacidadMaxima: 72}, {geocode: [-13.30593, -72.11599], popup: 'URUBAMBA', capacidadUtilizada: 0, capacidadMaxima: 29}, {geocode: [-12.836182, -71.3589], popup: 'MANU', capacidadUtilizada: 0, capacidadMaxima: 40}, {geocode: [-10.944943, -69.577415], popup: 'TAHUAMANU', capacidadUtilizada: 0, capacidadMaxima: 84}, {geocode: [-12.594216, -69.17625], popup: 'TAMBOPATA', capacidadUtilizada: 0, capacidadMaxima: 82}, {geocode: [-16.673923, -70.970055], popup: 'GENERAL SANCHEZ CERRO', capacidadUtilizada: 0, capacidadMaxima: 20}, {geocode: [-17.645824, -71.345314], popup: 'ILO', capacidadUtilizada: 0, capacidadMaxima: 86}, {geocode: [-17.193804, -70.9347], popup: 'MARISCAL NIETO', capacidadUtilizada: 0, capacidadMaxima: 49}, {geocode: [-14.9085245, -70.19534], popup: 'AZANGARO', capacidadUtilizada: 0, capacidadMaxima: 68}, {geocode: [-14.068453, -70.43136], popup: 'CARABAYA', capacidadUtilizada: 0, capacidadMaxima: 25}, {geocode: [-16.213324, -69.459236], popup: 'CHUCUITO', capacidadUtilizada: 0, capacidadMaxima: 41}, {geocode: [-16.086866, -69.638596], popup: 'EL COLLAO', capacidadUtilizada: 0, capacidadMaxima: 17}, {geocode: [-15.204116, -69.76144], popup: 'HUANCANE', capacidadUtilizada: 0, capacidadMaxima: 112}, {geocode: [-15.364678, -70.367546], popup: 'LAMPA', capacidadUtilizada: 0, capacidadMaxima: 49}, {geocode: [-14.881829, -70.59009], popup: 'MELGAR', capacidadUtilizada: 0, capacidadMaxima: 86}, {geocode: [-15.360712, -69.49989], popup: 'MOHO', capacidadUtilizada: 0, capacidadMaxima: 73}, {geocode: [-15.840612, -70.02801], popup: 'PUNO', capacidadUtilizada: 0, capacidadMaxima: 40}, {geocode: [-14.91416, -69.86856], popup: 'SAN ANTONIO DE PUTINA', capacidadUtilizada: 0, capacidadMaxima: 78}, {geocode: [-15.493232, -70.13554], popup: 'SAN ROMAN', capacidadUtilizada: 0, capacidadMaxima: 57}, {geocode: [-14.323019, -69.46661], popup: 'SANDIA', capacidadUtilizada: 0, capacidadMaxima: 26}, {geocode: [-16.244268, -69.09257], popup: 'YUNGUYO', capacidadUtilizada: 0, capacidadMaxima: 114}, {geocode: [-17.268188, -70.2504], popup: 'CANDARAVE', capacidadUtilizada: 0, capacidadMaxima: 145}, {geocode: [-17.613832, -70.7624], popup: 'JORGE BASADRE', capacidadUtilizada: 0, capacidadMaxima: 139}, {geocode: [-18.0137, -70.25079], popup: 'TACNA', capacidadUtilizada: 0, capacidadMaxima: 41}, {geocode: [-17.474718, -70.03211], popup: 'TARATA', capacidadUtilizada: 0, capacidadMaxima: 164}, {geocode: [-10.729728, -73.75484], popup: 'ATALAYA', capacidadUtilizada: 0, capacidadMaxima: 77}, {geocode: [-8.383243, -74.53224], popup: 'CORONEL PORTILLO', capacidadUtilizada: 0, capacidadMaxima: 57}, {geocode: [-9.036876, -75.50862], popup: 'PADRE ABAD', capacidadUtilizada: 0, capacidadMaxima: 71}, {geocode: [-9.77236, -70.71008], popup: 'PURUS', capacidadUtilizada: 0, capacidadMaxima: 28}, {geocode: [-9.780206, -77.61072], popup: 'AIJA', capacidadUtilizada: 0, capacidadMaxima: 105}, {geocode: [-9.101036, -77.01683], popup: 'ANTONIO RAYMONDI', capacidadUtilizada: 0, capacidadMaxima: 256}, {geocode: [-9.162093, -77.36604], popup: 'ASUNCION', capacidadUtilizada: 0, capacidadMaxima: 23}, {geocode: [-10.152066, -77.1568], popup: 'BOLOGNESI', capacidadUtilizada: 0, capacidadMaxima: 190}, {geocode: [-9.281765, -77.64629], popup: 'CARHUAZ', capacidadUtilizada: 0, capacidadMaxima: 242}, {geocode: [-9.0943575, -77.32913], popup: 'CARLOS FERMIN FITZCARRALD', capacidadUtilizada: 0, capacidadMaxima: 40}, {geocode: [-9.47608, -78.30544], popup: 'CASMA', capacidadUtilizada: 0, capacidadMaxima: 136}, {geocode: [-8.570422, -77.89804], popup: 'CORONGO', capacidadUtilizada: 0, capacidadMaxima: 55}, {geocode: [-9.529975, -77.52886], popup: 'HUARAZ', capacidadUtilizada: 0, capacidadMaxima: 33}, {geocode: [-9.347401, -77.17096], popup: 'HUARI', capacidadUtilizada: 0, capacidadMaxima: 96}, {geocode: [-10.0687065, -78.15227], popup: 'HUARMEY', capacidadUtilizada: 0, capacidadMaxima: 138}, {geocode: [-9.048588, -77.81007], popup: 'HUAYLAS', capacidadUtilizada: 0, capacidadMaxima: 20}, {geocode: [-8.864946, -77.35749], popup: 'MARISCAL LUZURIAGA', capacidadUtilizada: 0, capacidadMaxima: 259}, {geocode: [-10.403464, -77.39679], popup: 'OCROS', capacidadUtilizada: 0, capacidadMaxima: 157}, {geocode: [-8.392909, -78.00902], popup: 'PALLASCA', capacidadUtilizada: 0, capacidadMaxima: 18}, {geocode: [-8.820532, -77.46025], popup: 'POMABAMBA', capacidadUtilizada: 0, capacidadMaxima: 245}, {geocode: [-9.722085, -77.45615], popup: 'RECUAY', capacidadUtilizada: 0, capacidadMaxima: 207}, {geocode: [-9.074542, -78.593575], popup: 'SANTA', capacidadUtilizada: 0, capacidadMaxima: 48}, {geocode: [-8.554587, -77.63122], popup: 'SIHUAS', capacidadUtilizada: 0, capacidadMaxima: 109}, {geocode: [-9.139891, -77.7449], popup: 'YUNGAY', capacidadUtilizada: 0, capacidadMaxima: 61}, {geocode: [-12.060342, -77.14068], popup: 'CALLAO', capacidadUtilizada: 0, capacidadMaxima: 241}, {geocode: [-12.844325, -74.57118], popup: 'ACOBAMBA', capacidadUtilizada: 0, capacidadMaxima: 49}, {geocode: [-12.983049, -74.718544], popup: 'ANGARAES', capacidadUtilizada: 0, capacidadMaxima: 89}, {geocode: [-13.283339, -75.31915], popup: 'CASTROVIRREYNA', capacidadUtilizada: 0, capacidadMaxima: 72}, {geocode: [-12.739259, -74.38756], popup: 'CHURCAMPA', capacidadUtilizada: 0, capacidadMaxima: 94}, {geocode: [-12.787191, -74.9731], popup: 'HUANCAVELICA', capacidadUtilizada: 0, capacidadMaxima: 56}, {geocode: [-13.604421, -75.35307], popup: 'HUAYTARA', capacidadUtilizada: 0, capacidadMaxima: 107}, {geocode: [-12.398792, -74.86842], popup: 'TAYACAJA', capacidadUtilizada: 0, capacidadMaxima: 34}, {geocode: [-10.12923, -76.20446], popup: 'AMBO', capacidadUtilizada: 0, capacidadMaxima: 103}, {geocode: [-9.828532, -76.8013], popup: 'DOS DE MAYO', capacidadUtilizada: 0, capacidadMaxima: 78}, {geocode: [-9.037866, -76.952614], popup: 'HUACAYBAMBA', capacidadUtilizada: 0, capacidadMaxima: 73}, {geocode: [-9.550005, -76.815575], popup: 'HUAMALIES', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-9.929545, -76.23965], popup: 'HUANUCO', capacidadUtilizada: 0, capacidadMaxima: 53}, {geocode: [-10.078058, -76.631615], popup: 'LAURICOCHA', capacidadUtilizada: 0, capacidadMaxima: 25}, {geocode: [-9.298381, -76.00028], popup: 'LEONCIO PRADO', capacidadUtilizada: 0, capacidadMaxima: 22}, {geocode: [-8.604393, -77.14935], popup: 'MARAÑON', capacidadUtilizada: 0, capacidadMaxima: 42}, {geocode: [-9.897476, -75.99429], popup: 'PACHITEA', capacidadUtilizada: 0, capacidadMaxima: 47}, {geocode: [-9.379358, -74.96594], popup: 'PUERTO INCA', capacidadUtilizada: 0, capacidadMaxima: 59}, {geocode: [-9.858744, -76.6084], popup: 'YAROWILCA', capacidadUtilizada: 0, capacidadMaxima: 73}, {geocode: [-13.417593, -76.13261], popup: 'CHINCHA', capacidadUtilizada: 0, capacidadMaxima: 222}, {geocode: [-14.063935, -75.7292], popup: 'ICA', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-14.827559, -74.93705], popup: 'NASCA', capacidadUtilizada: 0, capacidadMaxima: 84}, {geocode: [-14.533749, -75.185135], popup: 'PALPA', capacidadUtilizada: 0, capacidadMaxima: 24}, {geocode: [-13.709894, -76.20321], popup: 'PISCO', capacidadUtilizada: 0, capacidadMaxima: 238}, {geocode: [-11.055986, -75.3282], popup: 'CHANCHAMAYO', capacidadUtilizada: 0, capacidadMaxima: 32}, {geocode: [-12.061711, -75.28762], popup: 'CHUPACA', capacidadUtilizada: 0, capacidadMaxima: 38}, {geocode: [-11.918462, -75.312965], popup: 'CONCEPCION', capacidadUtilizada: 0, capacidadMaxima: 60}, {geocode: [-12.067959, -75.21005], popup: 'HUANCAYO', capacidadUtilizada: 0, capacidadMaxima: 66}, {geocode: [-11.775216, -75.50053], popup: 'JAUJA', capacidadUtilizada: 0, capacidadMaxima: 25}, {geocode: [-11.161042, -75.99308], popup: 'JUNIN', capacidadUtilizada: 0, capacidadMaxima: 46}, {geocode: [-11.253902, -74.637], popup: 'SATIPO', capacidadUtilizada: 0, capacidadMaxima: 35}, {geocode: [-11.419918, -75.68777], popup: 'TARMA', capacidadUtilizada: 0, capacidadMaxima: 42}, {geocode: [-11.516594, -75.90004], popup: 'YAULI', capacidadUtilizada: 0, capacidadMaxima: 62}, {geocode: [-10.7540245, -77.760796], popup: 'BARRANCA', capacidadUtilizada: 0, capacidadMaxima: 225}, {geocode: [-10.472683, -76.993004], popup: 'CAJATAMBO', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-11.46702, -76.62474], popup: 'CANTA', capacidadUtilizada: 0, capacidadMaxima: 94}, {geocode: [-13.07775, -76.38743], popup: 'CAÑETE', capacidadUtilizada: 0, capacidadMaxima: 137}, {geocode: [-11.495407, -77.207184], popup: 'HUARAL', capacidadUtilizada: 0, capacidadMaxima: 67}, {geocode: [-11.844765, -76.38606], popup: 'HUAROCHIRI', capacidadUtilizada: 0, capacidadMaxima: 151}, {geocode: [-11.108553, -77.610405], popup: 'HUAURA', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-10.668103, -76.77306], popup: 'OYON', capacidadUtilizada: 0, capacidadMaxima: 232}, {geocode: [-12.459734, -75.918686], popup: 'YAUYOS', capacidadUtilizada: 0, capacidadMaxima: 222}, {geocode: [-10.491333, -76.516624], popup: 'DANIEL ALCIDES CARRION', capacidadUtilizada: 0, capacidadMaxima: 106}, {geocode: [-10.574283, -75.404625], popup: 'OXAPAMPA', capacidadUtilizada: 0, capacidadMaxima: 71}, {geocode: [-10.683662, -76.25618], popup: 'PASCO', capacidadUtilizada: 0, capacidadMaxima: 104}, {geocode: [-5.6390615, -78.53166], popup: 'BAGUA', capacidadUtilizada: 0, capacidadMaxima: 72}, {geocode: [-5.904324, -77.798096], popup: 'BONGARA', capacidadUtilizada: 0, capacidadMaxima: 84}, {geocode: [-6.2294083, -77.87244], popup: 'CHACHAPOYAS', capacidadUtilizada: 0, capacidadMaxima: 31}, {geocode: [-4.592347, -77.86448], popup: 'CONDORCANQUI', capacidadUtilizada: 0, capacidadMaxima: 56}, {geocode: [-6.139032, -77.95196], popup: 'LUYA', capacidadUtilizada: 0, capacidadMaxima: 37}, {geocode: [-6.395907, -77.4822], popup: 'RODRIGUEZ DE MENDOZA', capacidadUtilizada: 0, capacidadMaxima: 94}, {geocode: [-5.7544174, -78.4422], popup: 'UTCUBAMBA', capacidadUtilizada: 0, capacidadMaxima: 86}, {geocode: [-7.6237435, -78.046005], popup: 'CAJABAMBA', capacidadUtilizada: 0, capacidadMaxima: 44}, {geocode: [-7.1570687, -78.517525], popup: 'CAJAMARCA', capacidadUtilizada: 0, capacidadMaxima: 86}, {geocode: [-6.8655324, -78.14556], popup: 'CELENDIN', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-6.5615745, -78.650246], popup: 'CHOTA', capacidadUtilizada: 0, capacidadMaxima: 33}, {geocode: [-7.3661294, -78.80463], popup: 'CONTUMAZA', capacidadUtilizada: 0, capacidadMaxima: 97}, {geocode: [-6.3773556, -78.81831], popup: 'CUTERVO', capacidadUtilizada: 0, capacidadMaxima: 31}, {geocode: [-6.679542, -78.51914], popup: 'HUALGAYOC', capacidadUtilizada: 0, capacidadMaxima: 42}, {geocode: [-5.708803, -78.80782], popup: 'JAEN', capacidadUtilizada: 0, capacidadMaxima: 61}, {geocode: [-5.1462502, -79.004974], popup: 'SAN IGNACIO', capacidadUtilizada: 0, capacidadMaxima: 34}, {geocode: [-7.3360686, -78.17047], popup: 'SAN MARCOS', capacidadUtilizada: 0, capacidadMaxima: 38}, {geocode: [-7.0004487, -78.85143], popup: 'SAN MIGUEL', capacidadUtilizada: 0, capacidadMaxima: 49}, {geocode: [-7.1183414, -78.82337], popup: 'SAN PABLO', capacidadUtilizada: 0, capacidadMaxima: 100}, {geocode: [-6.6261396, -78.94439], popup: 'SANTA CRUZ', capacidadUtilizada: 0, capacidadMaxima: 77}, {geocode: [-7.7137904, -79.10751], popup: 'ASCOPE', capacidadUtilizada: 0, capacidadMaxima: 24}, {geocode: [-7.153872, -77.70264], popup: 'BOLIVAR', capacidadUtilizada: 0, capacidadMaxima: 132}, {geocode: [-7.227289, -79.429634], popup: 'CHEPEN', capacidadUtilizada: 0, capacidadMaxima: 103}, {geocode: [-7.479456, -78.81942], popup: 'GRAN CHIMU', capacidadUtilizada: 0, capacidadMaxima: 214}, {geocode: [-8.042529, -78.48663], popup: 'JULCAN', capacidadUtilizada: 0, capacidadMaxima: 198}, {geocode: [-7.902503, -78.5657], popup: 'OTUZCO', capacidadUtilizada: 0, capacidadMaxima: 209}, {geocode: [-7.4320564, -79.50428], popup: 'PACASMAYO', capacidadUtilizada: 0, capacidadMaxima: 129}, {geocode: [-8.275935, -77.29632], popup: 'PATAZ', capacidadUtilizada: 0, capacidadMaxima: 148}, {geocode: [-7.815552, -78.04862], popup: 'SANCHEZ CARRION', capacidadUtilizada: 0, capacidadMaxima: 256}, {geocode: [-8.145368, -78.17327], popup: 'SANTIAGO DE CHUCO', capacidadUtilizada: 0, capacidadMaxima: 147}, {geocode: [-8.414277, -78.75222], popup: 'VIRU', capacidadUtilizada: 0, capacidadMaxima: 204}, {geocode: [-6.771505, -79.83866], popup: 'CHICLAYO', capacidadUtilizada: 0, capacidadMaxima: 62}, {geocode: [-6.639227, -79.78804], popup: 'FERREÑAFE', capacidadUtilizada: 0, capacidadMaxima: 40}, {geocode: [-6.704108, -79.90621], popup: 'LAMBAYEQUE', capacidadUtilizada: 0, capacidadMaxima: 79}, {geocode: [-5.895269, -76.10441], popup: 'ALTO AMAZONAS', capacidadUtilizada: 0, capacidadMaxima: 47}, {geocode: [-4.8315687, -76.55451], popup: 'DATEM DEL MARAÑON', capacidadUtilizada: 0, capacidadMaxima: 28}, {geocode: [-4.506616, -73.57546], popup: 'LORETO', capacidadUtilizada: 0, capacidadMaxima: 64}, {geocode: [-3.9059913, -70.51679], popup: 'MARISCAL RAMON CASTILLA', capacidadUtilizada: 0, capacidadMaxima: 75}, {geocode: [-3.749346, -73.24437], popup: 'MAYNAS', capacidadUtilizada: 0, capacidadMaxima: 25}, {geocode: [-2.4471967, -72.66825], popup: 'PUTUMAYO', capacidadUtilizada: 0, capacidadMaxima: 66}, {geocode: [-5.063693, -73.856384], popup: 'REQUENA', capacidadUtilizada: 0, capacidadMaxima: 16}, {geocode: [-7.3505206, -75.00906], popup: 'UCAYALI', capacidadUtilizada: 0, capacidadMaxima: 19}, {geocode: [-4.640226, -79.71523], popup: 'AYABACA', capacidadUtilizada: 0, capacidadMaxima: 214}, {geocode: [-5.2390018, -79.45062], popup: 'HUANCABAMBA', capacidadUtilizada: 0, capacidadMaxima: 259}, {geocode: [-5.096551, -80.16085], popup: 'MORROPON', capacidadUtilizada: 0, capacidadMaxima: 99}, {geocode: [-5.085127, -81.11367], popup: 'PAITA', capacidadUtilizada: 0, capacidadMaxima: 162}, {geocode: [-5.197164, -80.62655], popup: 'PIURA', capacidadUtilizada: 0, capacidadMaxima: 51}, {geocode: [-5.557545, -80.82227], popup: 'SECHURA', capacidadUtilizada: 0, capacidadMaxima: 128}, {geocode: [-4.8900437, -80.68738], popup: 'SULLANA', capacidadUtilizada: 0, capacidadMaxima: 254}, {geocode: [-4.579691, -81.27182], popup: 'TALARA', capacidadUtilizada: 0, capacidadMaxima: 120}, {geocode: [-7.066871, -76.5847], popup: 'BELLAVISTA', capacidadUtilizada: 0, capacidadMaxima: 17}, {geocode: [-6.613914, -76.69486], popup: 'EL DORADO', capacidadUtilizada: 0, capacidadMaxima: 39}, {geocode: [-6.9364114, -76.77185], popup: 'HUALLAGA', capacidadUtilizada: 0, capacidadMaxima: 67}, {geocode: [-6.421838, -76.51618], popup: 'LAMAS', capacidadUtilizada: 0, capacidadMaxima: 89}, {geocode: [-7.1804104, -76.72644], popup: 'MARISCAL CACERES', capacidadUtilizada: 0, capacidadMaxima: 71}, {geocode: [-6.034669, -76.97467], popup: 'MOYOBAMBA', capacidadUtilizada: 0, capacidadMaxima: 30}, {geocode: [-6.9206414, -76.3303], popup: 'PICOTA', capacidadUtilizada: 0, capacidadMaxima: 53}, {geocode: [-6.0626082, -77.16777], popup: 'RIOJA', capacidadUtilizada: 0, capacidadMaxima: 75}, {geocode: [-6.487717, -76.35982], popup: 'SAN MARTIN', capacidadUtilizada: 0, capacidadMaxima: 26}, {geocode: [-8.188648, -76.510315], popup: 'TOCACHE', capacidadUtilizada: 0, capacidadMaxima: 41}, {geocode: [-3.6806676, -80.676285], popup: 'CONTRALMIRANTE VILLAR', capacidadUtilizada: 0, capacidadMaxima: 231}, {geocode: [-3.570834, -80.45957], popup: 'TUMBES', capacidadUtilizada: 0, capacidadMaxima: 135}, {geocode: [-3.5006804, -80.275024], popup: 'ZARUMILLA', capacidadUtilizada: 0, capacidadMaxima: 100}]
-  const almacenes = [{geocode: [-12.045919, -77.030495], popup: 'LIMA'}, {geocode: [-8.111764, -79.02869], popup: 'TRUJILLO'}, {geocode: [-16.398815, -71.53702], popup: 'AREQUIPA'}]
-  
-
-  const camionSeleccionado = {geocode: [-12.045919, -77.030495]}
-  const destinoSeleccionado = {geocode: [-8.414277, -78.75222]}
-  
-  const [ubicacionCamionSeleccionado, setUbicacionCamionSeleccionado] = useState(camionSeleccionado.geocode)
-
-  /*
-  useEffect(()=>{
-    const intervalId = setInterval(()=>{
-      const [latOrigen, lonOrigen] = ubicacionCamionSeleccionado;
-      const [latDestino, lonDestino] = destinoSeleccionado.geocode;
-
-      // Calcular la distancia total en kilómetros entre origen y destino
-      const distancia = Math.sqrt(
-        Math.pow((latDestino - latOrigen) * 111, 2) + // 1 grado de latitud ≈ 111 km
-        Math.pow((lonDestino - lonOrigen) * 111 * Math.cos(latOrigen * (Math.PI / 180)), 2) // 1 grado de longitud ajustado
-      );
+      // Inicializar el mapa
+      if (mapRef.current) return;
       
-      // Si la distancia es menor a un umbral, significa que hemos llegado al destino
-      const umbral = 0.001;
-      if (distancia <= umbral) { // Aproximadamente 1 metro
-        clearInterval(intervalId);
-        setUbicacionCamionSeleccionado(destinoSeleccionado.geocode); // Asegúrate de establecer la ubicación final
-        return () => clearInterval(intervalId)
+      mapRef.current = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD', //https://basemaps.cartocdn.com/gl/positron-gl-style/style.json
+        center: [-77.0428, -12.0464], // Coordenadas de Lima, Perú ?
+        zoom: 6
+      });
+      
+
+      const map = mapRef.current;
+      
+      // Función para crear marcadores personalizados
+      const createMarker = (geocode, popupContent, iconHtml) => {
+        const el = document.createElement("div");
+        el.innerHTML = iconHtml;
+        new maplibregl.Marker(el)
+          .setLngLat(geocode)
+          .setPopup(new maplibregl.Popup().setHTML(popupContent))
+          .addTo(map);
+      };
+
+      // Agregar marcadores de oficinas
+      const oficinas = [{id:0 , geocode: [-72.878876, -13.637346], popup: 'ABANCAY', capacidadUtilizada: 0, capacidadMaxima: 103}, {id:1 , geocode: [-73.38991, -13.656409], popup: 'ANDAHUAYLAS', capacidadUtilizada: 0, capacidadMaxima: 31}, {id:2 , geocode: [-72.87779, -14.364756], popup: 'ANTABAMBA', capacidadUtilizada: 0, capacidadMaxima: 30}, {id:3 , geocode: [-73.24427, -14.294712], popup: 'AYMARAES', capacidadUtilizada: 0, capacidadMaxima: 15}, {id:4 , geocode: [-73.7228, -13.518027], popup: 'CHINCHEROS', capacidadUtilizada: 0, capacidadMaxima: 94}, {id:5 , geocode: [-72.174446, -13.946195], popup: 'COTABAMBAS', capacidadUtilizada: 0, capacidadMaxima: 76}, {id:6 , geocode: [-72.70764, -14.10538], popup: 'GRAU', capacidadUtilizada: 0, capacidadMaxima: 94}, {id:7 , geocode: [-72.71162, -16.624918], popup: 'CAMANA', capacidadUtilizada: 0, capacidadMaxima: 58}, {id:8 , geocode: [-73.36541, -15.772139], popup: 'CARAVELI', capacidadUtilizada: 0, capacidadMaxima: 237}, {id:9 , geocode: [-72.49209, -16.076603], popup: 'CASTILLA', capacidadUtilizada: 0, capacidadMaxima: 158}, {id:10 , geocode: [-71.60198, -15.636742], popup: 'CAYLLOMA', capacidadUtilizada: 0, capacidadMaxima: 247}, {id:11 , geocode: [-72.65147, -15.839238], popup: 'CONDESUYOS', capacidadUtilizada: 0, capacidadMaxima: 21}, {id:12 , geocode: [-72.01544, -17.029276], popup: 'ISLAY', capacidadUtilizada: 0, capacidadMaxima: 139}, {id:13 , geocode: [-72.88816, -15.212908], popup: 'LA UNION', capacidadUtilizada: 0, capacidadMaxima: 228}, {id:14 , geocode: [-74.14368, -13.629325], popup: 'CANGALLO', capacidadUtilizada: 0, capacidadMaxima: 37}, {id:15 , geocode: [-74.22578, -13.160271], popup: 'HUAMANGA', capacidadUtilizada: 0, capacidadMaxima: 66}, {id:16 , geocode: [-74.333885, -13.919884], popup: 'HUANCA SANCOS', capacidadUtilizada: 0, capacidadMaxima: 20}, {id:17 , geocode: [-74.247894, -12.939914], popup: 'HUANTA', capacidadUtilizada: 0, capacidadMaxima: 89}, {id:18 , geocode: [-73.98111, -13.012666], popup: 'LA MAR', capacidadUtilizada: 0, capacidadMaxima: 103}, {id:19 , geocode: [-74.1242, -14.694042], popup: 'LUCANAS', capacidadUtilizada: 0, capacidadMaxima: 57}, {id:20 , geocode: [-73.78089, -15.016977], popup: 'PARINACOCHAS', capacidadUtilizada: 0, capacidadMaxima: 32}, {id:21 , geocode: [-73.34436, -15.278873], popup: 'PAUCAR DEL SARA SARA', capacidadUtilizada: 0, capacidadMaxima: 39}, {id:22 , geocode: [-73.838844, -14.011257], popup: 'SUCRE', capacidadUtilizada: 0, capacidadMaxima: 85}, {id:23 , geocode: [-74.0663, -13.752455], popup: 'VICTOR FAJARDO', capacidadUtilizada: 0, capacidadMaxima: 107}, {id:24 , geocode: [-73.953865, -13.653027], popup: 'VILCAS HUAMAN', capacidadUtilizada: 0, capacidadMaxima: 89}, {id:25 , geocode: [-71.683495, -13.919203], popup: 'ACOMAYO', capacidadUtilizada: 0, capacidadMaxima: 103}, {id:26 , geocode: [-72.14879, -13.471593], popup: 'ANTA', capacidadUtilizada: 0, capacidadMaxima: 88}, {id:27 , geocode: [-71.95605, -13.321749], popup: 'CALCA', capacidadUtilizada: 0, capacidadMaxima: 93}, {id:28 , geocode: [-71.43203, -14.216944], popup: 'CANAS', capacidadUtilizada: 0, capacidadMaxima: 27}, {id:29 , geocode: [-71.2265, -14.272991], popup: 'CANCHIS', capacidadUtilizada: 0, capacidadMaxima: 64}, {id:30 , geocode: [-72.082085, -14.450169], popup: 'CHUMBIVILCAS', capacidadUtilizada: 0, capacidadMaxima: 41}, {id:31 , geocode: [-71.97876, -13.516702], popup: 'CUSCO', capacidadUtilizada: 0, capacidadMaxima: 56}, {id:32 , geocode: [-71.41288, -14.793119], popup: 'ESPINAR', capacidadUtilizada: 0, capacidadMaxima: 28}, {id:33 , geocode: [-72.69288, -12.863322], popup: 'LA CONVENCION', capacidadUtilizada: 0, capacidadMaxima: 107}, {id:34 , geocode: [-71.84744, -13.761323], popup: 'PARURO', capacidadUtilizada: 0, capacidadMaxima: 46}, {id:35 , geocode: [-71.596725, -13.317805], popup: 'PAUCARTAMBO', capacidadUtilizada: 0, capacidadMaxima: 21}, {id:36 , geocode: [-71.62558, -13.687855], popup: 'QUISPICANCHI', capacidadUtilizada: 0, capacidadMaxima: 72}, {id:37 , geocode: [-72.11599, -13.30593], popup: 'URUBAMBA', capacidadUtilizada: 0, capacidadMaxima: 29}, {id:38 , geocode: [-71.3589, -12.836182], popup: 'MANU', capacidadUtilizada: 0, capacidadMaxima: 40}, {id:39 , geocode: [-69.577415, -10.944943], popup: 'TAHUAMANU', capacidadUtilizada: 0, capacidadMaxima: 84}, {id:40 , geocode: [-69.17625, -12.594216], popup: 'TAMBOPATA', capacidadUtilizada: 0, capacidadMaxima: 82}, {id:41 , geocode: [-70.970055, -16.673923], popup: 'GENERAL SANCHEZ CERRO', capacidadUtilizada: 0, capacidadMaxima: 20}, {id:42 , geocode: [-71.345314, -17.645824], popup: 'ILO', capacidadUtilizada: 0, capacidadMaxima: 86}, {id:43 , geocode: [-70.9347, -17.193804], popup: 'MARISCAL NIETO', capacidadUtilizada: 0, capacidadMaxima: 49}, {id:44 , geocode: [-70.19534, -14.9085245], popup: 'AZANGARO', capacidadUtilizada: 0, capacidadMaxima: 68}, {id:45 , geocode: [-70.43136, -14.068453], popup: 'CARABAYA', capacidadUtilizada: 0, capacidadMaxima: 25}, {id:46 , geocode: [-69.459236, -16.213324], popup: 'CHUCUITO', capacidadUtilizada: 0, capacidadMaxima: 41}, {id:47 , geocode: [-69.638596, -16.086866], popup: 'EL COLLAO', capacidadUtilizada: 0, capacidadMaxima: 17}, {id:48 , geocode: [-69.76144, -15.204116], popup: 'HUANCANE', capacidadUtilizada: 0, capacidadMaxima: 112}, {id:49 , geocode: [-70.367546, -15.364678], popup: 'LAMPA', capacidadUtilizada: 0, capacidadMaxima: 49}, {id:50 , geocode: [-70.59009, -14.881829], popup: 'MELGAR', capacidadUtilizada: 0, capacidadMaxima: 86}, {id:51 , geocode: [-69.49989, -15.360712], popup: 'MOHO', capacidadUtilizada: 0, capacidadMaxima: 73}, {id:52 , geocode: [-70.02801, -15.840612], popup: 'PUNO', capacidadUtilizada: 0, capacidadMaxima: 40}, {id:53 , geocode: [-69.86856, -14.91416], popup: 'SAN ANTONIO DE PUTINA', capacidadUtilizada: 0, capacidadMaxima: 78}, {id:54 , geocode: [-70.13554, -15.493232], popup: 'SAN ROMAN', capacidadUtilizada: 0, capacidadMaxima: 57}, {id:55 , geocode: [-69.46661, -14.323019], popup: 'SANDIA', capacidadUtilizada: 0, capacidadMaxima: 26}, {id:56 , geocode: [-69.09257, -16.244268], popup: 'YUNGUYO', capacidadUtilizada: 0, capacidadMaxima: 114}, {id:57 , geocode: [-70.2504, -17.268188], popup: 'CANDARAVE', capacidadUtilizada: 0, capacidadMaxima: 145}, {id:58 , geocode: [-70.7624, -17.613832], popup: 'JORGE BASADRE', capacidadUtilizada: 0, capacidadMaxima: 139}, {id:59 , geocode: [-70.25079, -18.0137], popup: 'TACNA', capacidadUtilizada: 0, capacidadMaxima: 41}, {id:60 , geocode: [-70.03211, -17.474718], popup: 'TARATA', capacidadUtilizada: 0, capacidadMaxima: 164}, {id:61 , geocode: [-73.75484, -10.729728], popup: 'ATALAYA', capacidadUtilizada: 0, capacidadMaxima: 77}, {id:62 , geocode: [-74.53224, -8.383243], popup: 'CORONEL PORTILLO', capacidadUtilizada: 0, capacidadMaxima: 57}, {id:63 , geocode: [-75.50862, -9.036876], popup: 'PADRE ABAD', capacidadUtilizada: 0, capacidadMaxima: 71}, {id:64 , geocode: [-70.71008, -9.77236], popup: 'PURUS', capacidadUtilizada: 0, capacidadMaxima: 28}, {id:65 , geocode: [-77.61072, -9.780206], popup: 'AIJA', capacidadUtilizada: 0, capacidadMaxima: 105}, {id:66 , geocode: [-77.01683, -9.101036], popup: 'ANTONIO RAYMONDI', capacidadUtilizada: 0, capacidadMaxima: 256}, {id:67 , geocode: [-77.36604, -9.162093], popup: 'ASUNCION', capacidadUtilizada: 0, capacidadMaxima: 23}, {id:68 , geocode: [-77.1568, -10.152066], popup: 'BOLOGNESI', capacidadUtilizada: 0, capacidadMaxima: 190}, {id:69 , geocode: [-77.64629, -9.281765], popup: 'CARHUAZ', capacidadUtilizada: 0, capacidadMaxima: 242}, {id:70 , geocode: [-77.32913, -9.0943575], popup: 'CARLOS FERMIN FITZCARRALD', capacidadUtilizada: 0, capacidadMaxima: 40}, {id:71 , geocode: [-78.30544, -9.47608], popup: 'CASMA', capacidadUtilizada: 0, capacidadMaxima: 136}, {id:72 , geocode: [-77.89804, -8.570422], popup: 'CORONGO', capacidadUtilizada: 0, capacidadMaxima: 55}, {id:73 , geocode: [-77.52886, -9.529975], popup: 'HUARAZ', capacidadUtilizada: 0, capacidadMaxima: 33}, {id:74 , geocode: [-77.17096, -9.347401], popup: 'HUARI', capacidadUtilizada: 0, capacidadMaxima: 96}, {id:75 , geocode: [-78.15227, -10.0687065], popup: 'HUARMEY', capacidadUtilizada: 0, capacidadMaxima: 138}, {id:76 , geocode: [-77.81007, -9.048588], popup: 'HUAYLAS', capacidadUtilizada: 0, capacidadMaxima: 20}, {id:77 , geocode: [-77.35749, -8.864946], popup: 'MARISCAL LUZURIAGA', capacidadUtilizada: 0, capacidadMaxima: 259}, {id:78 , geocode: [-77.39679, -10.403464], popup: 'OCROS', capacidadUtilizada: 0, capacidadMaxima: 157}, {id:79 , geocode: [-78.00902, -8.392909], popup: 'PALLASCA', capacidadUtilizada: 0, capacidadMaxima: 18}, {id:80 , geocode: [-77.46025, -8.820532], popup: 'POMABAMBA', capacidadUtilizada: 0, capacidadMaxima: 245}, {id:81 , geocode: [-77.45615, -9.722085], popup: 'RECUAY', capacidadUtilizada: 0, capacidadMaxima: 207}, {id:82 , geocode: [-78.593575, -9.074542], popup: 'SANTA', capacidadUtilizada: 0, capacidadMaxima: 48}, {id:83 , geocode: [-77.63122, -8.554587], popup: 'SIHUAS', capacidadUtilizada: 0, capacidadMaxima: 109}, {id:84 , geocode: [-77.7449, -9.139891], popup: 'YUNGAY', capacidadUtilizada: 0, capacidadMaxima: 61}, {id:85 , geocode: [-77.14068, -12.060342], popup: 'CALLAO', capacidadUtilizada: 0, capacidadMaxima: 241}, {id:86 , geocode: [-74.57118, -12.844325], popup: 'ACOBAMBA', capacidadUtilizada: 0, capacidadMaxima: 49}, {id:87 , geocode: [-74.718544, -12.983049], popup: 'ANGARAES', capacidadUtilizada: 0, capacidadMaxima: 89}, {id:88 , geocode: [-75.31915, -13.283339], popup: 'CASTROVIRREYNA', capacidadUtilizada: 0, capacidadMaxima: 72}, {id:89 , geocode: [-74.38756, -12.739259], popup: 'CHURCAMPA', capacidadUtilizada: 0, capacidadMaxima: 94}, {id:90 , geocode: [-74.9731, -12.787191], popup: 'HUANCAVELICA', capacidadUtilizada: 0, capacidadMaxima: 56}, {id:91 , geocode: [-75.35307, -13.604421], popup: 'HUAYTARA', capacidadUtilizada: 0, capacidadMaxima: 107}, {id:92 , geocode: [-74.86842, -12.398792], popup: 'TAYACAJA', capacidadUtilizada: 0, capacidadMaxima: 34}, {id:93 , geocode: [-76.20446, -10.12923], popup: 'AMBO', capacidadUtilizada: 0, capacidadMaxima: 103}, {id:94 , geocode: [-76.8013, -9.828532], popup: 'DOS DE MAYO', capacidadUtilizada: 0, capacidadMaxima: 78}, {id:95 , geocode: [-76.952614, -9.037866], popup: 'HUACAYBAMBA', capacidadUtilizada: 0, capacidadMaxima: 73}, {id:96 , geocode: [-76.815575, -9.550005], popup: 'HUAMALIES', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:97 , geocode: [-76.23965, -9.929545], popup: 'HUANUCO', capacidadUtilizada: 0, capacidadMaxima: 53}, {id:98 , geocode: [-76.631615, -10.078058], popup: 'LAURICOCHA', capacidadUtilizada: 0, capacidadMaxima: 25}, {id:99 , geocode: [-76.00028, -9.298381], popup: 'LEONCIO PRADO', capacidadUtilizada: 0, capacidadMaxima: 22}, {id:100 , geocode: [-77.14935, -8.604393], popup: 'MARAÑON', capacidadUtilizada: 0, capacidadMaxima: 42}, {id:101 , geocode: [-75.99429, -9.897476], popup: 'PACHITEA', capacidadUtilizada: 0, capacidadMaxima: 47}, {id:102 , geocode: [-74.96594, -9.379358], popup: 'PUERTO INCA', capacidadUtilizada: 0, capacidadMaxima: 59}, {id:103 , geocode: [-76.6084, -9.858744], popup: 'YAROWILCA', capacidadUtilizada: 0, capacidadMaxima: 73}, {id:104 , geocode: [-76.13261, -13.417593], popup: 'CHINCHA', capacidadUtilizada: 0, capacidadMaxima: 222}, {id:105 , geocode: [-75.7292, -14.063935], popup: 'ICA', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:106 , geocode: [-74.93705, -14.827559], popup: 'NASCA', capacidadUtilizada: 0, capacidadMaxima: 84}, {id:107 , geocode: [-75.185135, -14.533749], popup: 'PALPA', capacidadUtilizada: 0, capacidadMaxima: 24}, {id:108 , geocode: [-76.20321, -13.709894], popup: 'PISCO', capacidadUtilizada: 0, capacidadMaxima: 238}, {id:109 , geocode: [-75.3282, -11.055986], popup: 'CHANCHAMAYO', capacidadUtilizada: 0, capacidadMaxima: 32}, {id:110 , geocode: [-75.28762, -12.061711], popup: 'CHUPACA', capacidadUtilizada: 0, capacidadMaxima: 38}, {id:111 , geocode: [-75.312965, -11.918462], popup: 'CONCEPCION', capacidadUtilizada: 0, capacidadMaxima: 60}, {id:112 , geocode: [-75.21005, -12.067959], popup: 'HUANCAYO', capacidadUtilizada: 0, capacidadMaxima: 66}, {id:113 , geocode: [-75.50053, -11.775216], popup: 'JAUJA', capacidadUtilizada: 0, capacidadMaxima: 25}, {id:114 , geocode: [-75.99308, -11.161042], popup: 'JUNIN', capacidadUtilizada: 0, capacidadMaxima: 46}, {id:115 , geocode: [-74.637, -11.253902], popup: 'SATIPO', capacidadUtilizada: 0, capacidadMaxima: 35}, {id:116 , geocode: [-75.68777, -11.419918], popup: 'TARMA', capacidadUtilizada: 0, capacidadMaxima: 42}, {id:117 , geocode: [-75.90004, -11.516594], popup: 'YAULI', capacidadUtilizada: 0, capacidadMaxima: 62}, {id:118 , geocode: [-77.760796, -10.7540245], popup: 'BARRANCA', capacidadUtilizada: 0, capacidadMaxima: 225}, {id:119 , geocode: [-76.993004, -10.472683], popup: 'CAJATAMBO', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:120 , geocode: [-76.62474, -11.46702], popup: 'CANTA', capacidadUtilizada: 0, capacidadMaxima: 94}, {id:121 , geocode: [-76.38743, -13.07775], popup: 'CAÑETE', capacidadUtilizada: 0, capacidadMaxima: 137}, {id:122 , geocode: [-77.207184, -11.495407], popup: 'HUARAL', capacidadUtilizada: 0, capacidadMaxima: 67}, {id:123 , geocode: [-76.38606, -11.844765], popup: 'HUAROCHIRI', capacidadUtilizada: 0, capacidadMaxima: 151}, {id:124 , geocode: [-77.610405, -11.108553], popup: 'HUAURA', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:125 , geocode: [-76.77306, -10.668103], popup: 'OYON', capacidadUtilizada: 0, capacidadMaxima: 232}, {id:126 , geocode: [-75.918686, -12.459734], popup: 'YAUYOS', capacidadUtilizada: 0, capacidadMaxima: 222}, {id:127 , geocode: [-76.516624, -10.491333], popup: 'DANIEL ALCIDES CARRION', capacidadUtilizada: 0, capacidadMaxima: 106}, {id:128 , geocode: [-75.404625, -10.574283], popup: 'OXAPAMPA', capacidadUtilizada: 0, capacidadMaxima: 71}, {id:129 , geocode: [-76.25618, -10.683662], popup: 'PASCO', capacidadUtilizada: 0, capacidadMaxima: 104}, {id:130 , geocode: [-78.53166, -5.6390615], popup: 'BAGUA', capacidadUtilizada: 0, capacidadMaxima: 72}, {id:131 , geocode: [-77.798096, -5.904324], popup: 'BONGARA', capacidadUtilizada: 0, capacidadMaxima: 84}, {id:132 , geocode: [-77.87244, -6.2294083], popup: 'CHACHAPOYAS', capacidadUtilizada: 0, capacidadMaxima: 31}, {id:133 , geocode: [-77.86448, -4.592347], popup: 'CONDORCANQUI', capacidadUtilizada: 0, capacidadMaxima: 56}, {id:134 , geocode: [-77.95196, -6.139032], popup: 'LUYA', capacidadUtilizada: 0, capacidadMaxima: 37}, {id:135 , geocode: [-77.4822, -6.395907], popup: 'RODRIGUEZ DE MENDOZA', capacidadUtilizada: 0, capacidadMaxima: 94}, {id:136 , geocode: [-78.4422, -5.7544174], popup: 'UTCUBAMBA', capacidadUtilizada: 0, capacidadMaxima: 86}, {id:137 , geocode: [-78.046005, -7.6237435], popup: 'CAJABAMBA', capacidadUtilizada: 0, capacidadMaxima: 44}, {id:138 , geocode: [-78.517525, -7.1570687], popup: 'CAJAMARCA', capacidadUtilizada: 0, capacidadMaxima: 86}, {id:139 , geocode: [-78.14556, -6.8655324], popup: 'CELENDIN', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:140 , geocode: [-78.650246, -6.5615745], popup: 'CHOTA', capacidadUtilizada: 0, capacidadMaxima: 33}, {id:141 , geocode: [-78.80463, -7.3661294], popup: 'CONTUMAZA', capacidadUtilizada: 0, capacidadMaxima: 97}, {id:142 , geocode: [-78.81831, -6.3773556], popup: 'CUTERVO', capacidadUtilizada: 0, capacidadMaxima: 31}, {id:143 , geocode: [-78.51914, -6.679542], popup: 'HUALGAYOC', capacidadUtilizada: 0, capacidadMaxima: 42}, {id:144 , geocode: [-78.80782, -5.708803], popup: 'JAEN', capacidadUtilizada: 0, capacidadMaxima: 61}, {id:145 , geocode: [-79.004974, -5.1462502], popup: 'SAN IGNACIO', capacidadUtilizada: 0, capacidadMaxima: 34}, {id:146 , geocode: [-78.17047, -7.3360686], popup: 'SAN MARCOS', capacidadUtilizada: 0, capacidadMaxima: 38}, {id:147 , geocode: [-78.85143, -7.0004487], popup: 'SAN MIGUEL', capacidadUtilizada: 0, capacidadMaxima: 49}, {id:148 , geocode: [-78.82337, -7.1183414], popup: 'SAN PABLO', capacidadUtilizada: 0, capacidadMaxima: 100}, {id:149 , geocode: [-78.94439, -6.6261396], popup: 'SANTA CRUZ', capacidadUtilizada: 0, capacidadMaxima: 77}, {id:150 , geocode: [-79.10751, -7.7137904], popup: 'ASCOPE', capacidadUtilizada: 0, capacidadMaxima: 24}, {id:151 , geocode: [-77.70264, -7.153872], popup: 'BOLIVAR', capacidadUtilizada: 0, capacidadMaxima: 132}, {id:152 , geocode: [-79.429634, -7.227289], popup: 'CHEPEN', capacidadUtilizada: 0, capacidadMaxima: 103}, {id:153 , geocode: [-78.81942, -7.479456], popup: 'GRAN CHIMU', capacidadUtilizada: 0, capacidadMaxima: 214}, {id:154 , geocode: [-78.48663, -8.042529], popup: 'JULCAN', capacidadUtilizada: 0, capacidadMaxima: 198}, {id:155 , geocode: [-78.5657, -7.902503], popup: 'OTUZCO', capacidadUtilizada: 0, capacidadMaxima: 209}, {id:156 , geocode: [-79.50428, -7.4320564], popup: 'PACASMAYO', capacidadUtilizada: 0, capacidadMaxima: 129}, {id:157 , geocode: [-77.29632, -8.275935], popup: 'PATAZ', capacidadUtilizada: 0, capacidadMaxima: 148}, {id:158 , geocode: [-78.04862, -7.815552], popup: 'SANCHEZ CARRION', capacidadUtilizada: 0, capacidadMaxima: 256}, {id:159 , geocode: [-78.17327, -8.145368], popup: 'SANTIAGO DE CHUCO', capacidadUtilizada: 0, capacidadMaxima: 147}, {id:160 , geocode: [-78.75222, -8.414277], popup: 'VIRU', capacidadUtilizada: 0, capacidadMaxima: 204}, {id:161 , geocode: [-79.83866, -6.771505], popup: 'CHICLAYO', capacidadUtilizada: 0, capacidadMaxima: 62}, {id:162 , geocode: [-79.78804, -6.639227], popup: 'FERREÑAFE', capacidadUtilizada: 0, capacidadMaxima: 40}, {id:163 , geocode: [-79.90621, -6.704108], popup: 'LAMBAYEQUE', capacidadUtilizada: 0, capacidadMaxima: 79}, {id:164 , geocode: [-76.10441, -5.895269], popup: 'ALTO AMAZONAS', capacidadUtilizada: 0, capacidadMaxima: 47}, {id:165 , geocode: [-76.55451, -4.8315687], popup: 'DATEM DEL MARAÑON', capacidadUtilizada: 0, capacidadMaxima: 28}, {id:166 , geocode: [-73.57546, -4.506616], popup: 'LORETO', capacidadUtilizada: 0, capacidadMaxima: 64}, {id:167 , geocode: [-70.51679, -3.9059913], popup: 'MARISCAL RAMON CASTILLA', capacidadUtilizada: 0, capacidadMaxima: 75}, {id:168 , geocode: [-73.24437, -3.749346], popup: 'MAYNAS', capacidadUtilizada: 0, capacidadMaxima: 25}, {id:169 , geocode: [-72.66825, -2.4471967], popup: 'PUTUMAYO', capacidadUtilizada: 0, capacidadMaxima: 66}, {id:170 , geocode: [-73.856384, -5.063693], popup: 'REQUENA', capacidadUtilizada: 0, capacidadMaxima: 16}, {id:171 , geocode: [-75.00906, -7.3505206], popup: 'UCAYALI', capacidadUtilizada: 0, capacidadMaxima: 19}, {id:172 , geocode: [-79.71523, -4.640226], popup: 'AYABACA', capacidadUtilizada: 0, capacidadMaxima: 214}, {id:173 , geocode: [-79.45062, -5.2390018], popup: 'HUANCABAMBA', capacidadUtilizada: 0, capacidadMaxima: 259}, {id:174 , geocode: [-80.16085, -5.096551], popup: 'MORROPON', capacidadUtilizada: 0, capacidadMaxima: 99}, {id:175 , geocode: [-81.11367, -5.085127], popup: 'PAITA', capacidadUtilizada: 0, capacidadMaxima: 162}, {id:176 , geocode: [-80.62655, -5.197164], popup: 'PIURA', capacidadUtilizada: 0, capacidadMaxima: 51}, {id:177 , geocode: [-80.82227, -5.557545], popup: 'SECHURA', capacidadUtilizada: 0, capacidadMaxima: 128}, {id:178 , geocode: [-80.68738, -4.8900437], popup: 'SULLANA', capacidadUtilizada: 0, capacidadMaxima: 254}, {id:179 , geocode: [-81.27182, -4.579691], popup: 'TALARA', capacidadUtilizada: 0, capacidadMaxima: 120}, {id:180 , geocode: [-76.5847, -7.066871], popup: 'BELLAVISTA', capacidadUtilizada: 0, capacidadMaxima: 17}, {id:181 , geocode: [-76.69486, -6.613914], popup: 'EL DORADO', capacidadUtilizada: 0, capacidadMaxima: 39}, {id:182 , geocode: [-76.77185, -6.9364114], popup: 'HUALLAGA', capacidadUtilizada: 0, capacidadMaxima: 67}, {id:183 , geocode: [-76.51618, -6.421838], popup: 'LAMAS', capacidadUtilizada: 0, capacidadMaxima: 89}, {id:184 , geocode: [-76.72644, -7.1804104], popup: 'MARISCAL CACERES', capacidadUtilizada: 0, capacidadMaxima: 71}, {id:185 , geocode: [-76.97467, -6.034669], popup: 'MOYOBAMBA', capacidadUtilizada: 0, capacidadMaxima: 30}, {id:186 , geocode: [-76.3303, -6.9206414], popup: 'PICOTA', capacidadUtilizada: 0, capacidadMaxima: 53}, {id:187 , geocode: [-77.16777, -6.0626082], popup: 'RIOJA', capacidadUtilizada: 0, capacidadMaxima: 75}, {id:188 , geocode: [-76.35982, -6.487717], popup: 'SAN MARTIN', capacidadUtilizada: 0, capacidadMaxima: 26}, {id:189 , geocode: [-76.510315, -8.188648], popup: 'TOCACHE', capacidadUtilizada: 0, capacidadMaxima: 41}, {id:190 , geocode: [-80.676285, -3.6806676], popup: 'CONTRALMIRANTE VILLAR', capacidadUtilizada: 0, capacidadMaxima: 231}, {id:191 , geocode: [-80.45957, -3.570834], popup: 'TUMBES', capacidadUtilizada: 0, capacidadMaxima: 135}, {id:192 , geocode: [-80.275024, -3.5006804], popup: 'ZARUMILLA', capacidadUtilizada: 0, capacidadMaxima: 100}];
+      oficinas.forEach(oficina => {
+        const markerDiv = document.createElement('div');
+        markerDiv.innerHTML = oficinaIconHtmlString
+        markerDiv.style.textAlign = 'center'; // Alineación del texto
+        markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
+        const popupContent = `<h1>Provincia: ${oficina.popup}</h1>`;
+        const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+            .setHTML(popupContent);
+        const marker = new maplibregl.Marker({ element: markerDiv })
+          .setLngLat(oficina.geocode) // Establece la ubicación del marcador
+          .addTo(map)
+          .setPopup(popup); // Añade el marcador al mapa
+        });
+      
+
+      // Agregar marcadores de almacenes
+      const almacenes = [
+        { geocode: [-77.030495, -12.045919 ], popup: "LIMA" },
+        { geocode: [-79.02869, -8.111764], popup: "TRUJILLO" },
+        { geocode: [-71.53702, -16.398815], popup: "AREQUIPA" }
+      ];
+
+      almacenes.forEach(almacen => {
+        const markerDiv = document.createElement('div');
+        markerDiv.innerHTML = almacenIconHtmlString
+        markerDiv.style.textAlign = 'center'; // Alineación del texto
+        markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
+        const popupContent = `<h1>Código: ${almacen.popup}</h1>`;
+        const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+            .setHTML(popupContent);
+        const marker = new maplibregl.Marker({ element: markerDiv })
+          .setLngLat(almacen.geocode) // Establece la ubicación del marcador
+          .addTo(map)
+          .setPopup(popup); // Añade el marcador al mapa
+      });
+
+      // Agregar marcadores de camiones y las rutas si es necesario
+      if (datos && datos.vehiculos) {
+        datos.vehiculos.forEach(vehiculo => {
+          const markerDiv = document.createElement('div');
+          markerDiv.innerHTML = vehiculoIconHtmlString
+          markerDiv.style.textAlign = 'center'; // Alineación del texto
+          markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
+          const popupContent = `<h1>Código: ${vehiculo.codigo}</h1><p>${vehiculo.capacidadUsada}/${vehiculo.capacidadMaxima}</p>`;
+          const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+            .setHTML(popupContent);
+          const marker = new maplibregl.Marker({ element: markerDiv })
+            .setLngLat(vehiculo.geocode) // Establece la ubicación del marcador
+            .addTo(map)
+            .setPopup(popup); // Añade el marcador al mapa
+        });
       }
 
-      // Calcular el paso en cada dirección
-      const paso = 1000 / 111; // Aproximadamente 1 km en grados
-      const direccionLat = (latDestino - latOrigen) / distancia; // Normalizar la dirección
-      const direccionLon = (lonDestino - lonOrigen) / distancia;
+      {(estadoSimulacion!=="INICIAL" && mostrarRutas)&&
+      map.on('load', () => {
+        // Suponiendo que tienes una colección de vehículos
+        if (datos && datos.vehiculos) {
+          datos.vehiculos.forEach(vehiculo => {
+            const lineData = {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "LineString",
+                    coordinates: [vehiculo.geocode, [-72.66825, -2.4471967]], // Coordenadas
+                  },
+                  properties: {
+                    // Puedes agregar propiedades adicionales si es necesario
+                  },
+                },
+              ],
+            };
       
-      setUbicacionCamionSeleccionado((current) => [
-        current[0] + direccionLat * paso,
-        current[1] + direccionLon * paso,
-      ]);
+            // Agregar la fuente de datos
+            map.addSource(`ruta-${vehiculo.id}`, {
+              type: "geojson",
+              data: lineData,
+            });
+      
+            // Agregar la capa de la línea
+            map.addLayer({
+              id: `ruta-${vehiculo.id}`,
+              type: "line",
+              source: `ruta-${vehiculo.id}`, // Asegúrate de usar el nombre de la fuente correcta
+              layout: {
+                "line-join": "round", // Esquinas redondeadas
+                "line-cap": "round", // Extremos redondeados
+              },
+              paint: {
+                "line-color": "purple", // Color de la línea (morado)
+                "line-width": 2, // Grosor de la línea
+              },
+            });
+          });
+        }
+      })};
+      
 
-    }, 1000)
-    return () => clearInterval(intervalId)
-  }, []);
-  */
+      // Limpiar el mapa al desmontar el componente
+      return () => {
+        if (map) map.remove();
+        mapRef.current = null;
+      };
 
-
-
-  return (
-  <div className="w-full h-full relative">
-    <MapContainer
-    center={[-10, -78]}
-    zoom={7}
-    scrollWheelZoom={true}
-    dragging={true}
-    maxBounds={bounds}
-    minZoom={6}
-    maxBoundsViscosity={1}
-    className="z-0"
-    >
-    
-    <TileLayer
-        attribution='OPEN STREET MAP'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
-    {
-        oficinas.map((oficina)=>
-            <Marker
-            position={oficina.geocode}
-            icon={oficinaIcon}
-            >
-            <Popup>
-                <h1><b>{oficina.popup}</b></h1>
-                <h2><b>{oficina.capacidadUtilizada}/{oficina.capacidadMaxima}</b></h2>
-                
-            </Popup>
-        </Marker> 
-        )
+    } catch (error) {
+      console.error("Error loading the map:", error); 
     }
+  }, [isClient, datos, mostrarRutas, estadoSimulacion]); 
 
-    {
-        almacenes.map((almacen)=>
-            <Marker
-            position={almacen.geocode}
-            icon={almacenIcon}
-            >
-            <Popup>
-                <h2><b>{almacen.popup}</b></h2>
-            </Popup>
-        </Marker> 
-        )
-    }
-
-    {
-        datos && datos.vehiculos && datos.vehiculos.map((vehiculo)=>
-          <>
-          <Marker
-            key={vehiculo.id}
-            position={vehiculo.geocode}
-            icon={camionIcon}
-            className="z-50"
-            >
-            <Popup>
-                <h2><b>Vehiculo</b></h2>
-            </Popup>
-          </Marker> 
-          {(mostrarRutas==="1"&&estadoSimulacion!=="INICIAL")&&<Polyline key={vehiculo.id} pathOptions={{color:'purple'}} positions={[vehiculo.geocode, [-2.4471967, -72.66825]]}/>}
-        </>
-      )
-        
-    }
-
-        
-        
-    </MapContainer>
-  </div>
-  );
+  return <div ref={mapContainerRef} className="map-wrap" />;
 }
+/*
+oficinas.forEach(oficina => {
+        createMarker(
+          oficina.geocode,
+          `<h1><b>${oficina.popup}</b></h1><h2><b>${oficina.capacidadUtilizada}/${oficina.capacidadMaxima}</b></h2>`,
+          oficinaIconHtml
+        ); 
+      });
+*/

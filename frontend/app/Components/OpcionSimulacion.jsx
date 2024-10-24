@@ -33,7 +33,7 @@ return (
                             <input
                                 id="date-input"
                                 type="date"
-                                value={date}
+                                value={date !== null ? date : ""}
                                 className="border-2 stroke-black rounded-2xl w-[180px] px-2"
                             />
                             </div>
