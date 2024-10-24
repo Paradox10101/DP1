@@ -168,11 +168,6 @@ export default function MapView({datos, mostrarRutas, estadoSimulacion}) {
       )
         
     }
-        <Marker
-            
-            position={ubicacionCamionSeleccionado}
-            icon={camionIconSeleccionado}
-        ></Marker>
 
         
         
