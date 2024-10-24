@@ -12,7 +12,7 @@ export default function Simulacion(){
     const [ws, setWs] = useState(null);
     const [estadoSimulacion, setEstadoSimulacion] = useState("INICIAL");
     const [datos, setDatos] = useState({ vehiculos: vehiculosInicial });///ESTO ES LO QUE SE USA PARA EL MAPVIEW
-    const [mostrarRutas, setMostrarRutas] = useState("2");
+    const [mostrarRutas, setMostrarRutas] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     // useEffect para asegurar que el componente está montado (para evitar problemas de hidratación)
@@ -77,9 +77,9 @@ export default function Simulacion(){
         mostrarRutas={mostrarRutas}
         estadoSimulacion={estadoSimulacion}
       />
-      <div className="absolute bottom-6 right-10 bg-white rounded-lg">
+      <div className="absolute bottom-10 right-10 bg-white rounded-lg flex flex-col p-2">
         <MapLegend />
-        <Switch estado={mostrarRutas} setEstado={setMostrarRutas} />
+        <Switch isOn={mostrarRutas} setIsOn={setMostrarRutas} />
       </div>
     </div>
   );

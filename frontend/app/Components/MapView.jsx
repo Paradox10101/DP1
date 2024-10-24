@@ -126,6 +126,7 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
         });
       }
 
+      {(estadoSimulacion!=="INICIAL" && mostrarRutas)&&
       map.on('load', () => {
         // Suponiendo que tienes una colección de vehículos
         if (datos && datos.vehiculos) {
@@ -168,7 +169,7 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
             });
           });
         }
-      });
+      })};
       
 
       // Limpiar el mapa al desmontar el componente
