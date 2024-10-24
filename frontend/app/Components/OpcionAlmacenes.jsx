@@ -100,7 +100,7 @@ return (
                         porcentaje={capacidadUsadaTotal/capacidadTotalMaxima*100}/>
                     <div className="flex flex-row justify-between">
                         <div className="pequenno">
-                            Usado: {capacidadUsadaTotal}
+                            Ocupado: {capacidadUsadaTotal}
                         </div>
                         <div className="pequenno_bold">
                             {parseFloat((capacidadUsadaTotal/capacidadTotalMaxima*100).toFixed(2))}%
