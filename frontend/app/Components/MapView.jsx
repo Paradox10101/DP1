@@ -89,16 +89,18 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
             ubigeo={oficina.geocode.join(', ')}
             capacidadMaxima={oficina.capacidadMaxima}
             capacidadUtilizada={oficina.capacidadUtilizada}
+            iconoHtmlString = {oficinaIconHtmlString} // Aquí se pasa el ícono como prop <--------------ARREGLA ESTO
           />
         );
 
-        const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
-            .setHTML(popupContent);
+        const popup = new maplibregl.Popup({ offset: 25, closeButton: true, closeOnClick: true, anchor: 'left' })
+          .setHTML(popupContent);
+
         const marker = new maplibregl.Marker({ element: markerDiv })
-          .setLngLat(oficina.geocode) // Establece la ubicación del marcador
-          .addTo(map)
-          .setPopup(popup); // Añade el marcador al mapa
-        });
+          .setLngLat(oficina.geocode)
+          .setPopup(popup)
+          .addTo(map);
+      });
       
 
       // Agregar marcadores de almacenes
@@ -113,9 +115,18 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
         markerDiv.innerHTML = almacenIconHtmlString
         markerDiv.style.textAlign = 'center'; // Alineación del texto
         markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
-        const popupContent = `<h1>Código: ${almacen.popup}</h1>`;
-        const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+
+        const popupContent = ReactDOMServer.renderToStaticMarkup(
+          <AlmacenPopUp
+            title={almacen.popup}
+            ubigeo={almacen.geocode.join(', ')}
+            iconoHtmlString = {almacenIconHtmlString} // Aquí se pasa el ícono como prop <--------------ARREGLA ESTO
+          />
+        );
+
+        const popup = new maplibregl.Popup({ offset: 25, closeButton: true, closeOnClick: true, anchor: 'left' }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
+            
         const marker = new maplibregl.Marker({ element: markerDiv })
           .setLngLat(almacen.geocode) // Establece la ubicación del marcador
           .addTo(map)
@@ -129,8 +140,16 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
           markerDiv.innerHTML = vehiculoIconHtmlString
           markerDiv.style.textAlign = 'center'; // Alineación del texto
           markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
-          const popupContent = `<h1>Código: ${vehiculo.codigo}</h1><p>${vehiculo.capacidadUsada}/${vehiculo.capacidadMaxima}</p>`;
-          const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
+
+          const popupContent = ReactDOMServer.renderToStaticMarkup(
+          <VehiculoPopUp
+            title={vehiculo.popup}
+            capacidadMaxima={vehiculo.capacidadMaxima}
+            capacidadUtilizada={vehiculo.capacidadUtilizada}
+            iconoHtmlString = {vehiculoIconHtmlString} // Aquí se pasa el ícono como prop <--------------ARREGLA ESTO
+          />
+        );
+          const popup = new maplibregl.Popup({ offset: 25, closeButton: true, closeOnClick: true, anchor: 'left' }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
           const marker = new maplibregl.Marker({ element: markerDiv })
             .setLngLat(vehiculo.geocode) // Establece la ubicación del marcador
