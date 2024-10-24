@@ -47,29 +47,35 @@ return (
                     </div>
                     <div className="flex justify-around w-full flex-row ">
                         <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadDisponible"
+                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full " + (estadoSimulacion==="INICIAL"?"bg-capacidadDisponible":"bg-placeholder")}
                                 onClick={()=>{setEstadoSimulacion("EJECUCION")}}>
                                 <Play color="white" />
                             </button>
-                            <div className="subEncabezado text-capacidadDisponible">
+                            <div className={"subEncabezado " + (estadoSimulacion==="INICIAL"?" text-capacidadDisponible":" text-placeholder")}>
                                 Inicio
                             </div>
                         </div>
                         <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadSaturada"
-                                onClick={()=>{setEstadoSimulacion("INICIAL")}}>
-                                <Pause color="white" />
+                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full " + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" bg-capacidadSaturada":" bg-placeholder")}
+                                onClick={()=>{
+                                    if (estadoSimulacion!=="INICIAL")
+                                        setEstadoSimulacion(estadoSimulacion==="PAUSA"?"EJECUCION":"PAUSA")
+                                }}>
+                                {estadoSimulacion==="PAUSA"?(<Play color="white" />):(<Pause color="white" />)}
                             </button>
-                            <div className="subEncabezado text-capacidadSaturada">
-                                Pausa
+                            <div className={"subEncabezado "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" text-capacidadSaturada":" text-placeholder")}>
+                                {estadoSimulacion==="PAUSA"?"Reanudar":"Pausa"}
                             </div>
                         </div>
                         <div className="flex flex-col w-full text-center items-center">
-                            <button className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-capacidadLlena"
-                                onClick={()=>{setEstadoSimulacion("INICIAL")}}>
+                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" bg-capacidadLlena":" bg-placeholder")}
+                                onClick={()=>{
+                                    if (estadoSimulacion!=="INICIAL")
+                                        setEstadoSimulacion("INICIAL")
+                                    }}>
                                 <Square color="white" />
                             </button>
-                            <div className="subEncabezado text-capacidadLlena">
+                            <div className={"subEncabezado "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" text-capacidadLlena":" text-placeholder")}>
                                 Terminar
                             </div>
                         </div>

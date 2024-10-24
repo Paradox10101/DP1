@@ -1,9 +1,8 @@
 import { AlertTriangle } from "lucide-react";
 
-const IconoEstado = ({Icono, classNameContenedor, classNameContenido, alerta=false, alertClassname=""}) =>{
+const IconoEstado = ({Icono, classNameContenedor, classNameContenido}) =>{
     return (
         <div className={classNameContenedor}>
-            {alerta&&<AlertTriangle className={alertClassname}/>}
             <Icono className={classNameContenido}/>
         </div>
     )

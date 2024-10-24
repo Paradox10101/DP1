@@ -1,6 +1,7 @@
 import { NextUIProvider, Progress } from "@nextui-org/react";
 import { Building, Clock, Hash, MapPin, Package, Warehouse } from "lucide-react";
 import BarraProgreso from "@/app/Components/BarraProgreso"
+import IconoEstado from "./IconoEstado";
 
 export default function CardAlmacen({almacen}){
     return (
@@ -8,9 +9,9 @@ export default function CardAlmacen({almacen}){
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     {almacen.tipo=="Oficina"?
-                    <Building size={16} className="stroke-blue-500"/>
+                    <IconoEstado Icono={Building} classNameContenedor={"bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>
                     :
-                    <Warehouse size={16} />
+                    <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[15px] h-[15px] stroke-blanco z-10"}/>
                     }
                     <div className="pequenno_bold">
                         {(almacen.tipo=="Almacén"?"Almacén Principal: ":"Oficina: ") + almacen.ciudad}

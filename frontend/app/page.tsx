@@ -9,7 +9,7 @@ import Simulacion from "@/app/Pages/Simulacion"
 //AQUI ES DESDE DONDE SE LLAMA LO PRINCIPAL
 export default function App(){
   return(
-    <div className="relative">
+    <div>
         <Simulacion />
     </div>
   )
