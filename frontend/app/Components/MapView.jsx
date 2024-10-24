@@ -5,6 +5,10 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import ReactDOMServer from "react-dom/server";
 import IconoEstado from "@/app/Components/IconoEstado";
 import { Building, Truck, Warehouse } from "lucide-react";
+import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from "@/app/Components/PopUps";
+
+
+
 
 export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
   const mapContainerRef = useRef(null); 
@@ -78,7 +82,16 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
         markerDiv.innerHTML = oficinaIconHtmlString
         markerDiv.style.textAlign = 'center'; // Alineación del texto
         markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
-        const popupContent = `<h1>Provincia: ${oficina.popup}</h1>`;
+
+        const popupContent = ReactDOMServer.renderToStaticMarkup(
+          <OficinaPopUp
+            title={oficina.popup}
+            ubigeo={oficina.geocode.join(', ')}
+            capacidadMaxima={oficina.capacidadMaxima}
+            capacidadUtilizada={oficina.capacidadUtilizada}
+          />
+        );
+
         const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
         const marker = new maplibregl.Marker({ element: markerDiv })
