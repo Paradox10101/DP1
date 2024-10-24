@@ -57,7 +57,7 @@ export default function PanelSimulacion({estadoSimulacion, setEstadoSimulacion, 
                 
                 <div>
                     <Tabs
-                        className="bg-grisFondo flex flex-col px-[5px] py-[5px] rounded h-full"
+                        className="bg-grisFondo flex flex-col px-[5px] py-[5px] rounded h-full w-full"
                         selectedKey={opcionSeleccionada}
                         onSelectionChange={setOpcionSelecionada}
                     >
@@ -88,9 +88,9 @@ export default function PanelSimulacion({estadoSimulacion, setEstadoSimulacion, 
             {
                 opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion} date={date} fechaError={fechaError} tiemposSimulacion={tiemposSimulacion} estadoSimulacion={estadoSimulacion} setEstadoSimulacion={setEstadoSimulacion}/>
                 :
-                opcionSeleccionada==2 ? <OpcionEnvios />
+                opcionSeleccionada==2 ? <OpcionEnvios datos={datos}/>
                 :
-                opcionSeleccionada==3 ? <OpcionAlmacenes />
+                opcionSeleccionada==3 ? <OpcionAlmacenes datos={datos} />
                 :
                 opcionSeleccionada==4 ? <OpcionVehiculos vehiculos = {datos.vehiculos}/>
                 :

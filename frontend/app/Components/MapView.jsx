@@ -70,23 +70,6 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
           .setPopup(new maplibregl.Popup().setHTML(popupContent))
           .addTo(map);
       };
-
-      
-      if (datos && datos.oficinas) {
-        datos.oficinas.forEach(oficina => {
-          const markerDiv = document.createElement('div');
-          markerDiv.innerHTML = oficinaIconHtmlString
-          markerDiv.style.textAlign = 'center'; // Alineación del texto
-          markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
-          const popupContent = `<h1>Provincia: ${oficina.popup}</h1>`;
-          const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
-              .setHTML(popupContent);
-          const marker = new maplibregl.Marker({ element: markerDiv })
-            .setLngLat(oficina.geocode) // Establece la ubicación del marcador
-            .addTo(map)
-            .setPopup(popup); // Añade el marcador al mapa
-        });
-      }
       
 
       // Agregar marcadores de almacenes
@@ -94,10 +77,10 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
     if (datos && datos.almacenes) {
       datos.almacenes.forEach(almacen => {
         const markerDiv = document.createElement('div');
-        markerDiv.innerHTML = almacenIconHtmlString
+        markerDiv.innerHTML = (almacen.tipo==="Almacen"?almacenIconHtmlString:oficinaIconHtmlString)
         markerDiv.style.textAlign = 'center'; // Alineación del texto
         markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
-        const popupContent = `<h1>Código: ${almacen.popup}</h1>`;
+        const popupContent = `<h1>Código: ${almacen.provincia}</h1>`;
         const popup = new maplibregl.Popup({ offset: 25 }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
         const marker = new maplibregl.Marker({ element: markerDiv })
@@ -106,7 +89,7 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
           .setPopup(popup); // Añade el marcador al mapa
       });
       }
-
+      
       // Agregar marcadores de camiones y las rutas si es necesario
       if (datos && datos.vehiculos) {
         datos.vehiculos.forEach(vehiculo => {
@@ -123,6 +106,7 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
             .setPopup(popup); // Añade el marcador al mapa
         });
       }
+      
 
       {(estadoSimulacion!=="INICIAL" && mostrarRutas)&&
       map.on('load', () => {

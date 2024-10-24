@@ -19,7 +19,7 @@ export default function CardAlmacen({almacen}){
                 </div>
                 <div className={"pequenno border " +
                     (
-                    almacen.tipo==="Almacén"?"bg-[#284BCC] text-[#BECCFF] rounded-xl w-[80px] text-center" :
+                    almacen.tipo==="Almacen"?"bg-[#284BCC] text-[#BECCFF] rounded-xl w-[80px] text-center" :
                     almacen.tipo==="Oficina"?"bg-[#03AF00] text-[#BAFFB9] rounded-xl w-[80px] text-center" :
                     ""
                     )
@@ -37,10 +37,10 @@ export default function CardAlmacen({almacen}){
                 <div className="flex flex-row gap-2 items-center">
                     <Package size={16}/>
                     <div 
-                    className="pequenno">{"Capacidad utilizada: " + almacen.capacidadUsada + " / " + almacen.capacidadMaxima}</div>
+                    className="pequenno">{"Capacidad utilizada: " + almacen.capacidadUtilizada + " / " + almacen.capacidadMaxima}</div>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <BarraProgreso porcentaje={almacen.capacidadUsada/almacen.capacidadMaxima*100}/>
+                    <BarraProgreso porcentaje={almacen.capacidadUtilizada/almacen.capacidadMaxima*100}/>
                     <span className="pequenno text-[#555555]">{parseFloat((almacen.capacidadUsada/almacen.capacidadMaxima*100).toFixed(2))}% ocupado</span>
                 </div>
                 </>

@@ -1,5 +1,5 @@
 import { NextUIProvider, Progress } from "@nextui-org/react";
-import { Building, Car, CarFront, Clock, Gauge, Hash, MapPin, Package, Truck, Warehouse } from "lucide-react";
+import { Building, Calendar, Car, CarFront, Clock, Gauge, Hash, MapPin, Package, Truck, Warehouse } from "lucide-react";
 import BarraProgreso from "@/app/Components/BarraProgreso"
 import IconoEstado from "./IconoEstado";
 
@@ -40,8 +40,8 @@ export default function CardVehiculo({vehiculo}){
                 <div className="pequenno">{"Tramo actual: " + vehiculo.ubicacionActual + " -> " + vehiculo.ubicacionSiguiente}</div>
             </div>
             <div className="flex flex-row gap-2 items-center">
-                <Gauge size={16}/>
-                <div className="pequenno">{"Velocidad: " + vehiculo.velocidad} Km/h</div>
+                <Calendar size={16}/>
+                <div className="pequenno">{"Fecha estimada de llegada: " + vehiculo.fechaEstimadaLlegada}</div>
             </div>
             <div className="flex flex-row gap-2 items-center">
                 <Package size={16}/>
