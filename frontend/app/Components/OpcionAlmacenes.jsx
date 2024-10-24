@@ -8,68 +8,12 @@ import BarraProgreso from "./BarraProgreso";
 
 
 
-export default function OpcionAlmacenes(){
-const [almacenes, setAlmacenes] = useState([])
+export default function OpcionAlmacenes({datos}){
 
-const capacidadUsadaTotal = almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadUsada || 0)}, 0) 
-const capacidadTotalMaxima = almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadMaxima|| 0)}, 0)
-
-const almacenesEjemplo = [
-    {
-        ciudad: "Lima",
-        ubigeo: "150101",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Arequipa",
-        ubigeo: "028492",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Trujillo",
-        ubigeo: "028495",
-        tipo: "Almacén",
-        capacidadUsada: null,
-        capacidadMaxima: null
-    },
-    {
-        ciudad: "Piura",
-        ubigeo: "028495",
-        tipo: "Oficina",
-        capacidadUsada: 90,
-        capacidadMaxima: 100
-    },
-    {
-        ciudad: "Cuzco",
-        ubigeo: "028495",
-        tipo: "Oficina",
-        capacidadUsada: 10,
-        capacidadMaxima: 100
-    },
-    {
-        ciudad: "Ayacucho",
-        ubigeo: "028495",
-        tipo: "Oficina",
-        capacidadUsada: 150,
-        capacidadMaxima: 200
-    },
-    {
-        ciudad: "Huancayo",
-        ubigeo: "028499",
-        tipo: "Oficina",
-        capacidadUsada: 140,
-        capacidadMaxima: 200
-    },
-]
+const capacidadUsadaTotal = datos&&datos.almacenes?datos.almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadUtilizada || 0)}, 0):0
+const capacidadTotalMaxima = datos&&datos.almacenes?datos.almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadMaxima|| 0)}, 0):0
 
 
-useEffect(()=>{
-    setAlmacenes(almacenesEjemplo);
-}, [])
 
 return (
         <div className="h-full">
@@ -89,7 +33,7 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de almacenes: {almacenes.length}
+                Cantidad de almacenes: {datos&&datos.almacenes?datos.almacenes.length:0}
             </div>
             <div className="flex flex-col gap-2">
                 <div className="pequenno_bold text-center">
@@ -112,7 +56,8 @@ return (
                 </div>
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-                {almacenes.map((almacen)=>{
+                {datos&&datos.almacenes&&
+                datos.almacenes.map((almacen)=>{
                     return(
                         <CardAlmacen almacen={almacen} />
                     )

@@ -6,82 +6,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 
 
-export default function OpcionEnvios(){
-const [pedidos, setPedidos] = useState([])
-
-const pedidosEjemplo = [
-    {
-        codigo: "0P0010",
-        ciudadOrigen: "Trujillo",
-        ciudadDestino: "Piura",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "1",
-        estado: "En Tránsito"
-    },
-    {
-        codigo: "0P0011",
-        ciudadOrigen: "Lima",
-        ciudadDestino: "Trujillo",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "15",
-        estado: "Registrado"
-    },
-    {
-        codigo: "0P0012",
-        ciudadOrigen: "Lima",
-        ciudadDestino: "Ica",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "12",
-        estado: "En Oficina"
-
-    },
-    {
-        codigo: "0P0013",
-        ciudadOrigen: "Lima",
-        ciudadDestino: "Ica",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "12",
-        estado: "En Oficina"
-
-    },
-    {
-        codigo: "0P0014",
-        ciudadOrigen: "Lima",
-        ciudadDestino: "Ica",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "12",
-        estado: "En Oficina"
-
-    },
-    {
-        codigo: "0P0015",
-        ciudadOrigen: "Trujillo",
-        ciudadDestino: "Piura",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "1",
-        estado: "En Tránsito"
-    },
-    {
-        codigo: "0P0016",
-        ciudadOrigen: "Trujillo",
-        ciudadDestino: "Piura",
-        fechaDeInicio: "26/08/2024, 03:45 PM",
-        tiempoRestante: "1d 3h",
-        cantidadPaquetes: "1",
-        estado: "En Tránsito"
-    },
-]
-
-
-useEffect(()=>{
-    setPedidos(pedidosEjemplo);
-}, [])
+export default function OpcionEnvios({datos}){
 
 return (
         <div className="h-full">
@@ -101,15 +26,16 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de envíos: {pedidos.length}
+                Cantidad de envíos: {datos.pedidos&&datos.pedidos?datos.pedidos.length:0}
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[70vh] scroll-area">
-                {pedidos.map((pedido)=>{
+            {datos&&datos.pedidos&&
+                datos.pedidos.map((pedido)=>{
                     return(
                         <CardEnvio pedido={pedido} />
                     )
                     }
-                )}
+            )}
             </div>
         </div>
     )
