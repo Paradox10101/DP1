@@ -32,7 +32,7 @@ const Switch = ({isOn, setIsOn}) => {
         />
       </div>
       <span style={{ marginRight: '8px' }} className="regular">
-        {isOn ? 'Ocultar Rutas' : 'Mostrar Rutas'}
+        Mostrar Rutas
       </span>
     </div>
   );
