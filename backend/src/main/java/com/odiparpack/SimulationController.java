@@ -491,7 +491,7 @@ public class SimulationController {
             Map<String, Location> allLocations = locationService.getAllLocations();
 
             // Lista de ubigeos que son almacenes principales
-            List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
+            List<String> almacenesPrincipales = Arrays.asList("150101", "040101", "130101"); // Lima, Arequipa, Trujillo
 
             // Crear una FeatureCollection GeoJSON
             JsonObject featureCollection = new JsonObject();
