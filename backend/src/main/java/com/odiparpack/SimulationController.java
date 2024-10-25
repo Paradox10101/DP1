@@ -260,6 +260,7 @@ package com.odiparpack;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.odiparpack.models.Location;
 import com.odiparpack.models.Position;
 import com.odiparpack.models.SimulationState;
@@ -504,8 +505,8 @@ public class SimulationController {
                 JsonObject geometry = new JsonObject();
                 geometry.addProperty("type", "Point");
                 JsonArray coordinates = new JsonArray();
-                coordinates.add(loc.getLongitude());
-                coordinates.add(loc.getLatitude());
+                coordinates.add(new JsonPrimitive(loc.getLongitude()));
+                coordinates.add(new JsonPrimitive(loc.getLatitude()));
                 geometry.add("coordinates", coordinates);
                 feature.add("geometry", geometry);
 
