@@ -109,7 +109,10 @@ public class Main {
         Loader.loadNativeLibraries();
 
         DataLoader dataLoader = new DataLoader();
-
+        //String projectRoot = Paths.get("").toAbsolutePath().toString();
+        //System.out.println("La ruta absoluta del directorio raíz es: " + projectRoot);
+        //Path currentPath = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        //System.out.println("La ruta actual del archivo ejecutado es: " + currentPath);
         // Cargar datos
         locations = dataLoader.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);

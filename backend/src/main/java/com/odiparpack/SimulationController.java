@@ -260,6 +260,7 @@ package com.odiparpack;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.odiparpack.models.Location;
 import com.odiparpack.models.Position;
 import com.odiparpack.models.SimulationState;
@@ -490,7 +491,7 @@ public class SimulationController {
             Map<String, Location> allLocations = locationService.getAllLocations();
 
             // Lista de ubigeos que son almacenes principales
-            List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
+            List<String> almacenesPrincipales = Arrays.asList("150101", "040101", "130101"); // Lima, Arequipa, Trujillo
 
             // Crear una FeatureCollection GeoJSON
             JsonObject featureCollection = new JsonObject();
@@ -504,8 +505,8 @@ public class SimulationController {
                 JsonObject geometry = new JsonObject();
                 geometry.addProperty("type", "Point");
                 JsonArray coordinates = new JsonArray();
-                coordinates.add(loc.getLongitude());
-                coordinates.add(loc.getLatitude());
+                coordinates.add(new JsonPrimitive(loc.getLongitude()));
+                coordinates.add(new JsonPrimitive(loc.getLatitude()));
                 geometry.add("coordinates", coordinates);
                 feature.add("geometry", geometry);
 
