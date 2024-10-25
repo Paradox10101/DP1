@@ -1,7 +1,7 @@
 import { Button, Tab, Tabs } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 
-export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion, estadoSimulacion, setEstadoSimulacion}){
+export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion, simulationStatus, handleSimulationControl, error}){
 
 return (
 
@@ -46,41 +46,48 @@ return (
                         <span className="encabezado">Ejecución</span>
                     </div>
                     <div className="flex justify-around w-full flex-row ">
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full " + (estadoSimulacion==="INICIAL"?"bg-capacidadDisponible":"bg-placeholder")}
-                                onClick={()=>{setEstadoSimulacion("EJECUCION")}}>
-                                <Play color="white" />
-                            </button>
-                            <div className={"subEncabezado " + (estadoSimulacion==="INICIAL"?" text-capacidadDisponible":" text-placeholder")}>
-                                Inicio
-                            </div>
-                        </div>
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full " + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" bg-capacidadSaturada":" bg-placeholder")}
-                                onClick={()=>{
-                                    if (estadoSimulacion!=="INICIAL")
-                                        setEstadoSimulacion(estadoSimulacion==="PAUSA"?"EJECUCION":"PAUSA")
-                                }}>
-                                {estadoSimulacion==="PAUSA"?(<Play color="white" />):(<Pause color="white" />)}
-                            </button>
-                            <div className={"subEncabezado "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" text-capacidadSaturada":" text-placeholder")}>
-                                {estadoSimulacion==="PAUSA"?"Reanudar":"Pausa"}
-                            </div>
-                        </div>
-                        <div className="flex flex-col w-full text-center items-center">
-                            <button className={"flex items-center justify-center w-[40px] h-[40px] rounded-full "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" bg-capacidadLlena":" bg-placeholder")}
-                                onClick={()=>{
-                                    if (estadoSimulacion!=="INICIAL")
-                                        setEstadoSimulacion("INICIAL")
-                                    }}>
-                                <Square color="white" />
-                            </button>
-                            <div className={"subEncabezado "  + (estadoSimulacion==="EJECUCION"||estadoSimulacion==="PAUSA"?" text-capacidadLlena":" text-placeholder")}>
-                                Terminar
-                            </div>
-                        </div>
+                    <button
+                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200 
+                            ${simulationStatus === 'running' 
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                            : 'bg-green-100 text-green-600 hover:bg-green-200'}`}
+                        onClick={() => handleSimulationControl('start')}
+                        disabled={simulationStatus === 'running'}
+                        title="Start Simulation"
+                        >
+                        <Play size={20} />
+                        </button>
+                        
+                        <button
+                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200
+                            ${simulationStatus !== 'running'
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'}`}
+                        onClick={() => handleSimulationControl('pause')}
+                        disabled={simulationStatus !== 'running'}
+                        title="Pause Simulation"
+                        >
+                        <Pause size={20} />
+                        </button>
+                        
+                        <button
+                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200
+                            ${simulationStatus === 'stopped'
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
+                        onClick={() => handleSimulationControl('stop')}
+                        disabled={simulationStatus === 'stopped'}
+                        title="Stop Simulation"
+                        >
+                        <Square size={20} />
+                        </button>
                     </div>    
                 </div>
+                {error && (
+                    <div className="p-2 mb-2 text-sm text-red-600 bg-red-100 rounded-lg">
+                {error}
+                </div>
+                )}
                 
                 <div className="flex flex-col gap-3">
                     <div>

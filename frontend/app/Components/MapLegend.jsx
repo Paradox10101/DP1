@@ -5,11 +5,11 @@ import { AlertTriangle, Building, Car, CarFront, TriangleAlert, Truck, Warehouse
 import { useState } from "react";
 import IconoEstado from "@/app/Components/IconoEstado"
 
-export default function MapLegend(){
+export default function MapLegend({cornerPosition}){
     const [hideLegend, setHideLegend] = useState(true);
     return (
         <>
-            <div className={"bg-white w-fit p-3 rounded"}>
+            <div className={"bg-white w-fit p-3 rounded absolute bottom-6 " + cornerPosition}>
                 <div className="flex flex-col justify-between gap-4">
                 {!hideLegend&&(
                     <div className="flex flex-col justify-between gap-4">
