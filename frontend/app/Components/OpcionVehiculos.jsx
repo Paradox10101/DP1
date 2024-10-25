@@ -10,8 +10,8 @@ import CardVehiculo from "@/app/Components/CardVehiculo";
 export default function OpcionVehiculos({vehiculos}){
 //const [vehiculos, setVehiculos] = useState([])
 
-const capacidadUsadaTotal = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
-const capacidadTotalMaxima = vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
+const capacidadUsadaTotal = vehiculos && vehiculos.length>0 && vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
+const capacidadTotalMaxima = vehiculos && vehiculos.length>0 && vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
 
 const vehiculosEjemplo = [
     {
@@ -101,7 +101,7 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de vehículos: {vehiculos.length}
+                Cantidad de vehículos: {vehiculos?vehiculos.length:0}
             </div>
             <div className="flex flex-col gap-2">
                 <div className="pequenno_bold text-center">
@@ -124,7 +124,7 @@ return (
                 </div>
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-                {vehiculos.map((vehiculo)=>{
+                {vehiculos && vehiculos.map((vehiculo)=>{
                     return(
                         <CardVehiculo vehiculo={vehiculo} />
                     )
