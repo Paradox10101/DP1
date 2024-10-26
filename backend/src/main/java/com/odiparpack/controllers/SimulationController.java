@@ -262,10 +262,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.odiparpack.SimulationRunner;
-import com.odiparpack.models.Location;
-import com.odiparpack.models.Position;
-import com.odiparpack.models.SimulationState;
-import com.odiparpack.models.Vehicle;
+import com.odiparpack.models.*;
 //import com.odiparpack.websocket.VehicleWebSocketHandler;
 import com.odiparpack.services.LocationService;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
@@ -275,7 +272,9 @@ import spark.Service;
 
 import static spark.Spark.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -305,9 +304,13 @@ public class SimulationController {
         // Configurar WebSockets
         configureWebSockets();
         VehicleWebSocketHandler.setSimulationState(simulationState);
-        
+        //oficinasws
+        //enviosws
+
+
         new OficinaController();
         new AlmacenController();
+        new EnvioController();
 
         setupRoutes();
 
@@ -443,6 +446,34 @@ public class SimulationController {
             response.type("application/json");
             return gson.toJson(geoJsonFeature);
         });
+
+        // Endpoint para obtener los envios
+        get("/orders", (request, response) -> {
+            // Crear Feature GeoJSON
+            List<Order>orders = simulationState.getOrders();
+            JsonObject featureCollection = new JsonObject();
+            featureCollection.addProperty("type", "FeatureCollection");
+            JsonArray features = new JsonArray();
+            JsonObject feature = new JsonObject();
+            for (Order order : orders) {
+                feature.addProperty("orderCode", order.getId());
+                feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
+                feature.addProperty("remainingTimeDays", Duration.between(order.getOrderTime(), order.getDueTime()).toDays());
+                feature.addProperty("remainingTimeHours", Duration.between(order.getOrderTime(), order.getDueTime()).toHours() % 24);
+                feature.addProperty("remainingTimeMinutes", Duration.between(order.getOrderTime(), order.getDueTime()).toMinutes() % 60);
+                feature.addProperty("originUbigeo", order.getOriginUbigeo());
+                feature.addProperty("destinyUbigeo", order.getDestinationUbigeo());
+                feature.addProperty("remainingPackages", order.getQuantity());
+                feature.addProperty("status", order.getStatus().toString());
+
+                features.add(feature);
+            }
+
+            featureCollection.add("features", features);
+            response.type("application/json");
+            return gson.toJson(featureCollection);
+        });
+
 
         // Endpoint para obtener las posiciones de todos los vehículos
         get("/vehicles/positions", (request, response) -> {
