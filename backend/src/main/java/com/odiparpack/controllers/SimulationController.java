@@ -255,12 +255,13 @@ public class SimulationController {
     }
 }
 */
-package com.odiparpack;
+package com.odiparpack.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.odiparpack.SimulationRunner;
 import com.odiparpack.models.Location;
 import com.odiparpack.models.Position;
 import com.odiparpack.models.SimulationState;
@@ -304,6 +305,9 @@ public class SimulationController {
         // Configurar WebSockets
         configureWebSockets();
         VehicleWebSocketHandler.setSimulationState(simulationState);
+        
+        new OficinaController();
+        new AlmacenController();
 
         setupRoutes();
 
