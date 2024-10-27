@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.odiparpack.services.LocationService;
 import spark.Route;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import static spark.Spark.*;
@@ -44,7 +46,8 @@ public class OficinaController {
 
     private boolean isAlmacenPrincipal(String ubigeo) {
         // Lista de ubigeos que son almacenes principales (hardcodeado)
-        List<String> almacenesPrincipales = List.of("150101", "040101", "130101"); // Lima, Arequipa, Trujillo
+        List<String> almacenesPrincipales = Collections.unmodifiableList(Arrays.asList("150101", "040101", "130101"));
+
         return almacenesPrincipales.contains(ubigeo);
     }
 }

@@ -7,32 +7,31 @@ import com.odiparpack.models.Location;
 import com.odiparpack.services.LocationService;
 import spark.Route;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import static spark.Spark.*;
 
-public class AlmacenController {
+import static spark.Spark.get;
+
+public class EnvioController {
     private final LocationService locationService = LocationService.getInstance();
     private final Gson gson = new Gson();
 
-    public AlmacenController() {
+    public EnvioController() {
         setupRoutes();
     }
 
     private void setupRoutes() {
-        get("/almacenes", getAllAlmacenes);
+        //get("/envios", getAllEnvios);
     }
 
     // Endpoint para obtener listado de almacenes
-    private final Route getAllAlmacenes = (request, response) -> {
+    private final Route getAllEnvios = (request, response) -> {
         response.type("application/json");
 
-        // Lista de ubigeos que son almacenes principales (hardcodeado)
-        List<String> almacenesPrincipales = Collections.unmodifiableList(Arrays.asList("150101", "040101", "130101"));
-        // Lima, Arequipa, Trujillo
-
-        JsonArray almacenes = new JsonArray();
+        JsonArray envios = new JsonArray();
+        JsonObject envioInfo = new JsonObject();
+        envioInfo.addProperty("ubigeo", "uno");
+        envioInfo.addProperty("province", "dos");
+        /*
         for (String ubigeo : almacenesPrincipales) {
             Location location = locationService.getLocation(ubigeo);
             if (location != null) {
@@ -42,12 +41,13 @@ public class AlmacenController {
                 almacenInfo.addProperty("latitude", location.getLatitude());
                 almacenInfo.addProperty("longitude", location.getLongitude());
                 almacenInfo.addProperty("type", "Almacen Principal");
-                almacenes.add(almacenInfo);
+                envios.add(almacenInfo);
             } else {
                 System.err.println("Advertencia: No se encontró la ubicación para el ubigeo " + ubigeo);
             }
         }
-
-        return gson.toJson(almacenes);
+        */
+        envios.add(envioInfo);
+        return gson.toJson(envios);
     };
 }
