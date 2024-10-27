@@ -448,7 +448,7 @@ public class SimulationController {
         });
 
         // Endpoint para obtener los envios
-        get("/orders", (request, response) -> {
+        get("/shipments", (request, response) -> {
             // Crear Feature GeoJSON
             List<Order>orders = simulationState.getOrders();
             JsonObject featureCollection = new JsonObject();
@@ -472,6 +472,108 @@ public class SimulationController {
             featureCollection.add("features", features);
             response.type("application/json");
             return gson.toJson(featureCollection);
+        });
+
+
+        // Endpoint para obtener los datos de un envío
+        get("/shipment", (request, response) -> {
+
+            String shipmentId = request.queryParams("shipmentId");
+            System.out.println();
+            if (shipmentId == null) {
+                response.status(400);
+                return "Parámetro faltante: shipmentCode es obligatorio.";
+            }
+
+            Order order = simulationState.getOrders().stream()
+                    .filter(orderS -> orderS.getId()==Integer.parseInt(shipmentId))
+                    .findFirst()
+                    .orElse(null);
+            if (order == null) {
+                response.status(404);
+                return "No se encontró el envio con código " + shipmentId;
+            }
+
+            List<Vehicle> associatedVehicles = simulationState.getVehicles().values().stream()
+                    .filter(vehicle -> vehicle.getCurrentOrder() != null)
+                    .filter(vehicle -> vehicle.getCurrentOrder().getId()==(order.getId()))
+                    .collect(Collectors.toList());
+
+            if (associatedVehicles.isEmpty())
+                System.out.println("No hay vehículos asociados a la orden con ID: " + order.getId());
+
+            JsonArray transportPlans = new JsonArray();
+            JsonObject feature = new JsonObject();
+            JsonObject featureCollection = new JsonObject();
+            featureCollection.addProperty("type", "FeatureCollection");
+
+            feature.addProperty("orderCode", order.getId());
+            feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
+            feature.addProperty("remainingTimeDays", Duration.between(order.getOrderTime(), order.getDueTime()).toDays());
+            feature.addProperty("remainingTimeHours", Duration.between(order.getOrderTime(), order.getDueTime()).toHours() % 24);
+            feature.addProperty("remainingTimeMinutes", Duration.between(order.getOrderTime(), order.getDueTime()).toMinutes() % 60);
+            feature.addProperty("originUbigeo", order.getOriginUbigeo());
+            feature.addProperty("destinyUbigeo", order.getDestinationUbigeo());
+            feature.addProperty("remainingPackages", order.getQuantity());
+            feature.addProperty("status", order.getStatus().toString());
+            for(Vehicle associatedVehicle : associatedVehicles) {
+                JsonObject transportPlan = new JsonObject();
+                transportPlan.addProperty("type", "TransportPlan");
+                transportPlan.addProperty("vehicleCode",associatedVehicle.getCode());
+                transportPlan.addProperty("inTransportPackages",order.getQuantity() - associatedVehicle.getCurrentOrder().getDeliveredPackages());
+                transportPlan.addProperty("attendedPackages",associatedVehicle.getCurrentOrder().getDeliveredPackages());
+                transportPlans.add(transportPlan);
+            }
+            feature.add("transportPlans", transportPlans);
+            response.type("application/json");
+            featureCollection.add("features", feature);
+            return gson.toJson(featureCollection);
+        });
+
+        get("/shipments/:shipmentId/status", (request, response) -> {
+
+            String shipmentId = request.params(":shipmentId");
+            System.out.println();
+            if (shipmentId == null) {
+                response.status(400);
+                return "Parámetro faltante: shipmentCode es obligatorio.";
+            }
+
+            Order order = simulationState.getOrders().stream()
+                    .filter(orderS -> orderS.getId()==Integer.parseInt(shipmentId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (order == null) {
+                response.status(404);
+                return "No se encontró el envio con código " + shipmentId;
+            }
+
+            JsonObject feature = new JsonObject();
+            JsonObject featureCollection = new JsonObject();
+            featureCollection.addProperty("type", "FeatureCollection");
+
+            feature.addProperty("orderCode", order.getId());
+
+            feature.addProperty("status", order.getStatus().toString());
+
+
+            response.type("application/json");
+            featureCollection.add("features", feature);
+            return gson.toJson(featureCollection);
+        });
+
+
+
+        // Manejo global de excepciones
+        exception(Exception.class, (exception, request, response) -> {
+            exception.printStackTrace();
+            response.status(500);
+            response.body("Error interno del servidor: " + exception.getMessage());
+        });
+
+        after((request, response) -> {
+            System.out.println("Respuesta enviada para " + request.pathInfo() + " con estado " + response.status());
         });
 
 
