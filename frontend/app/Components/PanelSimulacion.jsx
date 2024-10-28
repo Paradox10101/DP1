@@ -8,7 +8,7 @@ import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
 
-export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error}){
+export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error, shipments}){
     
     const [currentTime, setCurrentTime] = useState(new Date())
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
@@ -34,6 +34,7 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
       return () => clearInterval(intervalo);
     }
   }, [esCliente]);
+
 
     
     
@@ -99,7 +100,7 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
             {
                 opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion}  simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} error={error}/>
                 :
-                opcionSeleccionada==2 ? <OpcionEnvios datos={datos}/>
+                opcionSeleccionada==2 ? <OpcionEnvios shipments={shipments}/>
                 :
                 opcionSeleccionada==3 ? <OpcionAlmacenes datos={datos} />
                 :

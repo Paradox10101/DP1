@@ -5,7 +5,7 @@ import MapLegend from "@/app/Components/MapLegend"
 import { DatePicker } from "@nextui-org/react"
 import PruebaSocket from "@/app/Components/PruebaSocket"
 import Simulacion from "@/app/Pages/Simulacion"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import VehicleMap from "./components/VehicleMap";
 import { Play, Pause, Square, X, PanelRightClose } from "lucide-react";
 
@@ -16,6 +16,7 @@ export default function App(){
   const [showControls, setShowControls] = useState(true);
   const [simulationStatus, setSimulationStatus] = useState('stopped'); // 'stopped', 'running', 'paused'
   const [error, setError] = useState(null);
+  const [shipments, setShipments] = useState(null);
 
   const toggleControls = () => setShowControls(!showControls);
 
@@ -51,13 +52,13 @@ export default function App(){
   return(
     <div>
         <div className="relative w-screen h-screen">
-      <VehicleMap simulationStatus={simulationStatus} />
+      <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} />
       
 
       {/* Floating Control Panel */}
       {
         showControls ? (
-          <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error}/>
+          <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments}/>
         ) :
         /* Control Panel Toggle Button */
         (

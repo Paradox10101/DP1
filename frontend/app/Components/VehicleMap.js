@@ -10,16 +10,18 @@ import {
 } from '../atoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const VehicleMap = ({ simulationStatus }) => {
+const VehicleMap = ({ simulationStatus, setShipments }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
-  const socketRef = useRef(null);
+  const socketRefVehicles = useRef(null);
+  const socketRefShipments = useRef(null);
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [previousPositions, setPreviousPositions] = useState(null);
-  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [reconnectAttemptsWSVehicles, setReconnectAttemptsWSVehicles] = useState(0);
+  const [reconnectAttemptsWSShipments, setReconnectAttemptsWSShipments] = useState(0);
   const [locations, setLocations] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -450,18 +452,19 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   };
 
-  // Conexión WebSocket
-  const connectWebSocket = () => {
-    socketRef.current = new WebSocket('ws://localhost:4567/ws');
-    socketRef.current.onopen = () => {
-      console.log('Conectado al WebSocket');
+  // Conexión WebSocket de vehiculos
+  const connectWebSocketVehicles = () => {
+    socketRefVehicles.current = new WebSocket('ws://localhost:4567/wsVehicles');
+    socketRefVehicles.current.onopen = () => {
+      console.log('Conectado al WebSocket de vehiculos');
       setLoading('succeeded');
-      setReconnectAttempts(0);
+      setReconnectAttemptsWSVehicles(0);
       setError(null);
     };
 
-    socketRef.current.onmessage = (event) => {
+    socketRefVehicles.current.onmessage = (event) => {
       try {
+        
         const data = JSON.parse(event.data);
         if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
           setPositions(data);
@@ -471,51 +474,115 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       } catch (err) {
         console.error('Error al procesar mensaje WebSocket:', err);
-        setError('Error al procesar datos del WebSocket');
+        setError('Error al procesar datos del WebSocket de vehiculos');
       }
     };
 
-    socketRef.current.onclose = () => {
-      console.log('WebSocket cerrado');
+    socketRefVehicles.current.onclose = () => {
+      console.log('WebSocket de vehiculos cerrado');
       setLoading('failed');
-      setError('WebSocket cerrado');
+      setError('WebSocket de vehiculos cerrado');
       attemptReconnect();
     };
 
-    socketRef.current.onerror = (error) => {
-      console.error('Error en WebSocket:', error);
-      setError('Error en WebSocket');
+    socketRefVehicles.current.onerror = (error) => {
+      console.error('Error en WebSocket de vehiculos:', error);
+      setError('Error en WebSocket de vehiculos');
       setLoading('failed');
-      attemptReconnect();
+      attemptReconnect("wsVehicles");
     };
   };
+
+
+  // Conexión WebSocket de Envios
+  const connectWebSocketShipments = () => {
+    socketRefShipments.current = new WebSocket('ws://localhost:4567/wsShipments');
+    socketRefShipments.current.onopen = () => {
+      console.log('Conectado al WebSocket de envíos');
+      setLoading('succeeded');
+      setReconnectAttemptsWSShipments(0);
+      setError(null);
+    };
+
+    socketRefShipments.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+          setShipments(data.features);
+          setError(null);
+        } else {
+          throw new Error('Formato GeoJSON inválido');
+        }
+        
+      } catch (err) {
+        console.error('Error al procesar mensaje WebSocket de envíos:', err);
+        setError('Error al procesar datos del WebSocket de envios');
+      }
+    };
+
+    socketRefShipments.current.onclose = () => {
+      console.log('WebSocket de envios cerrado');
+      setLoading('failed');
+      setError('WebSocket de envios cerrado');
+      attemptReconnect();
+    };
+
+    socketRefShipments.current.onerror = (error) => {
+      console.error('Error en WebSocket de envios:', error);
+      setError('Error en WebSocket de envios');
+      setLoading('failed');
+      attemptReconnect("wsShipments");
+    };
+  };
+
 
   // Reconexión WebSocket
-  const attemptReconnect = () => {
+  const attemptReconnect = (wsType) => {
     const maxReconnectAttempts = 5;
     const reconnectDelay = 3000;
-    if (reconnectAttempts < maxReconnectAttempts) {
-      setTimeout(() => {
-        console.log(`Intentando reconectar... (Intento ${reconnectAttempts + 1})`);
-        setReconnectAttempts((prev) => prev + 1);
-        connectWebSocket();
-      }, reconnectDelay);
-    } else {
-      console.log('Se alcanzó el máximo de intentos de reconexión');
-      setError('No se pudo reconectar al WebSocket');
-    }
-  };
+    switch(wsType){
+      case "wsVehicles":
+        if (reconnectAttemptsWSVehicles < maxReconnectAttempts) {
+          setTimeout(() => {
+            console.log(`Intentando reconectar... (Intento ${reconnectAttemptsWSVehicles + 1})`);
+            setReconnectAttemptsWSVehicles((prev) => prev + 1);
+            connectWebSocketVehicles();
+          }, reconnectDelay);
+        } else {
+          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket ' + wsType);
+          setError('No se pudo reconectar al WebSocket ' + wsType);
+        }
+        break;
+      case "wsShipments":
+        if (reconnectAttemptsWSShipments < maxReconnectAttempts) {  
+          setTimeout(() => {
+            console.log(`Intentando reconectar... (Intento ${reconnectAttemptsWSShipments + 1})`);
+            setReconnectAttemptsWSShipments((prev) => prev + 1);
+            connectWebSocketShipments();
+          }, reconnectDelay);
+        } else {
+          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket ' + wsType);
+          setError('No se pudo reconectar al WebSocket ' + wsType);
+        }
+        break;
+    };
+  }
 
   // Gestionar conexión WebSocket
   useEffect(() => {
     if (simulationStatus === 'running') {
-      console.log('Conectando al servidor WebSocket...');
-      connectWebSocket();
+      console.log('Conectando a los servidores WebSocket...');
+      connectWebSocketVehicles();
+      connectWebSocketShipments();
     }
     return () => {
-      if (socketRef.current) {
-        socketRef.current.close();
-        socketRef.current = null;
+      if (socketRefVehicles.current) {
+        socketRefVehicles.current.close();
+        socketRefVehicles.current = null;
+      }
+      if (socketRefShipments.current) {
+        socketRefShipments.current.close();
+        socketRefShipments.current = null;
       }
     };
   }, [simulationStatus]);
