@@ -21,7 +21,7 @@ export default function App(){
 
   const handleSimulationControl = async (action) => {
     try {
-      const response = await fetch(`http://localhost:4567/simulation/${action}`, {
+      const response = await fetch(`http://localhost:4567/api/v1/simulation/${action}`, {
         method: 'POST',
       });
 
