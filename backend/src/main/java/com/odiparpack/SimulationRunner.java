@@ -3,6 +3,7 @@ package com.odiparpack;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 import com.odiparpack.models.*;
+import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class SimulationRunner {
         if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
             webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
             scheduleWebSocketBroadcast(state, isSimulationRunning);
+            scheduleWebSocketShipmentBroadcast(state, isSimulationRunning);
         }
 
         try {
@@ -88,7 +90,19 @@ public class SimulationRunner {
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
+    private static void scheduleWebSocketShipmentBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
+        webSocketExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                if (state.isPaused() || state.isStopped()) return;
 
+                // Broadcast shipment list via WebSocket
+                ShipmentWebSocketHandler.broadcastShipments();
+
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
+    }
 
     private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime, AtomicBoolean isSimulationRunning,
                                                 Map<String, List<RouteSegment>> vehicleRoutes,
