@@ -30,12 +30,13 @@ public class SimulationReport {
     }
 
     // Métodos para calcular cada atributo
-    private double calculateCapacidadEfectiva(SimulationState state) {
+    private double calculateCapacidadEfectiva(SimulationState state) {//CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
+        
         double totalCapacityUsed = 0;
         double totalCapacity = 0;
 
         for (Vehicle vehicle : state.getVehicles().values()) {
-            totalCapacityUsed += vehicle.getCapacityUsed(); // Capacidad usada actualmente
+            totalCapacityUsed += vehicle.getCapacityUsed(); // Capacidad usada
             totalCapacity += vehicle.getTotalCapacity(); // Capacidad total del vehículo
         }
 
@@ -45,7 +46,7 @@ public class SimulationReport {
         return (totalCapacityUsed / totalCapacity) * 100; // Resultado en porcentaje
     }
 
-    private double calculateEficienciaRutas(SimulationState state) {
+    private double calculateEficienciaRutas(SimulationState state) {//ES IMPORTANTELA EFICIENCIA DEL CALCULO DE RUTA RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE VEHICULOS) -> VER SI SE PUEDE CALCULAR EL PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
         int totalOrders = state.getOrders().size();
         if (totalOrders == 0) {
             return 0;
