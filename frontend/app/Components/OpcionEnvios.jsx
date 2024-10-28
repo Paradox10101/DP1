@@ -6,8 +6,9 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 
 
-export default function OpcionEnvios({datos}){
-
+export default function OpcionEnvios({shipments}){
+    
+    useEffect(()=>{console.log(shipments)},[shipments])
 return (
         <div className="h-full">
             <div className="flex justify-between flex-row items-center">
@@ -26,13 +27,13 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de envíos: {datos.pedidos&&datos.pedidos?datos.pedidos.length:0}
+                Cantidad de envíos: {shipments&&shipments?shipments.length:0}
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[70vh] scroll-area">
-            {datos&&datos.pedidos&&
-                datos.pedidos.map((pedido)=>{
+            {shipments&&
+                shipments.map((shipment)=>{
                     return(
-                        <CardEnvio pedido={pedido} />
+                        <CardEnvio shipment={shipment} />
                     )
                     }
             )}

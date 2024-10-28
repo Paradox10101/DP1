@@ -265,10 +265,19 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.models.*;
 //import com.odiparpack.websocket.VehicleWebSocketHandler;
 import com.odiparpack.services.LocationService;
+import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import spark.Service;
+import spark.Session;
 
 import static spark.Spark.*;
 
@@ -301,16 +310,18 @@ public class SimulationController {
     public void start() {
         port(4567);
 
+
         // Configurar WebSockets
         configureWebSockets();
+
         VehicleWebSocketHandler.setSimulationState(simulationState);
+        ShipmentWebSocketHandler.setSimulationState(simulationState);
+
         //oficinasws
-        //enviosws
 
 
         new OficinaController();
         new AlmacenController();
-        new EnvioController();
 
         setupRoutes();
 
@@ -335,6 +346,7 @@ public class SimulationController {
 
         System.out.println("Servidor de simulación iniciado en http://localhost:4567");
     }*/
+
 
     private void setupRoutes() {
         // Middleware para manejar CORS
@@ -449,7 +461,6 @@ public class SimulationController {
 
         // Endpoint para obtener los envios
         get("/shipments", (request, response) -> {
-            // Crear Feature GeoJSON
             List<Order>orders = simulationState.getOrders();
             JsonObject featureCollection = new JsonObject();
             featureCollection.addProperty("type", "FeatureCollection");
@@ -767,7 +778,8 @@ public class SimulationController {
 
     // Método para configurar WebSockets
     private void configureWebSockets() {
-        webSocket("/ws", VehicleWebSocketHandler.class);
+        webSocket("/wsVehicles", VehicleWebSocketHandler.class);
+        webSocket("/wsShipments", ShipmentWebSocketHandler.class);
     }
 
     // Método para validar el tipo de avería
