@@ -12,16 +12,16 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                         <div className="regular">Ruta</div>
                     </div>
                     <div className="regular_bold">
-                        {"Almacen Trujillo -> Oficina Piura"}
+                        {"Almacen "+"Trujillo" +" -> "+"Oficina "+"Piura"}
                     </div>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 text-center">
                     <div className="flex flex-row gap-1">
                         <Clock size={16}/>
                         <div className="regular">Tiempo restante</div>
                     </div>
                     <div className="regular_bold">
-                        {"1 dia con 3 horas y 22 minutos"}
+                        {"1"+"d "+"22"+"h:"+"33"+"m"}
                     </div>
                 </div>
             </div>
@@ -55,8 +55,8 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                     </Button>
                 </div>
                 
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                <div className="overflow-x-auto max-h-[350px]">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow overflow-y-auto">
                         <thead>
                         <tr className="bg-gray-50 text-gray-500 uppercase text-sm leading-normal">
                             <th className="py-3 px-6 text-left">ID PAQUETE</th>
@@ -66,6 +66,102 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                         </tr>
                         </thead>
                         <tbody className="text-gray-700 text-sm font-light">
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 hover:bg-gray-100">
+                            <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
+                            <td className="py-3 px-6 text-left">
+                            <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-600">
+                                En tránsito
+                            </span>
+                            </td>
+                            <td className="py-3 px-6 text-left">TRUCK-LC1</td>
+                            <td className="py-3 px-6 text-left flex items-center">
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
+                            </td>
+                        </tr>
                         <tr className="border-b border-gray-200 hover:bg-gray-100">
                             <td className="py-3 px-6 text-left whitespace-nowrap">PKG001</td>
                             <td className="py-3 px-6 text-left">

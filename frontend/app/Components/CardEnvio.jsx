@@ -25,11 +25,11 @@ export default function CardEnvio({shipment}){
                     <MapPin size={16}/>
                     <div className="pequenno">{shipment.originUbigeo + " -> " + shipment.destinyUbigeo}</div>
                 </div>
-                <div className={"pequenno border " +
+                <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
                     (
-                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl w-[80px] text-center" :
-                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl w-[80px] text-center" :
-                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl w-[80px] text-center" :
+                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl" :
+                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl" :
+                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl" :
                     ""
                     )
                 }>
@@ -55,11 +55,11 @@ export default function CardEnvio({shipment}){
         header={
             <div className="flex flex-row gap-2">
                 <div className="subEncabezado">Información del envío {'P' + String(shipment.orderCode).padStart(5, '0')}</div>
-                <div className={"pequenno border " +
+                <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
                     (
-                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl w-[80px] text-center" :
-                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl w-[80px] text-center" :
-                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl w-[80px] text-center" :
+                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl" :
+                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl" :
+                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl" :
                     ""
                     )
                 }>

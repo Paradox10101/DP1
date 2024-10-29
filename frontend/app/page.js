@@ -52,7 +52,7 @@ export default function App(){
     <div>
       <div className="relative w-screen h-screen">
         <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} />
-        //Panel control
+        {/* Panel de control */}
         {
           showControls ? (
             <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments}/>
