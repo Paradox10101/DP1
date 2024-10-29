@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react"
 import { Clock, Eye, Filter, Flag, Globe, MapPin, Package } from "lucide-react"
 
-export default function ModalEnvios({shipment, setModalContentType}){
+export default function ModalEnvios({shipment, setSelectedVehicle}){
     
     return (
         <div className="flex flex-col gap-6">
@@ -75,8 +75,11 @@ export default function ModalEnvios({shipment, setModalContentType}){
                             </td>
                             <td className="py-3 px-6 text-left">TRUCK-LC1</td>
                             <td className="py-3 px-6 text-left flex items-center">
-                            <Eye className="w-4 h-4 mr-1 text-gray-500" />
-                            <span className="text-gray-500 cursor-pointer">Ver ruta</span>
+                            <button className="bg-principal flex flex-row items-center p-2 rounded"
+                            onClick={()=>{setSelectedVehicle("1")}}>
+                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                <span className=" cursor-pointer text-white">Ver ruta</span>
+                            </button>
                             </td>
                         </tr>
                         </tbody>

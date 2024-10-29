@@ -1,5 +1,5 @@
 "use client"
-import { Clock, Hash, MapPin, Package } from "lucide-react";
+import { ArrowLeft, Clock, Hash, MapPin, Package } from "lucide-react";
 import ModalContainer from "@/app/Components/ModalContainer"
 import { useDisclosure } from "@nextui-org/react";
 import ModalEnvios from "@/app/Components/ModalEnvios"
@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export default function CardEnvio({shipment}){
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const [modalContentType, setModalContentType] = useState("VEHICLES")
+    const [selectedVehicle, setSelectedVehicle] = useState(null)
     return (
         <>
         <button className="w-full" onClick={onOpen}>
@@ -50,7 +50,7 @@ export default function CardEnvio({shipment}){
         </div>
         </button>
         {
-        modalContentType==="SHIPMENTS"?
+        selectedVehicle===null?
         <ModalContainer isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}
         header={
             <div className="flex flex-row gap-2">
@@ -69,20 +69,24 @@ export default function CardEnvio({shipment}){
             
         }
         body={
-            <ModalEnvios shipment={shipment} setModalContentType={setModalContentType}/>
+            <ModalEnvios shipment={shipment} setSelectedVehicle={setSelectedVehicle}/>
         }
         />
         :
         <ModalContainer isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}
+        doBeforeClose={()=>{setSelectedVehicle(null)}}
         header={
             <div className="flex flex-row gap-2">
+                <button onClick={()=>{setSelectedVehicle(null)}}>
+                    <ArrowLeft size={24}/>
+                </button>
                 <div className="flex flex-row gap-2">
                     <div className="subEncabezado">Rutas del vehículo {'A505'}</div>
                 </div>
             </div>
         }
         body={
-            <ModalRutaVehiculoEnvio shipment={shipment} setModalContentType={setModalContentType}/>
+            <ModalRutaVehiculoEnvio selectedVehicle={selectedVehicle} setSelectedVehicle={setSelectedVehicle}/>
         }
         />
         }

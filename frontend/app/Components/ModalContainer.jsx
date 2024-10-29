@@ -4,7 +4,7 @@ import React from "react";
 import { Modal, Button, useDisclosure, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
 import { X } from "lucide-react";
 
-export default function ModalEjemplo({isOpen, onOpen, onOpenChange, header, body}) {
+export default function ModalEjemplo({isOpen, onOpen, onOpenChange, header, body, doBeforeClose=undefined}) {
 
   return (
     <>
@@ -19,7 +19,12 @@ export default function ModalEjemplo({isOpen, onOpen, onOpenChange, header, body
           <ModalHeader className="text-center text-black w-full">
             <div className="flex flex-row justify-between w-full">
               {header}
-              <Button auto flat color="error" onPress={onOpenChange} disableRipple> {/* Desactiva el efecto ripple aquí también */}
+              <Button auto flat color="error"
+              onPress={()=>{
+                if(doBeforeClose!==undefined)
+                  doBeforeClose()
+                onOpenChange(false)
+                }} disableRipple> {/* Desactiva el efecto ripple aquí también */}
               <X size={24}/>
               </Button>  
             </div>
