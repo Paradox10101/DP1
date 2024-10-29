@@ -1,7 +1,9 @@
 package com.odiparpack.models;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.ortools.constraintsolver.Assignment;
 import com.google.ortools.constraintsolver.RoutingIndexManager;
 import com.google.ortools.constraintsolver.RoutingModel;
@@ -16,6 +18,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -48,6 +52,11 @@ public class SimulationState {
     private List<Blockage> allBlockages;
     private volatile boolean isPaused = false;
     private volatile boolean isStopped = false;
+    private final AtomicLong lastUpdateTimestamp = new AtomicLong(0);
+    private final AtomicInteger updateCounter = new AtomicInteger(0);
+    private volatile JsonObject lastPositions = null;
+    private static final long UPDATE_THRESHOLD = 50; // 50ms threshold
+    private static final Gson gson = new Gson();
 
     public void reset() {
         // Adquirir el lock para asegurar thread safety durante el reset
@@ -328,35 +337,73 @@ public class SimulationState {
     }
 
     public JsonObject getCurrentPositionsGeoJSON() {
-        JsonObject featureCollection = new JsonObject();
-        featureCollection.addProperty("type", "FeatureCollection");
-        JsonArray features = new JsonArray();
+        long currentTimestamp = System.currentTimeMillis();
+        long timeSinceLastUpdate = currentTimestamp - lastUpdateTimestamp.get();
+
+        if (timeSinceLastUpdate < UPDATE_THRESHOLD && lastPositions != null) {
+            return lastPositions;
+        }
+
+        // Prealocar StringBuilder con un tamaño estimado
+        int estimatedSize = vehicles.size() * 200; // ~200 bytes por vehículo
+        StringBuilder featuresJson = new StringBuilder(estimatedSize);
+        featuresJson.append("[");
+        boolean first = true;
+
+        // Crear plantilla del feature para reutilizar
+        String featureTemplate = "{"
+                + "\"type\":\"Feature\","
+                + "\"geometry\":{"
+                + "\"type\":\"Point\","
+                + "\"coordinates\":[%f,%f]},"
+                + "\"properties\":{"
+                + "\"vehicleCode\":\"%s\","
+                + "\"status\":\"%s\"}}";
 
         for (Vehicle vehicle : vehicles.values()) {
             Position position = vehicle.getCurrentPosition(currentTime);
             if (position != null) {
-                JsonObject feature = new JsonObject();
-                feature.addProperty("type", "Feature");
+                if (!first) {
+                    featuresJson.append(',');
+                }
+                first = false;
 
-                JsonObject geometry = new JsonObject();
-                geometry.addProperty("type", "Point");
-                JsonArray coordinates = new JsonArray();
-                coordinates.add(position.getLongitude());
-                coordinates.add(position.getLatitude());
-                geometry.add("coordinates", coordinates);
-                feature.add("geometry", geometry);
-
-                JsonObject properties = new JsonObject();
-                properties.addProperty("vehicleCode", vehicle.getCode());
-                // Puedes añadir más propiedades si lo deseas
-                feature.add("properties", properties);
-
-                features.add(feature);
+                // Usar String.format para mejor rendimiento con números
+                featuresJson.append(String.format(
+                        featureTemplate,
+                        position.getLongitude(),
+                        position.getLatitude(),
+                        vehicle.getCode(),
+                        vehicle.getEstado()
+                ));
             }
         }
+        featuresJson.append("]");
 
-        featureCollection.add("features", features);
-        return featureCollection;
+        try {
+            JsonObject featureCollection = new JsonObject();
+            featureCollection.addProperty("type", "FeatureCollection");
+            featureCollection.addProperty("timestamp", currentTimestamp);
+
+            JsonParser parser = new JsonParser();
+            JsonArray features = parser.parse(featuresJson.toString()).getAsJsonArray();
+            featureCollection.add("features", features);
+
+            lastPositions = featureCollection;
+            lastUpdateTimestamp.set(currentTimestamp);
+            updateCounter.incrementAndGet();
+
+            return featureCollection;
+        } catch (Exception e) {
+            logger.severe("Error parsing JSON: " + e.getMessage());
+            return lastPositions != null ? lastPositions : new JsonObject();
+        }
+    }
+
+    // Método para limpiar caché si es necesario
+    public void clearPositionsCache() {
+        lastPositions = null;
+        lastUpdateTimestamp.set(0);
     }
 
     public void updateVehicleStates() {

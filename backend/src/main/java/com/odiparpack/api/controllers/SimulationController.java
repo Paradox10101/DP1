@@ -55,7 +55,7 @@ public class SimulationController {
 
     private void setupWebSocket() {
         webSocket("/ws", VehicleWebSocketHandler.class);
-        VehicleWebSocketHandler.setSimulationState(simulationState);
+        //VehicleWebSocketHandler.setSimulationState(simulationState);
     }
 
     private void initializeRoutes() {

@@ -821,19 +821,58 @@ public class Main {
 
 
     // Estructura para almacenar los datos de la solución
-    static class SolutionData {
+    public static class SolutionData {
         public long objectiveValue;
         public Map<String, List<RouteSegment>> routes; // Mapa de rutas por vehículo
         public Map<String, Long> routeTimes;            // Mapa para almacenar el tiempo total de cada ruta
         public long maxRouteTime;
 
+        // Constructor que acepta los objetos de OR-Tools y extrae la información necesaria
+        public SolutionData(Assignment solution, RoutingModel routingModel, RoutingIndexManager manager, DataModel data) {
+            this.routes = new HashMap<>();
+            this.routeTimes = new HashMap<>();
+            this.maxRouteTime = 0;
+            this.objectiveValue = solution.objectiveValue();
+
+            for (int i = 0; i < data.vehicleNumber; ++i) {
+                long index = routingModel.start(i);
+                List<RouteSegment> route = new ArrayList<>();
+                long routeTime = 0;
+
+                while (!routingModel.isEnd(index)) {
+                    long previousIndex = index;
+                    index = solution.value(routingModel.nextVar(index));
+
+                    int fromNode = manager.indexToNode(previousIndex);
+                    int toNode = manager.indexToNode(index);
+
+                    String fromName = data.locationNames.get(fromNode);
+                    String fromUbigeo = data.locationUbigeos.get(fromNode);
+                    String toName = data.locationNames.get(toNode);
+                    String toUbigeo = data.locationUbigeos.get(toNode);
+
+                    long durationMinutes = data.timeMatrix[fromNode][toNode];
+                    double distance = calculateDistanceFromNodes(data, fromNode, toNode);
+
+                    route.add(new RouteSegment(fromName + " to " + toName, fromUbigeo, toUbigeo, distance, durationMinutes));
+                    routeTime += durationMinutes;
+                }
+
+                String vehicleCode = data.assignments.get(i).getVehicle().getCode();
+                this.routes.put(vehicleCode, route);
+                this.routeTimes.put(vehicleCode, routeTime);
+                this.maxRouteTime = Math.max(this.maxRouteTime, routeTime);
+            }
+        }
+
+        // Constructor por defecto (si aún lo necesitas)
         public SolutionData() {
             this.routes = new HashMap<>();
             this.routeTimes = new HashMap<>();
             this.maxRouteTime = 0;
         }
     }
-
+    
     // Método para imprimir los datos de la solución almacenados
     private static void printSolutionData(SolutionData solutionData) {
         logger.info("Objetivo de la Solución: " + solutionData.objectiveValue);

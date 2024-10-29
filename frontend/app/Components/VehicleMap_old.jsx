@@ -1,3 +1,4 @@
+// src/components/VehicleMap.js
 'use client';
 import { useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -7,22 +8,24 @@ import {
   loadingAtom,
   errorAtom,
 } from '../atoms';
-import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
 import { useWebSocket } from '../../hooks/useWebSocket';
-import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 
 const VehicleMap = ({ simulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
+  const socketRef = useRef(null);
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
+  const [previousPositions, setPreviousPositions] = useState(null);
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const [locations, setLocations] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
+  const animationStateRef = useRef(new Map());
+  const lastFrameTimeRef = useRef(0);
 
   // Actualizar posición de popups
   const updatePopups = (geojson) => {
@@ -35,27 +38,10 @@ const VehicleMap = ({ simulationStatus }) => {
     });
   };
 
-  const { 
-    animateTransition, 
-    cleanup: cleanupAnimation, 
-    performanceManager 
-  } = useVehicleAnimation(mapRef, updatePopups);
-
-  // Actualizar las métricas de rendimiento
-  useEffect(() => {
-    if (performanceManager) {
-      const updateInterval = setInterval(() => {
-        setPerformanceMetrics({
-          fps: performanceManager.metrics.fps,
-          frameTime: performanceManager.metrics.frameTime,
-          vehicleCount: performanceManager.metrics.vehicleCount,
-          performanceLevel: performanceManager.performanceLevel
-        });
-      }, 1000 / 5); // 30 actualizaciones por segundo
-
-      return () => clearInterval(updateInterval);
-    }
-  }, [performanceManager, setPerformanceMetrics]);
+  const { animateTransition, cleanup: cleanupAnimation } = useVehicleAnimation(
+    mapRef,
+    updatePopups
+  );
 
   // Manejador de mensajes WebSocket
   const handleWebSocketMessage = useCallback((data) => {
@@ -81,6 +67,39 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   }, [wsError, setError]);
 
+  // Constantes de animación
+  const ANIMATION_CONFIG = {
+    BUFFER_SIZE: 5,
+    MIN_UPDATE_INTERVAL: 16,
+    INTERPOLATION_SMOOTHING: 0.15
+  };
+
+  // Estado de animación por vehículo
+  class VehicleAnimationState {
+    constructor() {
+      this.positionBuffer = [];
+      this.lastUpdateTime = 0;
+      this.currentAnimation = null;
+      this.velocity = { x: 0, y: 0 };
+      this.acceleration = { x: 0, y: 0 };
+    }
+  }
+
+
+  const cancelPendingAnimations = () => {
+    animationStateRef.current.forEach(state => {
+      if (state.currentAnimation) {
+        cancelAnimationFrame(state.currentAnimation);
+        state.currentAnimation = null;
+      }
+    });
+  };
+
+  const cleanup = () => {
+    cancelPendingAnimations();
+    animationStateRef.current.clear();
+  };
+
   // Función personalizada para cargar imágenes
   const loadCustomImage = async (name, url) => {
     try {
@@ -99,6 +118,8 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   };
 
+
+
   // Inicializar el mapa
   useEffect(() => {
     if (mapRef.current) return;
@@ -106,12 +127,13 @@ const VehicleMap = ({ simulationStatus }) => {
       console.log('Inicializando mapa...');
       mapRef.current = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: MAP_CONFIG.STYLE_URL,
-        center: MAP_CONFIG.DEFAULT_CENTER,
-        zoom: MAP_CONFIG.DEFAULT_ZOOM,
+        style: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD',
+        center: [-76.991, -12.046],
+        zoom: 6,
         attributionControl: false,
       });
 
+      // Agregar controles de navegación
       mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
       // Botón para centrar en Perú
@@ -133,10 +155,7 @@ const VehicleMap = ({ simulationStatus }) => {
           this.container.style.cursor = 'pointer';
 
           this.container.onclick = () => {
-            map.flyTo({ 
-              center: MAP_CONFIG.DEFAULT_CENTER, 
-              zoom: MAP_CONFIG.DEFAULT_ZOOM 
-            });
+            map.flyTo({ center: [-76.991, -12.046], zoom: 6 });
           };
 
           return this.container;
@@ -150,71 +169,123 @@ const VehicleMap = ({ simulationStatus }) => {
 
       mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
+      
+      // Configurar el mapa cuando esté cargado
+      
+      
       mapRef.current.on('load', async () => {
         console.log('Mapa completamente cargado');
 
-        // Cargar imágenes definidas en la configuración
-        for (const [key, image] of Object.entries(MAP_CONFIG.IMAGES)) {
-          await loadCustomImage(image.id, image.url);
-        }
+        // Cargar imágenes de íconos
+        await loadCustomImage('warehouse-icon', '/warehouse-icon.png');
+        await loadCustomImage('office-icon', '/office-icon.png');
 
         // Configurar la fuente de vehículos
-        if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
-          mapRef.current.addSource(MAP_CONFIG.SOURCES.VEHICLES.id, {
+        if (!mapRef.current.getSource('vehicles')) {
+          mapRef.current.addSource('vehicles', {
             type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] }
+            data: { type: 'FeatureCollection', features: [] },
           });
         }
-        
-        // Configurar capas de vehículos
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.CIRCLE)) {
+
+        // Configurar la capa de círculos para vehículos
+        if (!mapRef.current.getLayer('vehicles-circle-layer')) {
           mapRef.current.addLayer({
-            id: MAP_CONFIG.LAYERS.VEHICLES.CIRCLE,
+            id: 'vehicles-circle-layer',
             type: 'circle',
-            source: MAP_CONFIG.SOURCES.VEHICLES.id,
-            paint: LAYER_STYLES.vehicles.circle.paint
+            source: 'vehicles',
+            paint: {
+              'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                5, 10,
+                10, 12,
+                15, 14,
+              ],
+              'circle-color': '#FF0000',
+              'circle-stroke-color': '#FFFFFF',
+              'circle-stroke-width': 2,
+            },
           });
         }
-        
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.TEXT)) {
+
+        // Configurar la capa de texto para vehículos
+        if (!mapRef.current.getLayer('vehicles-text-layer')) {
           mapRef.current.addLayer({
-            id: MAP_CONFIG.LAYERS.VEHICLES.TEXT,
+            id: 'vehicles-text-layer',
             type: 'symbol',
-            source: MAP_CONFIG.SOURCES.VEHICLES.id,
-            layout: LAYER_STYLES.vehicles.text.layout,
-            paint: LAYER_STYLES.vehicles.text.paint
+            source: 'vehicles',
+            layout: {
+              'text-field': ['get', 'vehicleCode'],
+              'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+              'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                5, 12,
+                10, 14,
+                15, 16,
+              ],
+              'text-offset': [0, 0],
+              'text-anchor': 'center',
+            },
+            paint: {
+              'text-color': '#FFFFFF',
+              'text-halo-color': '#000000',
+              'text-halo-width': 1,
+            },
           });
         }
-        
-        // Configurar eventos
-        mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, handleVehicleClick);
-        mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
+
+        // Configurar eventos de click en vehículos
+        mapRef.current.on('click', 'vehicles-circle-layer', handleVehicleClick);
+        mapRef.current.on('mouseenter', 'vehicles-circle-layer', () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
         });
-        mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
+        mapRef.current.on('mouseleave', 'vehicles-circle-layer', () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
+
+        // **Eliminar la configuración de eventos para clusters aquí**
         
+        // Evento de clic en clusters para hacer zoom
+        mapRef.current.on('click', 'clusters', (e) => {
+          // ...
+        });
+
+        // Cambiar el cursor al pasar sobre clusters
+        mapRef.current.on('mouseenter', 'clusters', () => {
+          // ...
+        });
+        mapRef.current.on('mouseleave', 'clusters', () => {
+          // ...
+        });
+        
+
         setMapLoaded(true);
       });
+      
+     //ACA FINALIZA
     } catch (error) {
       console.error('Error al inicializar el mapa:', error);
       setError('Error al inicializar el mapa');
     }
+    
 
     return () => {
-      cleanupAnimation();
+      console.log('Limpiando mapa...');
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, [cleanupAnimation]);
+  }, []);
 
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
     const features = mapRef.current.queryRenderedFeatures(e.point, {
-      layers: [MAP_CONFIG.LAYERS.VEHICLES.CIRCLE],
+      layers: ['vehicles-circle-layer'],
     });
     if (!features.length) return;
 
@@ -250,7 +321,12 @@ const VehicleMap = ({ simulationStatus }) => {
     popupContent.appendChild(vehicleInfo);
     popupContent.appendChild(closeButton);
 
-    const popup = new maplibregl.Popup(POPUP_CONFIG)
+    const popup = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 15,
+      anchor: 'top',
+    })
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
@@ -258,7 +334,7 @@ const VehicleMap = ({ simulationStatus }) => {
     popupsRef.current[vehicleCode] = popup;
   };
 
-  // Obtener y actualizar ubicaciones
+  // Obtener ubicaciones del backend
   const fetchLocations = async () => {
     try {
       console.log('Obteniendo ubicaciones del backend...');
@@ -267,6 +343,7 @@ const VehicleMap = ({ simulationStatus }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log('Datos de ubicaciones recibidos:', data);
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
         setLocations(data);
       } else {
@@ -277,13 +354,14 @@ const VehicleMap = ({ simulationStatus }) => {
       setError('Error al obtener ubicaciones');
     }
   };
-
+  
+  // Cargar ubicaciones cuando el mapa esté listo
   useEffect(() => {
     if (mapLoaded) {
       fetchLocations();
     }
   }, [mapLoaded]);
-
+  
   // Actualizar ubicaciones en el mapa
   useEffect(() => {
     const updateMap = async () => {
@@ -448,17 +526,60 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   };
 
+
   // Actualizar posiciones de vehículos
   useEffect(() => {
-    if (!mapRef.current || !positions?.features) return;
-
-    try {
-      animateTransition(positions);
-    } catch (error) {
-      console.error('Error al actualizar posiciones:', error);
-      setError('Error al actualizar posiciones de vehículos');
+    if (!mapRef.current || !mapRef.current.getSource('vehicles')) {
+      return;
     }
+
+    if (!positions || !positions.features || positions.features.length === 0) {
+      return;
+    }
+
+    if (!(positions.type === 'FeatureCollection' && Array.isArray(positions.features))) {
+      setError('Datos de posiciones inválidos');
+      return;
+    }
+
+    // Usar la animación del hook
+    if (previousPositions && previousPositions.type === 'FeatureCollection') {
+      animateTransition(previousPositions, positions);
+    } else {
+      mapRef.current.getSource('vehicles').setData(positions);
+      fitMapToVehicles(positions);
+    }
+
+    setPreviousPositions(positions);
   }, [positions, animateTransition]);
+
+  // Cleanup al desmontar
+  useEffect(() => {
+    return () => {
+      cleanupAnimation();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [cleanupAnimation]);
+  
+
+  // Ajustar vista del mapa
+  const fitMapToVehicles = (geojson) => {
+    if (!mapRef.current) return;
+
+    const bounds = new maplibregl.LngLatBounds();
+
+    geojson.features.forEach((feature) => {
+      const [lng, lat] = feature.geometry.coordinates;
+      bounds.extend([lng, lat]);
+    });
+
+    mapRef.current.fitBounds(bounds, { padding: 50, animate: true });
+  };
+
+  
 
   return (
     <div className="relative w-full h-full">
@@ -474,15 +595,10 @@ const VehicleMap = ({ simulationStatus }) => {
         </div>
       )}
 
-      {performanceManager && (
-        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-2 rounded">
-          FPS: {Math.round(performanceManager.metrics.fps)}
-        </div>
-      )}
-      
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );
 };
 
 export default VehicleMap;
+
