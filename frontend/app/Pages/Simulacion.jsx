@@ -102,26 +102,6 @@ export default function Simulacion(){
         <MapLegend />
         <Switch isOn={mostrarRutas} setIsOn={setMostrarRutas} />
       </div>
-
-      <Modal
-        closeButton
-        blur
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-title"
-      >
-        <Modal.Header>
-          <h3 id="modal-title">Reporte de Simulación</h3>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Contenido detallado del reporte de simulación...</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button auto flat color="error" onClick={handleCloseModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }

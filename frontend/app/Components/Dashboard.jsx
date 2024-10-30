@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Pie, Bar } from 'react-chartjs-2';
+"use client";
+import { Pie, Bar } from "react-chartjs-2";
 import 'chart.js/auto';
-import { Button, Modal, ModalBody, ModalHeader } from '@nextui-org/react';
+import { useDisclosure } from "@nextui-org/react";
+import ModalContainer from "@/app/Components/ModalContainer";
+import { useState, useEffect } from "react";
 
-const Dashboard = ({ open, setOpen }) => {
+export default function Dashboard({ shipment }) {
+  // Hook para controlar el modal
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  
   // Estado para manejar los datos del dashboard
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -80,53 +85,65 @@ const Dashboard = ({ open, setOpen }) => {
   };
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)} width="80%">
-      <ModalHeader>
-        <h1 className="text-xl font-bold">Reporte a partir de {data.startDate} hasta {data.endDate}</h1>
-      </ModalHeader>
-      <ModalBody>
-        <div className="dashboard-container">
-          <div className="grid grid-cols-4 gap-4">
-            {/* Tarjetas de información */}
-            <div className="col-span-1 flex flex-col gap-4">
-              <div className="card">
-                <p>Proporción de Capacidad Efectiva transportada</p>
-                <h3>{data.capacidadEfectiva}%</h3>
+    <>
+      <button className="w-full" onClick={onOpen}>
+        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
+          <div className="flex flex-row justify-between items-center">
+            <div className="font-bold text-lg">Ver Reporte del Dashboard</div>
+          </div>
+        </div>
+      </button>
+      <ModalContainer
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        header={
+          <div className="flex flex-row gap-2">
+            <div className="text-xl font-bold">Reporte a partir de {data.startDate} hasta {data.endDate}</div>
+          </div>
+        }
+        body={
+          <div className="dashboard-container">
+            <div className="grid grid-cols-4 gap-4">
+              {/* Tarjetas de información */}
+              <div className="col-span-1 flex flex-col gap-4">
+                <div className="card">
+                  <p>Proporción de Capacidad Efectiva transportada</p>
+                  <h3>{data.capacidadEfectiva}%</h3>
+                </div>
+                <div className="card">
+                  <p>Cantidad Total de Pedidos Atendidos</p>
+                  <h3>{data.pedidosAtendidos}</h3>
+                </div>
+                <div className="card">
+                  <p>Eficiencia de Planificación de Rutas</p>
+                  <h3>{data.eficienciaRutas}%</h3>
+                </div>
+                <div className="card">
+                  <p>Cantidad Promedio de Pedidos por Día</p>
+                  <h3>{data.promedioPedidos}</h3>
+                </div>
               </div>
-              <div className="card">
-                <p>Cantidad Total de Pedidos Atendidos</p>
-                <h3>{data.pedidosAtendidos}</h3>
-              </div>
-              <div className="card">
-                <p>Eficiencia de Planificación de Rutas</p>
-                <h3>{data.eficienciaRutas}%</h3>
-              </div>
-              <div className="card">
-                <p>Cantidad Promedio de Pedidos por Día</p>
-                <h3>{data.promedioPedidos}</h3>
-              </div>
-            </div>
 
-            {/* Gráficos */}
-            <div className="col-span-3 grid grid-cols-2 gap-4">
-              <div className="chart-container">
-                <h4>Ciudades con mayor demanda de pedidos</h4>
-                <Bar data={barData} />
-              </div>
-              <div className="chart-container">
-                <h4>Estado de Paquetes</h4>
-                <Pie data={pieData} />
-              </div>
-              <div className="chart-container">
-                <h4>Cantidad de paradas en almacén</h4>
-                <Bar data={almacenParadasData} />
+              {/* Gráficos */}
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div className="chart-container">
+                  <h4>Ciudades con mayor demanda de pedidos</h4>
+                  <Bar data={barData} />
+                </div>
+                <div className="chart-container">
+                  <h4>Estado de Paquetes</h4>
+                  <Pie data={pieData} />
+                </div>
+                <div className="chart-container">
+                  <h4>Cantidad de paradas en almacén</h4>
+                  <Bar data={almacenParadasData} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </ModalBody>
-    </Modal>
+        }
+      />
+    </>
   );
-};
-
-export default Dashboard;
+}
