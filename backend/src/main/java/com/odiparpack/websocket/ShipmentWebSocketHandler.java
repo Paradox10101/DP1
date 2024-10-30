@@ -3,6 +3,7 @@ package com.odiparpack.websocket;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.odiparpack.models.Location;
 import com.odiparpack.models.Order;
 import com.odiparpack.models.SimulationState;
 import org.eclipse.jetty.websocket.api.Session;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,24 +60,30 @@ public class ShipmentWebSocketHandler {
 
     //envios de estados de los envios
     public static void broadcastShipments() {
-
         if (simulationState != null) {
-            List<Order> orders = simulationState.getOrders();
+            List<Order>orders = simulationState.getOrders();
+            Map<String, Location> locations = simulationState.getLocations();
             JsonObject featureCollection = new JsonObject();
             featureCollection.addProperty("type", "FeatureCollection");
             JsonArray features = new JsonArray();
             JsonObject feature = new JsonObject();
             for (Order order : orders) {
+                String status = order.getStatus().toString();
                 feature.addProperty("orderCode", order.getId());
                 feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
-                feature.addProperty("remainingTimeDays", Duration.between(order.getOrderTime(), order.getDueTime()).toDays());
-                feature.addProperty("remainingTimeHours", Duration.between(order.getOrderTime(), order.getDueTime()).toHours() % 24);
-                feature.addProperty("remainingTimeMinutes", Duration.between(order.getOrderTime(), order.getDueTime()).toMinutes() % 60);
-                feature.addProperty("originUbigeo", order.getOriginUbigeo());
-                feature.addProperty("destinyUbigeo", order.getDestinationUbigeo());
-                feature.addProperty("remainingPackages", order.getQuantity());
-                feature.addProperty("status", order.getStatus().toString());
+                if(!order.getStatus().equals(Order.OrderStatus.DELIVERED)&&!order.getStatus().equals(Order.OrderStatus.PENDING_PICKUP)){
+                    feature.addProperty("remainingTimeDays",  Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toDays());
+                    feature.addProperty("remainingTimeHours", Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toHours() % 24);
+                }
+                else{
+                    feature.addProperty("remainingTimeDays", "--");
+                    feature.addProperty("remainingTimeHours", "--");
+                }
 
+                feature.addProperty("originCity", locations.get(order.getOriginUbigeo()).getProvince());
+                feature.addProperty("destinyCity", locations.get(order.getDestinationUbigeo()).getProvince());
+                feature.addProperty("remainingPackages", order.getQuantity());
+                feature.addProperty("status", status);
                 features.add(feature);
             }
             featureCollection.add("features", features);

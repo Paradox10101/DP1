@@ -487,7 +487,7 @@ public class SimulationController {
 
 
         // Endpoint para obtener los datos de un envío
-        get("/shipment", (request, response) -> {
+        get("/shipmentdeunvehiculo", (request, response) -> {
 
             String shipmentId = request.queryParams("shipmentId");
             System.out.println();

@@ -4,11 +4,41 @@ import ModalContainer from "@/app/Components/ModalContainer"
 import { useDisclosure } from "@nextui-org/react";
 import ModalEnvios from "@/app/Components/ModalEnvios"
 import ModalRutaVehiculoEnvio from "@/app/Components/ModalRutaVehiculoEnvio"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CardEnvio({shipment}){
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [selectedVehicle, setSelectedVehicle] = useState(null)
+    const [extraShipmentInfo, setExtraShipmentInfo] = useState(null)
+
+    useEffect(()=>{
+        if(isOpen){
+            
+            const fetchOrderData = async () => {
+                try {
+                    const response = await fetch(`http://localhost:4567/api/v1/shipment?orderId=${shipment.orderCode}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log("siervo siervoyamada: " + data.features)
+                    if(data)
+                        setExtraShipmentInfo(data.feature)
+                } catch (error) {
+                    console.log("No se pudo recibir los datos: " + error)
+                }
+            }
+            fetchOrderData()
+        }
+    },[onOpenChange])
+
+
     return (
         <>
         <button className="w-full" onClick={onOpen}>
@@ -23,18 +53,20 @@ export default function CardEnvio({shipment}){
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <MapPin size={16}/>
-                    <div className="pequenno">{shipment.originUbigeo + " -> " + shipment.destinyUbigeo}</div>
+                    <div className="pequenno">{shipment.originCity + " -> " + shipment.destinyCity}</div>
                 </div>
-                <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
-                    (
-                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl" :
-                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl" :
-                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl" :
-                    ""
-                    )
-                }>
-                {shipment.status}
-                </div>
+                {
+                shipment.status==="REGISTERED"?
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                :
+                shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                :
+                shipment.status==="FULLY_ASSIGNED"?
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                :
+                <></>
+                }
             </div>
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
@@ -42,10 +74,10 @@ export default function CardEnvio({shipment}){
                     <div 
                     className="pequenno">{shipment.remainingPackages + (shipment.remainingPackages>1?" paquetes":" paquete")}</div>
                 </div>
-                <div className="flex flex-row gap-2 items-center">
+            </div>
+            <div className="flex flex-row gap-2 items-center">
                     <Clock size={16}/>
-                    <div className="pequenno">{shipment.remainingTimeDays + "d " + String(shipment.remainingTimeHours).padStart(2, '0')+"h:"+String(shipment.remainingTimeMinutes).padStart(2, '0') + "m"}</div>
-                </div>
+                    <div className="pequenno">Tiempo restante: {shipment.remainingTimeDays + " d " + String(shipment.remainingTimeHours).padStart(2, '0')+" h"}</div>
             </div>
         </div>
         </button>
@@ -53,23 +85,27 @@ export default function CardEnvio({shipment}){
         selectedVehicle===null?
         <ModalContainer isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}
         header={
+            (extraShipmentInfo &&
             <div className="flex flex-row gap-2">
-                <div className="subEncabezado">Información del envío {'P' + String(shipment.orderCode).padStart(5, '0')}</div>
-                <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
-                    (
-                        shipment.status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl" :
-                        shipment.status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl" :
-                        shipment.status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl" :
-                    ""
-                    )
-                }>
-                {shipment.status}
-                </div>
+                <div className="subEncabezado">Información del envío {'P' + String(extraShipmentInfo.orderCode).padStart(5, '0')}</div>
+                {extraShipmentInfo&&(
+                    extraShipmentInfo.status==="REGISTERED"?
+                    <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                    :
+                    extraShipmentInfo.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
+                    <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                    :
+                    extraShipmentInfo.status==="FULLY_ASSIGNED"?
+                    <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                    :
+                    <></>
+                    
+                )}
             </div>
-            
+            )
         }
         body={
-            <ModalEnvios shipment={shipment} setSelectedVehicle={setSelectedVehicle}/>
+            <ModalEnvios shipment={extraShipmentInfo} setSelectedVehicle={setSelectedVehicle}/>
         }
         />
         :

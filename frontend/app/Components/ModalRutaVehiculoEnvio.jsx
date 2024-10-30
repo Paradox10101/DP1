@@ -2,9 +2,11 @@ import { Button } from "@nextui-org/react"
 import { AlertTriangle, Building, Check, Circle, Clock, Eye, Filter, Flag, Globe, MapPin, Package, Truck, Warehouse } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
+import { useEffect } from "react"
 
 export default function ModalRutaVehiculoEnvio({selectedVehicle}){
     
+
     return (
         <div className="flex flex-col gap-6">
             
