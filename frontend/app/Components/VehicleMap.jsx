@@ -10,18 +10,20 @@ import {
 } from '../atoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const VehicleMap = ({ simulationStatus, setShipments }) => {
+const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
   const socketRefVehicles = useRef(null);
   const socketRefShipments = useRef(null);
+  const socketRefVehiclesInfo = useRef(null);
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [previousPositions, setPreviousPositions] = useState(null);
   const [reconnectAttemptsWSVehicles, setReconnectAttemptsWSVehicles] = useState(0);
   const [reconnectAttemptsWSShipments, setReconnectAttemptsWSShipments] = useState(0);
+  const [reconnectAttemptsWSSVehiclesInfo, setReconnectAttemptsWSVehiclesInfo] = useState(0);
   const [locations, setLocations] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -482,7 +484,7 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
       console.log('WebSocket de vehiculos cerrado');
       setLoading('failed');
       setError('WebSocket de vehiculos cerrado');
-      attemptReconnect();
+      attemptReconnect("wsVehicles");
     };
 
     socketRefVehicles.current.onerror = (error) => {
@@ -493,6 +495,45 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
     };
   };
 
+  // Conexión WebSocket de vehiculos info
+  const connectWebSocketVehiclesInfo = () => {
+    socketRefVehiclesInfo.current = new WebSocket('ws://localhost:4567/wsVehiclesInfo');
+    socketRefVehiclesInfo.current.onopen = () => {
+      console.log('Conectado al WebSocket de vehiculos info');
+      setLoading('succeeded');
+      setReconnectAttemptsWSVehiclesInfo(0);
+      setError(null);
+    };
+
+    socketRefVehiclesInfo.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+          setVehicles(data.features);
+          setError(null);
+        } else {
+          throw new Error('Formato GeoJSON inválido');
+        }
+      } catch (err) {
+        console.error('Error al procesar mensaje WebSocket:', err);
+        setError('Error al procesar datos del WebSocket de vehiculos info');
+      }
+    };
+
+    socketRefVehiclesInfo.current.onclose = () => {
+      console.log('WebSocket de vehiculos info cerrado');
+      setLoading('failed');
+      setError('WebSocket de vehiculos info cerrado');
+      attemptReconnect("wsVehiclesInfo");
+    };
+
+    socketRefVehiclesInfo.current.onerror = (error) => {
+      console.error('Error en WebSocket de vehiculos info:', error);
+      setError('Error en WebSocket de vehiculos info');
+      setLoading('failed');
+      attemptReconnect("wsVehiclesInfo");
+    };
+  };
 
   // Conexión WebSocket de Envios
   const connectWebSocketShipments = () => {
@@ -524,7 +565,7 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
       console.log('WebSocket de envios cerrado');
       setLoading('failed');
       setError('WebSocket de envios cerrado');
-      attemptReconnect();
+      attemptReconnect("wsShipments");
     };
 
     socketRefShipments.current.onerror = (error) => {
@@ -549,7 +590,7 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
             connectWebSocketVehicles();
           }, reconnectDelay);
         } else {
-          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket ' + wsType);
+          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket vehiculos' + wsType);
           setError('No se pudo reconectar al WebSocket ' + wsType);
         }
         break;
@@ -561,7 +602,19 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
             connectWebSocketShipments();
           }, reconnectDelay);
         } else {
-          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket ' + wsType);
+          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket envios' + wsType);
+          setError('No se pudo reconectar al WebSocket ' + wsType);
+        }
+        break;
+      case "wsVehiclesInfo":
+        if (reconnectAttemptsWSSVehiclesInfo < maxReconnectAttempts) {  
+          setTimeout(() => {
+            console.log(`Intentando reconectar... (Intento ${reconnectAttemptsWSSVehiclesInfo + 1})`);
+            setReconnectAttemptsWSVehiclesInfo((prev) => prev + 1);
+            connectWebSocketVehiclesInfo();
+          }, reconnectDelay);
+        } else {
+          console.log('Se alcanzó el máximo de intentos de reconexión a WebSocket vehiculos info' + wsType);
           setError('No se pudo reconectar al WebSocket ' + wsType);
         }
         break;
@@ -574,6 +627,7 @@ const VehicleMap = ({ simulationStatus, setShipments }) => {
       console.log('Conectando a los servidores WebSocket...');
       connectWebSocketVehicles();
       connectWebSocketShipments();
+      connectWebSocketVehiclesInfo();
     }
     return () => {
       if (socketRefVehicles.current) {

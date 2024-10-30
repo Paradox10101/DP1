@@ -5,6 +5,7 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.*;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
+import com.odiparpack.websocket.VehicleInfoWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 import spark.Spark;
 
@@ -55,8 +56,10 @@ public class SimulationController {
     private void setupWebSocket() {
         webSocket("/wsVehicles", VehicleWebSocketHandler.class);
         webSocket("/wsShipments", ShipmentWebSocketHandler.class);
+        webSocket("/wsVehiclesInfo", VehicleInfoWebSocketHandler.class);
         VehicleWebSocketHandler.setSimulationState(simulationState);
         ShipmentWebSocketHandler.setSimulationState(simulationState);
+        VehicleInfoWebSocketHandler.setSimulationState(simulationState);
     }
 
     private void initializeRoutes() {

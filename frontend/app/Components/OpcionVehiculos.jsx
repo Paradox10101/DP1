@@ -7,81 +7,10 @@ import CardAlmacen from "./CardAlmacen";
 import BarraProgreso from "./BarraProgreso";
 import CardVehiculo from "@/app/Components/CardVehiculo";
 
-export default function OpcionVehiculos({vehiculos}){
-//const [vehiculos, setVehiculos] = useState([])
+export default function OpcionVehiculos({vehicles}){
 
-const capacidadUsadaTotal = vehiculos && vehiculos.length>0 && vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
-const capacidadTotalMaxima = vehiculos && vehiculos.length>0 && vehiculos.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
-
-const vehiculosEjemplo = [
-    {
-        codigo: "A001",
-        ubicacionActual: "Piura",
-        ubicacionSiguiente: "Trujillo",
-        tipo: "A",
-        capacidadUsada: 10,
-        capacidadMaxima: 20,
-        estado: "En Tránsito",
-        velocidad: 30
-    },
-    {
-        codigo: "A002",
-        ubicacionActual: "Piura",
-        ubicacionSiguiente: "",
-        tipo: "A",
-        capacidadUsada: 0,
-        capacidadMaxima: 20,
-        estado: "En Mantenimiento",
-        velocidad: 0
-    },
-    {
-        codigo: "A003",
-        ubicacionActual: "Piura",
-        ubicacionSiguiente: "Arequipa",
-        tipo: "A",
-        capacidadUsada: 10,
-        capacidadMaxima: 20,
-        estado: "Averiado",
-        velocidad: 0
-    },
-    {
-        codigo: "B001",
-        ubicacionActual: "Lima",
-        ubicacionSiguiente: "",
-        tipo: "B",
-        capacidadUsada: 10,
-        capacidadMaxima: 60,
-        estado: "En Preparación",
-        velocidad: 0
-    },
-    {
-        codigo: "B002",
-        ubicacionActual: "Piura",
-        ubicacionSiguiente: "Trujillo",
-        tipo: "B",
-        capacidadUsada: 0,
-        capacidadMaxima: 60,
-        estado: "En Tránsito",
-        velocidad: 30
-    },
-    {
-        codigo: "C001",
-        ubicacionActual: "Piura",
-        ubicacionSiguiente: "Trujillo",
-        tipo: "C",
-        capacidadUsada: 20,
-        capacidadMaxima: 90,
-        estado: "En Tránsito",
-        velocidad: 30
-    },
-    
-]
-
-/*
-useEffect(()=>{
-    setVehiculos(vehiculos);
-}, [])
-*/
+const capacidadUsadaTotal = vehicles && vehicles.length>0 && vehicles.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadUsada || 0)}, 0) 
+const capacidadTotalMaxima = vehicles && vehicles.length>0 && vehicles.reduce((total, vehiculo)=>{return total+(vehiculo.capacidadMaxima|| 0)}, 0)
 
 return (
         <div className="h-full">
@@ -101,7 +30,7 @@ return (
                 </Button>
             </div>
             <div className="text-right pequenno text-[#939393]">
-                Cantidad de vehículos: {vehiculos?vehiculos.length:0}
+                Cantidad de vehículos: {vehicles?vehicles.length:0}
             </div>
             <div className="flex flex-col gap-2">
                 <div className="pequenno_bold text-center">
@@ -124,7 +53,7 @@ return (
                 </div>
             </div>
             <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-                {vehiculos && vehiculos.map((vehiculo)=>{
+                {vehicles && vehicles.map((vehiculo)=>{
                     return(
                         <CardVehiculo vehiculo={vehiculo} />
                     )

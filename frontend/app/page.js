@@ -16,6 +16,7 @@ export default function App(){
   const [simulationStatus, setSimulationStatus] = useState('stopped'); // 'stopped', 'running', 'paused'
   const [error, setError] = useState(null);
   const [shipments, setShipments] = useState(null);
+  const [vehicles, setVehicles] = useState(null);
 
   const toggleControls = () => setShowControls(!showControls);
 
@@ -51,11 +52,11 @@ export default function App(){
   return(
     <div>
       <div className="relative w-screen h-screen">
-        <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} />
+        <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} setVehicles={setVehicles}/>
         {/* Panel de control */}
         {
           showControls ? (
-            <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments}/>
+            <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments} vehicles={vehicles}/>
           ) :
           //Control Panel Toggle Button
           (

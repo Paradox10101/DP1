@@ -2,6 +2,7 @@ package com.odiparpack.simulation.scheduler;
 
 import com.odiparpack.simulation.state.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
+import com.odiparpack.websocket.VehicleInfoWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class SimulationScheduler {
         schedulePlanning();
         scheduleWebSocketBroadcast();
         scheduleWebSocketShipmentBroadcast();
+        scheduleWebSocketVehiclesInfoBroadcast();
     }
 
     public void pause() {
@@ -128,18 +130,19 @@ public class SimulationScheduler {
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
-    private void scheduleWebSocketBroadcastShipments() {
+    private void scheduleWebSocketVehiclesInfoBroadcast() {
         webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
         webSocketExecutorService.scheduleAtFixedRate(() -> {
             try {
                 if (simulationState.isPaused() || simulationState.isStopped()) return;
 
-                // Broadcast envios via WebSocket
-                ShipmentWebSocketHandler.broadcastShipments();
+                // Broadcast shipment list via WebSocket
+                VehicleInfoWebSocketHandler.broadcastVehicles();
 
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
+
 }
