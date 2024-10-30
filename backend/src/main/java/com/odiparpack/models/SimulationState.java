@@ -10,6 +10,7 @@ import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
+import com.odiparpack.SimulationRunner;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,12 +19,16 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.SimulationRunner.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
 public class SimulationState {
@@ -44,7 +49,7 @@ public class SimulationState {
     private static final String BREAKDOWN_COMMAND_FILE = "src/main/resources/breakdown_commands.txt";
     private long lastModified = 0;
     // Mapa para almacenar los logs de avería por vehículo
-    public static final Map<String, List<String>> breakdownLogs = new HashMap<>();
+    public static Map<String, List<String>> breakdownLogs = new HashMap<>();
     private Map<String, Integer> locationIndices;
     private List<String> locationNames;
     private List<String> locationUbigeos;
@@ -57,9 +62,10 @@ public class SimulationState {
     private volatile JsonObject lastPositions = null;
     private static final long UPDATE_THRESHOLD = 50; // 50ms threshold
     private static final Gson gson = new Gson();
+    private final ReentrantLock stateLock = new ReentrantLock();
+    private final Object pauseLock = new Object();
 
     public void reset() {
-        // Adquirir el lock para asegurar thread safety durante el reset
         lock.lock();
         try {
             System.out.println("Starting simulation reset at: " + LocalDateTime.now());
@@ -67,17 +73,37 @@ public class SimulationState {
             // Detener la simulación primero
             this.stopSimulation();
 
-            // Limpiar todas las estructuras existentes por seguridad
-            if (this.routeCache != null) {
+            // Inicializar estructuras si son null antes de limpiar
+            if (this.routeCache == null) {
+                this.routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);
+            } else {
                 this.routeCache.clear();
             }
 
-            if (this.breakdownLogs != null) {
-                this.breakdownLogs.clear();
+            // Limpiar el contenido del mapa existente en lugar de reasignarlo
+            if (breakdownLogs != null) {
+                breakdownLogs.clear();
+            }
+
+            if (this.vehiclesNeedingNewRoutes == null) {
+                this.vehiclesNeedingNewRoutes = new ArrayList<>();
+            } else {
+                this.vehiclesNeedingNewRoutes.clear();
+            }
+
+            if (this.activeBlockages == null) {
+                this.activeBlockages = new ArrayList<>();
+            } else {
+                this.activeBlockages.clear();
             }
 
             // Recargar todos los datos
             loadInitialData();
+
+            // Verificar estado después de la carga
+            validateState();
+
+            updateBlockages(currentTime, allBlockages);
 
             System.out.println("Simulation reset completed successfully");
         } catch (Exception e) {
@@ -87,6 +113,22 @@ public class SimulationState {
         } finally {
             lock.unlock();
         }
+    }
+
+    private void validateState() {
+        if (locations == null || locations.isEmpty()) {
+            throw new IllegalStateException("Invalid state: locations not initialized");
+        }
+        if (vehicles == null || vehicles.isEmpty()) {
+            throw new IllegalStateException("Invalid state: vehicles not initialized");
+        }
+        if (orders == null) {
+            throw new IllegalStateException("Invalid state: orders not initialized");
+        }
+        if (timeMatrix == null) {
+            throw new IllegalStateException("Invalid state: timeMatrix not initialized");
+        }
+        // Validar otras estructuras críticas
     }
 
     private void loadInitialData() {
@@ -113,13 +155,13 @@ public class SimulationState {
             // Reinicializar índices de ubicación
             this.locationIndices = new HashMap<>();
             for (int i = 0; i < locationList.size(); i++) {
-                this.locationIndices.put(locationList.get(i).getUbigeo(), i);
+                locationIndices.put(locationList.get(i).getUbigeo(), i);
             }
 
             // Crear matriz de tiempos
             this.timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
             this.currentTimeMatrix = Arrays.stream(this.timeMatrix)
-                    .map(row -> row.clone())
+                    .map(long[]::clone)
                     .toArray(long[][]::new);
 
             // Reinicializar listas de nombres y ubigeos
@@ -144,9 +186,8 @@ public class SimulationState {
             // Reinicializar otras estructuras de datos
             this.vehiclesNeedingNewRoutes = new ArrayList<>();
             this.activeBlockages = new ArrayList<>();
-            this.breakdownLogs.clear();
 
-            // Reinicializar el warehouse manager
+            // Reinicializar el warehouse manager con las nuevas ubicaciones
             this.warehouseManager = new WarehouseManager(this.locations);
 
             // Reinicializar los almacenes principales
@@ -195,15 +236,100 @@ public class SimulationState {
     }
 
     public void pauseSimulation() {
-        isPaused = true;
+        stateLock.lock();
+        try {
+            isPaused = true;
+            logger.info("Simulación pausada en tiempo de simulación: " + currentTime);
+
+            // Pausar executors
+            if (simulationExecutorService != null) {
+                simulationExecutorService.shutdown();
+            }
+            if (webSocketExecutorService != null) {
+                webSocketExecutorService.shutdown();
+            }
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        } finally {
+            stateLock.unlock();
+        }
     }
 
     public void resumeSimulation() {
-        isPaused = false;
+        stateLock.lock();
+        try {
+            isPaused = false;
+            logger.info("Simulación reanudada en tiempo de simulación: " + currentTime);
+
+            // Reiniciar executors
+            if (simulationExecutorService == null || simulationExecutorService.isShutdown()) {
+                simulationExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+            }
+            if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
+                webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
+                scheduleWebSocketBroadcast(this, new AtomicBoolean(true));
+            }
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        } finally {
+            stateLock.unlock();
+        }
+    }
+
+    public void updateSimulationTime() {
+        stateLock.lock();
+        try {
+            if (!isPaused && !isStopped) {
+                currentTime = currentTime.plusMinutes(SimulationRunner.TIME_ADVANCEMENT_INTERVAL_MINUTES);
+                logger.fine("Tiempo de simulación actualizado a: " + currentTime);
+            }
+        } finally {
+            stateLock.unlock();
+        }
+    }
+
+    public void waitWhilePaused() {
+        synchronized (pauseLock) {
+            while (isPaused && !isStopped) {
+                try {
+                    pauseLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
     }
 
     public void stopSimulation() {
         isStopped = true;
+        // Esperar a que los hilos se detengan
+        if (SimulationRunner.simulationExecutorService != null && !SimulationRunner.simulationExecutorService.isShutdown()) {
+            SimulationRunner.simulationExecutorService.shutdownNow();
+            try {
+                if (!SimulationRunner.simulationExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    SimulationRunner.simulationExecutorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                SimulationRunner.simulationExecutorService.shutdownNow();
+            }
+        }
+        if (SimulationRunner.webSocketExecutorService != null && !SimulationRunner.webSocketExecutorService.isShutdown()) {
+            SimulationRunner.webSocketExecutorService.shutdownNow();
+            try {
+                if (!SimulationRunner.webSocketExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    SimulationRunner.webSocketExecutorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                SimulationRunner.webSocketExecutorService.shutdownNow();
+            }
+        }
     }
 
     public boolean isPaused() {
@@ -212,6 +338,10 @@ public class SimulationState {
 
     public boolean isStopped() {
         return isStopped;
+    }
+
+    void setIsStopped(boolean stop) {
+        this.isStopped = stop;
     }
 
     public Map<String, Integer> getLocationIndices() {
@@ -686,9 +816,9 @@ public class SimulationState {
     }
 
     private static List<List<RouteSegment>> calcularRutasHaciaAlmacen(DataModel data, int[] start, int[] end) {
-        RoutingIndexManager manager = createRoutingIndexManager(data, start, end);
-        RoutingModel routing = createRoutingModel(manager, data);
-        RoutingSearchParameters searchParameters = createSearchParameters();
+        RoutingIndexManager manager = SimulationRunner.createRoutingIndexManager(data, start, end);
+        RoutingModel routing = SimulationRunner.createRoutingModel(manager, data);
+        RoutingSearchParameters searchParameters = SimulationRunner.createSearchParameters();
 
         logger.info("Iniciando la resolución del modelo de rutas para rutas hacia almacenes.");
         Assignment solution = routing.solveWithParameters(searchParameters);
@@ -696,7 +826,7 @@ public class SimulationState {
 
         if (solution != null) {
             List<List<RouteSegment>> calculatedRoutes = extractCalculatedRoutesWithoutAssignments(manager, data, routing, solution);
-            printSolution(data, routing, manager, solution);
+            SimulationRunner.printSolution(data, routing, manager, solution);
             logger.info("Solución de rutas hacia almacenes impresa correctamente.");
             return calculatedRoutes;
         } else {
@@ -840,11 +970,11 @@ public class SimulationState {
     }
 
     public LocalDateTime getCurrentTime() {
-        lock.lock();
+        stateLock.lock();
         try {
             return currentTime;
         } finally {
-            lock.unlock();
+            stateLock.unlock();
         }
     }
 

@@ -88,6 +88,7 @@ public class Vehicle {
     private LocalDateTime journeyStartTime;
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
 
+
     // Clase interna para almacenar posición y tiempo
     public static class PositionTimestamp {
         private LocalDateTime timestamp;

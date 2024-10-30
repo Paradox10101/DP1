@@ -1,7 +1,96 @@
 import { Button, Tab, Tabs } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
+import SimulationControls from '../Components/SimulationControls';
+import { useAtom } from "jotai";
+import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '../../atoms/errorAtoms';
+import { simulationStatusAtom } from "@/atoms/simulationAtoms";
+import { useCallback, useState, useEffect, useMemo } from "react";
+import { serverAvailableAtom } from '@/atoms/simulationAtoms';
+import { useWebSocket } from "@/hooks/useWebSocket";
+import SimulationSpeedControl from '../components/SimulationSpeedControl';
+  
+const SimulationStates = {
+    RUNNING: 'running',
+    PAUSED: 'paused',
+    STOPPED: 'stopped',
+    DISCONNECTED: 'disconnected'
+  };
+  
+  export default function OpcionSimulacion({
+    tipoSimulacion,
+    setTipoSimulacion,
+    date,
+    fechaError,
+    tiemposSimulacion,
+  }) {    
+    const [error, setError] = useAtom(errorAtom);
+    const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
+    const [serverAvailable, setServerAvailable] = useAtom(serverAvailableAtom);
+    
+    const handleWebSocketMessage = useCallback((data) => {
+        //console.log('Datos recibidos del WebSocket:', data);
+      }, []);
+    
+      const handleConnectionChange = useCallback((status) => {
+        setServerAvailable(status === 'connected');
+        if (status !== 'connected') {
+          setSimulationStatus(SimulationStates.DISCONNECTED);
+        }
+      }, [setServerAvailable, setSimulationStatus]);
 
-export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion, simulationStatus, handleSimulationControl, error}){
+    const { connect, checkStatus } = useWebSocket({
+        onMessage: handleWebSocketMessage,
+        onConnectionChange: handleConnectionChange,
+    });
+
+    const handleSimulationControl = useCallback(async (action) => {
+        if (!error || error.type !== ErrorTypes.CONNECTION) {
+          try {
+            const endpoint = simulationStatus === 'paused' && action === 'start'
+              ? 'resume'
+              : action;
+            
+            const response = await fetch(`http://localhost:4567/api/v1/simulation/${endpoint}`, {
+              method: 'POST',
+            });
+            
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Failed to ${action} simulation`);
+            }
+            
+            switch (action) {
+              case 'start':
+                setSimulationStatus(SimulationStates.RUNNING);
+                break;
+              case 'pause':
+                setSimulationStatus(SimulationStates.PAUSED);
+                break;
+              case 'stop':
+                setSimulationStatus(SimulationStates.STOPPED);
+                break;
+            }
+            setError(null);
+          } catch (err) {
+            console.error(`Error ${action}ing simulation:`, err);
+            checkStatus();
+          }
+        }
+      }, [simulationStatus, setSimulationStatus, setError, error]);
+  
+    const effectiveStatus = useMemo(() => 
+        error?.type === ErrorTypes.CONNECTION 
+          ? SimulationStates.DISCONNECTED 
+          : simulationStatus
+      , [error, simulationStatus]);
+    
+    useEffect(() => {
+        console.log("estado: ", effectiveStatus);
+    }, [effectiveStatus])
+
+    useEffect(() => {
+        console.log("servidor disponible: ", serverAvailable);
+    }, [serverAvailable])
 
 return (
 
@@ -41,52 +130,23 @@ return (
                         </div>
                     </div>
                 </div>
+                
                 <div className="flex w-full flex-col gap-3">
-                    <div>
-                        <span className="encabezado">Ejecución</span>
-                    </div>
-                    <div className="flex justify-around w-full flex-row ">
-                    <button
-                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200 
-                            ${simulationStatus === 'running' 
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                            : 'bg-green-100 text-green-600 hover:bg-green-200'}`}
-                        onClick={() => handleSimulationControl('start')}
-                        disabled={simulationStatus === 'running'}
-                        title="Start Simulation"
-                        >
-                        <Play size={20} />
-                        </button>
-                        
-                        <button
-                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200
-                            ${simulationStatus !== 'running'
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'}`}
-                        onClick={() => handleSimulationControl('pause')}
-                        disabled={simulationStatus !== 'running'}
-                        title="Pause Simulation"
-                        >
-                        <Pause size={20} />
-                        </button>
-                        
-                        <button
-                        className={`p-2 rounded-lg flex items-center justify-center transition-colors duration-200
-                            ${simulationStatus === 'stopped'
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
-                        onClick={() => handleSimulationControl('stop')}
-                        disabled={simulationStatus === 'stopped'}
-                        title="Stop Simulation"
-                        >
-                        <Square size={20} />
-                        </button>
-                    </div>    
+                    <SimulationControls 
+                        simulationStatus={effectiveStatus}
+                        isServerAvailable={!error?.type || error.type !== ErrorTypes.CONNECTION}
+                        handleSimulationControl={handleSimulationControl}
+                    />
+
+                    <SimulationSpeedControl
+                        simulationStatus={effectiveStatus}
+                    />
                 </div>
-                {error && (
+
+                {error?.message && (
                     <div className="p-2 mb-2 text-sm text-red-600 bg-red-100 rounded-lg">
-                {error}
-                </div>
+                        {error.message}
+                    </div>
                 )}
                 
                 <div className="flex flex-col gap-3">

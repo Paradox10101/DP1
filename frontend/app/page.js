@@ -23,42 +23,13 @@ export default function App() {
 
   const toggleControls = () => setShowControls(!showControls);
 
-  const handleSimulationControl = async (action) => {
-    try {
-      const response = await fetch(`http://localhost:4567/api/v1/simulation/${action}`, {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || `Failed to ${action} simulation`);
-      }
-      switch (action) {
-        case 'start':
-          setSimulationStatus('running');
-          break;
-        case 'pause':
-          setSimulationStatus('paused');
-          break;
-        case 'stop':
-          setSimulationStatus('stopped');
-          break;
-      }
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-      console.error(`Error ${action}ing simulation:`, err);
-    }
-  };
-
   return (
     <div>
       <div className="relative w-screen h-screen">
         <PerformanceMetrics metrics={performanceMetrics} />
-        <VehicleMap simulationStatus={simulationStatus} />
+        <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
         {showControls ? (
           <PanelSimulacion
-            simulationStatus={simulationStatus}
-            handleSimulationControl={handleSimulationControl}
             datos={[]}
             toggleControls={toggleControls}
             error={error}

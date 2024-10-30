@@ -97,14 +97,9 @@ public class Main {
         // El método main termina aquí
     }*/
 
-    public static void main(String[] args) throws IOException {
-        Loader.loadNativeLibraries();
-
+    public static com.odiparpack.models.SimulationState initializeSimulationState() throws IOException {
         DataLoader dataLoader = new DataLoader();
-        //String projectRoot = Paths.get("").toAbsolutePath().toString();
-        //System.out.println("La ruta absoluta del directorio raíz es: " + projectRoot);
-        //Path currentPath = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        //System.out.println("La ruta actual del archivo ejecutado es: " + currentPath);
+
         // Cargar datos
         locations = dataLoader.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);
@@ -118,7 +113,6 @@ public class Main {
         // Construir índices y matrices
         List<Location> locationList = new ArrayList<>(locations.values());
 
-        // Inicializar índices de ubicación globalmente
         locationIndices = new HashMap<>();
         for (int i = 0; i < locationList.size(); i++) {
             locationIndices.put(locationList.get(i).getUbigeo(), i);
@@ -126,22 +120,26 @@ public class Main {
 
         long[][] timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
 
-        List<String> locationNames = new ArrayList<>();
-        List<String> locationUbigeos = new ArrayList<>();
+        locationNames = new ArrayList<>();
+        locationUbigeos = new ArrayList<>();
         for (Location loc : locationList) {
             locationNames.add(loc.getProvince());
             locationUbigeos.add(loc.getUbigeo());
         }
 
-        // Inicializar SimulationState con los datos necesarios
-        Map<String, Vehicle> vehicleMap = vehicles.stream().collect(Collectors.toMap(Vehicle::getCode, v -> v));
+        // Inicializar mapa de vehículos
+        Map<String, Vehicle> vehicleMap = vehicles.stream()
+                .collect(Collectors.toMap(Vehicle::getCode, v -> v));
+
+        // Calcular el tiempo inicial de simulación
         LocalDateTime initialSimulationTime = orders.stream()
                 .map(Order::getOrderTime)
                 .min(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.now())
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        com.odiparpack.models.SimulationState simulationState = new com.odiparpack.models.SimulationState(
+        // Crear una nueva instancia de SimulationState
+        return new com.odiparpack.models.SimulationState(
                 vehicleMap,
                 initialSimulationTime,
                 orders,
@@ -154,6 +152,13 @@ public class Main {
                 locationNames,
                 locationUbigeos
         );
+    }
+
+    public static void main(String[] args) throws IOException {
+        Loader.loadNativeLibraries();
+
+        // Inicializar SimulationState
+        com.odiparpack.models.SimulationState simulationState = initializeSimulationState();
 
         // Iniciar el servidor SimulationController
         SimulationController simulationController = new SimulationController(simulationState);

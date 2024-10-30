@@ -23,10 +23,38 @@ public class SimulationRunner {
     private static final int SIMULATION_DAYS = 7;
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
-    private static final int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5;
-    private static ScheduledExecutorService simulationExecutorService;
-    private static ScheduledExecutorService webSocketExecutorService;
+    public static int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5;
+    public static ScheduledExecutorService simulationExecutorService;
+    public static ScheduledExecutorService webSocketExecutorService;
     private static final int BROADCAST_INTERVAL = 100; // 100ms = 10 updates/segundo
+
+    // Para cambiar velocidad de avance del tiempo
+    public enum SimulationSpeed {
+        FAST(8),    // 8 min/seg
+        MEDIUM(6),  // 6 min/seg
+        SLOW(5);    // 5 min/seg
+
+        private final int minutesPerSecond;
+
+        SimulationSpeed(int minutesPerSecond) {
+            this.minutesPerSecond = minutesPerSecond;
+        }
+
+        public int getMinutesPerSecond() {
+            return minutesPerSecond;
+        }
+    }
+
+    public static void setSimulationSpeed(SimulationSpeed speed) {
+        // Calcular el nuevo intervalo de avance basado en la velocidad deseada
+        // Para X minutos/segundo, necesitamos que cada tick avance X minutos
+        TIME_ADVANCEMENT_INTERVAL_MINUTES = speed.getMinutesPerSecond();
+        logger.info("Velocidad de simulación actualizada: " + speed.getMinutesPerSecond() + " minutos por segundo");
+    }
+
+    public static int getTimeAdvancementInterval() {
+        return TIME_ADVANCEMENT_INTERVAL_MINUTES;
+    }
 
     public static void runSimulation(SimulationState state) throws InterruptedException {
         // Obtener los datos necesarios del estado de simulación
@@ -75,16 +103,16 @@ public class SimulationRunner {
         }
     }
 
-    private static void scheduleWebSocketBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
+    public static void scheduleWebSocketBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
         webSocketExecutorService.scheduleAtFixedRate(() -> {
             try {
-                if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) return;
+                if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
+                    return;
+                }
 
-                long currentTimestamp = System.currentTimeMillis();
                 JsonObject positions = state.getCurrentPositionsGeoJSON();
-                positions.addProperty("timestamp", currentTimestamp);
+                positions.addProperty("timestamp", System.currentTimeMillis());
                 VehicleWebSocketHandler.broadcastVehiclePositions(positions);
-
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
             }
@@ -93,22 +121,30 @@ public class SimulationRunner {
 
 
 
-    private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime, AtomicBoolean isSimulationRunning,
+    private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime,
+                                                AtomicBoolean isSimulationRunning,
                                                 Map<String, List<RouteSegment>> vehicleRoutes,
                                                 ScheduledExecutorService executorService) {
         executorService.scheduleAtFixedRate(() -> {
             try {
-                if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) return;
+                // Si está pausado, esperar
+                if (state.isPaused()) {
+                    return;
+                }
 
-                state.setCurrentTime(state.getCurrentTime().plusMinutes(TIME_ADVANCEMENT_INTERVAL_MINUTES));
-                logger.info("Tiempo de simulación: " + state.getCurrentTime());
+                if (!isSimulationRunning.get() || state.isStopped()) {
+                    return;
+                }
 
-                state.updateBlockages(state.getCurrentTime(), state.getAllBlockages());
+                state.updateSimulationTime();
+                LocalDateTime currentTime = state.getCurrentTime();
+
+                // Actualizar estado de la simulación
+                state.updateBlockages(currentTime, state.getAllBlockages());
                 state.updateVehicleStates();
                 state.updateOrderStatuses();
-                logger.info("Estados de vehículos, pedidos y bloqueos actualizados.");
 
-                if (state.getCurrentTime().isAfter(endTime)) {
+                if (currentTime.isAfter(endTime)) {
                     logger.info("Simulación completada.");
                     isSimulationRunning.set(false);
                     state.stopSimulation();
@@ -315,7 +351,7 @@ public class SimulationRunner {
             } else {
                 // Si no se encuentra solución, dividir y resolver
                 List<SolutionData> solutions = Collections.synchronizedList(new ArrayList<>());
-                divideAndSolve(data.assignments, Arrays.asList(
+                divideAndSolve(state, data.assignments, Arrays.asList(
                         FirstSolutionStrategy.Value.CHRISTOFIDES,
                         FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC
                 ), solutions);
@@ -362,7 +398,7 @@ public class SimulationRunner {
         return null; // No se encontró solución con las estrategias dadas
     }
 
-    public static void divideAndSolve(List<VehicleAssignment> assignments, List<FirstSolutionStrategy.Value> strategies, List<Main.SolutionData> solutions) {
+    public static void divideAndSolve(SimulationState state, List<VehicleAssignment> assignments, List<FirstSolutionStrategy.Value> strategies, List<Main.SolutionData> solutions) {
         if (assignments == null || strategies == null || solutions == null) {
             throw new IllegalArgumentException("Los argumentos no pueden ser nulos.");
         }
@@ -371,7 +407,7 @@ public class SimulationRunner {
         int maxDepth = 10;
         try {
             Future<?> future = executor.submit(() ->
-                    processSubset(assignments, strategies, solutions, executor, 0, maxDepth)
+                    processSubset(state, assignments, strategies, solutions, executor, 0, maxDepth)
             );
 
             future.get();
@@ -390,7 +426,7 @@ public class SimulationRunner {
         }
     }
 
-    private static void processSubset(List<VehicleAssignment> subset,
+    private static void processSubset(SimulationState state, List<VehicleAssignment> subset,
                                       List<FirstSolutionStrategy.Value> strategies,
                                       List<SolutionData> solutions,
                                       ExecutorService executor,
@@ -409,7 +445,7 @@ public class SimulationRunner {
         for (FirstSolutionStrategy.Value strategy : strategies) {
             logger.info("Intentando resolver subconjunto con estrategia: " + strategy);
 
-            RoutingResult result = solveSubset(subset, strategy);
+            RoutingResult result = solveSubset(state, subset, strategy);
 
             if (result != null && result.solution != null) {
                 logger.info("Solución encontrada para el subconjunto con estrategia: " + strategy);
@@ -433,11 +469,11 @@ public class SimulationRunner {
 
         // Procesar cada mitad de manera concurrente
         Future<?> futureFirst = executor.submit(() ->
-                processSubset(firstHalf, strategies, solutions, executor, depth + 1, maxDepth)
+                processSubset(state, firstHalf, strategies, solutions, executor, depth + 1, maxDepth)
         );
 
         Future<?> futureSecond = executor.submit(() ->
-                processSubset(secondHalf, strategies, solutions, executor, depth + 1, maxDepth)
+                processSubset(state, secondHalf, strategies, solutions, executor, depth + 1, maxDepth)
         );
 
         try {
@@ -449,9 +485,9 @@ public class SimulationRunner {
         }
     }
 
-    private static RoutingResult solveSubset(List<VehicleAssignment> subset, FirstSolutionStrategy.Value strategy) {
+    private static RoutingResult solveSubset(SimulationState state, List<VehicleAssignment> subset, FirstSolutionStrategy.Value strategy) {
         try {
-            DataModel data = new DataModel(timeMatrix, new ArrayList<>(), subset, locationIndices, locationNames, locationUbigeos);
+            DataModel data = new DataModel(state.getCurrentTimeMatrix(), new ArrayList<>(), subset, locationIndices, locationNames, locationUbigeos);
             RoutingIndexManager manager = createRoutingIndexManager(data, data.starts, data.ends);
             RoutingModel routing = createRoutingModel(manager, data);
             RoutingSearchParameters searchParameters = Main.createSearchParameters(strategy);

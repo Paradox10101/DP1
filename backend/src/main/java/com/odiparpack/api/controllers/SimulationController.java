@@ -1,26 +1,31 @@
 package com.odiparpack.api.controllers;
 
 import com.google.gson.JsonObject;
+import com.odiparpack.DataLoader;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.BaseRouter;
 import com.odiparpack.api.routers.LocationRouter;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.api.routers.VehicleRouter;
+import com.odiparpack.models.Location;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 import spark.Spark;
 
+import static com.odiparpack.Main.initializeSimulationState;
 import static spark.Spark.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 public class SimulationController {
-    private final SimulationState simulationState;
+    private SimulationState simulationState;
     private final List<BaseRouter> routers;
     private ExecutorService simulationExecutor;
     private Future<?> simulationFuture;
@@ -31,7 +36,7 @@ public class SimulationController {
         this.routers = Arrays.asList(
                 new LocationRouter(),
                 new VehicleRouter(simulationState),
-                new SimulationRouter(simulationState)
+                new SimulationRouter(simulationState, this  )
         );
     }
 
@@ -112,6 +117,35 @@ public class SimulationController {
             errorResponse.addProperty("path", request.pathInfo());
             return errorResponse;
         });
+    }
+
+    public void resetSimulationState() {
+        if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
+            simulationExecutor.shutdownNow();
+        }
+        simulationExecutor = null;
+        SimulationState newState = createNewSimulationState();
+        this.simulationState = newState;
+
+        // Actualizar los routers
+        routers.forEach(router -> {
+            if (router instanceof SimulationRouter) {
+                ((SimulationRouter) router).updateSimulationState(newState);
+            }
+        });
+    }
+
+    private SimulationState createNewSimulationState() {
+        try {
+            return initializeSimulationState();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create new SimulationState", e);
+        }
+    }
+
+    // Método para exponer a SimulationRouter
+    public void handleStopSimulation() {
+        simulationState.stopSimulation();
     }
 
     public void stop() {

@@ -4,16 +4,17 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom,
-  errorAtom,
+  loadingAtom
 } from '../atoms';
 import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
+import ErrorDisplay from '../Components/ErrorDisplay';
+import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 
-const VehicleMap = ({ simulationStatus }) => {
+const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -23,6 +24,60 @@ const VehicleMap = ({ simulationStatus }) => {
   const [locations, setLocations] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
+  const [locationError, setLocationError] = useState(null);
+  const locationRetryTimeoutRef = useRef(null);
+
+   // Función auxiliar para crear mensajes de error
+   const createError = (type, customMessage = null) => ({
+    ...ERROR_MESSAGES[type],
+    message: customMessage || ERROR_MESSAGES[type].message
+  });
+  
+   // Obtener y actualizar ubicaciones con reintentos
+   const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
+    try {
+      console.log('Obteniendo ubicaciones del backend...');
+      const response = await fetch('http://localhost:4567/api/v1/locations');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+        setLocations(data);
+        setError(null);
+        return true;
+      } else {
+        throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
+      }
+    } catch (err) {
+      console.error('Error al obtener las ubicaciones:', err);
+      setError(createError(ErrorTypes.CONNECTION, 'No se pudieron cargar las ubicaciones de oficinas y almacenes.'));
+
+      if (retryCount < maxRetries) {
+        console.log(`Reintentando carga de ubicaciones (${retryCount + 1}/${maxRetries})...`);
+        locationRetryTimeoutRef.current = setTimeout(() => {
+          fetchLocations(retryCount + 1, maxRetries);
+        }, 2000 * (retryCount + 1));
+      }
+      return false;
+    }
+  }, [setError]);
+
+  // Limpiar timeout de reintento si existe
+  const clearLocationRetryTimeout = useCallback(() => {
+    if (locationRetryTimeoutRef.current) {
+      clearTimeout(locationRetryTimeoutRef.current);
+      locationRetryTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Manejar la reconexión exitosa
+  const handleConnectionSuccess = useCallback(() => {
+    clearLocationRetryTimeout();
+    if (!locations) {
+      fetchLocations();
+    }
+  }, [fetchLocations, locations, clearLocationRetryTimeout]);
 
   // Actualizar posición de popups
   const updatePopups = (geojson) => {
@@ -64,22 +119,27 @@ const VehicleMap = ({ simulationStatus }) => {
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
-    setLoading(status);
-  }, [setLoading]);
+    setLoading(status === 'loading');
+    if (status === 'failed') {
+      setError(createError(ErrorTypes.CONNECTION));
+    }
+  }, [setLoading, setError]);
 
   // Usar el nuevo hook de WebSocket
-  const { error: wsError } = useWebSocket({
+  const { 
+    connect,
+    disconnect,
+    checkStatus,
+    isRetrying
+  } = useWebSocket({
     onMessage: handleWebSocketMessage,
     onConnectionChange: handleConnectionChange,
-    simulationStatus
   });
 
-  // Actualizar el error si hay problemas con WebSocket
+  // Verificar estado inicial
   useEffect(() => {
-    if (wsError) {
-      setError(wsError);
-    }
-  }, [wsError, setError]);
+    checkStatus();
+  }, []);
 
   // Función personalizada para cargar imágenes
   const loadCustomImage = async (name, url) => {
@@ -95,7 +155,7 @@ const VehicleMap = ({ simulationStatus }) => {
       }
     } catch (error) {
       console.error(`Error al cargar icono ${name}:`, error);
-      setError(`Error al cargar icono ${name}`);
+      setError(createError(ErrorTypes.SIMULATION, `Error al cargar icono ${name}`));
     }
   };
 
@@ -258,31 +318,19 @@ const VehicleMap = ({ simulationStatus }) => {
     popupsRef.current[vehicleCode] = popup;
   };
 
-  // Obtener y actualizar ubicaciones
-  const fetchLocations = async () => {
-    try {
-      console.log('Obteniendo ubicaciones del backend...');
-      const response = await fetch('http://localhost:4567/api/v1/locations');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        setLocations(data);
-      } else {
-        throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
-      }
-    } catch (err) {
-      console.error('Error al obtener las ubicaciones:', err);
-      setError('Error al obtener ubicaciones');
-    }
-  };
-
+  // Efecto para cargar ubicaciones cuando el mapa está listo
   useEffect(() => {
-    if (mapLoaded) {
+    if (mapLoaded && !locations) {
       fetchLocations();
     }
-  }, [mapLoaded]);
+  }, [mapLoaded, locations, fetchLocations]);
+
+  // Limpiar timeouts al desmontar
+  useEffect(() => {
+    return () => {
+      clearLocationRetryTimeout();
+    };
+  }, [clearLocationRetryTimeout]);
 
   // Actualizar ubicaciones en el mapa
   useEffect(() => {
@@ -460,6 +508,26 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   }, [positions, animateTransition]);
 
+  const handleRetry = useCallback(() => {
+    const currentError = error;
+    if (!currentError) return;
+
+    switch (currentError.type) {
+      case ErrorTypes.CONNECTION:
+        connect();
+        break;
+      case ErrorTypes.SIMULATION:
+        checkStatus();
+        break;
+      default:
+        // Si el error está relacionado con ubicaciones, intentar cargar nuevamente
+        if (currentError.message?.includes('ubicaciones')) {
+          fetchLocations();
+        }
+    }
+  }, [error, connect, checkStatus, fetchLocations]);
+
+
   return (
     <div className="relative w-full h-full">
       {loading === 'loading' && (
@@ -468,11 +536,11 @@ const VehicleMap = ({ simulationStatus }) => {
         </div>
       )}
 
-      {error && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full bg-red-500 bg-opacity-50">
-          <div className="text-white">Error: {error}</div>
-        </div>
-      )}
+      <ErrorDisplay 
+        error={error}
+        onRetry={handleRetry}
+        isRetrying={isRetrying}
+      />
 
       {performanceManager && (
         <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-2 rounded">
