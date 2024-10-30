@@ -49,6 +49,13 @@ public class SimulationState {
     private volatile boolean isPaused = false;
     private volatile boolean isStopped = false;
 
+
+    // Atributos para capacidad efectiva acumulada
+    private double totalCapacityUsed = 0;
+    private double totalCapacity = 0;
+    private int capacityRecordsCount = 0;
+
+
     public void reset() {
         // Adquirir el lock para asegurar thread safety durante el reset
         lock.lock();
@@ -250,6 +257,10 @@ public class SimulationState {
         updateBlockages(initialSimulationTime, allBlockages);
     }
 
+    public RouteCache getRouteCache() {
+        return routeCache;
+    }
+
 
     // Getter para breakdownLogs
     public Map<String, List<String>> getBreakdownLogs() {
@@ -373,6 +384,10 @@ public class SimulationState {
                 if (vehicle.isUnderRepair()) {
                     handleRepairCompletion(vehicle, currentTime);
                     vehicle.updateAveriaTime(currentTime);  // Actualizar el tiempo en estado de avería
+                    // TODO: Considerar reasignación de pedidos en caso de avería.
+                    // if (vehicle.getAssignedOrder() != null) {
+                    //     reassignOrderAfterBreakdown(vehicle, currentTime);
+                    // }
                 }
 
                 if (vehicle.shouldUpdateStatus()) {
@@ -392,6 +407,59 @@ public class SimulationState {
         } finally {
             lock.unlock();
         }
+    }
+
+    // TODO: Implementar reasignación de pedidos cuando ocurre una avería en el vehículo.
+    // Este método debería buscar vehículos vacíos y cercanos para reasignar el pedido del vehículo averiado.
+    // private void reassignOrderAfterBreakdown(Vehicle brokenVehicle, LocalDateTime currentTime) {
+    //     Order orderToReassign = brokenVehicle.getAssignedOrder();
+    //     if (orderToReassign == null) {
+    //         logger.warning("El vehículo " + brokenVehicle.getCode() + " no tiene un pedido asignado. No es necesario reasignar.");
+    //         return;
+    //     }
+    //
+    //     // Buscar vehículos vacíos y cercanos
+    //     List<Vehicle> availableVehicles = vehicles.values().stream()
+    //             .filter(v -> v.getEstado() == Vehicle.EstadoVehiculo.EN_ALMACEN
+    //                         && v.getCurrentLocationUbigeo().equals(brokenVehicle.getCurrentLocationUbigeo())
+    //                         && v.getAssignedOrder() == null)
+    //             .collect(Collectors.toList());
+    //
+    //     if (availableVehicles.isEmpty()) {
+    //         logger.warning("No hay vehículos disponibles cercanos para reasignar el pedido " + orderToReassign.getId() + " del vehículo " + brokenVehicle.getCode());
+    //         return;
+    //     }
+    //
+    //     // Seleccionar el primer vehículo disponible y reasignar el pedido
+    //     Vehicle newVehicle = availableVehicles.get(0);
+    //     newVehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
+    //     newVehicle.setAssignedOrder(orderToReassign);
+    //     newVehicle.setCurrentCapacity(orderToReassign.getQuantity());
+    //     orderToReassign.setAssignedVehicle(newVehicle);
+    //     orderToReassign.setStatus(Order.OrderStatus.FULLY_ASSIGNED);
+    //
+    //     brokenVehicle.setEstado(Vehicle.EstadoVehiculo.EN_REPARACION);
+    //     brokenVehicle.setAssignedOrder(null);
+    //     brokenVehicle.setCurrentCapacity(0);
+    //
+    //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
+    // }
+
+
+    // Método para actualizar la métrica de capacidad efectiva acumulada
+    public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {
+        this.totalCapacityUsed += currentCapacityUsed;
+        this.totalCapacity += vehicleCapacity;
+        this.capacityRecordsCount++;
+        logger.info("Actualizando métricas de capacidad: Capacidad Usada: " + currentCapacityUsed +
+                ", Capacidad Total: " + vehicleCapacity + ", Total Registros: " + capacityRecordsCount);
+    }
+
+    public double calculateAverageCapacity() {
+        if (capacityRecordsCount == 0 || totalCapacity == 0) {
+            return 0;
+        }
+        return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
     }
 
     private void handleMaintenance(Vehicle vehicle) {

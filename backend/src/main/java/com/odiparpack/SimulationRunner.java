@@ -145,7 +145,7 @@ public class SimulationRunner {
                 logAvailableOrders(availableOrders);
 
                 if (!availableOrders.isEmpty()) {
-                    List<VehicleAssignment> assignments = assignOrdersToVehicles(availableOrders, new ArrayList<>(state.getVehicles().values()), state.getCurrentTime());
+                    List<VehicleAssignment> assignments = assignOrdersToVehicles(availableOrders, new ArrayList<>(state.getVehicles().values()), state.getCurrentTime(), state);
                     if (!assignments.isEmpty()) {
                         calculateAndApplyRoutes(currentTimeMatrix, assignments, locationIndices, locationNames,
                                 locationUbigeos, vehicleRoutes, state, executorService);
@@ -173,7 +173,7 @@ public class SimulationRunner {
         }
     }
 
-    private static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, LocalDateTime currentTime) {
+    private static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, LocalDateTime currentTime, SimulationState state) {
         List<VehicleAssignment> assignments = new ArrayList<>();
 
         // Ordenar los pedidos por dueTime (los más urgentes primero)
@@ -209,6 +209,7 @@ public class SimulationRunner {
                 if (vehicle.getCapacity() >= unassignedPackages) {
                     // El vehículo puede satisfacer completamente la orden
                     assignments.add(new VehicleAssignment(vehicle, order, unassignedPackages));
+                    vehicle.setCurrentCapacity(vehicle.getCurrentCapacity()  + unassignedPackages);
                     vehicle.setAvailable(false);
                     vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
                     order.incrementAssignedPackages(unassignedPackages); // Actualización completa
@@ -219,12 +220,19 @@ public class SimulationRunner {
                                     "Cantidad Total de la Orden: %d paquetes\n" +
                                     "Cantidad Asignada al Vehículo: %d paquetes\n" +
                                     "Código del Vehículo: %s\n" +
+                                    "Capacidad Actual del Vehículo: %d / %d\n" +
                                     "---------------------------",
                             order.getId(),
                             order.getQuantity(),
                             unassignedPackages,
-                            vehicle.getCode()
+                            vehicle.getCode(),
+                            vehicle.getCurrentCapacity(),
+                            vehicle.getCapacity()
                     );
+
+                    // Actualizar la métrica de capacidad efectiva acumulada
+                    state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
+
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);

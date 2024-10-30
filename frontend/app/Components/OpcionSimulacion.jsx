@@ -1,8 +1,9 @@
 import { Button, Tab, Tabs } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
-
+import Dashboard from "@/app/Components/Dashboard"
+import { useState } from "react";
 export default function OpcionSimulacion({tipoSimulacion, setTipoSimulacion, date, fechaError, tiemposSimulacion, simulationStatus, handleSimulationControl, error}){
-
+    const [openDashboard, setOpenDashboard] = useState(false);
 return (
 
         <div className="h-full flex flex-col justify-between">
@@ -123,11 +124,19 @@ return (
 
             </div>
             <div>
-                <Button disableRipple={true} className="bg-placeholder text-blanco w-full rounded regular py-[12px]" startContent={<ChartColumnIncreasing />}>
+                <Button disableRipple={true} 
+                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
+                    startContent={<ChartColumnIncreasing />}
+                    onClick={()=> setOpenDashboard(true)}
+                >
                     Visualizar Reporte
                 </Button>    
+                
             </div>
+            <Dashboard open={openDashboard} setOpen={setOpenDashboard} />
         </div>
+        
+        
     )
 
 }

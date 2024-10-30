@@ -1,6 +1,7 @@
 package com.odiparpack.api.routers;
 
 import com.google.gson.JsonObject;
+import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 import spark.Spark;
@@ -95,6 +96,16 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("Error al reiniciar la simulación: " + e.getMessage());
             }
         });
+
+        /*// Agregar el endpoint para el reporte de capacidades
+        Spark.get("/api/v1/simulation/report", (request, response) -> {
+            response.type("application/json");
+
+            JsonObject report = simulationReport.generateCapacityReport();
+
+            response.status(200);
+            return gson.toJson(report);
+        });*/
     }
 
     private void resetSimulationState() {

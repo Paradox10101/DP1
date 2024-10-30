@@ -7,7 +7,7 @@ import com.odiparpack.simulation.maintenance.MaintenanceManager;
 import com.odiparpack.simulation.order.OrderManager;
 import com.odiparpack.simulation.route.RouteManager;
 import com.odiparpack.simulation.vehicle.VehicleManager;
-
+import com.odiparpack.models.SimulationState;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,16 +38,31 @@ public class SimulationInitializer {
         Map<String, Vehicle> vehicles = createVehicleMap(vehiclesList);
         LocalDateTime initialTime = getInitialSimulationTime(orders);
 
+        // Crear el estado de simulación a partir de los datos iniciales
+        SimulationState simulationState = new SimulationState(
+                vehicles,
+                initialTime,
+                orders,
+                locations,
+                new RouteCache(1000),
+                timeMatrix,
+                blockages,
+                maintenanceSchedule,
+                locationIndices,
+                locationNames,
+                locationUbigeos
+        );
+
         // Inicializar los managers
         WarehouseManager warehouseManager = new WarehouseManager(locations);
         MaintenanceManager maintenanceManager = new MaintenanceManager(maintenanceSchedule);
         BlockageManager blockageManager = new BlockageManager(blockages, timeMatrix, locationIndices);
-        RouteManager routeManager = new RouteManager(new RouteCache(1000), locationIndices, locationNames,
+        RouteManager routeManager = new RouteManager(simulationState.getRouteCache(), locationIndices, locationNames,
                 locationUbigeos, blockageManager);
         OrderManager orderManager = new OrderManager(orders);
-        VehicleManager vehicleManager = new VehicleManager(vehicles, warehouseManager, routeManager, maintenanceManager);
+        VehicleManager vehicleManager = new VehicleManager(vehicles, warehouseManager, routeManager, maintenanceManager, simulationState);
 
-        return new SimulationComponents(initialTime, vehicleManager, orderManager, routeManager, blockageManager, maintenanceManager, warehouseManager);
+        return new SimulationComponents(initialTime, vehicleManager, orderManager, routeManager, blockageManager, maintenanceManager, warehouseManager,simulationState);
     }
 
     // Métodos auxiliares para crear estructuras de datos
