@@ -2,7 +2,6 @@
 import PanelSimulacion from "@/app/Components/PanelSimulacion"
 import MapView from "@/app/Components/MapView"
 import MapLegend from "@/app/Components/MapLegend"
-import { DatePicker } from "@nextui-org/react"
 import PruebaSocket from "@/app/Components/PruebaSocket"
 import Simulacion from "@/app/Pages/Simulacion"
 import { useEffect, useState } from "react"
@@ -51,28 +50,27 @@ export default function App(){
   
   return(
     <div>
-        <div className="relative w-screen h-screen">
-      <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} />
-      
-
-      {/* Floating Control Panel */}
-      {
-        showControls ? (
-          <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments}/>
-        ) :
-        /* Control Panel Toggle Button */
-        (
-          <button onClick={toggleControls} className="bg-white w-[11vw] px-[22px] py-[11px] rounded text-principal encabezado absolute left-5 top-5 z-50 cursor-pointer flex flex-row justify-between items-center">
-              <div>        
-                  <span className="text-principal encabezado">Mostrar Panel</span>
-              </div>
-              <PanelRightClose size={40} className="stroke-principal inline"/>
-          </button>
-        )
-      }
-      <MapLegend cornerPosition={showControls?"left-[24vw]":"left-[2vw]"}/>
+      <div className="relative w-screen h-screen">
+        <VehicleMap simulationStatus={simulationStatus} setShipments={setShipments} />
+        {/* Panel de control */}
+        {
+          showControls ? (
+            <PanelSimulacion simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} datos={[]} toggleControls={toggleControls} error={error} shipments={shipments}/>
+          ) :
+          //Control Panel Toggle Button
+          (
+            <button onClick={toggleControls} className="bg-white w-[11vw] px-[22px] py-[11px] rounded text-principal encabezado absolute left-5 top-5 z-50 cursor-pointer flex flex-row justify-between items-center">
+                <div>        
+                    <span className="text-principal encabezado">Mostrar Panel</span>
+                </div>
+                <PanelRightClose size={40} className="stroke-principal inline"/>
+            </button>
+          )
+        }
+        <MapLegend cornerPosition={showControls?"left-[24vw]":"left-[2vw]"}/>
+      </div>
     </div>
-    </div>
+    
   )
 
 }
