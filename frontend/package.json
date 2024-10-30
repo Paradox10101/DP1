@@ -13,6 +13,8 @@
     "@radix-ui/react-scroll-area": "^1.2.0",
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.6",
+    "frontend_odiparpack": "file:",
+    "install": "^0.13.0",
     "jotai": "^2.10.1",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
