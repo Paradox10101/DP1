@@ -13,7 +13,7 @@ export default function Simulacion(){
     const pedidosInicial = [ { id: 1, codigo: "0P0010", ciudadOrigen: "Trujillo", ciudadDestino: "Piura", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "1", estado: "En Tránsito" }, { id: 2, codigo: "0P0011", ciudadOrigen: "Lima", ciudadDestino: "Trujillo", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "15", estado: "Registrado" }, { id: 3, codigo: "0P0012", ciudadOrigen: "Lima", ciudadDestino: "Ica", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "12", estado: "En Oficina" }, { id: 4, codigo: "0P0013", ciudadOrigen: "Lima", ciudadDestino: "Ica", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "12", estado: "En Oficina" }, { id: 5, codigo: "0P0014", ciudadOrigen: "Lima", ciudadDestino: "Ica", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "12", estado: "En Oficina" }, { id: 6, codigo: "0P0015", ciudadOrigen: "Trujillo", ciudadDestino: "Piura", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "1", estado: "En Tránsito" }, { id: 7, codigo: "0P0016", ciudadOrigen: "Trujillo", ciudadDestino: "Piura", fechaDeInicio: "26/08/2024, 03:45 PM", tiempoRestante: "1d 3h", cantidadPaquetes: "1", estado: "En Tránsito" } ]
     const [ws, setWs] = useState(null);
     const [estadoSimulacion, setEstadoSimulacion] = useState("INICIAL");
-    const [datos, setDatos] = useState({ vehiculos: vehiculosInicial,  almacenes: almacenesInicial, pedidos: []});///ESTO ES LO QUE SE USA PARA EL MAPVIEW
+    const [datos, setDatos] = useState({ vehiculos: [],  almacenes: almacenesInicial, pedidos: []});///ESTO ES LO QUE SE USA PARA EL MAPVIEW
     const [mostrarRutas, setMostrarRutas] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [hidePanel, setHidePanel] = useState(false)
@@ -22,6 +22,25 @@ export default function Simulacion(){
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Función para obtener datos de vehículos desde la API
+  const fetchVehiculosData = async () => {
+      try {
+          const response = await fetch("/vehicles/formatted-list"); // Asegúrate de que esta ruta es correcta y accesible
+          if (response.ok) {
+              const vehiculosData = await response.json();
+              setDatos((prevDatos) => ({
+                  ...prevDatos,
+                  vehiculos: vehiculosData // Actualizamos solo los vehículos
+              }));
+              console.log("Datos de vehículos:", vehiculosData);
+          } else {
+              console.error("Error al obtener datos de vehículos");
+          }
+      } catch (error) {
+          console.error("Error en la solicitud de vehículos:", error);
+      }
+  };
 
   // useEffect para la conexión WebSocket
   useEffect(() => {
@@ -33,7 +52,10 @@ export default function Simulacion(){
       return;
     }
 
-    setDatos({ vehiculos: vehiculosInicial, almacenes: almacenesInicial, pedidos: pedidosInicial});
+    setDatos({ vehiculos: [], almacenes: almacenesInicial, pedidos: pedidosInicial});
+
+    // Fetch para cargar los vehiculos
+    fetchVehiculosData(); 
 
     const socket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL);
 
