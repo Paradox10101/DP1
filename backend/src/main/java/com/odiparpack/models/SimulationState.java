@@ -37,6 +37,7 @@ public class SimulationState {
     private List<Blockage> activeBlockages;
     private long[][] currentTimeMatrix;
     private List<Maintenance> maintenanceSchedule;
+    List<VehicleAssignment> assignments = new ArrayList<>();
     private static final String BREAKDOWN_COMMAND_FILE = "src/main/resources/breakdown_commands.txt";
     private long lastModified = 0;
     // Mapa para almacenar los logs de avería por vehículo
@@ -812,5 +813,13 @@ public class SimulationState {
 
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
+    }
+
+    public List<VehicleAssignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<VehicleAssignment> assignments) {
+        this.assignments = assignments;
     }
 }

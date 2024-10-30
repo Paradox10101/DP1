@@ -79,13 +79,14 @@ public class ShipmentRouter extends BaseRouter {
 
             feature.addProperty("orderCode", order.get().getId());
             feature.addProperty("startTime", order.get().getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
-            if(!order.get().getStatus().equals(Order.OrderStatus.DELIVERED)){
-                feature.addProperty("remainingTimeDays",  Duration.between(simulationState.getCurrentTime(), order.get().getDueTime()).toDays());
-                feature.addProperty("remainingTimeHours", Duration.between(simulationState.getCurrentTime(), order.get().getDueTime()).toHours() % 24);
+            feature.addProperty("limitTime", order.get().getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
+            if(!order.get().getStatus().equals(Order.OrderStatus.DELIVERED)&&!order.get().getStatus().equals(Order.OrderStatus.PENDING_PICKUP)){
+                feature.addProperty("elapsedTimeDays",  Duration.between(simulationState.getCurrentTime(), order.get().getDueTime()).toDays());
+                feature.addProperty("elapsedTimeHours", Duration.between(simulationState.getCurrentTime(), order.get().getDueTime()).toHours() % 24);
             }
             else{
-                feature.addProperty("remainingTimeDays", "--");
-                feature.addProperty("remainingTimeHours", "--");
+                feature.addProperty("elapsedTimeDays", "--");
+                feature.addProperty("elapsedTimeHours", "--");
             }
             feature.addProperty("originCity", locations.get(order.get().getOriginUbigeo()).getProvince());
             feature.addProperty("destinyCity", locations.get(order.get().getDestinationUbigeo()).getProvince());
@@ -95,17 +96,11 @@ public class ShipmentRouter extends BaseRouter {
             feature.addProperty("destinyRegion", locations.get(order.get().getDestinationUbigeo()).getNaturalRegion());
             feature.addProperty("status", status);
 
-            List<Vehicle> associatedVehicles = simulationState.getVehicles().values().stream()
-                    .filter(vehicle -> vehicle.getCurrentOrder() != null)
-                    .filter(vehicle -> vehicle.getCurrentOrder().getId()==(order.get().getId()))
-                    .collect(Collectors.toList());
-
-            for(Vehicle associatedVehicle : associatedVehicles) {
+            for(VehicleAssignment assignment: simulationState.getAssignments()) {
                 JsonObject transportPlan = new JsonObject();
                 transportPlan.addProperty("type", "TransportPlan");
-                transportPlan.addProperty("vehicleCode",associatedVehicle.getCode());
-                transportPlan.addProperty("inTransportPackages",order.get().getQuantity() - associatedVehicle.getCurrentOrder().getDeliveredPackages());
-                transportPlan.addProperty("attendedPackages",associatedVehicle.getCurrentOrder().getDeliveredPackages());
+                transportPlan.addProperty("vehicleCode",assignment.getVehicle().getCode());
+                transportPlan.addProperty("inTransportPackages",assignment.getAssignedQuantity());
                 transportPlans.add(transportPlan);
             }
             feature.add("transportPlans", transportPlans);

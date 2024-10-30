@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/react"
-import { Clock, Eye, Filter, Flag, Globe, MapPin, Package } from "lucide-react"
+import { Calendar, Clock, Eye, Filter, Flag, Globe, MapPin, Package } from "lucide-react"
 
 export default function ModalEnvios({shipment, setSelectedVehicle}){
     
@@ -21,10 +21,10 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                 <div className="flex flex-col gap-1 text-center">
                     <div className="flex flex-row gap-1">
                         <Clock size={16}/>
-                        <div className="regular">Tiempo restante</div>
+                        <div className="regular">Tiempo transcurrido</div>
                     </div>
                     <div className="regular_bold">
-                        {shipment.remainingTimeDays+" d "+ shipment.remainingTimeHours +" h"}
+                        {shipment.elapsedTimeDays+" d "+ shipment.elapsedTimeHours +" h"}
                     </div>
                 </div>
             </div>
@@ -35,9 +35,9 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                     <div className="text-[#8E8D8D] pequenno">Paquetes</div>
                 </div>
                 <div className="flex flex-col justify-center">
-                    <Flag size={32} className="stroke-[#ADADAD] self-center"/>
-                    <div className="regular">Media</div>
-                    <div className="text-[#8E8D8D] pequenno">Prioridad</div>
+                    <Calendar size={32} className="stroke-[#ADADAD] self-center"/>
+                    <div className="regular">{shipment.limitTime}</div>
+                    <div className="text-[#8E8D8D] pequenno">Fecha límite</div>
                 </div>
                 <div className="flex flex-col justify-center">
                     <Globe size={32} className="stroke-[#ADADAD] self-center"/>

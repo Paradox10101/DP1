@@ -163,6 +163,7 @@ public class SimulationRunner {
                 if (!availableOrders.isEmpty()) {
                     List<VehicleAssignment> assignments = assignOrdersToVehicles(availableOrders, new ArrayList<>(state.getVehicles().values()), state.getCurrentTime());
                     if (!assignments.isEmpty()) {
+                        state.getAssignments().addAll(assignments);
                         calculateAndApplyRoutes(currentTimeMatrix, assignments, locationIndices, locationNames,
                                 locationUbigeos, vehicleRoutes, state, executorService);
                     }
@@ -225,6 +226,7 @@ public class SimulationRunner {
                 if (vehicle.getCapacity() >= unassignedPackages) {
                     // El vehículo puede satisfacer completamente la orden
                     assignments.add(new VehicleAssignment(vehicle, order, unassignedPackages));
+
                     vehicle.setAvailable(false);
                     vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
                     order.incrementAssignedPackages(unassignedPackages); // Actualización completa

@@ -1,5 +1,5 @@
 "use client"
-import { ArrowLeft, Clock, Hash, MapPin, Package } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Hash, MapPin, Package } from "lucide-react";
 import ModalContainer from "@/app/Components/ModalContainer"
 import { useDisclosure } from "@nextui-org/react";
 import ModalEnvios from "@/app/Components/ModalEnvios"
@@ -76,8 +76,12 @@ export default function CardEnvio({shipment}){
                 </div>
             </div>
             <div className="flex flex-row gap-2 items-center">
+                    <Calendar size={16}/>
+                    <div className="pequenno">Fecha límite: {shipment.limitTime}</div>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
                     <Clock size={16}/>
-                    <div className="pequenno">Tiempo restante: {shipment.remainingTimeDays + " d " + String(shipment.remainingTimeHours).padStart(2, '0')+" h"}</div>
+                    <div className="pequenno">Tiempo transcurrido: {shipment.remainingTimeDays + " d " + String(shipment.remainingTimeHours).padStart(2, '0')+" h"}</div>
             </div>
         </div>
         </button>

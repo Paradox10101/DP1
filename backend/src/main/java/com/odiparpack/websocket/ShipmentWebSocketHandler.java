@@ -3,9 +3,11 @@ package com.odiparpack.websocket;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.ortools.constraintsolver.Assignment;
 import com.odiparpack.models.Location;
 import com.odiparpack.models.Order;
 import com.odiparpack.models.SimulationState;
+import com.odiparpack.models.VehicleAssignment;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
@@ -72,6 +74,7 @@ public class ShipmentWebSocketHandler {
                 String status = order.getStatus().toString();
                 feature.addProperty("orderCode", order.getId());
                 feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
+                feature.addProperty("limitTime", order.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
                 if(!order.getStatus().equals(Order.OrderStatus.DELIVERED)&&!order.getStatus().equals(Order.OrderStatus.PENDING_PICKUP)){
                     feature.addProperty("remainingTimeDays",  Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toDays());
                     feature.addProperty("remainingTimeHours", Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toHours() % 24);
