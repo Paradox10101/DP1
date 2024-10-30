@@ -2,7 +2,6 @@ import { Button, Tab, Tabs, useDisclosure } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 import Dashboard from "@/app/Components/Dashboard"
 import ModalContainer from "@/app/Components/ModalContainer"
-import { useState } from "react";
 import SimulationControls from '../Components/SimulationControls';
 import { useAtom } from "jotai";
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '../../atoms/errorAtoms';

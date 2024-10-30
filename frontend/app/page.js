@@ -12,7 +12,6 @@ import {
 } from '@/atoms/simulationAtoms'
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from "react"
 
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 
