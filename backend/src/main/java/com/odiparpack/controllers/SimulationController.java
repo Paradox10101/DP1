@@ -314,7 +314,7 @@ public class SimulationController {
         // Configurar WebSockets
         configureWebSockets();
 
-        VehicleWebSocketHandler.setSimulationState(simulationState);
+        //VehicleWebSocketHandler.setSimulationState(simulationState);
         ShipmentWebSocketHandler.setSimulationState(simulationState);
 
         //oficinasws
