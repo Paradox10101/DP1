@@ -1,14 +1,9 @@
 "use client";
-import { Pie, Bar } from "react-chartjs-2";
+import { Pie, Bar, Doughnut } from "react-chartjs-2";
 import 'chart.js/auto';
-import { useDisclosure } from "@nextui-org/react";
-import ModalContainer from "@/app/Components/ModalContainer";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Dashboard({ shipment }) {
-  // Hook para controlar el modal
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  
   // Estado para manejar los datos del dashboard
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,13 +36,18 @@ export default function Dashboard({ shipment }) {
     return <div>Error al cargar los datos.</div>;
   }
 
-  // Datos de los gráficos
+  // Datos de los gráficos con redondeo a dos decimales para porcentajes
   const pieData = {
-    labels: ['Paquetes en Almacén', 'Paquetes en Oficina', 'Paquetes en Entrega'],
+    labels: ['En Almacén', 'En Oficina', 'En Entrega', 'Entregado'],
     datasets: [
       {
-        data: [data.paquetesAlmacen, data.paquetesOficina, data.paquetesEntrega],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        data: [
+          data.estadoPaquetes?.['En Almacén'],
+          data.estadoPaquetes?.['En Oficina'],
+          data.estadoPaquetes?.['En Entrega'],
+          data.estadoPaquetes?.['Entregado'],
+        ],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
       },
     ],
   };
@@ -84,66 +84,89 @@ export default function Dashboard({ shipment }) {
     ],
   };
 
+  const averiasData = {
+    labels: ['Tipo 1', 'Tipo 2', 'Tipo 3'],
+    datasets: [
+      {
+        label: 'Número de Averías por Tipo',
+        data: [
+          data.averiasPorTipo?.['Tipo 1'],
+          data.averiasPorTipo?.['Tipo 2'],
+          data.averiasPorTipo?.['Tipo 3'],
+        ],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      },
+    ],
+  };
+
+  const regionDemandaData = {
+    labels: ['Costa', 'Sierra', 'Selva'],
+    datasets: [
+      {
+        label: 'Regiones con Mayor Demanda',
+        data: [
+          data.regionConMayorDemanda?.Costa,
+          data.regionConMayorDemanda?.Sierra,
+          data.regionConMayorDemanda?.Selva,
+        ],
+        backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
+      },
+    ],
+  };
+
   return (
-    <>
-      <button className="w-full" onClick={onOpen}>
-        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
-          <div className="flex flex-row justify-between items-center">
-            <div className="font-bold text-lg">Ver Reporte del Dashboard</div>
+    <div className="dashboard-container">
+      <div className="grid grid-cols-4 gap-4">
+        {/* Tarjetas de información */}
+        <div className="col-span-1 flex flex-col gap-4">
+          <div className="card border p-4 shadow-md">
+            <p>Proporción de Capacidad Efectiva transportada</p>
+            <h3>{data.capacidadEfectiva.toFixed(2)}%</h3>
+          </div>
+          <div className="card border p-4 shadow-md">
+            <p>Cantidad Total de Pedidos Atendidos</p>
+            <h3>{data.pedidosAtendidos}</h3>
+          </div>
+          <div className="card border p-4 shadow-md">
+            <p>Eficiencia de Planificación de Rutas</p>
+            <h3>{data.eficienciaRutas.toFixed(2)}%</h3>
+          </div>
+          <div className="card border p-4 shadow-md">
+            <p>Cantidad Promedio de Pedidos por Día</p>
+            <h3>{data.promedioPedidos}</h3>
+          </div>
+          <button className="bg-blue-700 text-white w-full rounded p-3 flex items-center justify-center mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16m8-8H4" />
+            </svg>
+            Exportar CSV
+          </button>
+        </div>
+
+        {/* Gráficos */}
+        <div className="col-span-3 grid grid-cols-2 gap-4">
+          <div className="chart-container">
+            <h4>Regiones con Mayor Demanda</h4>
+            <Doughnut data={regionDemandaData} />
+          </div>
+          <div className="chart-container">
+            <h4>Estado de Paquetes</h4>
+            <Pie data={pieData} />
+          </div>
+          <div className="chart-container">
+            <h4>Ciudades con mayor demanda de pedidos</h4>
+            <Bar data={barData} />
+          </div>
+          <div className="chart-container">
+            <h4>Número de Averías por Tipo</h4>
+            <Bar data={averiasData} />
+          </div>
+          <div className="chart-container">
+            <h4>Cantidad de paradas en almacén</h4>
+            <Bar data={almacenParadasData} />
           </div>
         </div>
-      </button>
-      <ModalContainer
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
-        header={
-          <div className="flex flex-row gap-2">
-            <div className="text-xl font-bold">Reporte a partir de {data.startDate} hasta {data.endDate}</div>
-          </div>
-        }
-        body={
-          <div className="dashboard-container">
-            <div className="grid grid-cols-4 gap-4">
-              {/* Tarjetas de información */}
-              <div className="col-span-1 flex flex-col gap-4">
-                <div className="card">
-                  <p>Proporción de Capacidad Efectiva transportada</p>
-                  <h3>{data.capacidadEfectiva}%</h3>
-                </div>
-                <div className="card">
-                  <p>Cantidad Total de Pedidos Atendidos</p>
-                  <h3>{data.pedidosAtendidos}</h3>
-                </div>
-                <div className="card">
-                  <p>Eficiencia de Planificación de Rutas</p>
-                  <h3>{data.eficienciaRutas}%</h3>
-                </div>
-                <div className="card">
-                  <p>Cantidad Promedio de Pedidos por Día</p>
-                  <h3>{data.promedioPedidos}</h3>
-                </div>
-              </div>
-
-              {/* Gráficos */}
-              <div className="col-span-3 grid grid-cols-2 gap-4">
-                <div className="chart-container">
-                  <h4>Ciudades con mayor demanda de pedidos</h4>
-                  <Bar data={barData} />
-                </div>
-                <div className="chart-container">
-                  <h4>Estado de Paquetes</h4>
-                  <Pie data={pieData} />
-                </div>
-                <div className="chart-container">
-                  <h4>Cantidad de paradas en almacén</h4>
-                  <Bar data={almacenParadasData} />
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-      />
-    </>
+      </div>
+    </div>
   );
 }
