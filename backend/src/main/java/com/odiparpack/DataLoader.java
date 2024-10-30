@@ -1,4 +1,4 @@
-package com.odiparpack;
+zzpackage com.odiparpack;
 
 import com.odiparpack.models.*;
 
