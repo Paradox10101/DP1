@@ -2,10 +2,7 @@ package com.odiparpack.api.controllers;
 
 import com.google.gson.JsonObject;
 import com.odiparpack.SimulationRunner;
-import com.odiparpack.api.routers.BaseRouter;
-import com.odiparpack.api.routers.LocationRouter;
-import com.odiparpack.api.routers.SimulationRouter;
-import com.odiparpack.api.routers.VehicleRouter;
+import com.odiparpack.api.routers.*;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
@@ -32,7 +29,8 @@ public class SimulationController {
         this.routers = Arrays.asList(
                 new LocationRouter(),
                 new VehicleRouter(simulationState),
-                new SimulationRouter(simulationState)
+                new SimulationRouter(simulationState),
+                new ShipmentRouter(simulationState)
         );
     }
 
