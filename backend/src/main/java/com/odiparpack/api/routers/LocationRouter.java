@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class LocationRouter extends BaseRouter {
     private final LocationService locationService;
-    private final List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101");
+    private final List<String> almacenesPrincipales = Arrays.asList("150101", "040101", "130101");
 
     public LocationRouter() {
         this.locationService = LocationService.getInstance();
