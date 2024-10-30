@@ -4,7 +4,7 @@ import MapView from "@/app/Components/MapView";
 import MapLegend from "@/app/Components/MapLegend";
 import { useEffect, useState } from "react";
 import Switch from "@/app/Components/Switch";
-
+import { Modal, Button } from "@nextui-org/react";
 
 export default function Simulacion(){
     ///ESTO ES LO QUE SE USA PARA EL MAPVIEW
@@ -64,6 +64,17 @@ export default function Simulacion(){
       }
     };
   }, [estadoSimulacion, isMounted]);
+  
+  // Handler para abrir/cerrar el modal
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+  
+  // useEffect para escuchar cambios en el prop isDashboardModalOpen
+  useEffect(() => {
+    if (isDashboardModalOpen) {
+      setIsModalOpen(true);
+    }
+  }, [isDashboardModalOpen]);
 
   // Renderizar solo cuando el componente esté montado
   if (!isMounted) {
@@ -79,6 +90,7 @@ export default function Simulacion(){
           datos={datos}
           hidePanel={hidePanel}
           setHidePanel={setHidePanel}
+          handleOpenModal={handleOpenModal} // Pasar el handler al panel
         />
       
       <MapView

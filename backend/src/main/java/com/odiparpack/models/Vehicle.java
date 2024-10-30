@@ -53,6 +53,13 @@ public class Vehicle {
         }
     }
 
+    public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void setCurrentCapacity(int currentCapacity) {
+        this.currentCapacity = currentCapacity;
+    }
 
 
     public enum EstadoVehiculo {
@@ -71,6 +78,7 @@ public class Vehicle {
     private String code;
     private String type; // A, B, C
     private int capacity;
+    private int currentCapacity;
     private String currentLocationUbigeo;
     private boolean isAvailable;
     private String homeUbigeo;

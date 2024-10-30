@@ -754,6 +754,15 @@ public class SimulationController {
             return gson.toJson(historyJson);
         });
 
+        // Endpoint para obtener el reporte del dashboard
+        get("/dashboardData", (request, response) -> {
+            // Crear el reporte usando el estado actual de la simulación
+            SimulationReport report = new SimulationReport(simulationState);
+
+            response.type("application/json");
+            return gson.toJson(report);
+        });
+
         // Manejo global de excepciones
         exception(Exception.class, (exception, request, response) -> {
             exception.printStackTrace();

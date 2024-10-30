@@ -30,6 +30,7 @@ public class SimulationController {
                 new LocationRouter(),
                 new VehicleRouter(simulationState),
                 new SimulationRouter(simulationState),
+                new ReportRouter(simulationState), // Agregamos el nuevo ReportRouter
                 new ShipmentRouter(simulationState)
         );
     }
