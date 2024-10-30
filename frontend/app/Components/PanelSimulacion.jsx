@@ -8,7 +8,7 @@ import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
 
-export default function PanelSimulacion({datos, toggleControls, error}){
+export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error, shipments}){
     
     const [currentTime, setCurrentTime] = useState(new Date())
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
@@ -35,11 +35,12 @@ export default function PanelSimulacion({datos, toggleControls, error}){
     }
   }, [esCliente]);
 
+
     
     
     return(
     <>
-        <div className={"bg-blanco w-[22vw] h-[95%] p-[22px] flex flex-col gap-3 absolute left-5 z-50 top-1/2 transform -translate-y-1/2 rounded "}>
+        <div className={"bg-blanco w-[22vw] h-[95%] p-[22px] flex flex-col gap-3 absolute left-5 z-50 top-1/2 transform -translate-y-1/2 rounded min-w-[400px]"}>
             <div className="flex flex-row justify-between w-full ">
                 <div className="flex flex-row gap-1 items-center basis-1/4">
                     <Truck size={40} className="stroke-principal inline"/>
@@ -99,7 +100,7 @@ export default function PanelSimulacion({datos, toggleControls, error}){
             {
                 opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion} error={error}/>
                 :
-                opcionSeleccionada==2 ? <OpcionEnvios datos={datos}/>
+                opcionSeleccionada==2 ? <OpcionEnvios shipments={shipments}/>
                 :
                 opcionSeleccionada==3 ? <OpcionAlmacenes datos={datos} />
                 :

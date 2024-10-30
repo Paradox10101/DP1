@@ -1,8 +1,12 @@
 package com.odiparpack.api.routers;
 
 import com.google.gson.JsonObject;
+<<<<<<< HEAD
 import com.google.gson.JsonParser;
 import com.odiparpack.api.controllers.SimulationController;
+=======
+import com.odiparpack.models.SimulationReport;
+>>>>>>> main
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 import spark.Spark;
@@ -129,6 +133,7 @@ public class SimulationRouter extends BaseRouter {
             }
         });
 
+<<<<<<< HEAD
         // Nueva ruta para cambiar velocidad
         Spark.post("/api/v1/simulation/speed", (request, response) -> {
             response.type("application/json");
@@ -149,6 +154,17 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("Error al actualizar la velocidad: " + e.getMessage());
             }
         });
+=======
+        /*// Agregar el endpoint para el reporte de capacidades
+        Spark.get("/api/v1/simulation/report", (request, response) -> {
+            response.type("application/json");
+
+            JsonObject report = simulationReport.generateCapacityReport();
+
+            response.status(200);
+            return gson.toJson(report);
+        });*/
+>>>>>>> main
     }
 
     private void resetSimulationState() {

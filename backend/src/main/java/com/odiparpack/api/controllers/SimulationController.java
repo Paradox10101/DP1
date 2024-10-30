@@ -3,12 +3,17 @@ package com.odiparpack.api.controllers;
 import com.google.gson.JsonObject;
 import com.odiparpack.DataLoader;
 import com.odiparpack.SimulationRunner;
+<<<<<<< HEAD
 import com.odiparpack.api.routers.BaseRouter;
 import com.odiparpack.api.routers.LocationRouter;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.api.routers.VehicleRouter;
 import com.odiparpack.models.Location;
+=======
+import com.odiparpack.api.routers.*;
+>>>>>>> main
 import com.odiparpack.models.SimulationState;
+import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 import spark.Spark;
 
@@ -36,7 +41,13 @@ public class SimulationController {
         this.routers = Arrays.asList(
                 new LocationRouter(),
                 new VehicleRouter(simulationState),
+<<<<<<< HEAD
                 new SimulationRouter(simulationState, this  )
+=======
+                new SimulationRouter(simulationState),
+                new ReportRouter(simulationState), // Agregamos el nuevo ReportRouter
+                new ShipmentRouter(simulationState)
+>>>>>>> main
         );
     }
 
@@ -59,8 +70,15 @@ public class SimulationController {
     }
 
     private void setupWebSocket() {
+<<<<<<< HEAD
         webSocket("/ws", VehicleWebSocketHandler.class);
         //VehicleWebSocketHandler.setSimulationState(simulationState);
+=======
+        webSocket("/wsVehicles", VehicleWebSocketHandler.class);
+        webSocket("/wsShipments", ShipmentWebSocketHandler.class);
+        VehicleWebSocketHandler.setSimulationState(simulationState);
+        ShipmentWebSocketHandler.setSimulationState(simulationState);
+>>>>>>> main
     }
 
     private void initializeRoutes() {

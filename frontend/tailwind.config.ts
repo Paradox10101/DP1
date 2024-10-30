@@ -41,7 +41,11 @@ const config: Config = {
         '.subEncabezado': {
           fontSize: '22px',
         },
-        '.encabezado': {
+        '.subEncabezado_bold':{
+          fontSize: '22px',
+          fontWeight: 'bold'
+        },
+        '.encabezado':{
           fontSize: '18px',
           fontWeight: 'bold',
         },
