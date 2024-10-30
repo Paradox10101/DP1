@@ -64,6 +64,7 @@ public class VehicleInfoWebSocketHandler {
         Map<String, Vehicle> vehicles = simulationState.getVehicles();
         LocalDateTime simulationTime = simulationState.getCurrentTime();
         JsonObject featureCollection = new JsonObject();
+
         // Prepare a JSON array to hold the formatted vehicle information
         JsonArray vehicleArray = new JsonArray();
         for (Vehicle vehicle : vehicles.values()) {

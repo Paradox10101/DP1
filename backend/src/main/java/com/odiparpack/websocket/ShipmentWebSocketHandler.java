@@ -67,6 +67,7 @@ public class ShipmentWebSocketHandler {
             featureCollection.addProperty("type", "FeatureCollection");
             JsonArray features = new JsonArray();
             JsonObject feature = new JsonObject();
+
             for (Order order : orders) {
                 String status = order.getStatus().toString();
                 feature.addProperty("orderCode", order.getId());
