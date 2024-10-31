@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static com.odiparpack.Main.logger;
 
 @WebSocket
-public class VehicleWebSocketHandler {
+public class VehicleWebSocketHandler extends BaseWebSocketHandler {
     private static class SessionInfo {
         final Session session;
         long lastUpdateTime;
@@ -28,26 +28,29 @@ public class VehicleWebSocketHandler {
             this.missedUpdates = 0;
         }
     }
-    private static final Gson gson = new Gson();
+
     private static final Map<Session, SessionInfo> sessions = new ConcurrentHashMap<>();
     private static final int MAX_MISSED_UPDATES = 5;
     private static final Queue<JsonObject> positionBuffer = new ConcurrentLinkedQueue<>();
     private static final int BUFFER_SIZE = 5;
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
+    @Override
+    protected void handleConnect(Session session) {
         sessions.put(session, new SessionInfo(session));
-        System.out.println("Cliente conectado: " + session.getRemoteAddress().getAddress());
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason) {
+    @Override
+    protected void handleDisconnect(Session session) {
         sessions.remove(session);
-        System.out.println("Cliente desconectado: " + session.getRemoteAddress().getAddress());
+    }
+
+    @Override
+    protected void broadcastMessage(JsonObject positions) {
+        broadcastVehiclePositions(positions);
     }
 
     public static void broadcastVehiclePositions(JsonObject positions) {
-        // Mantener un buffer de posiciones recientes
+        // Mantener buffer de posiciones recientes
         positionBuffer.offer(positions);
         while (positionBuffer.size() > BUFFER_SIZE) {
             positionBuffer.poll();
