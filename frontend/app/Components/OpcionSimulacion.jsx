@@ -9,8 +9,9 @@ import { simulationStatusAtom } from "@/atoms/simulationAtoms";
 import { useCallback, useState, useEffect, useMemo } from "react";
 import { serverAvailableAtom } from '@/atoms/simulationAtoms';
 import { useWebSocket } from "@/hooks/useWebSocket";
-import SimulationSpeedControl from '../components/SimulationSpeedControl';
-  
+import SimulationSpeedControl from '../Components/SimulationSpeedControl';
+import MetricsDisplay from '../Components/MetricsDisplay';
+
 const SimulationStates = {
     RUNNING: 'running',
     PAUSED: 'paused',
@@ -155,34 +156,9 @@ return (
                 
                 <div className="flex flex-col gap-3">
                     <div>
-                        <span className="regular_bold">Resumen de la simulación</span>
+                        <span className="regular_bold">Resumen de la simulación asd</span>
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Calendar
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Inicio de la simulacion: {tiemposSimulacion===null?"--/--/---- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Calendar
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Fin de la simulacion: {tiemposSimulacion===null?"--/--/---- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Clock
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Tiempo simulado: {tiemposSimulacion===null?"-- --:--":""}</span>
-                        </div>
-                        <div className="flex w-full flex-wrap gap-4">
-                            <Clock
-                                className="max-w-[240px]"
-                            />
-                            <span className="regular">Tiempo real en simulación: {tiemposSimulacion===null?"-- --:--":""}</span>
-                        </div>
-                    </div>
+                    <MetricsDisplay/>
                 </div>
 
             </div>

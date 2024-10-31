@@ -11,12 +11,14 @@ import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
+import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -35,7 +37,6 @@ public class SimulationState {
     private Map<String, Vehicle> vehicles;
     private List<Order> orders;
     private Map<String, Location> locations;
-    private LocalDateTime currentTime;
     private ReentrantLock lock = new ReentrantLock();
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
@@ -65,6 +66,14 @@ public class SimulationState {
     private final ReentrantLock stateLock = new ReentrantLock();
     private final Object pauseLock = new Object();
 
+    private LocalDateTime simulationStartTime; // Tiempo inicial de simulación
+    private LocalDateTime simulationEndTime;   // Tiempo final de simulación
+    private LocalDateTime currentTime;         // Tiempo actual de simulación
+    private LocalDateTime realStartTime;       // Momento real de inicio
+    private long effectiveRunningTime = 0;     // Tiempo efectivo de ejecución en ms
+    private long lastUpdateTime;               // Último momento de actualización
+
+    private final Object timeLock = new Object();
 
     // Atributos para capacidad efectiva acumulada
     private double totalCapacityUsed = 0;
@@ -248,12 +257,21 @@ public class SimulationState {
             isPaused = true;
             logger.info("Simulación pausada en tiempo de simulación: " + currentTime);
 
+            // Actualizar tiempo efectivo hasta el momento de pausar
+            long now = System.currentTimeMillis();
+            long timeDiff = now - lastUpdateTime;
+            if (timeDiff > 0) {
+                effectiveRunningTime += timeDiff;
+                logger.fine("Tiempo efectivo actualizado al pausar: " + effectiveRunningTime + "ms");
+            }
+            lastUpdateTime = now;
+
             // Pausar executors
             if (simulationExecutorService != null) {
-                simulationExecutorService.shutdown();
+                simulationExecutorService.shutdownNow();
             }
             if (webSocketExecutorService != null) {
-                webSocketExecutorService.shutdown();
+                webSocketExecutorService.shutdownNow();
             }
 
             // Notificar a threads en espera
@@ -270,6 +288,9 @@ public class SimulationState {
         try {
             isPaused = false;
             logger.info("Simulación reanudada en tiempo de simulación: " + currentTime);
+
+            // Restablecer el tiempo de última actualización
+            lastUpdateTime = System.currentTimeMillis();
 
             // Reiniciar executors
             if (simulationExecutorService == null || simulationExecutorService.isShutdown()) {
@@ -289,16 +310,105 @@ public class SimulationState {
         }
     }
 
+    public void initializeSimulation() {
+        simulationStartTime = currentTime;
+        simulationEndTime = simulationStartTime.plusDays(7);
+        realStartTime = LocalDateTime.now();
+        lastUpdateTime = System.currentTimeMillis();
+        effectiveRunningTime = 0;
+
+        // Log de inicialización
+        logger.info("Simulación inicializada - Start Time: " + simulationStartTime +
+                ", Last Update: " + lastUpdateTime);
+    }
+
     public void updateSimulationTime() {
         stateLock.lock();
         try {
             if (!isPaused && !isStopped) {
+                // Actualizar tiempo de simulación
                 currentTime = currentTime.plusMinutes(SimulationRunner.TIME_ADVANCEMENT_INTERVAL_MINUTES);
-                logger.fine("Tiempo de simulación actualizado a: " + currentTime);
+
+                // Actualizar tiempo efectivo de ejecución
+                long now = System.currentTimeMillis();
+                long timeDiff = now - lastUpdateTime;
+
+                // Log del cálculo de tiempo
+                logger.fine("Cálculo de tiempo - Now: " + now +
+                        ", Last Update: " + lastUpdateTime +
+                        ", Diff: " + timeDiff);
+
+                if (timeDiff > 0) {  // Validación adicional
+                    effectiveRunningTime += timeDiff;
+                    logger.fine("Tiempo efectivo actualizado: " + effectiveRunningTime + "ms");
+                }
+
+                lastUpdateTime = now;
+
+                // Crear y enviar resumen actualizado
+                broadcastSimulationSummary();
             }
         } finally {
             stateLock.unlock();
         }
+    }
+
+    private void broadcastSimulationSummary() {
+        JsonObject summary = new JsonObject();
+
+        // Calcular y verificar las duraciones
+        Duration simulatedDuration = Duration.between(simulationStartTime, currentTime);
+        Duration realDuration = Duration.ofMillis(effectiveRunningTime);
+
+        // Log de duraciones
+        logger.fine("Duraciones - Simulada: " + simulatedDuration.toString() +
+                ", Real: " + realDuration.toString());
+
+        // Convertir LocalDateTime a ZonedDateTime con zona horaria UTC
+        ZonedDateTime startZonedDateTime = simulationStartTime.atZone(ZoneOffset.UTC);
+        ZonedDateTime endZonedDateTime = simulationEndTime.atZone(ZoneOffset.UTC);
+
+        // Convertir ZonedDateTime a Instant
+        Instant startInstant = startZonedDateTime.toInstant();
+        Instant endInstant = endZonedDateTime.toInstant();
+
+        // Formatear fechas en ISO 8601 con zona horaria UTC
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        String formattedStartTime = formatter.format(startInstant);
+        String formattedEndTime = formatter.format(endInstant);
+
+        summary.addProperty("startTime", formattedStartTime);
+        summary.addProperty("endTime", formattedEndTime);
+
+        // Tiempo simulado (duración en formato hh:mm:ss)
+        String simulatedTime = formatDuration(simulatedDuration);
+        summary.addProperty("simulatedTime", simulatedTime);
+
+        // Tiempo real efectivo (duración en formato hh:mm:ss)
+        String realTime = formatDuration(realDuration);
+        summary.addProperty("realElapsedTime", realTime);
+
+        // Log del resumen
+        logger.info("Resumen de simulación - Tiempo simulado: " + simulatedTime +
+                ", Tiempo real: " + realTime);
+
+        // Estado actual
+        summary.addProperty("isPaused", isPaused);
+        summary.addProperty("isStopped", isStopped);
+
+        // Log detallado de JSON enviado al frontend
+        logger.info("JSON enviado al frontend: " + summary.toString());
+
+        // Enviar vía WebSocket
+        SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(summary);
+    }
+
+    private String formatDuration(Duration duration) {
+        long seconds = duration.getSeconds();
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 
     public void waitWhilePaused() {
@@ -393,6 +503,9 @@ public class SimulationState {
         this.currentTimeMatrix = Arrays.stream(originalTimeMatrix)
                 .map(long[]::clone)
                 .toArray(long[][]::new);
+
+        // Inicializar tiempos de simulación
+        initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
     }
 

@@ -155,10 +155,6 @@ export const useWebSocket = ({
       websocketRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          /* console.log('Mensaje WebSocket recibido:', {
-            type: data?.type,
-            featuresCount: data?.features?.length
-          }); */
           
           if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
             onMessage?.(data);
