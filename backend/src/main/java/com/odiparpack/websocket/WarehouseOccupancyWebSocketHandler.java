@@ -67,11 +67,27 @@ public class WarehouseOccupancyWebSocketHandler extends BaseWebSocketHandler {
         });
     }
 
+    private static double calculateTotalOccupancy() {
+        if (lastOccupancyStates.isEmpty()) {
+            return 0.0;
+        }
+
+        double totalOccupancy = lastOccupancyStates.values()
+                .stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+
+        return Math.round(totalOccupancy * 100.0) / 100.0; // Redondear a 2 decimales
+    }
+
     private static JsonObject createOccupancyUpdate(String ubigeo, double occupancyPercentage) {
         JsonObject update = new JsonObject();
         update.addProperty("type", "occupancy_update");
         update.addProperty("ubigeo", ubigeo);
         update.addProperty("occupiedPercentage", occupancyPercentage);
+        update.addProperty("totalOccupancy", calculateTotalOccupancy());
+        update.addProperty("warehouseCount", lastOccupancyStates.size());
         update.addProperty("timestamp", System.currentTimeMillis());
         return update;
     }
@@ -79,10 +95,16 @@ public class WarehouseOccupancyWebSocketHandler extends BaseWebSocketHandler {
     private static JsonObject createOccupancyUpdate(Map<String, Double> occupancyStates) {
         JsonObject update = new JsonObject();
         update.addProperty("type", "occupancy_update_batch");
+
         JsonObject states = new JsonObject();
         occupancyStates.forEach(states::addProperty);
         update.add("states", states);
+
+        // Agregar información de ocupación total
+        update.addProperty("totalOccupancy", calculateTotalOccupancy());
+        update.addProperty("warehouseCount", occupancyStates.size());
         update.addProperty("timestamp", System.currentTimeMillis());
+
         return update;
     }
 

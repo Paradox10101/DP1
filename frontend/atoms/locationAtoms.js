@@ -12,6 +12,41 @@ export const searchInputAtom = atom('');
 // Átomo para el query de búsqueda con debounce (el que se usa para filtrar)
 export const searchQueryAtom = atom('');
 
+// Nuevo átomo para estadísticas totales
+export const totalStatsAtom = atom({
+  totalOccupancy: 0,
+  warehouseCount: 0,
+  timestamp: 0
+});
+
+// Átomo derivado para calcular estadísticas totales
+export const warehouseStatsAtom = atom((get) => {
+  const locations = get(formattedLocationsAtom);
+  const occupancyUpdates = get(occupancyUpdatesAtom);
+  
+  if (!locations) return {
+    currentPackages: 0,
+    maxCapacity: 0,
+    totalOccupancy: 0
+  };
+
+  return locations.reduce((stats, location) => {
+    if (location.type === 'warehouse') return stats;
+    
+    const capacity = location.capacity || 0;
+    const occupancy = occupancyUpdates[location.ubigeo]?.occupiedPercentage || location.occupiedPercentage || 0;
+    const currentPackages = Math.round(capacity * (occupancy / 100));
+
+    return {
+      currentPackages: stats.currentPackages + currentPackages,
+      maxCapacity: stats.maxCapacity + capacity,
+      totalOccupancy: stats.maxCapacity > 0 
+        ? ((stats.currentPackages + currentPackages) / (stats.maxCapacity + capacity)) * 100 
+        : 0
+    };
+  }, { currentPackages: 0, maxCapacity: 0, totalOccupancy: 0 });
+});
+
 // Átomo derivado que combina las ubicaciones con los updates de ocupación
 export const formattedLocationsAtom = atom((get) => {
   const locations = get(locationsAtom);

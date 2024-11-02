@@ -1,12 +1,13 @@
 // hooks/useWarehouseWebSocket.js
 import { useEffect, useCallback } from 'react';
 import { useSetAtom } from 'jotai';
-import { occupancyUpdatesAtom } from '../atoms/locationAtoms';
+import { occupancyUpdatesAtom, totalStatsAtom } from '../atoms/locationAtoms';
 
 const WEBSOCKET_URL = 'ws://localhost:4567/ws/occupancy';
 
 export const useWarehouseWebSocket = () => {
   const setOccupancyUpdates = useSetAtom(occupancyUpdatesAtom);
+  const setTotalStats = useSetAtom(totalStatsAtom);
 
   const handleMessage = useCallback(
     (event) => {
@@ -21,6 +22,13 @@ export const useWarehouseWebSocket = () => {
               occupiedPercentage: data.occupiedPercentage,
             },
           }));
+          
+          // Actualizar estadísticas totales
+          setTotalStats({
+            totalOccupancy: data.totalOccupancy,
+            warehouseCount: data.warehouseCount,
+            timestamp: data.timestamp
+          });
         } else if (data.type === 'occupancy_update_batch') {
           setOccupancyUpdates((prev) => ({
             ...prev,
@@ -32,12 +40,19 @@ export const useWarehouseWebSocket = () => {
               {}
             ),
           }));
+          
+          // Actualizar estadísticas totales del batch
+          setTotalStats({
+            totalOccupancy: data.totalOccupancy,
+            warehouseCount: data.warehouseCount,
+            timestamp: data.timestamp
+          });
         }
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
       }
     },
-    [setOccupancyUpdates]
+    [setOccupancyUpdates, setTotalStats]
   );
 
   useEffect(() => {

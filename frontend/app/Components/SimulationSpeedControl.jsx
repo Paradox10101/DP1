@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/react";
 import { Clock } from "lucide-react";
 
 const SimulationSpeedControl = ({ simulationStatus }) => {
-    const [currentSpeed, setCurrentSpeed] = useState('MEDIUM');
+    const [currentSpeed, setCurrentSpeed] = useState('SLOW');
     const [isChanging, setIsChanging] = useState(false);
 
     const speeds = [
