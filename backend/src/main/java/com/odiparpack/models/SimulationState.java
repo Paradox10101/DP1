@@ -1,32 +1,42 @@
 package com.odiparpack.models;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.ortools.constraintsolver.Assignment;
 import com.google.ortools.constraintsolver.RoutingIndexManager;
 import com.google.ortools.constraintsolver.RoutingModel;
 import com.google.ortools.constraintsolver.RoutingSearchParameters;
 import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
+import com.odiparpack.SimulationRunner;
+import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.SimulationRunner.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
 public class SimulationState {
     private Map<String, Vehicle> vehicles;
     private List<Order> orders;
     private Map<String, Location> locations;
-    private LocalDateTime currentTime;
     private ReentrantLock lock = new ReentrantLock();
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
@@ -40,7 +50,7 @@ public class SimulationState {
     private static final String BREAKDOWN_COMMAND_FILE = "src/main/resources/breakdown_commands.txt";
     private long lastModified = 0;
     // Mapa para almacenar los logs de avería por vehículo
-    public static final Map<String, List<String>> breakdownLogs = new HashMap<>();
+    public static Map<String, List<String>> breakdownLogs = new HashMap<>();
     private Map<String, Integer> locationIndices;
     private List<String> locationNames;
     private List<String> locationUbigeos;
@@ -48,9 +58,37 @@ public class SimulationState {
     private List<Blockage> allBlockages;
     private volatile boolean isPaused = false;
     private volatile boolean isStopped = false;
+    private final AtomicLong lastUpdateTimestamp = new AtomicLong(0);
+    private final AtomicInteger updateCounter = new AtomicInteger(0);
+    private volatile JsonObject lastPositions = null;
+    private static final long UPDATE_THRESHOLD = 50; // 50ms threshold
+    private static final Gson gson = new Gson();
+    private final ReentrantLock stateLock = new ReentrantLock();
+    private final Object pauseLock = new Object();
+
+    private LocalDateTime simulationStartTime; // Tiempo inicial de simulación
+    private LocalDateTime simulationEndTime;   // Tiempo final de simulación
+    private LocalDateTime currentTime;         // Tiempo actual de simulación
+    private LocalDateTime realStartTime;       // Momento real de inicio
+    private long effectiveRunningTime = 0;     // Tiempo efectivo de ejecución en ms
+    private long lastUpdateTime;               // Último momento de actualización
+
+    private final Object timeLock = new Object();
+
+    // Atributos para capacidad efectiva acumulada
+    private double totalCapacityUsed = 0;
+    private double totalCapacity = 0;
+    private int capacityRecordsCount = 0;
+
+    private static final StringBuilderPool stringBuilderPool;
+
+    static {
+        // Usar núcleos * 2 para balance entre threads I/O y CPU
+        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+        stringBuilderPool = new StringBuilderPool(poolSize, 16384); // 16KB initial capacity
+    }
 
     public void reset() {
-        // Adquirir el lock para asegurar thread safety durante el reset
         lock.lock();
         try {
             System.out.println("Starting simulation reset at: " + LocalDateTime.now());
@@ -58,17 +96,37 @@ public class SimulationState {
             // Detener la simulación primero
             this.stopSimulation();
 
-            // Limpiar todas las estructuras existentes por seguridad
-            if (this.routeCache != null) {
+            // Inicializar estructuras si son null antes de limpiar
+            if (this.routeCache == null) {
+                this.routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);
+            } else {
                 this.routeCache.clear();
             }
 
-            if (this.breakdownLogs != null) {
-                this.breakdownLogs.clear();
+            // Limpiar el contenido del mapa existente en lugar de reasignarlo
+            if (breakdownLogs != null) {
+                breakdownLogs.clear();
+            }
+
+            if (this.vehiclesNeedingNewRoutes == null) {
+                this.vehiclesNeedingNewRoutes = new ArrayList<>();
+            } else {
+                this.vehiclesNeedingNewRoutes.clear();
+            }
+
+            if (this.activeBlockages == null) {
+                this.activeBlockages = new ArrayList<>();
+            } else {
+                this.activeBlockages.clear();
             }
 
             // Recargar todos los datos
             loadInitialData();
+
+            // Verificar estado después de la carga
+            validateState();
+
+            updateBlockages(currentTime, allBlockages);
 
             System.out.println("Simulation reset completed successfully");
         } catch (Exception e) {
@@ -78,6 +136,22 @@ public class SimulationState {
         } finally {
             lock.unlock();
         }
+    }
+
+    private void validateState() {
+        if (locations == null || locations.isEmpty()) {
+            throw new IllegalStateException("Invalid state: locations not initialized");
+        }
+        if (vehicles == null || vehicles.isEmpty()) {
+            throw new IllegalStateException("Invalid state: vehicles not initialized");
+        }
+        if (orders == null) {
+            throw new IllegalStateException("Invalid state: orders not initialized");
+        }
+        if (timeMatrix == null) {
+            throw new IllegalStateException("Invalid state: timeMatrix not initialized");
+        }
+        // Validar otras estructuras críticas
     }
 
     private void loadInitialData() {
@@ -104,13 +178,13 @@ public class SimulationState {
             // Reinicializar índices de ubicación
             this.locationIndices = new HashMap<>();
             for (int i = 0; i < locationList.size(); i++) {
-                this.locationIndices.put(locationList.get(i).getUbigeo(), i);
+                locationIndices.put(locationList.get(i).getUbigeo(), i);
             }
 
             // Crear matriz de tiempos
             this.timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
             this.currentTimeMatrix = Arrays.stream(this.timeMatrix)
-                    .map(row -> row.clone())
+                    .map(long[]::clone)
                     .toArray(long[][]::new);
 
             // Reinicializar listas de nombres y ubigeos
@@ -135,9 +209,8 @@ public class SimulationState {
             // Reinicializar otras estructuras de datos
             this.vehiclesNeedingNewRoutes = new ArrayList<>();
             this.activeBlockages = new ArrayList<>();
-            this.breakdownLogs.clear();
 
-            // Reinicializar el warehouse manager
+            // Reinicializar el warehouse manager con las nuevas ubicaciones
             this.warehouseManager = new WarehouseManager(this.locations);
 
             // Reinicializar los almacenes principales
@@ -186,15 +259,181 @@ public class SimulationState {
     }
 
     public void pauseSimulation() {
-        isPaused = true;
+        stateLock.lock();
+        try {
+            isPaused = true;
+            logger.info("Simulación pausada en tiempo de simulación: " + currentTime);
+
+            // Actualizar tiempo efectivo hasta el momento de pausar
+            long now = System.currentTimeMillis();
+            long timeDiff = now - lastUpdateTime;
+            if (timeDiff > 0) {
+                effectiveRunningTime += timeDiff;
+                logger.fine("Tiempo efectivo actualizado al pausar: " + effectiveRunningTime + "ms");
+            }
+            lastUpdateTime = now;
+
+            // En lugar de manejar directamente los executors, notificar a SimulationRunner
+            //SimulationRunner.pauseSimulation();
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        } finally {
+            stateLock.unlock();
+        }
     }
 
     public void resumeSimulation() {
-        isPaused = false;
+        stateLock.lock();
+        try {
+            isPaused = false;
+            lastUpdateTime = System.currentTimeMillis();
+            logger.info("Simulación resumida en tiempo de simulación: " + currentTime);
+
+            // Notificar a SimulationRunner para reanudar
+            //SimulationRunner.resumeSimulation();
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        } finally {
+            stateLock.unlock();
+        }
+    }
+
+    public void initializeSimulation() {
+        simulationStartTime = currentTime;
+        simulationEndTime = simulationStartTime.plusDays(7);
+        realStartTime = LocalDateTime.now();
+        lastUpdateTime = System.currentTimeMillis();
+        effectiveRunningTime = 0;
+
+        // Log de inicialización
+        logger.info("Simulación inicializada - Start Time: " + simulationStartTime +
+                ", Last Update: " + lastUpdateTime);
+    }
+
+    public void updateSimulationTime() {
+        stateLock.lock();
+        try {
+            if (!isPaused && !isStopped) {
+                // Actualizar tiempo de simulación
+                currentTime = currentTime.plusMinutes(SimulationRunner.TIME_ADVANCEMENT_INTERVAL_MINUTES);
+
+                // Actualizar tiempo efectivo de ejecución
+                long now = System.currentTimeMillis();
+                long timeDiff = now - lastUpdateTime;
+
+                // Log del cálculo de tiempo
+                logger.fine("Cálculo de tiempo - Now: " + now +
+                        ", Last Update: " + lastUpdateTime +
+                        ", Diff: " + timeDiff);
+
+                if (timeDiff > 0) {  // Validación adicional
+                    effectiveRunningTime += timeDiff;
+                    logger.fine("Tiempo efectivo actualizado: " + effectiveRunningTime + "ms");
+                }
+
+                lastUpdateTime = now;
+
+                // Crear y enviar resumen actualizado
+                broadcastSimulationSummary();
+            }
+        } finally {
+            stateLock.unlock();
+        }
+    }
+
+    private void broadcastSimulationSummary() {
+        JsonObject summary = new JsonObject();
+
+        // Calcular y verificar las duraciones
+        Duration simulatedDuration = Duration.between(simulationStartTime, currentTime);
+        Duration realDuration = Duration.ofMillis(effectiveRunningTime);
+
+        // Log de duraciones
+        logger.fine("Duraciones - Simulada: " + simulatedDuration.toString() +
+                ", Real: " + realDuration.toString());
+
+        // Convertir LocalDateTime a ZonedDateTime con zona horaria UTC
+        ZonedDateTime startZonedDateTime = simulationStartTime.atZone(ZoneOffset.UTC);
+        ZonedDateTime endZonedDateTime = simulationEndTime.atZone(ZoneOffset.UTC);
+
+        // Convertir ZonedDateTime a Instant
+        Instant startInstant = startZonedDateTime.toInstant();
+        Instant endInstant = endZonedDateTime.toInstant();
+
+        // Formatear fechas en ISO 8601 con zona horaria UTC
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        String formattedStartTime = formatter.format(startInstant);
+        String formattedEndTime = formatter.format(endInstant);
+
+        summary.addProperty("startTime", formattedStartTime);
+        summary.addProperty("endTime", formattedEndTime);
+
+        // Tiempo simulado (duración en formato hh:mm:ss)
+        String simulatedTime = formatDuration(simulatedDuration);
+        summary.addProperty("simulatedTime", simulatedTime);
+
+        // Tiempo real efectivo (duración en formato hh:mm:ss)
+        String realTime = formatDuration(realDuration);
+        summary.addProperty("realElapsedTime", realTime);
+
+        // Log del resumen
+        logger.info("Resumen de simulación - Tiempo simulado: " + simulatedTime +
+                ", Tiempo real: " + realTime);
+
+        // Estado actual
+        summary.addProperty("isPaused", isPaused);
+        summary.addProperty("isStopped", isStopped);
+
+        // Log detallado de JSON enviado al frontend
+        logger.info("JSON enviado al frontend: " + summary.toString());
+
+        // Enviar vía WebSocket
+        SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(summary);
+    }
+
+    private String formatDuration(Duration duration) {
+        long seconds = duration.getSeconds();
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
+    }
+
+    public void waitWhilePaused() {
+        synchronized (pauseLock) {
+            while (isPaused && !isStopped) {
+                try {
+                    pauseLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
     }
 
     public void stopSimulation() {
-        isStopped = true;
+        stateLock.lock();
+        try {
+            isStopped = true;
+            logger.info("Simulación detenida en tiempo de simulación: " + currentTime);
+
+            // Delegar la detención de executors a SimulationRunner
+            SimulationRunner.stopSimulation();
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        } finally {
+            stateLock.unlock();
+        }
     }
 
     public boolean isPaused() {
@@ -203,6 +442,10 @@ public class SimulationState {
 
     public boolean isStopped() {
         return isStopped;
+    }
+
+    void setIsStopped(boolean stop) {
+        this.isStopped = stop;
     }
 
     public Map<String, Integer> getLocationIndices() {
@@ -247,7 +490,14 @@ public class SimulationState {
         this.currentTimeMatrix = Arrays.stream(originalTimeMatrix)
                 .map(long[]::clone)
                 .toArray(long[][]::new);
+
+        // Inicializar tiempos de simulación
+        initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
+    }
+
+    public RouteCache getRouteCache() {
+        return routeCache;
     }
 
 
@@ -328,35 +578,48 @@ public class SimulationState {
     }
 
     public JsonObject getCurrentPositionsGeoJSON() {
-        JsonObject featureCollection = new JsonObject();
-        featureCollection.addProperty("type", "FeatureCollection");
-        JsonArray features = new JsonArray();
+        StringBuilder builder = stringBuilderPool.borrow();
+        try {
+            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
 
-        for (Vehicle vehicle : vehicles.values()) {
-            Position position = vehicle.getCurrentPosition(currentTime);
-            if (position != null) {
-                JsonObject feature = new JsonObject();
-                feature.addProperty("type", "Feature");
-
-                JsonObject geometry = new JsonObject();
-                geometry.addProperty("type", "Point");
-                JsonArray coordinates = new JsonArray();
-                coordinates.add(position.getLongitude());
-                coordinates.add(position.getLatitude());
-                geometry.add("coordinates", coordinates);
-                feature.add("geometry", geometry);
-
-                JsonObject properties = new JsonObject();
-                properties.addProperty("vehicleCode", vehicle.getCode());
-                // Puedes añadir más propiedades si lo deseas
-                feature.add("properties", properties);
-
-                features.add(feature);
+            boolean first = true;
+            for (Vehicle vehicle : vehicles.values()) {
+                Position position = vehicle.getCurrentPosition(getCurrentTime());
+                if (position != null) {
+                    if (!first) {
+                        builder.append(',');
+                    }
+                    first = false;
+                    appendVehicleFeature(builder, vehicle, position);
+                }
             }
-        }
 
-        featureCollection.add("features", features);
-        return featureCollection;
+            builder.append("],\"timestamp\":")
+                    .append(System.currentTimeMillis())
+                    .append("}");
+
+            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+        } finally {
+            stringBuilderPool.release(builder);
+        }
+    }
+
+    private void appendVehicleFeature(StringBuilder builder, Vehicle vehicle, Position position) {
+        builder.append("{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",")
+                .append("\"coordinates\":[")
+                .append(position.getLongitude()).append(",")
+                .append(position.getLatitude()).append("]},")
+                .append("\"properties\":{\"vehicleCode\":\"")
+                .append(vehicle.getCode())
+                .append("\",\"status\":\"")
+                .append(vehicle.getEstado())
+                .append("\"}}");
+    }
+
+    // Método para limpiar caché si es necesario
+    public void clearPositionsCache() {
+        lastPositions = null;
+        lastUpdateTimestamp.set(0);
     }
 
     public void updateVehicleStates() {
@@ -373,6 +636,10 @@ public class SimulationState {
                 if (vehicle.isUnderRepair()) {
                     handleRepairCompletion(vehicle, currentTime);
                     vehicle.updateAveriaTime(currentTime);  // Actualizar el tiempo en estado de avería
+                    // TODO: Considerar reasignación de pedidos en caso de avería.
+                    // if (vehicle.getAssignedOrder() != null) {
+                    //     reassignOrderAfterBreakdown(vehicle, currentTime);
+                    // }
                 }
 
                 if (vehicle.shouldUpdateStatus()) {
@@ -392,6 +659,59 @@ public class SimulationState {
         } finally {
             lock.unlock();
         }
+    }
+
+    // TODO: Implementar reasignación de pedidos cuando ocurre una avería en el vehículo.
+    // Este método debería buscar vehículos vacíos y cercanos para reasignar el pedido del vehículo averiado.
+    // private void reassignOrderAfterBreakdown(Vehicle brokenVehicle, LocalDateTime currentTime) {
+    //     Order orderToReassign = brokenVehicle.getAssignedOrder();
+    //     if (orderToReassign == null) {
+    //         logger.warning("El vehículo " + brokenVehicle.getCode() + " no tiene un pedido asignado. No es necesario reasignar.");
+    //         return;
+    //     }
+    //
+    //     // Buscar vehículos vacíos y cercanos
+    //     List<Vehicle> availableVehicles = vehicles.values().stream()
+    //             .filter(v -> v.getEstado() == Vehicle.EstadoVehiculo.EN_ALMACEN
+    //                         && v.getCurrentLocationUbigeo().equals(brokenVehicle.getCurrentLocationUbigeo())
+    //                         && v.getAssignedOrder() == null)
+    //             .collect(Collectors.toList());
+    //
+    //     if (availableVehicles.isEmpty()) {
+    //         logger.warning("No hay vehículos disponibles cercanos para reasignar el pedido " + orderToReassign.getId() + " del vehículo " + brokenVehicle.getCode());
+    //         return;
+    //     }
+    //
+    //     // Seleccionar el primer vehículo disponible y reasignar el pedido
+    //     Vehicle newVehicle = availableVehicles.get(0);
+    //     newVehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
+    //     newVehicle.setAssignedOrder(orderToReassign);
+    //     newVehicle.setCurrentCapacity(orderToReassign.getQuantity());
+    //     orderToReassign.setAssignedVehicle(newVehicle);
+    //     orderToReassign.setStatus(Order.OrderStatus.FULLY_ASSIGNED);
+    //
+    //     brokenVehicle.setEstado(Vehicle.EstadoVehiculo.EN_REPARACION);
+    //     brokenVehicle.setAssignedOrder(null);
+    //     brokenVehicle.setCurrentCapacity(0);
+    //
+    //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
+    // }
+
+
+    // Método para actualizar la métrica de capacidad efectiva acumulada
+    public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {
+        this.totalCapacityUsed += currentCapacityUsed;
+        this.totalCapacity += vehicleCapacity;
+        this.capacityRecordsCount++;
+        logger.info("Actualizando métricas de capacidad: Capacidad Usada: " + currentCapacityUsed +
+                ", Capacidad Total: " + vehicleCapacity + ", Total Registros: " + capacityRecordsCount);
+    }
+
+    public double calculateAverageCapacity() {
+        if (capacityRecordsCount == 0 || totalCapacity == 0) {
+            return 0;
+        }
+        return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
     }
 
     private void handleMaintenance(Vehicle vehicle) {
@@ -639,9 +959,9 @@ public class SimulationState {
     }
 
     private static List<List<RouteSegment>> calcularRutasHaciaAlmacen(DataModel data, int[] start, int[] end) {
-        RoutingIndexManager manager = createRoutingIndexManager(data, start, end);
-        RoutingModel routing = createRoutingModel(manager, data);
-        RoutingSearchParameters searchParameters = createSearchParameters();
+        RoutingIndexManager manager = SimulationRunner.createRoutingIndexManager(data, start, end);
+        RoutingModel routing = SimulationRunner.createRoutingModel(manager, data);
+        RoutingSearchParameters searchParameters = SimulationRunner.createSearchParameters();
 
         logger.info("Iniciando la resolución del modelo de rutas para rutas hacia almacenes.");
         Assignment solution = routing.solveWithParameters(searchParameters);
@@ -649,7 +969,7 @@ public class SimulationState {
 
         if (solution != null) {
             List<List<RouteSegment>> calculatedRoutes = extractCalculatedRoutesWithoutAssignments(manager, data, routing, solution);
-            printSolution(data, routing, manager, solution);
+            SimulationRunner.printSolution(data, routing, manager, solution);
             logger.info("Solución de rutas hacia almacenes impresa correctamente.");
             return calculatedRoutes;
         } else {
@@ -793,11 +1113,11 @@ public class SimulationState {
     }
 
     public LocalDateTime getCurrentTime() {
-        lock.lock();
+        stateLock.lock();
         try {
             return currentTime;
         } finally {
-            lock.unlock();
+            stateLock.unlock();
         }
     }
 

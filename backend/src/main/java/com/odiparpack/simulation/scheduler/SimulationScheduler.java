@@ -1,6 +1,8 @@
+/*
 package com.odiparpack.simulation.scheduler;
 
 import com.odiparpack.simulation.state.SimulationState;
+import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
 import java.time.LocalDateTime;
@@ -40,6 +42,7 @@ public class SimulationScheduler {
         scheduleTimeAdvancement();
         schedulePlanning();
         scheduleWebSocketBroadcast();
+        scheduleWebSocketShipmentBroadcast();
     }
 
     public void pause() {
@@ -96,7 +99,8 @@ public class SimulationScheduler {
         }, 0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
     }
 
-    private void scheduleWebSocketBroadcast() {
+    */
+/*private void scheduleWebSocketBroadcast() {
         webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
         webSocketExecutorService.scheduleAtFixedRate(() -> {
             try {
@@ -109,5 +113,41 @@ public class SimulationScheduler {
                 logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
+<<<<<<< HEAD
+    }*//*
+
+=======
     }
+
+    private void scheduleWebSocketShipmentBroadcast() {
+        webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
+        webSocketExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                if (simulationState.isPaused() || simulationState.isStopped()) return;
+
+                // Broadcast shipment list via WebSocket
+                ShipmentWebSocketHandler.broadcastShipments();
+
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+
+    private void scheduleWebSocketBroadcastShipments() {
+        webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
+        webSocketExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                if (simulationState.isPaused() || simulationState.isStopped()) return;
+
+                // Broadcast envios via WebSocket
+                ShipmentWebSocketHandler.broadcastShipments();
+
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+>>>>>>> main
 }
+*/

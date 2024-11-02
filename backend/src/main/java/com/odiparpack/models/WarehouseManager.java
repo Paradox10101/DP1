@@ -1,5 +1,7 @@
 package com.odiparpack.models;
 
+import com.odiparpack.websocket.WarehouseOccupancyWebSocketHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,17 +21,42 @@ public class WarehouseManager {
     }
 
     public void decreaseCapacity(String ubigeo, int amount) {
-        int currentCapacity = currentCapacities.getOrDefault(ubigeo, 0);
-        int newCapacity = currentCapacity - amount;
-        currentCapacities.put(ubigeo, newCapacity);
-        logCapacityChange(ubigeo, currentCapacity, newCapacity);
+        synchronized (this) {
+            int currentCapacity = currentCapacities.getOrDefault(ubigeo, 0);
+            int totalCapacity = warehouseCapacities.getOrDefault(ubigeo, 0);
+            int newCapacity = Math.max(0, currentCapacity - amount);
+
+            currentCapacities.put(ubigeo, newCapacity);
+            logCapacityChange(ubigeo, currentCapacity, newCapacity);
+
+            // Calcular y enviar actualización de porcentaje de ocupación
+            double occupancyPercentage = calculateOccupancyPercentage(ubigeo);
+            WarehouseOccupancyWebSocketHandler.broadcastOccupancyUpdate(ubigeo, occupancyPercentage);
+        }
     }
 
     public void increaseCapacity(String ubigeo, int amount) {
+        synchronized (this) {
+            int currentCapacity = currentCapacities.getOrDefault(ubigeo, 0);
+            int totalCapacity = warehouseCapacities.getOrDefault(ubigeo, 0);
+            int newCapacity = Math.min(totalCapacity, currentCapacity + amount);
+
+            currentCapacities.put(ubigeo, newCapacity);
+            logCapacityChange(ubigeo, currentCapacity, newCapacity);
+
+            // Calcular y enviar actualización de porcentaje de ocupación
+            double occupancyPercentage = calculateOccupancyPercentage(ubigeo);
+            WarehouseOccupancyWebSocketHandler.broadcastOccupancyUpdate(ubigeo, occupancyPercentage);
+        }
+    }
+
+    private double calculateOccupancyPercentage(String ubigeo) {
+        int totalCapacity = warehouseCapacities.getOrDefault(ubigeo, 0);
+        if (totalCapacity == 0) return 0.0;
+
         int currentCapacity = currentCapacities.getOrDefault(ubigeo, 0);
-        int newCapacity = currentCapacity + amount;
-        currentCapacities.put(ubigeo, newCapacity);
-        logCapacityChange(ubigeo, currentCapacity, newCapacity);
+        int usedCapacity = totalCapacity - currentCapacity;
+        return (double) usedCapacity / totalCapacity * 100.0;
     }
 
     private void logCapacityChange(String ubigeo, int oldCapacity, int newCapacity) {

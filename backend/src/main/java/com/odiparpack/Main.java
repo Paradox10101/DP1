@@ -1,25 +1,17 @@
 package com.odiparpack;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.google.ortools.Loader;
 import com.google.ortools.constraintsolver.*;
-import com.odiparpack.controllers.SimulationController;
+import com.odiparpack.api.controllers.SimulationController;
 import com.odiparpack.models.*;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.lang.management.ManagementFactory;
 
-import com.odiparpack.services.DataService;
-import com.odiparpack.simulation.SimulationEngine;
-import com.odiparpack.simulation.state.SimulationComponents;
-import com.odiparpack.simulation.state.SimulationInitializer;
 import com.odiparpack.simulation.state.SimulationState;
 import com.sun.management.OperatingSystemMXBean;
 
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,7 +19,6 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -106,14 +97,9 @@ public class Main {
         // El método main termina aquí
     }*/
 
-    public static void main(String[] args) throws IOException {
-        Loader.loadNativeLibraries();
-
+    public static com.odiparpack.models.SimulationState initializeSimulationState() throws IOException {
         DataLoader dataLoader = new DataLoader();
-        //String projectRoot = Paths.get("").toAbsolutePath().toString();
-        //System.out.println("La ruta absoluta del directorio raíz es: " + projectRoot);
-        //Path currentPath = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        //System.out.println("La ruta actual del archivo ejecutado es: " + currentPath);
+
         // Cargar datos
         locations = dataLoader.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);
@@ -127,7 +113,6 @@ public class Main {
         // Construir índices y matrices
         List<Location> locationList = new ArrayList<>(locations.values());
 
-        // Inicializar índices de ubicación globalmente
         locationIndices = new HashMap<>();
         for (int i = 0; i < locationList.size(); i++) {
             locationIndices.put(locationList.get(i).getUbigeo(), i);
@@ -135,22 +120,26 @@ public class Main {
 
         long[][] timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
 
-        List<String> locationNames = new ArrayList<>();
-        List<String> locationUbigeos = new ArrayList<>();
+        locationNames = new ArrayList<>();
+        locationUbigeos = new ArrayList<>();
         for (Location loc : locationList) {
             locationNames.add(loc.getProvince());
             locationUbigeos.add(loc.getUbigeo());
         }
 
-        // Inicializar SimulationState con los datos necesarios
-        Map<String, Vehicle> vehicleMap = vehicles.stream().collect(Collectors.toMap(Vehicle::getCode, v -> v));
+        // Inicializar mapa de vehículos
+        Map<String, Vehicle> vehicleMap = vehicles.stream()
+                .collect(Collectors.toMap(Vehicle::getCode, v -> v));
+
+        // Calcular el tiempo inicial de simulación
         LocalDateTime initialSimulationTime = orders.stream()
                 .map(Order::getOrderTime)
                 .min(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.now())
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        com.odiparpack.models.SimulationState simulationState = new com.odiparpack.models.SimulationState(
+        // Crear una nueva instancia de SimulationState
+        return new com.odiparpack.models.SimulationState(
                 vehicleMap,
                 initialSimulationTime,
                 orders,
@@ -163,6 +152,13 @@ public class Main {
                 locationNames,
                 locationUbigeos
         );
+    }
+
+    public static void main(String[] args) throws IOException {
+        Loader.loadNativeLibraries();
+
+        // Inicializar SimulationState
+        com.odiparpack.models.SimulationState simulationState = initializeSimulationState();
 
         // Iniciar el servidor SimulationController
         SimulationController simulationController = new SimulationController(simulationState);
@@ -830,19 +826,58 @@ public class Main {
 
 
     // Estructura para almacenar los datos de la solución
-    static class SolutionData {
+    public static class SolutionData {
         public long objectiveValue;
         public Map<String, List<RouteSegment>> routes; // Mapa de rutas por vehículo
         public Map<String, Long> routeTimes;            // Mapa para almacenar el tiempo total de cada ruta
         public long maxRouteTime;
 
+        // Constructor que acepta los objetos de OR-Tools y extrae la información necesaria
+        public SolutionData(Assignment solution, RoutingModel routingModel, RoutingIndexManager manager, DataModel data) {
+            this.routes = new HashMap<>();
+            this.routeTimes = new HashMap<>();
+            this.maxRouteTime = 0;
+            this.objectiveValue = solution.objectiveValue();
+
+            for (int i = 0; i < data.vehicleNumber; ++i) {
+                long index = routingModel.start(i);
+                List<RouteSegment> route = new ArrayList<>();
+                long routeTime = 0;
+
+                while (!routingModel.isEnd(index)) {
+                    long previousIndex = index;
+                    index = solution.value(routingModel.nextVar(index));
+
+                    int fromNode = manager.indexToNode(previousIndex);
+                    int toNode = manager.indexToNode(index);
+
+                    String fromName = data.locationNames.get(fromNode);
+                    String fromUbigeo = data.locationUbigeos.get(fromNode);
+                    String toName = data.locationNames.get(toNode);
+                    String toUbigeo = data.locationUbigeos.get(toNode);
+
+                    long durationMinutes = data.timeMatrix[fromNode][toNode];
+                    double distance = calculateDistanceFromNodes(data, fromNode, toNode);
+
+                    route.add(new RouteSegment(fromName + " to " + toName, fromUbigeo, toUbigeo, distance, durationMinutes));
+                    routeTime += durationMinutes;
+                }
+
+                String vehicleCode = data.assignments.get(i).getVehicle().getCode();
+                this.routes.put(vehicleCode, route);
+                this.routeTimes.put(vehicleCode, routeTime);
+                this.maxRouteTime = Math.max(this.maxRouteTime, routeTime);
+            }
+        }
+
+        // Constructor por defecto (si aún lo necesitas)
         public SolutionData() {
             this.routes = new HashMap<>();
             this.routeTimes = new HashMap<>();
             this.maxRouteTime = 0;
         }
     }
-
+    
     // Método para imprimir los datos de la solución almacenados
     private static void printSolutionData(SolutionData solutionData) {
         logger.info("Objetivo de la Solución: " + solutionData.objectiveValue);

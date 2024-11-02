@@ -7,6 +7,7 @@ import com.odiparpack.simulation.maintenance.MaintenanceManager;
 import com.odiparpack.simulation.order.OrderManager;
 import com.odiparpack.simulation.route.RouteManager;
 import com.odiparpack.simulation.vehicle.VehicleManager;
+import com.odiparpack.models.SimulationState;
 
 import java.time.LocalDateTime;
 
@@ -21,10 +22,11 @@ public class SimulationComponents {
     private final BlockageManager blockageManager;
     private final MaintenanceManager maintenanceManager;
     private final WarehouseManager warehouseManager;
+    private final SimulationState simulationState;
 
     public SimulationComponents(LocalDateTime initialTime, VehicleManager vehicleManager, OrderManager orderManager,
                                 RouteManager routeManager, BlockageManager blockageManager,
-                                MaintenanceManager maintenanceManager, WarehouseManager warehouseManager) {
+                                MaintenanceManager maintenanceManager, WarehouseManager warehouseManager, SimulationState simulationState) {
         this.initialTime = initialTime;
         this.vehicleManager = vehicleManager;
         this.orderManager = orderManager;
@@ -32,6 +34,11 @@ public class SimulationComponents {
         this.blockageManager = blockageManager;
         this.maintenanceManager = maintenanceManager;
         this.warehouseManager = warehouseManager;
+        this.simulationState = simulationState;
+    }
+
+    public SimulationState getSimulationState() {
+        return simulationState;
     }
 
     public LocalDateTime getInitialTime() {

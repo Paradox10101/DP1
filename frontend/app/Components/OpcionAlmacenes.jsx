@@ -1,69 +1,120 @@
+import { useAtomValue, useAtom } from "jotai";
+import { filteredLocationsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/locationAtoms';
 import { Button, Input } from "@nextui-org/react";
-import { Filter, Map } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import CardEnvio from "@/app/Components/CardEnvio"
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import CardAlmacen from "./CardAlmacen";
-import BarraProgreso from "./BarraProgreso";
+import { Filter, Map, SearchX } from "lucide-react";
+import { useEffect, useCallback } from 'react';
+import CapacidadTotalAlmacenes from '../Components/CapacidadTotalAlmacenes';
+import LocationCard from './LocationCard';
+import { useWarehouseWebSocket } from '../../hooks/useWarehouseWebSocket';
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
+export default function OpcionAlmacenes() {
+    useWarehouseWebSocket();
 
+  const locations = useAtomValue(filteredLocationsAtom);
+  const [searchInput, setSearchInput] = useAtom(searchInputAtom);
+  const [, setSearchQuery] = useAtom(searchQueryAtom);
 
-export default function OpcionAlmacenes({datos}){
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 300);
 
-const capacidadUsadaTotal = datos&&datos.almacenes?datos.almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadUtilizada || 0)}, 0):0
-const capacidadTotalMaxima = datos&&datos.almacenes?datos.almacenes.reduce((total, almacen)=>{return total+(almacen.capacidadMaxima|| 0)}, 0):0
+    return () => clearTimeout(debounceTimeout);
+  }, [searchInput, setSearchQuery]);
 
+  const handleSearchChange = useCallback((e) => {
+    setSearchInput(e.target.value);
+  }, [setSearchInput]);
 
+  const NoDataMessage = () => (
+    <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+      <Map size={48} className="mb-4 opacity-50" />
+      <p className="text-lg font-medium">No hay ubicaciones disponibles</p>
+      <p className="text-sm">Por favor, intente más tarde</p>
+    </div>
+  );
 
-return (
-        <div className="h-full">
-            <div className="flex justify-between flex-row items-center">
-                <Input
-                type="text"
-                placeholder="Buscar por nombre o ubigeo"
-                className="focus:outline-none border-2 stroke-black rounded-2xl h-8 pequenno w-[77%]"
-                startContent={<Map className="mr-2"/>}
-                />
-                <Button
-                disableRipple={true}
-                startContent={<Filter className="size-2"/>}
-                className="focus:outline-none border stroke-black rounded h-8 pequenno w-[22%] bg-[#F4F4F4]"
-                >
-                Filtros
-                </Button>
-            </div>
-            <div className="text-right pequenno text-[#939393]">
-                Cantidad de almacenes: {datos&&datos.almacenes?datos.almacenes.length:0}
-            </div>
-            <div className="flex flex-col gap-2">
-                <div className="pequenno_bold text-center">
-                    Capacidad Total de las Oficinas
-                </div>
-                <div className="flex flex-col gap-1">
-                    <BarraProgreso
-                        porcentaje={capacidadUsadaTotal/capacidadTotalMaxima*100}/>
-                    <div className="flex flex-row justify-between">
-                        <div className="pequenno">
-                            Ocupado: {capacidadUsadaTotal}
-                        </div>
-                        <div className="pequenno_bold">
-                            {parseFloat((capacidadUsadaTotal/capacidadTotalMaxima*100).toFixed(2))}%
-                        </div>
-                        <div className="pequenno">
-                            Máximo: {capacidadTotalMaxima}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-                {datos&&datos.almacenes&&
-                datos.almacenes.map((almacen)=>{
-                    return(
-                        <CardAlmacen almacen={almacen} />
-                    )
-                    }
+  const NoResultsMessage = () => (
+    <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+      <SearchX size={48} className="mb-4 opacity-50" />
+      <p className="text-lg font-medium">No se encontraron resultados</p>
+      <p className="text-sm">Intenta con otros términos de búsqueda</p>
+    </div>
+  );
+
+  const warehouseCount = locations?.filter(l => l?.type === 'warehouse').length || 0;
+
+  // Determinar si no hay datos iniciales vs. no hay resultados de búsqueda
+  const hasInitialData = Array.isArray(locations);
+  const hasSearchResults = hasInitialData && locations.length > 0;
+  const isSearching = searchInput.length > 0;
+
+  const Row = ({ index, style }) => {
+    const location = locations[index];
+    return (
+      <div style={style}>
+        <LocationCard
+          key={location.ubigeo}
+          {...location}
+        />
+      </div>
+    );
+  };
+  
+  return (
+    <div className="flex flex-col gap-4 h-full w-full">
+      {!hasInitialData ? (
+        <NoDataMessage />
+      ) : (
+        <>
+          <div className="flex flex-row justify-between items-center gap-2">
+            <Input
+              type="text"
+              placeholder="Buscar una ubicación..."
+              startContent={<Map size="18" />}
+              className="w-3/4"
+              value={searchInput}
+              onChange={handleSearchChange}
+              onClear={() => setSearchInput('')}
+              isClearable
+            />
+            <Button
+              disableRipple={true}
+              startContent={<Filter size="18" />}
+              className="bg-[#F4F4F4]"
+            >
+              Filtros
+            </Button>
+          </div>
+
+          <div className="text-right text-sm text-[#939393]">
+            Cantidad de almacenes: {warehouseCount}
+          </div>
+
+          <CapacidadTotalAlmacenes />
+
+          <div className="h-[550px] w-full overflow-y-auto">
+            {!hasSearchResults && isSearching ? (
+              <NoResultsMessage />
+            ) : (
+              <AutoSizer>
+                {({ height, width }) => (
+                  <List
+                    height={height}
+                    itemCount={locations.length}
+                    itemSize={200}
+                    width={width}
+                  >
+                    {Row}
+                  </List>
                 )}
-            </div>
-        </div>
-    )
+              </AutoSizer>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
