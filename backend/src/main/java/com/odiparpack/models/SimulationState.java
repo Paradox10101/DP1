@@ -80,6 +80,13 @@ public class SimulationState {
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
 
+    private static final StringBuilderPool stringBuilderPool;
+
+    static {
+        // Usar núcleos * 2 para balance entre threads I/O y CPU
+        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+        stringBuilderPool = new StringBuilderPool(poolSize, 16384); // 16KB initial capacity
+    }
 
     public void reset() {
         lock.lock();
@@ -266,13 +273,8 @@ public class SimulationState {
             }
             lastUpdateTime = now;
 
-            // Pausar executors
-            if (simulationExecutorService != null) {
-                simulationExecutorService.shutdownNow();
-            }
-            if (webSocketExecutorService != null) {
-                webSocketExecutorService.shutdownNow();
-            }
+            // En lugar de manejar directamente los executors, notificar a SimulationRunner
+            //SimulationRunner.pauseSimulation();
 
             // Notificar a threads en espera
             synchronized (pauseLock) {
@@ -287,19 +289,11 @@ public class SimulationState {
         stateLock.lock();
         try {
             isPaused = false;
-            logger.info("Simulación reanudada en tiempo de simulación: " + currentTime);
-
-            // Restablecer el tiempo de última actualización
             lastUpdateTime = System.currentTimeMillis();
+            logger.info("Simulación resumida en tiempo de simulación: " + currentTime);
 
-            // Reiniciar executors
-            if (simulationExecutorService == null || simulationExecutorService.isShutdown()) {
-                simulationExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-            }
-            if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
-                webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
-                scheduleWebSocketBroadcast(this, new AtomicBoolean(true));
-            }
+            // Notificar a SimulationRunner para reanudar
+            //SimulationRunner.resumeSimulation();
 
             // Notificar a threads en espera
             synchronized (pauseLock) {
@@ -425,27 +419,20 @@ public class SimulationState {
     }
 
     public void stopSimulation() {
-        isStopped = true;
-        // Esperar a que los hilos se detengan
-        if (SimulationRunner.simulationExecutorService != null && !SimulationRunner.simulationExecutorService.isShutdown()) {
-            SimulationRunner.simulationExecutorService.shutdownNow();
-            try {
-                if (!SimulationRunner.simulationExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                    SimulationRunner.simulationExecutorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                SimulationRunner.simulationExecutorService.shutdownNow();
+        stateLock.lock();
+        try {
+            isStopped = true;
+            logger.info("Simulación detenida en tiempo de simulación: " + currentTime);
+
+            // Delegar la detención de executors a SimulationRunner
+            SimulationRunner.stopSimulation();
+
+            // Notificar a threads en espera
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
             }
-        }
-        if (SimulationRunner.webSocketExecutorService != null && !SimulationRunner.webSocketExecutorService.isShutdown()) {
-            SimulationRunner.webSocketExecutorService.shutdownNow();
-            try {
-                if (!SimulationRunner.webSocketExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                    SimulationRunner.webSocketExecutorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                SimulationRunner.webSocketExecutorService.shutdownNow();
-            }
+        } finally {
+            stateLock.unlock();
         }
     }
 
@@ -591,67 +578,42 @@ public class SimulationState {
     }
 
     public JsonObject getCurrentPositionsGeoJSON() {
-        long currentTimestamp = System.currentTimeMillis();
-        long timeSinceLastUpdate = currentTimestamp - lastUpdateTimestamp.get();
-
-        if (timeSinceLastUpdate < UPDATE_THRESHOLD && lastPositions != null) {
-            return lastPositions;
-        }
-
-        // Prealocar StringBuilder con un tamaño estimado
-        int estimatedSize = vehicles.size() * 200; // ~200 bytes por vehículo
-        StringBuilder featuresJson = new StringBuilder(estimatedSize);
-        featuresJson.append("[");
-        boolean first = true;
-
-        // Crear plantilla del feature para reutilizar
-        String featureTemplate = "{"
-                + "\"type\":\"Feature\","
-                + "\"geometry\":{"
-                + "\"type\":\"Point\","
-                + "\"coordinates\":[%f,%f]},"
-                + "\"properties\":{"
-                + "\"vehicleCode\":\"%s\","
-                + "\"status\":\"%s\"}}";
-
-        for (Vehicle vehicle : vehicles.values()) {
-            Position position = vehicle.getCurrentPosition(currentTime);
-            if (position != null) {
-                if (!first) {
-                    featuresJson.append(',');
-                }
-                first = false;
-
-                // Usar String.format para mejor rendimiento con números
-                featuresJson.append(String.format(
-                        featureTemplate,
-                        position.getLongitude(),
-                        position.getLatitude(),
-                        vehicle.getCode(),
-                        vehicle.getEstado()
-                ));
-            }
-        }
-        featuresJson.append("]");
-
+        StringBuilder builder = stringBuilderPool.borrow();
         try {
-            JsonObject featureCollection = new JsonObject();
-            featureCollection.addProperty("type", "FeatureCollection");
-            featureCollection.addProperty("timestamp", currentTimestamp);
+            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
 
-            JsonParser parser = new JsonParser();
-            JsonArray features = parser.parse(featuresJson.toString()).getAsJsonArray();
-            featureCollection.add("features", features);
+            boolean first = true;
+            for (Vehicle vehicle : vehicles.values()) {
+                Position position = vehicle.getCurrentPosition(getCurrentTime());
+                if (position != null) {
+                    if (!first) {
+                        builder.append(',');
+                    }
+                    first = false;
+                    appendVehicleFeature(builder, vehicle, position);
+                }
+            }
 
-            lastPositions = featureCollection;
-            lastUpdateTimestamp.set(currentTimestamp);
-            updateCounter.incrementAndGet();
+            builder.append("],\"timestamp\":")
+                    .append(System.currentTimeMillis())
+                    .append("}");
 
-            return featureCollection;
-        } catch (Exception e) {
-            logger.severe("Error parsing JSON: " + e.getMessage());
-            return lastPositions != null ? lastPositions : new JsonObject();
+            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+        } finally {
+            stringBuilderPool.release(builder);
         }
+    }
+
+    private void appendVehicleFeature(StringBuilder builder, Vehicle vehicle, Position position) {
+        builder.append("{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",")
+                .append("\"coordinates\":[")
+                .append(position.getLongitude()).append(",")
+                .append(position.getLatitude()).append("]},")
+                .append("\"properties\":{\"vehicleCode\":\"")
+                .append(vehicle.getCode())
+                .append("\",\"status\":\"")
+                .append(vehicle.getEstado())
+                .append("\"}}");
     }
 
     // Método para limpiar caché si es necesario
