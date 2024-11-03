@@ -103,7 +103,7 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
                 :
                 opcionSeleccionada==3 ? <OpcionAlmacenes />
                 :
-                opcionSeleccionada==4 ? <OpcionVehiculos vehiculos = {datos.vehiculos}/>
+                opcionSeleccionada==4 ? <OpcionVehiculos />
                 :
                 <></>
             }

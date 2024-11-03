@@ -1178,4 +1178,57 @@ public class SimulationState {
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
     }
+
+    // Funcion para obtener todos los detalles de vehiculos
+    // en un JSON
+    // Brando
+
+    public JsonObject getCurrentVehiclesDataGeoJSON() {
+        StringBuilder builder = stringBuilderPool.borrow();
+        try {
+            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
+    
+            boolean first = true;
+            for (Vehicle vehicle : vehicles.values()) {
+                Position position = vehicle.getCurrentPosition(getCurrentTime());
+                if (position != null) {
+                    if (!first) {
+                        builder.append(',');
+                    }
+                    first = false;
+                    appendVehicleFullDataFeature(builder, vehicle, position);
+                }
+            }
+    
+            builder.append("],\"timestamp\":")
+                    .append(System.currentTimeMillis())
+                    .append("}");
+    
+            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+        } finally {
+            stringBuilderPool.release(builder);
+        }
+    }
+    
+    private void appendVehicleFullDataFeature(StringBuilder builder, Vehicle vehicle, Position position) {
+        builder.append("{\"type\":\"Feature\",\"properties\":{")
+                .append("\"vehicleCode\":\"").append(vehicle.getCode()).append("\",")
+                .append("\"ubicacionActual\":\"").append(vehicle.getCurrentLocationUbigeo()).append("\",")
+                .append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
+                        ? vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo() : " ").append("\",")
+                .append("\"tipo\":\"").append(vehicle.getType()).append("\",")
+                .append("\"capacidadUsada\":").append(vehicle.getCurrentCapacity()).append(",")
+                .append("\"capacidadMaxima\":").append(vehicle.getCapacity()).append(",")
+                .append("\"status\":\"").append(vehicle.getEstado().toString()).append("\",")
+                .append("\"velocidad\":").append(vehicle.getStatus() != null ? vehicle.getStatus().getCurrentSpeed() : 0)
+                .append("},");
+    
+        // Add the geometry (location)
+        builder.append("\"geometry\":{\"type\":\"Point\",\"coordinates\":[")
+                .append(position.getLongitude()).append(",")
+                .append(position.getLatitude())
+                .append("]}}");
+    }
+    
+
 }
