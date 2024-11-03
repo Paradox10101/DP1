@@ -3,7 +3,8 @@ package com.odiparpack.models;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 import com.google.gson.Gson;
 
 public class SimulationReport {
@@ -73,17 +74,38 @@ public class SimulationReport {
 
     private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state) {
         // Valores hardcodeados por ahora
-        Map<String, Integer> demandas = new HashMap<>();
+        //Aqui se debe considerar solo cuando se realiza el pedido
+        //!Cuando se entrega el pedido ya es otra metrica (que no estamos abarcando)
+        //Entonces se debe colocar en el mismo lugar donde se esta asignando el pedido --> pero ahora la relevancia esta en el "DESTINO"
+        // Obtener el mapa de demandas por ciudad desde el estado de simulación
+        Map<String, Integer> cityOrderCount = state.getCityOrderCount();
+
+        // Ordenar las ciudades por cantidad de pedidos de mayor a menor y limitar a las 5 primeras
+        Map<String, Integer> topDemandCities = cityOrderCount.entrySet()
+                .stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())) // Ordenar de mayor a menor demanda
+                .limit(5) // Limitar a las 5 ciudades con mayor demanda
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, // En caso de conflicto, mantener el valor existente
+                        LinkedHashMap::new // Mantener el orden de inserción
+                ));
+
+        return topDemandCities;
+
+        /*Map<String, Integer> demandas = new HashMap<>();
         demandas.put("Lima", 50);
         demandas.put("Arequipa", 30);
         demandas.put("Trujillo", 20);
         demandas.put("Junín", 10);
         demandas.put("Huancayo", 40);
-        return demandas;
+        return demandas;*/
     }
 
     private Map<String, Integer> calculateParadasEnAlmacenes(SimulationState state) {
         // Valores hardcodeados por ahora
+        //estos son las veces que el vehiculo regresa al almacen? o son las veces que un vehiculo sale de un almacen.
         Map<String, Integer> paradas = new HashMap<>();
         paradas.put("Trujillo", 10);
         paradas.put("Lima", 15);
