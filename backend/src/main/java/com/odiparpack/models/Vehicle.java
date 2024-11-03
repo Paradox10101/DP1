@@ -96,6 +96,20 @@ public class Vehicle {
     private LocalDateTime journeyStartTime;
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
 
+    public int getCurrentSegmentIndex() {
+        return currentSegmentIndex;
+    }
+    public void setCurrentSegmentIndex(int currentSegmentIndex) {
+        this.currentSegmentIndex = currentSegmentIndex;
+    }
+
+    public VehicleStatus getStatus() {
+        return status;
+    }
+    public void setStatus(VehicleStatus status) {
+        this.status = status;
+    }
+
 
     // Clase interna para almacenar posición y tiempo
     public static class PositionTimestamp {

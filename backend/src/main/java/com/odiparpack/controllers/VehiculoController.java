@@ -109,19 +109,7 @@ public class VehiculoController {
             return "Orden asignada al vehículo con éxito.";
         });
 
-        // Endpoint para obtener la ruta de un vehículo
-        get("/vehicleRoute/:vehicleCode", (request, response) -> {
-            String vehicleCode = request.params(":vehicleCode");
-            VehicleRoute route = simulationState.getVehicleRoutes().get(vehicleCode);
-            
-            if (route == null) {
-                response.status(404);
-                return "No se encontró la ruta para el vehículo con código " + vehicleCode;
-            }
-
-            response.type("application/json");
-            return gson.toJson(route);
-        });
+       
 
         // Endpoint para actualizar el estado de un vehículo (ej. en tránsito o disponible)
         put("/vehicleStatus/:vehicleCode", (request, response) -> {
@@ -137,10 +125,10 @@ public class VehiculoController {
             boolean inTransit = Boolean.parseBoolean(request.queryParams("inTransit"));
 
             if (newUbigeo != null) {
-                vehicleState.setCurrentUbigeo(newUbigeo);
+                //vehicleState.setCurrentUbigeo(newUbigeo);
             }
 
-            vehicleState.setInTransit(inTransit);
+            //vehicleState.setInTransit(inTransit);
             response.status(200);
             return "Estado del vehículo actualizado con éxito.";
         });

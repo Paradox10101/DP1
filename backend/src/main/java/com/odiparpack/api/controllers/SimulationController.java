@@ -9,7 +9,6 @@ import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
-
 import com.odiparpack.websocket.WarehouseOccupancyWebSocketHandler;
 import spark.Spark;
 

@@ -24,7 +24,8 @@ public class WebSocketVehicleBroadcastTask implements Runnable {
             if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
                 return;
             }
-            JsonObject positions = state.getCurrentPositionsGeoJSON();
+            // JsonObject positions = state.getCurrentPositionsGeoJSON();
+            JsonObject positions = state.getCurrentVehiclesDataGeoJSON();
             VehicleWebSocketHandler.broadcastVehiclePositions(positions);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
