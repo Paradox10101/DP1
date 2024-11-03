@@ -16,14 +16,14 @@ export default function CardEnvio({shipment}){
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <Hash size={16}/>
-                    <div className="pequenno_bold">{'P' + String(shipment.orderCode).padStart(5, '0')}</div>    
+                    <div className="pequenno_bold">{'P' + String(shipment.id).padStart(5, '0')}</div>    
                 </div>
                 <div className="pequenno">{shipment.startTime}</div>
             </div>
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <MapPin size={16}/>
-                    <div className="pequenno">{shipment.originUbigeo + " -> " + shipment.destinyUbigeo}</div>
+                    <div className="pequenno">{shipment.originCity + " -> " + shipment.destinationCity}</div>
                 </div>
                 <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
                     (
@@ -40,11 +40,11 @@ export default function CardEnvio({shipment}){
                 <div className="flex flex-row gap-2 items-center">
                     <Package size={16}/>
                     <div 
-                    className="pequenno">{shipment.remainingPackages + (shipment.remainingPackages>1?" paquetes":" paquete")}</div>
+                    className="pequenno">{shipment.quantity + (shipment.quantity>1?" paquetes":" paquete")}</div>
                 </div>
                 <div className="flex flex-row gap-2 items-center">
                     <Clock size={16}/>
-                    <div className="pequenno">{shipment.remainingTimeDays + "d " + String(shipment.remainingTimeHours).padStart(2, '0')+"h:"+String(shipment.remainingTimeMinutes).padStart(2, '0') + "m"}</div>
+                    <div className="pequenno">{shipment.duetime}</div>
                 </div>
             </div>
         </div>
