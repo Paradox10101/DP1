@@ -36,6 +36,14 @@ public class TimeAdvancementTask implements Runnable {
             state.updateSimulationTime();
             LocalDateTime currentTime = state.getCurrentTime();
 
+            // Verificar si ha pasado un día completo
+
+            long hours = state.calculateIntervalTime();
+            if (hours != 0 && hours % 24 == 0) {
+                // Llamar al método para guardar los pedidos del día actual
+                state.guardarPedidosDiarios();
+            }
+
             state.updateBlockages(currentTime, state.getAllBlockages());
             state.updateVehicleStates();
             state.updateOrderStatuses();
