@@ -22,7 +22,7 @@ public class WarehouseOccupancyWebSocketHandler extends BaseWebSocketHandler {
         // Enviar estado actual al nuevo cliente
         if (!lastOccupancyStates.isEmpty()) {
             try {
-                JsonObject currentState = createOccupancyUpdate(lastOccupancyStates);
+                    JsonObject currentState = createOccupancyUpdate(lastOccupancyStates);
                 session.getRemote().sendString(gson.toJson(currentState));
             } catch (IOException e) {
                 logger.warning("Error sending initial occupancy state: " + e.getMessage());

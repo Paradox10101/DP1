@@ -1,66 +1,73 @@
 package com.odiparpack.websocket;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.odiparpack.models.Order;
-import com.odiparpack.models.SimulationState;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
-
 import java.io.IOException;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @WebSocket
-public class ShipmentWebSocketHandler {
-    private static Set<Session> sessions = ConcurrentHashMap.newKeySet();
-    private static Gson gson = new Gson();
-    private static SimulationState simulationState;
+public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
+    private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private static final Object lock = new Object();
+    private static JsonObject lastShipmentList;
 
-    public ShipmentWebSocketHandler() {
-        // No-arg constructor required by Spark
-    }
 
-    // Provide a setter for simulationState
-    public static void setSimulationState(SimulationState state) {
-        simulationState = state;
-    }
-
-    public ShipmentWebSocketHandler(SimulationState state) {
-        simulationState = state;
-    }
-
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
+    @Override
+    protected void handleConnect(Session session) {
         sessions.add(session);
-        System.out.println("(WebSocket de envíos) Cliente conectado : " + session.getRemoteAddress().getAddress());
+        // Enviar último estado conocido al nuevo cliente
+        if (lastShipmentList != null) {
+            try {
+                session.getRemote().sendString(gson.toJson(lastShipmentList));
+            } catch (IOException e) {
+                logger.warning("Error sending initial state to new client: " + e.getMessage());
+            }
+        }
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason) {
+    @Override
+    protected void handleDisconnect(Session session) {
         sessions.remove(session);
-        System.out.println("(WebSocket de envíos) Cliente desconectado : " + session.getRemoteAddress().getAddress());
     }
 
-    @OnWebSocketMessage
-    public void onMessage(Session session, String message) {
-        // Manejar mensajes entrantes si es necesario
+    @Override
+    protected void broadcastMessage(JsonObject positions) {
+        broadcastShipments(positions);
     }
 
-    @OnWebSocketError
-    public void onError(Session session, Throwable error) {
-        System.err.println("(WebSocket de envíos) Error: " + error.getMessage());
+
+    public static void broadcastShipments(JsonObject shipmentList) {
+
+        lastShipmentList = shipmentList; // Actualizar cache
+        String message = gson.toJson(shipmentList);
+
+        // Log del mensaje JSON antes de enviarlo
+        logger.info("Mensaje JSON para WebSocket: " + message);
+
+        sessions.removeIf(session -> {
+            if (!session.isOpen()) {
+                return true;
+            }
+
+            try {
+                session.getRemote().sendString(message);
+                return false;
+            } catch (IOException e) {
+                logger.warning("Error sending metrics to session: " + e.getMessage());
+                return true;
+            }
+        });
     }
 
-    //envios de estados de los envios
+
+
+
+    /*
     public static void broadcastShipments() {
 
-        if (simulationState != null) {
-            List<Order> orders = simulationState.getOrders();
+        if (lastShipmentStates != null) {
+            List<Order> orders = lastShipmentStates.getOrders();
             JsonObject featureCollection = new JsonObject();
             featureCollection.addProperty("type", "FeatureCollection");
             JsonArray features = new JsonArray();
@@ -94,4 +101,6 @@ public class ShipmentWebSocketHandler {
             }
         }
     }
+    */
+
 }

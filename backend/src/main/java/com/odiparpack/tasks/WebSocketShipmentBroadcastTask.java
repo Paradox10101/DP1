@@ -1,5 +1,6 @@
 package com.odiparpack.tasks;
 
+import com.google.gson.JsonObject;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 
@@ -23,7 +24,8 @@ public class WebSocketShipmentBroadcastTask implements Runnable {
             if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
                 return;
             }
-            ShipmentWebSocketHandler.broadcastShipments();
+            JsonObject shipmentList = state.getShipmentListJson();
+            ShipmentWebSocketHandler.broadcastShipments(shipmentList);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in shipment broadcast task", e);
         }

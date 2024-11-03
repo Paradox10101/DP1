@@ -66,8 +66,7 @@ public class SimulationController {
         webSocket("/ws/simulation", SimulationMetricsWebSocketHandler.class);
         webSocket("/ws/occupancy", WarehouseOccupancyWebSocketHandler.class);  // Nueva línea
         //VehicleWebSocketHandler.setSimulationState(simulationState);
-        webSocket("/wsShipments", ShipmentWebSocketHandler.class);
-        ShipmentWebSocketHandler.setSimulationState(simulationState);
+        webSocket("/ws/shipments", ShipmentWebSocketHandler.class);
     }
 
     private void initializeRoutes() {

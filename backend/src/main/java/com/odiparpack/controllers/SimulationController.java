@@ -310,15 +310,10 @@ public class SimulationController {
     public void start() {
         port(4567);
 
-
         // Configurar WebSockets
         configureWebSockets();
 
-        //VehicleWebSocketHandler.setSimulationState(simulationState);
-        ShipmentWebSocketHandler.setSimulationState(simulationState);
-
         //oficinasws
-
 
         new OficinaController();
         new AlmacenController();
