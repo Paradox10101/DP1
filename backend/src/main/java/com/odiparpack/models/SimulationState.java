@@ -13,13 +13,9 @@ import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +75,13 @@ public class SimulationState {
     private double totalCapacityUsed = 0;
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
+    private int totalOrdersCount = 0;
+    private int currentDayOrders = 0;
+    private List<Integer> orderbyDays;
 
+    public LocalDateTime getSimulationStartTime() {
+        return simulationStartTime;
+    }
     private static final StringBuilderPool stringBuilderPool;
 
     static {
@@ -347,6 +349,10 @@ public class SimulationState {
         }
     }
 
+    public long calculateIntervalTime(){
+        return Duration.between(simulationStartTime, currentTime).toHours();
+    }
+
     private void broadcastSimulationSummary() {
         JsonObject summary = new JsonObject();
 
@@ -490,7 +496,7 @@ public class SimulationState {
         this.currentTimeMatrix = Arrays.stream(originalTimeMatrix)
                 .map(long[]::clone)
                 .toArray(long[][]::new);
-
+        this.orderbyDays = new ArrayList<>();
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
@@ -752,6 +758,44 @@ public class SimulationState {
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
 
+    //Metodo que se llama cada vez que se asigna un pedido a un vehículo
+    public void assignOrdersCount(){
+        currentDayOrders++;
+    }
+
+    public void guardarPedidosDiarios() {
+        if(currentDayOrders != 0){
+            stateLock.lock();
+            try {
+                orderbyDays.add(currentDayOrders);
+                totalOrdersCount += currentDayOrders;
+                currentDayOrders = 0; // Reiniciar el conteo diario para el siguiente día
+                logger.info("Pedidos guardados para el día actual. Total de pedidos: " + totalOrdersCount);
+            } finally {
+                stateLock.unlock();
+            }
+        }
+    }
+
+    public int obteinCountOrder(){
+        return totalOrdersCount;
+    }
+    public List<Integer> getOrderbyDays(){
+        return orderbyDays;
+    }
+    // Obtener el promedio de pedidos por día
+    public double obtenerPromedioPedidosPorDia() {
+        if (this.orderbyDays.isEmpty()) {
+            return 0.0; // Evitar división por cero
+        }
+
+        int totalPedidos = 0;
+        for (int pedidos : this.orderbyDays) {
+            totalPedidos += pedidos;
+        }
+
+        return (double) totalPedidos / this.orderbyDays.size();
+    }
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
     public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {

@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.odiparpack.models.*;
 import com.odiparpack.simulation.maintenance.MaintenanceManager;
-import com.odiparpack.simulation.order.OrderManager;
 import com.odiparpack.simulation.route.RouteManager;
 
 import java.time.LocalDateTime;
@@ -76,6 +75,7 @@ public class VehicleManager {
                     vehicle.updateStatus(currentTime, warehouseManager);
                     // Añadir la actualización de métricas aquí también
                     simulationState.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
+                    simulationState.assignOrdersCount();//AQUI NO FUNCIONA
                 }
 
                 if (vehicle.shouldCalculateNewRoute(currentTime)) {
@@ -167,6 +167,9 @@ public class VehicleManager {
                     //state.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
                     // Notificar a SimulationState de la nueva asignación
                     simulationState.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
+                    //AL PARECER COLOCARLO AQUI NO FUNCIONA <----------------
+                    simulationState.assignOrdersCount();
+
                 } else {
                     logger.warning(String.format("No se pudo calcular ruta para el vehículo %s y la orden %d", vehicle.getCode(), order.getId()));
                 }
