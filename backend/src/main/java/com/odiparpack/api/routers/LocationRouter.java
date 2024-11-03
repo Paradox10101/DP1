@@ -70,7 +70,7 @@ public class LocationRouter extends BaseRouter {
             JsonObject feature = new JsonObject();
             feature.addProperty("type", "Feature");
 
-            // Agregar geometría
+            // Geometría
             JsonObject geometry = new JsonObject();
             geometry.addProperty("type", "Point");
             JsonArray coordinates = new JsonArray();
@@ -79,15 +79,20 @@ public class LocationRouter extends BaseRouter {
             geometry.add("coordinates", coordinates);
             feature.add("geometry", geometry);
 
-            // Agregar propiedades
+            // Propiedades extendidas
             JsonObject properties = new JsonObject();
             properties.addProperty("name", loc.getProvince());
             properties.addProperty("ubigeo", loc.getUbigeo());
             properties.addProperty("type", almacenesPrincipales.contains(loc.getUbigeo()) ? "warehouse" : "office");
+            properties.addProperty("province", loc.getProvince());
+            properties.addProperty("department", loc.getDepartment());
+            properties.addProperty("region", loc.getNaturalRegion());
 
-            // Si es oficina, agregar capacidad
+            // Capacidad solo para oficinas
             if (!almacenesPrincipales.contains(loc.getUbigeo())) {
-                properties.addProperty("maxCapacity", loc.getWarehouseCapacity());
+                properties.addProperty("capacity", loc.getWarehouseCapacity());
+                // Inicializar occupiedPercentage en 0
+                properties.addProperty("occupiedPercentage", 0);
             }
 
             feature.add("properties", properties);

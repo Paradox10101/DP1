@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { errorAtom, ErrorTypes } from '../atoms/errorAtoms';
-import { serverAvailableAtom, simulationStatusAtom } from '../atoms/simulationAtoms';
+import { simulationStatusAtom } from '../atoms/simulationAtoms';
 
 const WEBSOCKET_CONFIG = {
     MAX_RECONNECT_ATTEMPTS: 5,
@@ -49,29 +49,47 @@ export const useSimulationMetrics = () => {
             websocketRef.current.close();
             websocketRef.current = null;
         }
-        setIsConnected(false);
+        setIsConnected(prev => {
+            if (prev !== false) return false;
+            return prev;
+        });
     }, []);
 
     const handleMetricsMessage = useCallback((event) => {
         try {
             const data = JSON.parse(event.data);
-            // Log 2: Datos después del parsing
-            //console.log('Datos parseados:', data);
-
-            // Validar que el mensaje contenga las métricas necesarias
             if (data.startTime && data.endTime &&
                 data.simulatedTime && data.realElapsedTime) {
 
-                // Log 3: Datos validados antes de setear
-                /* console.log('Métricas válidas recibidas:', {
-                    simulationStartTime: data.simulationStartTime,
-                    simulationEndTime: data.simulationEndTime,
-                    simulatedTime: data.simulatedTime,
-                    realElapsedTime: data.realElapsedTime
-                }); */
+                // Formateamos las métricas aquí
+                const formattedData = {
+                    startTime: new Date(data.startTime).toLocaleString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    }),
+                    endTime: new Date(data.endTime).toLocaleString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    }),
+                    simulatedTime: data.simulatedTime || "--:--:--",
+                    realElapsedTime: data.realElapsedTime || "--:--:--"
+                };
 
-                setMetrics(data);
-                setError(null);
+                setMetrics(prevMetrics => {
+                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
+                        return formattedData;
+                    }
+                    return prevMetrics;
+                });
+                setError(prevError => (prevError ? null : prevError));
             } else {
                 console.warn('Datos incompletos recibidos:', data);
                 throw new Error('Formato de métricas inválido');
@@ -85,7 +103,7 @@ export const useSimulationMetrics = () => {
     const attemptReconnect = useCallback(() => {
         if (reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS) {
             console.log('Máximo número de intentos de reconexión de métricas alcanzado');
-            setError(createError(
+            setError(prevError => createError(
                 ErrorTypes.CONNECTION,
                 'No se pudo reconectar al servicio de métricas.'
             ));
@@ -109,14 +127,20 @@ export const useSimulationMetrics = () => {
 
             websocketRef.current.onopen = () => {
                 console.log('WebSocket de métricas conectado');
-                setIsConnected(true);
-                setError(null);
-                setReconnectAttempts(0);
+                setIsConnected(prev => {
+                    if (prev !== true) return true;
+                    return prev;
+                });
+                setError(prev => (prev ? null : prev));
+                setReconnectAttempts(prev => (prev !== 0 ? 0 : prev));
             };
 
             websocketRef.current.onclose = () => {
                 console.log('WebSocket de métricas cerrado');
-                setIsConnected(false);
+                setIsConnected(prev => {
+                    if (prev !== false) return false;
+                    return prev;
+                });
                 if (simulationStatus === 'running') {
                     attemptReconnect();
                 }
@@ -135,7 +159,6 @@ export const useSimulationMetrics = () => {
         }
     }, [handleMetricsMessage, cleanup, attemptReconnect, simulationStatus, setError]);
 
-    // Efecto para manejar la conexión basada en el estado de la simulación
     useEffect(() => {
         if (simulationStatus === 'running') {
             console.log('Iniciando conexión de métricas...');
@@ -148,19 +171,8 @@ export const useSimulationMetrics = () => {
         return cleanup;
     }, [simulationStatus, connectWebSocket, cleanup]);
 
-    const formattedMetrics = useCallback(() => {
-        if (!metrics) return null;
-
-        return {
-            startTime: new Date(metrics.startTime).toLocaleString(),
-            endTime: new Date(metrics.endTime).toLocaleString(),
-            simulatedTime: metrics.simulatedTime,
-            realElapsedTime: metrics.realElapsedTime
-        };
-    }, [metrics]);
-
     return {
-        metrics: formattedMetrics(),
+        metrics,
         isConnected,
         error,
         reconnectAttempts

@@ -13,6 +13,7 @@ import { useWebSocket } from '../../hooks/useWebSocket';
 import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
+import { locationsAtom } from '../../atoms/locationAtoms';
 
 const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
@@ -21,7 +22,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
-  const [locations, setLocations] = useState(null);
+  const [locations, setLocations] = useAtom(locationsAtom);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const [locationError, setLocationError] = useState(null);
@@ -36,14 +37,14 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
    // Obtener y actualizar ubicaciones con reintentos
    const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
     try {
-      console.log('Obteniendo ubicaciones del backend...');
       const response = await fetch('http://localhost:4567/api/v1/locations');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log("ubicaciones: ", data);
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        setLocations(data);
+        setLocations(data); // Actualizar el átomo compartido
         setError(null);
         return true;
       } else {
@@ -61,7 +62,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       }
       return false;
     }
-  }, [setError]);
+  }, [setLocations, setError]);
 
   // Limpiar timeout de reintento si existe
   const clearLocationRetryTimeout = useCallback(() => {
@@ -106,7 +107,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           vehicleCount: performanceManager.metrics.vehicleCount,
           performanceLevel: performanceManager.performanceLevel
         });
-      }, 1000 / 5); // 30 actualizaciones por segundo
+      }, 1000 / 5); // 5 actualizaciones por segundo
 
       return () => clearInterval(updateInterval);
     }

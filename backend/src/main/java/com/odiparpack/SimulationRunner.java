@@ -4,6 +4,10 @@ import com.google.gson.JsonObject;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 import com.odiparpack.models.*;
+import com.odiparpack.tasks.PlanificadorTask;
+import com.odiparpack.tasks.TimeAdvancementTask;
+import com.odiparpack.tasks.WebSocketShipmentBroadcastTask;
+import com.odiparpack.tasks.WebSocketVehicleBroadcastTask;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
@@ -11,6 +15,7 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,14 +25,97 @@ import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static com.odiparpack.Utils.formatTime;
 
 public class SimulationRunner {
+    // Constantes para el manejo de threads
+    private static final int CORE_MULTIPLIER = 2;
+    private static final int MIN_THREADS = 4;
+    private static final int MAX_THREADS = 16;
+
+    // Pool centralizado de threads
+    private static ExecutorService mainExecutorService;
+    private static ScheduledExecutorService scheduledExecutorService;
+    private static ScheduledExecutorService webSocketExecutorService;
+    private static ExecutorService computeIntensiveExecutor;
+
     private static final Logger logger = Logger.getLogger(SimulationRunner.class.getName());
     private static final int SIMULATION_DAYS = 7;
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
     public static int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5;
     public static ScheduledExecutorService simulationExecutorService;
-    public static ScheduledExecutorService webSocketExecutorService;
-    private static final int BROADCAST_INTERVAL = 100; // 100ms = 10 updates/segundo
+    private static final int BROADCAST_INTERVAL = 500; // 100ms = 10 updates/segundo
+
+    public static void initializeExecutorServices() {
+        int cores = Runtime.getRuntime().availableProcessors();
+        int optimalThreads = Math.min(MAX_THREADS, Math.max(MIN_THREADS, cores * CORE_MULTIPLIER));
+        ThreadFactory threadFactory = createThreadFactory();
+
+        if (mainExecutorService == null || mainExecutorService.isShutdown()) {
+            mainExecutorService = Executors.newFixedThreadPool(optimalThreads, threadFactory);
+        }
+
+        if (scheduledExecutorService == null || scheduledExecutorService.isShutdown()) {
+            scheduledExecutorService = Executors.newScheduledThreadPool(cores, threadFactory);
+        }
+
+        if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
+            webSocketExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        }
+
+        if (computeIntensiveExecutor == null || computeIntensiveExecutor.isShutdown()) {
+            computeIntensiveExecutor = Executors.newFixedThreadPool(Math.max(1, cores - 1), threadFactory);
+        }
+    }
+
+    public static void pauseSimulation() {
+        /*List<ExecutorService> executors = Arrays.asList(
+                scheduledExecutorService,
+                webSocketExecutorService
+        );
+
+        for (ExecutorService executor : executors) {
+            if (executor instanceof ScheduledExecutorService) {
+                // Para servicios programados, cancelar tareas futuras pero permitir que las actuales terminen
+                ((ScheduledExecutorService) executor).shutdown();
+            }
+        }*/
+    }
+
+    public static void resumeSimulation() {
+        /*// Reiniciar los servicios si es necesario
+        if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
+            webSocketExecutorService = Executors.newSingleThreadScheduledExecutor(createThreadFactory());
+        }
+        if (scheduledExecutorService == null || scheduledExecutorService.isShutdown()) {
+            scheduledExecutorService = Executors.newScheduledThreadPool(
+                    Runtime.getRuntime().availableProcessors(),
+                    createThreadFactory()
+            );
+        }*/
+    }
+
+    public static void stopSimulation() {
+        shutdown();
+    }
+
+    private static ThreadFactory createThreadFactory() {
+        return new ThreadFactory() {
+            private final AtomicInteger counter = new AtomicInteger();
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "simulation-thread-" + counter.incrementAndGet());
+                t.setDaemon(true);
+                return t;
+            }
+        };
+    }
+
+    // Método para verificar el estado de los executors
+    public static boolean areExecutorsRunning() {
+        return !(webSocketExecutorService.isShutdown() ||
+                scheduledExecutorService.isShutdown() ||
+                mainExecutorService.isShutdown() ||
+                computeIntensiveExecutor.isShutdown());
+    }
 
     // Para cambiar velocidad de avance del tiempo
     public enum SimulationSpeed {
@@ -57,6 +145,48 @@ public class SimulationRunner {
         return TIME_ADVANCEMENT_INTERVAL_MINUTES;
     }
 
+    static {
+        int cores = Runtime.getRuntime().availableProcessors();
+        int optimalThreads = Math.min(MAX_THREADS,
+                Math.max(MIN_THREADS, cores * CORE_MULTIPLIER));
+
+        ThreadFactory threadFactory = new ThreadFactory() {
+            private final AtomicInteger counter = new AtomicInteger();
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "simulation-thread-" + counter.incrementAndGet());
+                t.setDaemon(true);  // Permite que la JVM termine si solo quedan threads daemon
+                return t;
+            }
+        };
+
+        mainExecutorService = Executors.newFixedThreadPool(optimalThreads, threadFactory);
+        scheduledExecutorService = Executors.newScheduledThreadPool(
+                cores,
+                r -> {
+                    Thread t = threadFactory.newThread(r);
+                    t.setPriority(Thread.NORM_PRIORITY + 1);
+                    return t;
+                }
+        );
+        webSocketExecutorService = Executors.newSingleThreadScheduledExecutor(
+                r -> {
+                    Thread t = threadFactory.newThread(r);
+                    t.setPriority(Thread.NORM_PRIORITY + 1);
+                    return t;
+                }
+        );
+        computeIntensiveExecutor = Executors.newFixedThreadPool(
+                Math.max(1, cores - 1),
+                r -> {
+                    Thread t = threadFactory.newThread(r);
+                    t.setName("compute-intensive-" + t.getName());
+                    t.setPriority(Thread.MIN_PRIORITY);
+                    return t;
+                }
+        );
+    }
+
     public static void runSimulation(SimulationState state) throws InterruptedException {
         // Obtener los datos necesarios del estado de simulación
         long[][] timeMatrix = state.getCurrentTimeMatrix();
@@ -64,38 +194,68 @@ public class SimulationRunner {
         Map<String, Integer> locationIndices = state.getLocationIndices();
         List<String> locationNames = state.getLocationNames();
         List<String> locationUbigeos = state.getLocationUbigeos();
-        Map<String, List<RouteSegment>> vehicleRoutes = new HashMap<>();
 
         LocalDateTime endTime = state.getCurrentTime().plusDays(SIMULATION_DAYS);
         AtomicBoolean isSimulationRunning = new AtomicBoolean(true);
-
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() + 2);
-        simulationExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-        if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
-            webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
-            scheduleWebSocketBroadcast(state, isSimulationRunning);
-            scheduleWebSocketShipmentBroadcast(state, isSimulationRunning);
-        }
+        Map<String, List<RouteSegment>> vehicleRoutes = new ConcurrentHashMap<>();
 
         try {
-            // Iniciar tareas programadas
-            scheduleTimeAdvancement(state, endTime, isSimulationRunning, vehicleRoutes, executorService);
-            schedulePlanning(state, allOrders, locationIndices, locationNames, locationUbigeos, vehicleRoutes, executorService, isSimulationRunning);
+            // Iniciar broadcasts
+            scheduleWebSocketVehicleBroadcast(state, isSimulationRunning);
+            scheduleWebSocketShipmentBroadcast(state, isSimulationRunning);
 
+            // Programar tareas principales
+            Future<?> timeAdvancement = scheduleTimeAdvancement(
+                    state, endTime, isSimulationRunning, vehicleRoutes);
+            Future<?> planning = schedulePlanning(
+                    state, isSimulationRunning, vehicleRoutes);
+
+            // Monitoreo principal
             while (!state.isStopped() && isSimulationRunning.get()) {
                 if (state.isPaused()) {
                     Thread.sleep(1000);
                     continue;
                 }
-                // Realizar otras tareas si es necesario
                 Thread.sleep(1000);
             }
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Simulación interrumpida", e);
-            throw e;
         } finally {
-            simulationExecutorService.shutdownNow();
+            shutdown();
         }
+    }
+
+    private static void shutdown() {
+        // Crear lista solo con executors no nulos
+        List<ExecutorService> executors = new ArrayList<>();
+
+        if (mainExecutorService != null) executors.add(mainExecutorService);
+        if (scheduledExecutorService != null) executors.add(scheduledExecutorService);
+        if (webSocketExecutorService != null) executors.add(webSocketExecutorService);
+        if (computeIntensiveExecutor != null) executors.add(computeIntensiveExecutor);
+
+        for (ExecutorService executor : executors) {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Registrar el estado antes de nullificar
+        logger.info("Estado de shutdown - " +
+                "Main: " + (mainExecutorService != null) + ", " +
+                "Scheduled: " + (scheduledExecutorService != null) + ", " +
+                "WebSocket: " + (webSocketExecutorService != null) + ", " +
+                "Compute: " + (computeIntensiveExecutor != null));
+
+        // Set executor services to null
+        mainExecutorService = null;
+        scheduledExecutorService = null;
+        webSocketExecutorService = null;
+        computeIntensiveExecutor = null;
     }
 
     public static void stopWebSocketBroadcast() {
@@ -105,23 +265,21 @@ public class SimulationRunner {
         }
     }
 
-    public static void scheduleWebSocketBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
-        webSocketExecutorService.scheduleAtFixedRate(() -> {
-            try {
-                if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
-                    return;
-                }
-
-                JsonObject positions = state.getCurrentPositionsGeoJSON();
-                positions.addProperty("timestamp", System.currentTimeMillis());
-                VehicleWebSocketHandler.broadcastVehiclePositions(positions);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
-            }
-        }, 0, BROADCAST_INTERVAL, TimeUnit.MILLISECONDS);
+    private static void scheduleWebSocketVehicleBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
+        ScheduledFuture<?> future = webSocketExecutorService.scheduleAtFixedRate(
+                new WebSocketVehicleBroadcastTask(state, isSimulationRunning),
+                0, BROADCAST_INTERVAL, TimeUnit.MILLISECONDS
+        );
     }
 
     private static void scheduleWebSocketShipmentBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
+        ScheduledFuture<?> future = webSocketExecutorService.scheduleAtFixedRate(
+                new WebSocketShipmentBroadcastTask(state, isSimulationRunning),
+                0, BROADCAST_INTERVAL, TimeUnit.MILLISECONDS
+        );
+    }
+
+    /*private static void scheduleWebSocketShipmentBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
         webSocketExecutorService.scheduleAtFixedRate(() -> {
             try {
                 if (state.isPaused() || state.isStopped()) return;
@@ -133,9 +291,9 @@ public class SimulationRunner {
                 logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
-    }
+    }*/
 
-    private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime,
+    /*private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime,
                                                 AtomicBoolean isSimulationRunning,
                                                 Map<String, List<RouteSegment>> vehicleRoutes,
                                                 ScheduledExecutorService executorService) {
@@ -174,9 +332,34 @@ public class SimulationRunner {
                 logger.log(Level.SEVERE, "Error en la tarea de avance del tiempo", e);
             }
         }, 0, TIME_ADVANCEMENT_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
+    }*/
+
+    private static Future<?> scheduleTimeAdvancement(
+            SimulationState state,
+            LocalDateTime endTime,
+            AtomicBoolean isSimulationRunning,
+            Map<String, List<RouteSegment>> vehicleRoutes) {
+
+        return scheduledExecutorService.scheduleAtFixedRate(
+                new TimeAdvancementTask(state, endTime, isSimulationRunning, vehicleRoutes),
+                0, TIME_ADVANCEMENT_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED,
+                TimeUnit.MILLISECONDS
+        );
     }
 
-    private static void schedulePlanning(SimulationState state, List<Order> allOrders,
+    private static Future<?> schedulePlanning(
+            SimulationState state,
+            AtomicBoolean isSimulationRunning,
+            Map<String, List<RouteSegment>> vehicleRoutes) {
+
+        return scheduledExecutorService.scheduleAtFixedRate(
+                new PlanificadorTask(state, isSimulationRunning, vehicleRoutes),
+                0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED,
+                TimeUnit.MILLISECONDS
+        );
+    }
+
+    /*private static void schedulePlanning(SimulationState state, List<Order> allOrders,
                                          Map<String, Integer> locationIndices, List<String> locationNames,
                                          List<String> locationUbigeos, Map<String, List<RouteSegment>> vehicleRoutes,
                                          ScheduledExecutorService executorService, AtomicBoolean isSimulationRunning) {
@@ -201,9 +384,9 @@ public class SimulationRunner {
                 logger.log(Level.SEVERE, "Error en el ciclo de planificación", e);
             }
         }, 0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
-    }
+    }*/
 
-    private static List<Order> getAvailableOrders(List<Order> allOrders, LocalDateTime currentTime) {
+    public static List<Order> getAvailableOrders(List<Order> allOrders, LocalDateTime currentTime) {
         return allOrders.stream()
                 .filter(order -> (order.getStatus() == Order.OrderStatus.REGISTERED
                         || order.getStatus() == Order.OrderStatus.PARTIALLY_ASSIGNED
@@ -212,14 +395,14 @@ public class SimulationRunner {
                 .collect(Collectors.toList());
     }
 
-    private static void logAvailableOrders(List<Order> availableOrders) {
+    public static void logAvailableOrders(List<Order> availableOrders) {
         logger.info("Órdenes disponibles: " + availableOrders.size());
         for (Order order : availableOrders) {
             logger.info("Orden " + order.getId() + " - Paquetes restantes sin asignar: " + order.getUnassignedPackages());
         }
     }
 
-    private static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, LocalDateTime currentTime, SimulationState state) {
+    public static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, LocalDateTime currentTime, SimulationState state) {
         List<VehicleAssignment> assignments = new ArrayList<>();
 
         // Ordenar los pedidos por dueTime (los más urgentes primero)
@@ -333,10 +516,54 @@ public class SimulationRunner {
                 .collect(Collectors.toList());
     }
 
-    private static void calculateAndApplyRoutes(long[][] currentTimeMatrix, List<VehicleAssignment> assignments,
-                                                Map<String, Integer> locationIndices, List<String> locationNames,
-                                                List<String> locationUbigeos, Map<String, List<RouteSegment>> vehicleRoutes,
-                                                SimulationState state, ExecutorService executorService) {
+    public static void calculateAndApplyRoutes(long[][] currentTimeMatrix,
+                                               List<VehicleAssignment> assignments,
+                                               Map<String, Integer> locationIndices,
+                                               List<String> locationNames,
+                                               List<String> locationUbigeos,
+                                               Map<String, List<RouteSegment>> vehicleRoutes,
+                                               SimulationState state) {
+        if (locationIndices == null || locationIndices.isEmpty()) {
+            logger.severe("locationIndices no está inicializado.");
+            return;
+        }
+
+        Map<String, List<VehicleAssignment>> assignmentGroups = groupAssignmentsByOriginDestination(assignments);
+        List<VehicleAssignment> filteredAssignments = new ArrayList<>();
+        for (List<VehicleAssignment> group : assignmentGroups.values()) {
+            filteredAssignments.add(group.get(0));
+        }
+
+        DataModel data = new DataModel(currentTimeMatrix, state.getActiveBlockages(),
+                filteredAssignments, locationIndices,
+                locationNames, locationUbigeos);
+
+        // Usar computeIntensiveExecutor en lugar de executorService
+        Future<?> calculation = computeIntensiveExecutor.submit(() -> {
+            try {
+                Map<String, List<RouteSegment>> newRoutes = calculateRouteWithStrategies(data, state, assignmentGroups);
+                vehicleRoutes.putAll(newRoutes);
+                logger.info("Nuevas rutas calculadas y agregadas en tiempo de simulación: " + state.getCurrentTime());
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error durante el cálculo de rutas", e);
+            }
+        });
+
+        // Opcional: Esperar con timeout
+        try {
+            calculation.get(120, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.warning("Cálculo de rutas excedió tiempo máximo de 120 segundos");
+            calculation.cancel(true);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.log(Level.SEVERE, "Error en cálculo de rutas", e);
+        }
+    }
+
+    /*public static void calculateAndApplyRoutes(long[][] currentTimeMatrix, List<VehicleAssignment> assignments,
+                                               Map<String, Integer> locationIndices, List<String> locationNames,
+                                               List<String> locationUbigeos, Map<String, List<RouteSegment>> vehicleRoutes,
+                                               SimulationState state, ExecutorService executorService) {
         if (locationIndices == null || locationIndices.isEmpty()) {
             logger.severe("locationIndices no está inicializado.");
             return;
@@ -363,7 +590,7 @@ public class SimulationRunner {
                 logger.log(Level.SEVERE, "Error durante el cálculo de rutas", e);
             }
         });
-    }
+    }*/
 
     private static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state, Map<String, List<VehicleAssignment>> assignmentGroups) {
         logger.info("\n--- Inicio del cálculo de rutas con estrategias ---");

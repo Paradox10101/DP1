@@ -1,6 +1,7 @@
 package com.odiparpack.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.odiparpack.models.SimulationState;
 import org.eclipse.jetty.websocket.api.Session;
@@ -30,9 +31,10 @@ public class VehicleWebSocketHandler extends BaseWebSocketHandler {
     }
 
     private static final Map<Session, SessionInfo> sessions = new ConcurrentHashMap<>();
-    private static final int MAX_MISSED_UPDATES = 5;
-    private static final Queue<JsonObject> positionBuffer = new ConcurrentLinkedQueue<>();
-    private static final int BUFFER_SIZE = 5;
+    private static final int MAX_MISSED_UPDATES = 3;
+    private static final Gson gson = new GsonBuilder()
+            .disableHtmlEscaping()
+            .create();
 
     @Override
     protected void handleConnect(Session session) {
@@ -50,12 +52,6 @@ public class VehicleWebSocketHandler extends BaseWebSocketHandler {
     }
 
     public static void broadcastVehiclePositions(JsonObject positions) {
-        // Mantener buffer de posiciones recientes
-        positionBuffer.offer(positions);
-        while (positionBuffer.size() > BUFFER_SIZE) {
-            positionBuffer.poll();
-        }
-
         String message = gson.toJson(positions);
         long currentTime = System.currentTimeMillis();
 
@@ -75,7 +71,7 @@ public class VehicleWebSocketHandler extends BaseWebSocketHandler {
             } catch (IOException e) {
                 info.missedUpdates++;
                 logger.warning("Error sending to session: " + e.getMessage());
-                return false;
+                return info.missedUpdates >= MAX_MISSED_UPDATES;
             }
         });
     }

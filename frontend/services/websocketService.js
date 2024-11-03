@@ -1,86 +1,74 @@
+// services/websocketService.js
 export class WebSocketService {
-    constructor(url, options = {}) {
-      this.url = url;
-      this.options = {
-        maxReconnectAttempts: 5,
-        reconnectDelay: 3000,
-        ...options
-      };
-      this.reconnectAttempts = 0;
-      this.handlers = new Map();
-    }
-  
-    connect() {
-      this.ws = new WebSocket(this.url);
-      this.setupEventHandlers();
-    }
-  
-    setupEventHandlers() {
-      this.ws.onopen = () => this.handleOpen();
-      this.ws.onmessage = (event) => this.handleMessage(event);
-      this.ws.onclose = () => this.handleClose();
-      this.ws.onerror = (error) => this.handleError(error);
-    }
-  
-    handleOpen() {
-      this.reconnectAttempts = 0;
-      this.notifyHandlers('open');
-    }
-  
-    handleMessage(event) {
+  constructor(url, options = {}) {
+    this.url = url;
+    this.options = {
+      reconnectAttempts: 5,
+      reconnectInterval: 3000,
+      onOpen: () => {},
+      onClose: () => {},
+      onMessage: () => {},
+      onError: () => {},
+      ...options
+    };
+    this.ws = null;
+    this.reconnectCount = 0;
+    this.isConnecting = false;
+  }
+
+  connect() {
+    if (this.ws?.readyState === WebSocket.OPEN || this.isConnecting) return;
+
+    this.isConnecting = true;
+    this.ws = new WebSocket(this.url);
+
+    this.ws.onopen = () => {
+      this.isConnecting = false;
+      this.reconnectCount = 0;
+      this.options.onOpen();
+    };
+
+    this.ws.onclose = (event) => {
+      this.isConnecting = false;
+      this.options.onClose(event);
+      this.attemptReconnect();
+    };
+
+    this.ws.onerror = (error) => {
+      this.isConnecting = false;
+      this.options.onError(error);
+    };
+
+    this.ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        this.notifyHandlers('message', data);
+        this.options.onMessage(data);
       } catch (error) {
-        this.notifyHandlers('error', error);
+        console.error('Error parsing WebSocket message:', error);
       }
+    };
+  }
+
+  attemptReconnect() {
+    if (this.reconnectCount >= this.options.reconnectAttempts) {
+      console.error('Max reconnection attempts reached');
+      return;
     }
-  
-    handleClose() {
-      this.notifyHandlers('close');
-      this.attemptReconnect();
-    }
-  
-    handleError(error) {
-      this.notifyHandlers('error', error);
-    }
-  
-    attemptReconnect() {
-      if (this.reconnectAttempts < this.options.maxReconnectAttempts) {
-        setTimeout(() => {
-          this.reconnectAttempts++;
-          this.connect();
-        }, this.options.reconnectDelay);
-      } else {
-        this.notifyHandlers('maxReconnectAttemptsReached');
-      }
-    }
-  
-    addHandler(event, handler) {
-      if (!this.handlers.has(event)) {
-        this.handlers.set(event, new Set());
-      }
-      this.handlers.get(event).add(handler);
-    }
-  
-    removeHandler(event, handler) {
-      const handlers = this.handlers.get(event);
-      if (handlers) {
-        handlers.delete(handler);
-      }
-    }
-  
-    notifyHandlers(event, data) {
-      const handlers = this.handlers.get(event);
-      if (handlers) {
-        handlers.forEach(handler => handler(data));
-      }
-    }
-  
-    disconnect() {
-      if (this.ws) {
-        this.ws.close();
-        this.ws = null;
-      }
+
+    setTimeout(() => {
+      this.reconnectCount++;
+      this.connect();
+    }, this.options.reconnectInterval);
+  }
+
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
     }
   }
+
+  isConnected() {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+}

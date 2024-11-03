@@ -182,6 +182,10 @@ public class SimulationRouter extends BaseRouter {
 
     private void startSimulation() {
         isSimulationRunning = true;
+
+        // Reinitialize executor services if they have been shut down
+        SimulationRunner.initializeExecutorServices();
+
         simulationExecutor = Executors.newSingleThreadExecutor();
         simulationFuture = simulationExecutor.submit(() -> {
             try {

@@ -156,7 +156,7 @@ return (
                 
                 <div className="flex flex-col gap-3">
                     <div>
-                        <span className="regular_bold">Resumen de la simulación asd</span>
+                        <span className="regular_bold">Resumen de la simulación</span>
                     </div>
                     <MetricsDisplay/>
                 </div>
