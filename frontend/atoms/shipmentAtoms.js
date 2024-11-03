@@ -29,8 +29,10 @@ export const formattedShipmentsAtom = atom((get) => {
       quantity: order.quantity,
       originCity: order.originCity,
       destinationCity: order.destinationCity,
+      orderTime: order.orderTime,
       dueTime: order.dueTime,
-      timeElapsed: order.timeElapsed,
+      timeElapsedDays: order.timeElapsedDays!==-1?order.timeElapsedDays:feature.timeElapsedDays,
+      timeElapsedHours: order.timeElapsedHours!==-1?order.timeElapsedHours:feature.timeElapsedHours
     };
   });
 });
