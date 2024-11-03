@@ -7,7 +7,7 @@ import com.odiparpack.models.*;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -153,6 +153,13 @@ public class SimulationRunner {
                 state.updateSimulationTime();
                 LocalDateTime currentTime = state.getCurrentTime();
 
+                // Verificar si ha pasado un día completo
+
+                long hours = state.calculateIntervalTime();
+                if (hours != 0 && hours % 24 == 0) {
+                    // Llamar al método para guardar los pedidos del día actual
+                    state.guardarPedidosDiarios();
+                }
                 // Actualizar estado de la simulación
                 state.updateBlockages(currentTime, state.getAllBlockages());
                 state.updateVehicleStates();
@@ -271,7 +278,8 @@ public class SimulationRunner {
 
                     // Actualizar la métrica de capacidad efectiva acumulada
                     state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
-
+                    //AQUI CREO QUE ES <------------------------------- OJITO
+                    state.assignOrdersCount();
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);
