@@ -463,6 +463,12 @@ public class SimulationRunner {
                     state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
                     //AQUI CREO QUE ES <------------------------------- OJITO
                     state.assignOrdersCount();
+                    //Aqui se procesa el pedido para sacar su ubigeo
+                    String destinationCity = order.getDestinationCity();
+                    // Actualizar el contador en el mapa
+                    state.guardarCiudadDestino(destinationCity);
+                    //cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
+
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);

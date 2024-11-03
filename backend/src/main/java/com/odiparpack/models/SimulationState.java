@@ -78,6 +78,7 @@ public class SimulationState {
     private int totalOrdersCount = 0;
     private int currentDayOrders = 0;
     private List<Integer> orderbyDays;
+    private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -222,6 +223,9 @@ public class SimulationState {
             this.isPaused = false;
             this.isStopped = false;
             this.lastModified = 0;
+
+            // Inicializar el contador de pedidos por ciudad
+            cityOrderCount = new HashMap<>();
 
             System.out.println("Initial data reload completed successfully");
             System.out.println("Loaded: " +
@@ -783,19 +787,6 @@ public class SimulationState {
     public List<Integer> getOrderbyDays(){
         return orderbyDays;
     }
-    // Obtener el promedio de pedidos por día
-    public double obtenerPromedioPedidosPorDia() {
-        if (this.orderbyDays.isEmpty()) {
-            return 0.0; // Evitar división por cero
-        }
-
-        int totalPedidos = 0;
-        for (int pedidos : this.orderbyDays) {
-            totalPedidos += pedidos;
-        }
-
-        return (double) totalPedidos / this.orderbyDays.size();
-    }
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
     public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {
@@ -811,6 +802,13 @@ public class SimulationState {
             return 0;
         }
         return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
+    }
+    public void guardarCiudadDestino(String destinationCity){
+        cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
+    }
+
+    public Map<String, Integer> getCityOrderCount(){
+        return cityOrderCount;
     }
 
     private void handleMaintenance(Vehicle vehicle) {
