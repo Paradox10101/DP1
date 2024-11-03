@@ -589,6 +589,7 @@ public class SimulationState {
             builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
 
             boolean first = true;
+
             for (Vehicle vehicle : vehicles.values()) {
                 Position position = vehicle.getCurrentPosition(getCurrentTime());
                 if (position != null) {
@@ -609,6 +610,60 @@ public class SimulationState {
             stringBuilderPool.release(builder);
         }
     }
+
+    //Funcion para obtener el listado de envios
+    public JsonObject getShipmentListJson() {
+        StringBuilder builder = stringBuilderPool.borrow();
+        try {
+            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
+
+            boolean first = true;
+            for (Order order : orders) {
+                if (order != null) {
+                    if (!first) {
+                        builder.append(',');
+                    }
+                    first = false;
+                    appendShipmentFeature(builder, order);
+                }
+            }
+            builder.append("]")
+                    .append("}");
+
+            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+        } finally {
+            stringBuilderPool.release(builder);
+        }
+    }
+
+    private void appendShipmentFeature(StringBuilder builder, Order order) {
+        Order.OrderStatus currentOrderStatus = order.getStatus();
+        builder.append("{")
+                .append("\"type\":\"Feature\",")
+                .append("\"order\":{")
+                .append("\"id\":").append(order.getId()).append(",")
+                .append("\"status\":\"").append(currentOrderStatus).append("\",")
+                .append("\"quantity\":").append(order.getQuantity()).append(",")
+                .append("\"originCity\":\"").append(locations.get(order.getOriginUbigeo()).getProvince()).append("\",")
+                .append("\"destinationCity\":\"").append(locations.get(order.getDestinationUbigeo()).getProvince()).append("\",")
+                .append("\"orderTime\":\"").append(order.getOrderTime()).append("\",")
+                .append("\"dueTime\":\"").append(order.getDueTime()).append("\",");
+
+        if (currentOrderStatus.equals(Order.OrderStatus.DELIVERED) || currentOrderStatus.equals(Order.OrderStatus.PENDING_PICKUP)) {
+            builder.append("\"timeElapsedDays\":-1,")
+                    .append("\"timeElapsedHours\":-1");
+        } else {
+            Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime);
+            builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
+                    .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24);
+        }
+        builder.append("}}");
+
+
+
+    }
+
+
 
     private void appendVehicleFeature(StringBuilder builder, Vehicle vehicle, Position position) {
         builder.append("{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",")

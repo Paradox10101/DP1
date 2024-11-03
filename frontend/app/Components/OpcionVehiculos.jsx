@@ -65,22 +65,24 @@ export default function OpcionVehiculos() {
   }, [filteredVehiculosArray]);
 
   return (
-    <div className="h-full">
-      <div className="flex justify-between flex-row items-center">
+    <div className="h-full flex flex-col gap-4">
+      <div className="flex flex-row justify-between items-center gap-2">
         <Input
           type="text"
           placeholder="Buscar por código"
-          className="focus:outline-none border-2 stroke-black rounded-2xl h-8 pequenno w-[77%]"
-          startContent={<Map className="mr-2" />}
+          startContent={<Map size="18" />}
+          className="focus:outline-none  rounded-xl pequenno w-3/4"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)} // Update search input on change
+          onClear={() => setSearchInput('')}
+          isClearable
         />
         <Button
-          disableRipple={true}
-          startContent={<Filter className="size-2" />}
-          className="focus:outline-none border stroke-black rounded h-8 pequenno w-[22%] bg-[#F4F4F4]"
+        disableRipple={true}
+        startContent={<Filter size="18" />}
+        className="bg-[#F4F4F4]"
         >
-          Filtros
+        Filtros
         </Button>
       </div>
 

@@ -20,7 +20,6 @@ export default function App() {
   const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
   const [error, setError] = useAtom(simulationErrorAtom);
   const [performanceMetrics] = useAtom(performanceMetricsAtom);
-  const [shipments, setShipments] = useState(null);
 
   const toggleControls = () => setShowControls(!showControls);
 
@@ -34,7 +33,6 @@ export default function App() {
             datos={[]}
             toggleControls={toggleControls}
             error={error}
-            shipments={shipments}
           />
         ) : (
           <button
