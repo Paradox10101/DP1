@@ -36,6 +36,21 @@ export default function Dashboard({ shipment }) {
     return <div>Error al cargar los datos.</div>;
   }
 
+  // Helper function para capitalizar nombres de ciudades
+  const capitalizeCityName = (name) => {
+    return name.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  };
+
+  // Obtener las 5 ciudades con mayor demanda de pedidos
+  const demandasEntries = Object.entries(data.demandasPorCiudad);
+  const top5Cities = demandasEntries
+    .sort((a, b) => b[1] - a[1]) // Ordenar por demanda descendente
+    .slice(0, 5); // Tomar las 5 primeras
+
+  // Labels y datos para el gráfico de ciudades con mayor demanda
+  const barLabels = top5Cities.map(([city]) => capitalizeCityName(city));
+  const barDataValues = top5Cities.map(([_, value]) => value);
+
   // Datos de los gráficos con redondeo a dos decimales para porcentajes
   const pieData = {
     labels: ['En Almacén', 'En Oficina', 'En Entrega', 'Entregado'],
@@ -53,17 +68,11 @@ export default function Dashboard({ shipment }) {
   };
 
   const barData = {
-    labels: ['Lima', 'Arequipa', 'Trujillo', 'Junín', 'Huancayo'],
+    labels: barLabels, // Utilizar las etiquetas dinámicas obtenidas del backend
     datasets: [
       {
         label: 'Demandas por Ciudad',
-        data: [
-          data.demandasPorCiudad?.Lima,
-          data.demandasPorCiudad?.Arequipa,
-          data.demandasPorCiudad?.Trujillo,
-          data.demandasPorCiudad?.Junín,
-          data.demandasPorCiudad?.Huancayo,
-        ],
+        data: barDataValues, // Utilizar los valores de demanda obtenidos del backend
         backgroundColor: '#284BCC',
       },
     ],
