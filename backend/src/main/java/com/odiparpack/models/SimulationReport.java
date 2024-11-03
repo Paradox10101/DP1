@@ -1,6 +1,7 @@
 package com.odiparpack.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -9,7 +10,7 @@ public class SimulationReport {
     private double capacidadEfectiva;
     private int pedidosAtendidos;
     private double eficienciaRutas;
-    private int promedioPedidos;
+    private double promedioPedidos;
     private Map<String, Integer> demandasPorCiudad;
     private Map<String, Integer> paradasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
@@ -43,7 +44,8 @@ public class SimulationReport {
 
     private int calculatePedidosAtendidos(SimulationState state) {
         // Por ahora retornamos un valor hardcodeado
-        return 150;
+        //return state.obteinCountOrder();
+        return state.obteinCountOrder();
     }
 
     private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTELA EFICIENCIA DEL CALCULO DE RUTA
@@ -54,9 +56,19 @@ public class SimulationReport {
         return 85.0;
     }
 
-    private int calculatePromedioPedidos(SimulationState state) {
+    private double calculatePromedioPedidos(SimulationState state) {
         // Por ahora retornamos un valor hardcodeado
-        return 20;
+        List<Integer> orderbyDays = state.getOrderbyDays();
+        if (orderbyDays.isEmpty()) {
+            return 0.0; // Evitar división por cero
+        }
+
+        int totalPedidos = 0;
+        for (int pedidos : orderbyDays) {
+            totalPedidos += pedidos;
+        }
+
+        return (double) totalPedidos / orderbyDays.size();
     }
 
     private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state) {
