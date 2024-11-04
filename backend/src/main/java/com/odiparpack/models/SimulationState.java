@@ -640,6 +640,42 @@ public class SimulationState {
         }
     }
 
+
+    //Funcion para obtener el listado de envios en un periodo especificado
+    public JsonObject getShipmentListJsonInPeriod(LocalDateTime initialDate, LocalDateTime endDate) {
+        StringBuilder builder = stringBuilderPool.borrow();
+
+        try {
+            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
+            List<Order> ordersInPeriod = orders.stream()
+                    .filter(order -> {
+                        LocalDateTime orderTime = order.getOrderTime();
+                        return (orderTime.isAfter(initialDate) || orderTime.isEqual(initialDate)) &&
+                                (orderTime.isBefore(endDate) || orderTime.isEqual(endDate));
+                    })
+                    .collect(Collectors.toList());;
+            Collections.reverse(ordersInPeriod);
+
+            boolean first = true;
+            for (Order order : ordersInPeriod) {
+                if (order != null) {
+                    if (!first) {
+                        builder.append(',');
+                    }
+                    first = false;
+                    appendShipmentFeature(builder, order);
+                }
+            }
+            builder.append("]")
+                    .append("}");
+
+            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+        } finally {
+            stringBuilderPool.release(builder);
+        }
+    }
+
+
     private void appendShipmentFeature(StringBuilder builder, Order order) {
         Order.OrderStatus currentOrderStatus = order.getStatus();
         builder.append("{")

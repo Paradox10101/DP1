@@ -1,6 +1,6 @@
 import { Button, Input } from "@nextui-org/react";
 import { filteredShipmentsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/shipmentAtoms';
-import { Filter, Map } from "lucide-react";
+import { Filter, Map, SearchX } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import CardEnvio from "@/app/Components/CardEnvio"
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -64,7 +64,7 @@ export default function OpcionEnvios(){
 
     return (
         
-        <div className="h-full gap-4 flex flex-col">
+        <div className="h-full gap-4 flex flex-col w-full">
         {!hasInitialData?(
             <NoDataMessage />
         ) : (
@@ -91,7 +91,7 @@ export default function OpcionEnvios(){
             <div className="text-right text-sm text-[#939393]">
                 Cantidad de envios: {shipmentsCount}
             </div>
-            <div className="overflow-y-scroll h-3/4 w-full">
+            <div className="h-full w-full">
             {!hasSearchResults && isSearching ? (
                 <NoResultsMessage />
             ) : (
@@ -100,8 +100,9 @@ export default function OpcionEnvios(){
                 <List
                     height={height}
                     itemCount={shipments.length}
-                    itemSize={200}
+                    itemSize={165}
                     width={width}
+                    className="overflow-y-scroll scroll-area"
                 >
                     {Row}
                 </List>
