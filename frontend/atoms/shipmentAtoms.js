@@ -25,6 +25,7 @@ export const formattedShipmentsAtom = atom((get) => {
     const order = feature.order;
     return {
       id: order.id,
+      orderCode: order.orderCode,
       status: order.status,
       quantity: order.quantity,
       originCity: order.originCity,
@@ -43,6 +44,7 @@ const searchShipment = (order, searchQuery) => {
   const searchableFields = [
     order?.originCity,
     order?.destinationCity,
+    order?.orderCode,
   ];
   
   return searchableFields.some(field => 

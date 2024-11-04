@@ -7,7 +7,7 @@ import ModalRutaVehiculoEnvio from "@/app/Components/ModalRutaVehiculoEnvio"
 import { memo, useState } from "react";
 
 const CardEnvio = memo(({
-    id,
+    orderCode,
     status,
     quantity,
     originCity,
@@ -17,17 +17,13 @@ const CardEnvio = memo(({
     timeElapsedDays,
     timeElapsedHours
 }) => {
-    console.log(status)
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const [selectedVehicle, setSelectedVehicle] = useState(null)
     return (
-        <>
-        <button className={"w-full rounded-xl " + (isOpen?" border-4 border-principal text-principal":" bg-white border-1 stroke-black")} onClick={onOpen}>
+        
         <div className="flex flex-col p-4 gap-1">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <Hash size={16}/>
-                    <div className="pequenno_bold">{'P' + String(id).padStart(5, '0')}</div>    
+                    <div className="pequenno_bold">{orderCode}</div>    
                 </div>
                 {
                 status==="REGISTERED"?
@@ -40,7 +36,7 @@ const CardEnvio = memo(({
                 <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
                 :
                 <></>
-            }
+                }
             </div>
             
             <div className="flex flex-row justify-between">
@@ -75,49 +71,6 @@ const CardEnvio = memo(({
             
             
         </div>
-        </button>
-        {
-        selectedVehicle===null?
-        <ModalContainer isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}
-        header={
-            <div className="flex flex-row gap-2">
-                <div className="subEncabezado">Información del envío {'P' + String(id).padStart(5, '0')}</div>
-                <div className={"flex w-[80px] items-center pequenno border text-center justify-center " +
-                    (
-                        status==="En Tránsito"?"bg-[#284BCC] text-[#BECCFF] rounded-xl" :
-                        status==="REGISTERED"?"bg-[#B0F8F4] text-[#4B9490] rounded-xl" :
-                        status==="DELIVERED"?"bg-[#D0B0F8] text-[#7B15FA] rounded-xl" :
-                    ""
-                    )
-                }>
-                {status}
-                </div>
-            </div>
-            
-        }
-        body={
-            <ModalEnvios setSelectedVehicle={setSelectedVehicle}/>
-        }
-        />
-        :
-        <ModalContainer isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}
-        doBeforeClose={()=>{setSelectedVehicle(null)}}
-        header={
-            <div className="flex flex-row gap-2">
-                <button onClick={()=>{setSelectedVehicle(null)}}>
-                    <ArrowLeft size={24}/>
-                </button>
-                <div className="flex flex-row gap-2">
-                    <div className="subEncabezado">Rutas del vehículo {'A505'}</div>
-                </div>
-            </div>
-        }
-        body={
-            <ModalRutaVehiculoEnvio selectedVehicle={selectedVehicle} setSelectedVehicle={setSelectedVehicle}/>
-        }
-        />
-        }
-        </>
         
     )
 });
