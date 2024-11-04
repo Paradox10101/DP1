@@ -95,7 +95,7 @@ export default function OpcionAlmacenes() {
 
           <CapacidadTotalAlmacenes />
 
-          <div className="h-[550px] w-full overflow-y-auto">
+          <div className="h-3/4 w-full overflow-y-auto">
             {!hasSearchResults && isSearching ? (
               <NoResultsMessage />
             ) : (
