@@ -25,18 +25,18 @@ export default function ModalEnvios({shipment, setSelectedVehicle}){
                     </div>
                 </div>
             </div>
-            <div className="bg-[#F7F7F7] p-4 rounded flex flex-row justify-between">
-                <div className="flex flex-col justify-center">
+            <div className="bg-[#F7F7F7] p-4 rounded flex flex-row justify-around">
+                <div className="flex flex-col justify-center text-center">
                     <Package size={32} className="stroke-[#ADADAD] self-center"/>
                     <div className="regular">50</div>
                     <div className="text-[#8E8D8D] pequenno">Paquetes</div>
                 </div>
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center text-center">
                     <Flag size={32} className="stroke-[#ADADAD] self-center"/>
                     <div className="regular">Media</div>
                     <div className="text-[#8E8D8D] pequenno">Prioridad</div>
                 </div>
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center text-center">
                     <Globe size={32} className="stroke-[#ADADAD] self-center"/>
                     <div className="regular">Costa</div>
                     <div className="text-[#8E8D8D] pequenno">Region Destino</div>

@@ -37,6 +37,7 @@ public class SimulationState {
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
     private WarehouseManager warehouseManager;
+    private Map<Integer, List<VehicleAssignment>> vehicleAssignmentsPerOrder = new HashMap<>();
     private List<Vehicle> vehiclesNeedingNewRoutes;
     private List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
     private RouteCache routeCache;
@@ -654,7 +655,7 @@ public class SimulationState {
                                 (orderTime.isBefore(endDate) || orderTime.isEqual(endDate));
                     })
                     .collect(Collectors.toList());;
-            Collections.reverse(ordersInPeriod);
+            //Collections.reverse(ordersInPeriod);
 
             boolean first = true;
             for (Order order : ordersInPeriod) {
@@ -682,6 +683,7 @@ public class SimulationState {
                 .append("\"type\":\"Feature\",")
                 .append("\"order\":{")
                 .append("\"id\":").append(order.getId()).append(",")
+                .append("\"orderCode\":\"").append(order.getOrderCode()).append("\",")
                 .append("\"status\":\"").append(currentOrderStatus).append("\",")
                 .append("\"quantity\":").append(order.getQuantity()).append(",")
                 .append("\"originCity\":\"").append(locations.get(order.getOriginUbigeo()).getProvince()).append("\",")
@@ -689,6 +691,7 @@ public class SimulationState {
                 .append("\"orderTime\":\"").append(order.getOrderTime()).append("\",")
                 .append("\"dueTime\":\"").append(order.getDueTime()).append("\",");
 
+// Calcular tiempo transcurrido solo si el estado no es DELIVERED o PENDING_PICKUP
         if (currentOrderStatus.equals(Order.OrderStatus.DELIVERED) || currentOrderStatus.equals(Order.OrderStatus.PENDING_PICKUP)) {
             builder.append("\"timeElapsedDays\":-1,")
                     .append("\"timeElapsedHours\":-1");
@@ -697,9 +700,42 @@ public class SimulationState {
             builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
                     .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24);
         }
-        builder.append("}}");
+        builder.append("},");
 
+    // Construir el arreglo JSON de vehículos
+        builder.append("\"vehiculos\":[");
 
+        if (vehicleAssignmentsPerOrder.containsKey(order.getId())) {
+            boolean firstVehicle = true;
+            for (VehicleAssignment assignedVehicle : vehicleAssignmentsPerOrder.get(order.getId())) {
+                if (!firstVehicle) builder.append(",");
+                builder.append("{")
+                        .append("\"vehicleCode\":\"").append(assignedVehicle.getVehicle().getCode()).append("\",")
+                        .append("\"orderId\":").append(assignedVehicle.getOrder().getId()).append(",")
+                        .append("\"orderCode\":\"").append(assignedVehicle.getOrder().getOrderCode()).append("\",")
+                        .append("\"orderTime\":\"").append(assignedVehicle.getOrder().getOrderTime()).append("\",");
+
+                // Construir el arreglo JSON de rutas (anidado dentro de cada vehículo)
+                builder.append("\"routes\":[");
+                boolean firstRoute = true;
+                for (RouteSegment routeSegment : assignedVehicle.getRouteSegments()) {
+                    if (!firstRoute) builder.append(",");
+                    builder.append("{")
+                            .append("\"fromUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
+                            .append("\"toUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
+                            .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
+                            .append("\"distance\":").append(routeSegment.getDistance())
+                            .append("}");
+                    firstRoute = false;
+                }
+                builder.append("]");
+                builder.append("}");
+                firstVehicle = false;
+            }
+        }
+
+        builder.append("]"); // Cerrar el arreglo de vehiculos
+        builder.append("}");
 
     }
 
@@ -1266,6 +1302,12 @@ public class SimulationState {
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
     }
+
+    public Map<Integer, List<VehicleAssignment>> getVehicleAssignmentsPerOrder() {
+        return vehicleAssignmentsPerOrder;
+    }
+
+
 
     // Funcion para obtener todos los detalles de vehiculos
     // en un JSON

@@ -123,7 +123,7 @@ export default function OpcionEnvios() {
                 isDismissable={true}
                 blur
             >
-                <ModalContent className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50%vw] min-w-[700px] min-h-[600px] max-h-[750px]">
+                <ModalContent className="h-[850px] min-w-[850px]">
                     <ModalHeader>
                     <div className="flex flex-row gap-2">
                         <div className="subEncabezado">Información del envío {selectedShipment.orderCode}</div>
@@ -142,13 +142,8 @@ export default function OpcionEnvios() {
                     </div>
                     </ModalHeader>
                     <ModalBody>
-                        <ModalEnvios setSelectedVehicle={setSelectedVehicle}/>
+                        <ModalEnvios shipment={selectedShipment} setSelectedVehicle={setSelectedVehicle}/>
                     </ModalBody>
-                    <ModalFooter>
-                        <Button auto flat color="error" onClick={onClose}>
-                            Cerrar
-                        </Button>
-                    </ModalFooter>
                 </ModalContent>
             </Modal>
             }

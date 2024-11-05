@@ -24,8 +24,9 @@ public class WebSocketShipmentBroadcastTask implements Runnable {
             if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
                 return;
             }
+            String lastClientMessage = ShipmentWebSocketHandler.getLastClientMessage();
             JsonObject shipmentList = state.getShipmentListJsonInPeriod(state.getSimulationStartTime(), state.getCurrentTime());
-            ShipmentWebSocketHandler.broadcastShipments(shipmentList);
+            ShipmentWebSocketHandler.broadcastShipments(shipmentList, lastClientMessage);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in shipment broadcast task", e);
         }
