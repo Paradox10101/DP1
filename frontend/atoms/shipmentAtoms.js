@@ -14,6 +14,8 @@ export const totalStatsAtom = atom({
   shipmentCount: 0,
 });
 
+// Nuevo átomo para almacenar el envío seleccionado
+export const selectedShipmentAtom = atom(null);
 
 // Átomo derivado que combina las ubicaciones con los updates de ocupación
 export const formattedShipmentsAtom = atom((get) => {
@@ -30,10 +32,13 @@ export const formattedShipmentsAtom = atom((get) => {
       quantity: order.quantity,
       originCity: order.originCity,
       destinationCity: order.destinationCity,
+      destinationRegion: order.destinationRegion,
+      status: order.status,
       orderTime: order.orderTime,
       dueTime: order.dueTime,
-      timeElapsedDays: order.timeElapsedDays!==-1?order.timeElapsedDays:feature.timeElapsedDays,
-      timeElapsedHours: order.timeElapsedHours!==-1?order.timeElapsedHours:feature.timeElapsedHours
+      timeElapsedDays: order.timeElapsedDays !== -1 ? order.timeElapsedDays : feature.timeElapsedDays,
+      timeElapsedHours: order.timeElapsedHours !== -1 ? order.timeElapsedHours : feature.timeElapsedHours,
+      vehicles: feature.vehicles
     };
   });
 });

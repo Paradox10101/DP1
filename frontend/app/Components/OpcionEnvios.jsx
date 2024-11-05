@@ -1,6 +1,6 @@
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { filteredShipmentsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/shipmentAtoms';
-import { Filter, Map, SearchX } from "lucide-react";
+import { filteredShipmentsAtom, searchInputAtom, searchQueryAtom, selectedShipmentAtom } from '../../atoms/shipmentAtoms';
+import { Filter, Map, MoveLeft, SearchX } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import CardEnvio from "@/app/Components/CardEnvio";
 import { useAtom, useAtomValue } from "jotai";
@@ -8,15 +8,16 @@ import { useShipmentWebSocket } from '../../hooks/useShipmentWebSocket';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import ModalEnvios from "./ModalEnvios";
+import ModalRutaVehiculoEnvio from "./ModalRutaVehiculoEnvio";
 
 export default function OpcionEnvios() {
-    useShipmentWebSocket();
+    const { sendMessage } = useShipmentWebSocket();
     const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
     const shipments = useAtomValue(filteredShipmentsAtom);
     const [searchInput, setSearchInput] = useAtom(searchInputAtom);
     const [, setSearchQuery] = useAtom(searchQueryAtom);
-    const [selectedShipment, setSelectedShipment] = useState(null);
-    const [selectedVehicle,setSelectedVehicle] = useState(null)
+    const [selectedShipment, setSelectedShipment] = useAtom(selectedShipmentAtom); // Usar el átomo
+    const [selectedVehicle, setSelectedVehicle] = useState(null); // Define selectedVehicle
 
     useEffect(() => {
         const debounceTimeout = setTimeout(() => {
@@ -57,7 +58,8 @@ export default function OpcionEnvios() {
                 className={`p-2 border-2 rounded-xl stroke-black ${selectedShipment?.id && selectedShipment.id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
                 onMouseDown={() => {
                     setSelectedShipment(shipment);
-                    onOpen();
+                    sendMessage({ orderId: shipment.id, vehicleCode: "" }); // Enviar mensaje al WebSocket
+                    onOpen(); // Abrir modal
                 }}
             >
                 <CardEnvio key={shipment.id} {...shipment} />
@@ -91,7 +93,7 @@ export default function OpcionEnvios() {
                         </Button>
                     </div>
                     <div className="text-right text-sm text-[#939393]">
-                        Cantidad de envios: {shipmentsCount}
+                        Cantidad de envíos: {shipmentsCount}
                     </div>
                     <div className="h-full w-full">
                         {!hasSearchResults && isSearching ? (
@@ -115,38 +117,62 @@ export default function OpcionEnvios() {
                 </>
             )}
             {/* Modal */}
-            {selectedShipment&&
-            <Modal
-                closeButton
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                isDismissable={true}
-                blur
-            >
-                <ModalContent className="h-[850px] min-w-[850px]">
-                    <ModalHeader>
-                    <div className="flex flex-row gap-2">
-                        <div className="subEncabezado">Información del envío {selectedShipment.orderCode}</div>
-                        {
-                        selectedShipment.status==="REGISTERED"?
-                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
-                        :
-                        selectedShipment.status==="DELIVERED"||selectedShipment.status==="PENDING_PICKUP"?
-                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                        :
-                        selectedShipment.status==="FULLY_ASSIGNED"?
-                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
-                        :
-                        <></>
-                        }
-                    </div>
-                    </ModalHeader>
-                    <ModalBody>
-                        <ModalEnvios shipment={selectedShipment} setSelectedVehicle={setSelectedVehicle}/>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-            }
+            {(selectedShipment&&selectedVehicle===null) && (
+                <Modal
+                    closeButton
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    isDismissable={true}
+                    blur
+                >
+                    <ModalContent className="h-[775px] min-w-[850px]">
+                        <ModalHeader>
+                            <div className="flex flex-row gap-2">
+                                <div className="subEncabezado">Información del envío {selectedShipment.orderCode}</div>
+                                {
+                                    selectedShipment.status === "REGISTERED" ? (
+                                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                                    ) : selectedShipment.status === "DELIVERED" || selectedShipment.status === "PENDING_PICKUP" ? (
+                                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                                    ) : selectedShipment.status === "FULLY_ASSIGNED" ? (
+                                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
+                                    ) : (
+                                        <></>
+                                    )
+                                }
+                            </div>
+                        </ModalHeader>
+                        <ModalBody>
+                            <ModalEnvios shipmentVehicles={selectedShipment.vehicles} shipment={selectedShipment} setSelectedVehicle={setSelectedVehicle} sendMessage={sendMessage}/>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            )}
+            {(selectedShipment&&selectedVehicle) && (
+                <Modal
+                    closeButton
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    onClose={()=>{setSelectedVehicle(null)}}
+                    isDismissable={true}
+                    blur
+                >
+                    <ModalContent className="h-[775px] min-w-[850px]">
+                        <ModalHeader>
+                            <div className="flex flex-row gap-3">
+                                <button onClick={()=>{setSelectedVehicle(null)}}>
+                                <MoveLeft className="inline"/>
+                                </button>    
+                                <span className="subEncabezado">Información del vehiculo {selectedVehicle.vehicleCode}</span>
+                            </div>
+                      
+                        </ModalHeader>
+                        <ModalBody>
+                            <ModalRutaVehiculoEnvio selectedVehicle={selectedVehicle}/>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            )}
         </div>
     );
 }
