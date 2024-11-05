@@ -13,7 +13,7 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
     private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
     private static final Object lock = new Object();
     private static JsonObject lastShipmentList;
-    private static String lastClientMessage;
+    private static String lastClientMessage = null;
 
     @Override
     protected void handleConnect(Session session) {
@@ -35,34 +35,17 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
 
     @Override
     protected void broadcastMessage(JsonObject positions) {
-        broadcastShipments(positions, lastClientMessage);
+        broadcastShipments(positions);
     }
 
     @OnWebSocketMessage
     public void handleMessage(Session session, String message) {
         System.out.println("Mensaje recibido del cliente: " + message);
         lastClientMessage = message;
-        try {
-            // Convertir el mensaje en JSON
-            JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
-
-            // Reenviar el mensaje recibido a todos los clientes conectados
-            broadcastShipments(jsonMessage, lastClientMessage);
-        } catch (Exception e) {
-            logger.warning("Error procesando el mensaje recibido: " + e.getMessage());
-
-            // Si el mensaje no es un JSON válido, agregarlo como "message" a un JSON vacío
-            JsonObject jsonMessage = new JsonObject();
-            jsonMessage.addProperty("message", message);
-            broadcastShipments(jsonMessage, message);
-        }
     }
 
-    public static void broadcastShipments(JsonObject shipmentList, String optionalMessage) {
+    public static void broadcastShipments(JsonObject shipmentList) {
         // Si se proporciona una cadena opcional, agrégala al JSON con la clave "message"
-        if (optionalMessage != null) {
-            shipmentList.addProperty("message", optionalMessage);
-        }
         lastShipmentList = shipmentList; // Actualizar cache
         String message = gson.toJson(shipmentList);
 
@@ -88,7 +71,4 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
         return lastClientMessage;
     }
 
-    public static void setLastClientMessage(String lastClientMessage) {
-        ShipmentWebSocketHandler.lastClientMessage = lastClientMessage;
-    }
 }
