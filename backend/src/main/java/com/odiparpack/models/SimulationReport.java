@@ -13,10 +13,16 @@ public class SimulationReport {
     private double eficienciaRutas;
     private double promedioPedidos;
     private Map<String, Integer> demandasPorCiudad;
-    private Map<String, Integer> paradasEnAlmacenes;
+    private Map<String, Integer> demandasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
     private Map<String, Integer> regionConMayorDemanda;
     private Map<String, Integer> estadoPaquetes;
+
+    private Map<String, String> ubigeoToProvincia = new HashMap<String, String>() {{
+        put("150101", "Lima");
+        put("040101", "Arequipa");
+        put("130101", "Trujillo");
+    }};
 
     // Constructor, getters y setters
     public SimulationReport(SimulationState state) {
@@ -28,7 +34,7 @@ public class SimulationReport {
         this.eficienciaRutas = calculateEficienciaRutas(state);
         this.promedioPedidos = calculatePromedioPedidos(state);
         this.demandasPorCiudad = calculateDemandasPorCiudad(state);
-        this.paradasEnAlmacenes = calculateParadasEnAlmacenes(state);
+        this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
         this.estadoPaquetes = calculateEstadoPaquetes(state);
@@ -44,7 +50,6 @@ public class SimulationReport {
     // Métodos para calcular los atributos restantes (actualmente hardcodeados)
 
     private int calculatePedidosAtendidos(SimulationState state) {
-        // Por ahora retornamos un valor hardcodeado
         //return state.obteinCountOrder();
         return state.obteinCountOrder();
     }
@@ -53,7 +58,6 @@ public class SimulationReport {
                                                                     // RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
                                                                     // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
                                                                     // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
-        // Por ahora retornamos un valor hardcodeado
         return 85.0;
     }
 
@@ -103,14 +107,25 @@ public class SimulationReport {
         return demandas;*/
     }
 
-    private Map<String, Integer> calculateParadasEnAlmacenes(SimulationState state) {
-        // Valores hardcodeados por ahora
-        //estos son las veces que el vehiculo regresa al almacen? o son las veces que un vehiculo sale de un almacen.
-        Map<String, Integer> paradas = new HashMap<>();
-        paradas.put("Trujillo", 10);
-        paradas.put("Lima", 15);
-        paradas.put("Arequipa", 8);
-        return paradas;
+    private Map<String, Integer> calculateDemandasEnAlmacenes(SimulationState state) {
+        // Obtener las paradas con los ubigeos del estado
+        Map<String, Integer> demandasUbigeos = state.getDemandasAlmacenesOrderCount();
+        Map<String, Integer> demandasConNombreProvincia = new HashMap<>();
+
+        // Convertir cada entrada del ubigeo al nombre de la provincia correspondiente
+        for (Map.Entry<String, Integer> entry : demandasUbigeos.entrySet()) {
+            String ubigeo = entry.getKey();
+            Integer count = entry.getValue();
+
+            // Obtener el nombre de la provincia a partir del ubigeo
+            String nombreProvincia = ubigeoToProvincia.get(ubigeo);
+
+            if (nombreProvincia != null) {
+                demandasConNombreProvincia.put(nombreProvincia, count);
+            }
+        }
+
+        return demandasConNombreProvincia;
     }
 
     private Map<String, Integer> calculateAveriasPorTipo(SimulationState state) {

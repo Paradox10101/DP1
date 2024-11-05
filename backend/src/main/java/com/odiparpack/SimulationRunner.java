@@ -468,7 +468,7 @@ public class SimulationRunner {
                     // Actualizar el contador en el mapa
                     state.guardarCiudadDestino(destinationCity);
                     //cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
-
+                    state.registrarParadaEnAlmacen(order.getOriginUbigeo()); //se analiza el ubigeo origen del pedido
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);
