@@ -38,7 +38,7 @@ public class SimulationState {
     private static final int PLANNING_INTERVAL_MINUTES = 15;
     private WarehouseManager warehouseManager;
     private List<Vehicle> vehiclesNeedingNewRoutes;
-    private List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
+    private List<String> almacenesPrincipales = Arrays.asList("150101", "040101", "130101"); // Lima, Arequipa, Trujillo
     private RouteCache routeCache;
     private List<Blockage> activeBlockages;
     private long[][] currentTimeMatrix;
@@ -79,6 +79,9 @@ public class SimulationState {
     private int currentDayOrders = 0;
     private List<Integer> orderbyDays;
     private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
+    private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
+    // Mapa para almacenar la última vez que un vehículo hizo una parada en un almacén
+    private Map<String, LocalDateTime> ultimaParadaEnAlmacen = new HashMap<>();
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -501,6 +504,10 @@ public class SimulationState {
                 .map(long[]::clone)
                 .toArray(long[][]::new);
         this.orderbyDays = new ArrayList<>();
+        // Inicializa otras variables
+        paradasAlmacenesOrderCount.put("150101", 0);//Lima
+        paradasAlmacenesOrderCount.put("040201", 0);//Arequipa
+        paradasAlmacenesOrderCount.put("130101", 0);//Trujillo
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
@@ -762,6 +769,15 @@ public class SimulationState {
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
 
+    public Map<String, Integer> getDemandasAlmacenesOrderCount(){
+        return paradasAlmacenesOrderCount;
+    }
+
+    public void registrarParadaEnAlmacen(String codigoAlmacen) {
+        //aqui falta ver que es el parametro. Si es un ubigeo se necesita hacer un match para ver cual de los 3 almacenes es el indicado
+        paradasAlmacenesOrderCount.put(codigoAlmacen, paradasAlmacenesOrderCount.getOrDefault(codigoAlmacen, 0) + 1);
+    }
+
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
@@ -814,7 +830,7 @@ public class SimulationState {
     private void handleMaintenance(Vehicle vehicle) {
         Maintenance mantenimiento = getCurrentMaintenance(vehicle.getCode());
         if (mantenimiento != null) {
-            handleVehicleInMaintenance(vehicle, mantenimiento);
+                handleVehicleInMaintenance(vehicle, mantenimiento);
         }
     }
 
@@ -834,6 +850,20 @@ public class SimulationState {
 
     private void handleVehicleStatusUpdate(Vehicle vehicle, LocalDateTime currentTime) {
         vehicle.updateStatus(currentTime, warehouseManager);
+        /*String currentUbigeo = vehicle.getCurrentLocationUbigeo();
+        if (almacenesPrincipales.contains(currentUbigeo)) {
+            String vehicleCode = vehicle.getCode();  // Supongo que cada vehículo tiene un identificador único
+
+            // Verificar si el vehículo ya ha hecho una parada recientemente en el mismo almacén
+            LocalDateTime ultimaParada = ultimaParadaEnAlmacen.get(vehicleCode);
+
+            // Si no hay registro previo o han pasado más de 30 segundos, incrementamos el contador
+            if (ultimaParada == null || Duration.between(ultimaParada, currentTime).getSeconds() > 30) {
+                registrarParadaEnAlmacen(currentUbigeo);
+                // Actualizar el tiempo de la última parada de este vehículo
+                ultimaParadaEnAlmacen.put(vehicleCode, currentTime);
+            }
+        }*/
     }
 
     private void collectVehiclesNeedingNewRoutes(Vehicle vehicle, List<Vehicle> vehiclesNeedingNewRoutes, LocalDateTime currentTime) {
