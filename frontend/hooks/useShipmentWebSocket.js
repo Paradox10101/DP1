@@ -1,5 +1,5 @@
 // hooks/useWarehouseWebSocket.js
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { shipmentsAtom } from '../atoms/shipmentAtoms';
 
@@ -7,13 +7,13 @@ const WEBSOCKET_URL = 'ws://localhost:4567/ws/shipments';
 
 export const useShipmentWebSocket = () => {
   const setShipments = useSetAtom(shipmentsAtom);
+  const websocketRef = useRef(null); // Usamos un ref para el WebSocket
 
   const handleMessage = useCallback(
     (event) => {
       try {
-        const data = JSON.parse(event.data);          
-          setShipments(data)
-          
+        const data = JSON.parse(event.data);
+        setShipments(data);
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
       }
@@ -21,8 +21,17 @@ export const useShipmentWebSocket = () => {
     [setShipments]
   );
 
+  const sendMessage = useCallback((message) => {
+    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+      websocketRef.current.send(JSON.stringify(message));
+    } else {
+      console.error('WebSocket no está abierto. No se puede enviar el mensaje.');
+    }
+  }, []);
+
   useEffect(() => {
     const ws = new WebSocket(WEBSOCKET_URL);
+    websocketRef.current = ws; // Guardar la instancia del WebSocket en el ref
 
     ws.onopen = () => {
       console.log('WebSocket de envios connected');
@@ -40,6 +49,10 @@ export const useShipmentWebSocket = () => {
 
     return () => {
       ws.close();
+      websocketRef.current = null;
     };
   }, [handleMessage]);
+
+  return { sendMessage }; // Retornar sendMessage para que se pueda usar en componentes
 };
+

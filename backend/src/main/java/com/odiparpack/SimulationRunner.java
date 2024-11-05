@@ -549,6 +549,15 @@ public class SimulationRunner {
             try {
                 Map<String, List<RouteSegment>> newRoutes = calculateRouteWithStrategies(data, state, assignmentGroups);
                 vehicleRoutes.putAll(newRoutes);
+
+                for(VehicleAssignment vehicleAssingnment: assignments){
+                    if(!state.getVehicleAssignmentsPerOrder().containsKey(vehicleAssingnment.getOrder().getId()))
+                        state.getVehicleAssignmentsPerOrder().put(vehicleAssingnment.getOrder().getId(), new ArrayList<>());
+                    vehicleAssingnment.getRouteSegments().addAll(vehicleAssingnment.getVehicle().getRoute());
+                    state.getVehicleAssignmentsPerOrder().get(vehicleAssingnment.getOrder().getId()).add(vehicleAssingnment);
+
+                }
+
                 logger.info("Nuevas rutas calculadas y agregadas en tiempo de simulación: " + state.getCurrentTime());
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error durante el cálculo de rutas", e);
@@ -783,6 +792,8 @@ public class SimulationRunner {
                     if (state != null) {
                         vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
                     }
+                    System.out.println(vehicle.getRoute());
+
                     logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo());
                 }
             } else {
@@ -923,6 +934,7 @@ public class SimulationRunner {
 
                 index = nextIndex;
             }
+
 
             calculatedRoutes.put(vehicle.getCode(), route);
 

@@ -2,6 +2,8 @@ package com.odiparpack.websocket;
 import com.google.gson.JsonObject;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
+
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -11,7 +13,7 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
     private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
     private static final Object lock = new Object();
     private static JsonObject lastShipmentList;
-
+    private static String lastClientMessage = null;
 
     @Override
     protected void handleConnect(Session session) {
@@ -36,9 +38,14 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
         broadcastShipments(positions);
     }
 
+    @OnWebSocketMessage
+    public void handleMessage(Session session, String message) {
+        System.out.println("Mensaje recibido del cliente: " + message);
+        lastClientMessage = message;
+    }
 
     public static void broadcastShipments(JsonObject shipmentList) {
-
+        // Si se proporciona una cadena opcional, agrégala al JSON con la clave "message"
         lastShipmentList = shipmentList; // Actualizar cache
         String message = gson.toJson(shipmentList);
 
@@ -60,47 +67,8 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
         });
     }
 
-
-
-
-    /*
-    public static void broadcastShipments() {
-
-        if (lastShipmentStates != null) {
-            List<Order> orders = lastShipmentStates.getOrders();
-            JsonObject featureCollection = new JsonObject();
-            featureCollection.addProperty("type", "FeatureCollection");
-            JsonArray features = new JsonArray();
-            JsonObject feature = new JsonObject();
-            for (Order order : orders) {
-                feature.addProperty("orderCode", order.getId());
-                feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
-                feature.addProperty("remainingTimeDays", Duration.between(order.getOrderTime(), order.getDueTime()).toDays());
-                feature.addProperty("remainingTimeHours", Duration.between(order.getOrderTime(), order.getDueTime()).toHours() % 24);
-                feature.addProperty("remainingTimeMinutes", Duration.between(order.getOrderTime(), order.getDueTime()).toMinutes() % 60);
-                feature.addProperty("originUbigeo", order.getOriginUbigeo());
-                feature.addProperty("destinyUbigeo", order.getDestinationUbigeo());
-                feature.addProperty("remainingPackages", order.getQuantity());
-                feature.addProperty("status", order.getStatus().toString());
-
-                features.add(feature);
-            }
-            featureCollection.add("features", features);
-            broadcast(featureCollection.toString());
-        }
+    public static String getLastClientMessage() {
+        return lastClientMessage;
     }
-
-    private static void broadcast(String message) {
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                try {
-                    session.getRemote().sendString(message);
-                } catch (IOException e) {
-                    System.err.println("(WebSocket de envíos) Error al enviar mensaje: " + e.getMessage());
-                }
-            }
-        }
-    }
-    */
 
 }
