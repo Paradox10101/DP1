@@ -9,6 +9,7 @@ import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
+import org.springframework.cglib.core.Local;
 
 
 import java.time.*;
@@ -74,11 +75,13 @@ public class SimulationState {
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
     private int totalOrdersCount = 0;
+    private int totalOrdersCount2 = 0;
     private int currentDayOrders = 0;
     private List<Integer> orderbyDays;
     private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
     private Map<String, Integer> pedidosPorRegion = new HashMap<>();
+    private Map<String, Double> eficienciaPedidos = new HashMap<>();
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -869,6 +872,21 @@ public class SimulationState {
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
 
+
+    public Map<String, Double> getEficienciaPedidos() {
+        return eficienciaPedidos;
+    }
+
+    public void calcularEficienciaPedido(String codigo, LocalDateTime tiempoEstimado, LocalDateTime tiempoLimite) {
+        //aqui se debe dividir el tiempo estimado entre el tiempo limite. --> todo esto para 1 pedido se guarda en 1 indice de un MAP
+        //luego se tiene que ir sumando en total
+        //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
+        double eficiencia = (double) Duration.between(tiempoEstimado, tiempoLimite).getSeconds()
+                / (double) Duration.between(LocalDateTime.MIN, tiempoLimite).getSeconds();
+
+        eficienciaPedidos.put(codigo, eficiencia);
+    }
+
     public Map<String, Integer> getPedidosPorRegion(){
         return pedidosPorRegion;
     }
@@ -909,6 +927,11 @@ public class SimulationState {
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
+        totalOrdersCount2++;
+    }
+
+    public int getTotalOrdersCount2(){
+        return totalOrdersCount2;
     }
 
     public void guardarPedidosDiarios() {

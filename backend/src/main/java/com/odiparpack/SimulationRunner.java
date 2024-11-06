@@ -476,6 +476,8 @@ public class SimulationRunner {
                     //Llamar para contar que se está haciendo un pedido en tal Region
                     state.asignarPedidoAlmacenCount(order.getDestinationUbigeo());
 
+                    //state.calcularEficienciaPedido(vehicle.getCode(),vehicle.getEstimatedDeliveryTime(),order.getOrderTime());// AQUI YA NO PIPIPI
+
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);
@@ -797,7 +799,7 @@ public class SimulationRunner {
                     Vehicle vehicle = assignment.getVehicle();
                     vehicle.setRoute(route);
                     if (state != null) {
-                        vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
+                        vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(),state);
                     }
                     System.out.println(vehicle.getRoute());
 
@@ -1044,7 +1046,7 @@ public class SimulationRunner {
             if (route != null) {
                 vehicle.setRoute(route);
                 if (state != null) {
-                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
+                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(),state);
                 }
                 logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo());
             } else {
