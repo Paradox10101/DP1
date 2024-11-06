@@ -514,10 +514,10 @@ public class SimulationRunner {
 
     private static List<Vehicle> getAvailableVehicles(List<Vehicle> vehicles, String locationUbigeo) {
         // Loguear el origen del ubigeo de la orden antes del filtrado
-        logger.info(String.format("Ubigeo de origen de la orden: %s", locationUbigeo));
+        //logger.info(String.format("Ubigeo de origen de la orden: %s", locationUbigeo));
 
         return vehicles.stream()
-                .peek(v -> logger.info(String.format("Ubigeo actual del vehículo %s: %s", v.getCode(), v.getCurrentLocationUbigeo())))
+                //.peek(v -> logger.info(String.format("Ubigeo actual del vehículo %s: %s", v.getCode(), v.getCurrentLocationUbigeo())))
                 .filter(v -> v.getEstado() == Vehicle.EstadoVehiculo.EN_ALMACEN && v.getCurrentLocationUbigeo().equals(locationUbigeo))
                 .collect(Collectors.toList());
     }
@@ -547,7 +547,9 @@ public class SimulationRunner {
         // Usar computeIntensiveExecutor en lugar de executorService
         Future<?> calculation = computeIntensiveExecutor.submit(() -> {
             try {
-                Map<String, List<RouteSegment>> newRoutes = calculateRouteWithStrategies(data, state, assignmentGroups);
+                Map<String, List<RouteSegment>> newRoutes = calculateRouteWithStrategies(data, state);
+                // Asignar rutas a todos los vehículos en los grupos correspondientes
+                applyRoutesToVehiclesWithGroups(newRoutes, assignmentGroups, state);
                 vehicleRoutes.putAll(newRoutes);
                 logger.info("Nuevas rutas calculadas y agregadas en tiempo de simulación: " + state.getCurrentTime());
             } catch (Exception e) {
@@ -557,7 +559,7 @@ public class SimulationRunner {
 
         // Opcional: Esperar con timeout
         try {
-            calculation.get(120, TimeUnit.SECONDS);
+            calculation.get(240, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             logger.warning("Cálculo de rutas excedió tiempo máximo de 120 segundos");
             calculation.cancel(true);
@@ -598,10 +600,9 @@ public class SimulationRunner {
         });
     }*/
 
-    private static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state, Map<String, List<VehicleAssignment>> assignmentGroups) {
+    public static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state) {
         logger.info("\n--- Inicio del cálculo de rutas con estrategias ---");
         Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
-
         try {
             // Intentar resolver con las estrategias definidas
             Map<String, List<RouteSegment>> routes = trySolvingWithStrategies(data, Arrays.asList(
@@ -624,9 +625,6 @@ public class SimulationRunner {
                     allRoutes.putAll(solutionData.routes);
                 }
             }
-
-            // Asignar rutas a todos los vehículos en los grupos correspondientes
-            applyRoutesToVehiclesWithGroups(data, allRoutes, assignmentGroups, state);
 
             return allRoutes;
         } catch (Exception e) {
@@ -714,7 +712,7 @@ public class SimulationRunner {
                 logger.info("Solución encontrada para el subconjunto con estrategia: " + strategy);
 
                 // Crear una instancia de SolutionData con los resultados obtenidos
-                SolutionData solutionData = new SolutionData(result.solution, result.routingModel, result.manager, result.data);
+                SolutionData solutionData = new SolutionData(result.solution, result.routingModel, result.manager, result.data, state.getActiveBlockages());
                 solutions.add(solutionData);
 
                 return;
@@ -770,7 +768,8 @@ public class SimulationRunner {
         }
     }
 
-    private static void applyRoutesToVehiclesWithGroups(DataModel data, Map<String, List<RouteSegment>> allRoutes, Map<String, List<VehicleAssignment>> assignmentGroups, SimulationState state) {
+
+    private static void applyRoutesToVehiclesWithGroups(Map<String, List<RouteSegment>> allRoutes, Map<String, List<VehicleAssignment>> assignmentGroups, SimulationState state) {
         for (String key : assignmentGroups.keySet()) {
             List<VehicleAssignment> group = assignmentGroups.get(key);
             VehicleAssignment representativeAssignment = group.get(0);

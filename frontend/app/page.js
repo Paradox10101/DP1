@@ -2,7 +2,6 @@
 import PanelSimulacion from "@/app/Components/PanelSimulacion"
 import MapLegend from "@/app/Components/MapLegend"
 import { useAtom } from 'jotai'
-import VehicleMap from "./Components/VehicleMap";
 import { PanelRightClose } from "lucide-react";
 import {
   simulationStatusAtom,
@@ -13,6 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
+const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 
 export default function App() {

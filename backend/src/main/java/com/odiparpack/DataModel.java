@@ -47,9 +47,9 @@ public class DataModel {
             this.ends[i] = locationIndices.get(assignment.getOrder().getDestinationUbigeo());
         }
 
-        printTravelTime("010501", "010301");
+        //printTravelTime("010501", "010301");
 
-        logger.info("DataModel constructor with assignments:");
+        /*logger.info("DataModel constructor with assignments:");
         for (int i = 0; i < vehicleNumber; i++) {
             VehicleAssignment assignment = assignments.get(i);
             String vehicleUbigeo = assignment.getVehicle().getCurrentLocationUbigeo();
@@ -64,9 +64,9 @@ public class DataModel {
                 this.ends[i] = endIndex;
                 logger.info("Vehículo " + assignment.getVehicle().getCode() + " inicia en ubigeo " + vehicleUbigeo + " (índice " + startIndex + "), termina en ubigeo " + orderDestinationUbigeo + " (índice " + endIndex + ")");
             }
-        }
+        }*/
 
-        logger.info("Índices de inicio (starts): " + Arrays.toString(this.starts));
+        /*logger.info("Índices de inicio (starts): " + Arrays.toString(this.starts));
         logger.info("Índices de fin (ends): " + Arrays.toString(this.ends));
 
         // Verificar los tiempos de viaje entre los índices de inicio y fin
@@ -75,7 +75,7 @@ public class DataModel {
             int endIdx = this.ends[i];
             long travelTime = timeMatrix[startIdx][endIdx];
             logger.info("Tiempo de viaje desde índice " + startIdx + " a índice " + endIdx + " es " + travelTime);
-        }
+        }*/
     }
 
     public DataModel(long[][] timeMatrix, List<Blockage> activeBlockages, int[] starts, int[] ends,
@@ -95,7 +95,7 @@ public class DataModel {
         this.starts = starts;
         this.ends = ends;
 
-        logger.info("DataModel constructor without assignments:");
+        /*logger.info("DataModel constructor without assignments:");
         logger.info("Índices de inicio (starts): " + Arrays.toString(this.starts));
         logger.info("Índices de fin (ends): " + Arrays.toString(this.ends));
 
@@ -105,7 +105,7 @@ public class DataModel {
             int endIdx = this.ends[i];
             long travelTime = timeMatrix[startIdx][endIdx];
             logger.info("Tiempo de viaje desde índice " + startIdx + " a índice " + endIdx + " es " + travelTime);
-        }
+        }*/
     }
 
     public void printTravelTime(String fromUbigeo, String toUbigeo) {

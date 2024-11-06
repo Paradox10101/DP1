@@ -833,7 +833,7 @@ public class Main {
         public long maxRouteTime;
 
         // Constructor que acepta los objetos de OR-Tools y extrae la información necesaria
-        public SolutionData(Assignment solution, RoutingModel routingModel, RoutingIndexManager manager, DataModel data) {
+        public SolutionData(Assignment solution, RoutingModel routingModel, RoutingIndexManager manager, DataModel data, List<Blockage> activeBlockages) {
             this.routes = new HashMap<>();
             this.routeTimes = new HashMap<>();
             this.maxRouteTime = 0;
@@ -865,6 +865,13 @@ public class Main {
 
                 String vehicleCode = data.assignments.get(i).getVehicle().getCode();
                 this.routes.put(vehicleCode, route);
+
+                // Añadir la ruta calculada al caché
+                routeCache.putRoute(data.locationUbigeos.get(data.starts[i]),
+                        data.locationUbigeos.get(data.ends[i]),
+                        route,
+                        activeBlockages);
+
                 this.routeTimes.put(vehicleCode, routeTime);
                 this.maxRouteTime = Math.max(this.maxRouteTime, routeTime);
             }
