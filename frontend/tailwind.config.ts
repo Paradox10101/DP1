@@ -46,7 +46,7 @@ const config: Config = {
           fontWeight: 'bold'
         },
         '.encabezado':{
-          fontSize: '18px',
+          fontSize: '17px',
           fontWeight: 'bold',
         },
         '.pequenno': {
