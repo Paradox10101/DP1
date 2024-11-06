@@ -2,26 +2,15 @@
 <project version="4">
   <component name="RemoteTargetsManager">
     <targets>
-<<<<<<< HEAD
-      <target name="WSL - Ubuntu" type="wsl" uuid="749cfd5d-a794-4af8-991b-b98ea1dc3e62">
+      <target name="WSL - Ubuntu" type="wsl" uuid="c89c7e20-2a22-48d4-99d4-ca5d407fafcd">
         <config>
           <option name="distributionMsId" value="Ubuntu" />
-          <option name="projectRootOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/tmp/tmp.DpGA7JmUx8&#10;, stderr=}/backend" />
-        </config>
-        <ContributedStateBase type="JavaLanguageRuntime">
-          <config>
-            <option name="homePath" value="/usr/local/jdk-20" />
-=======
-      <target name="WSL - Ubuntu" type="wsl" uuid="90a6d1e4-ea97-4e4a-9509-01aab24762a0">
-        <config>
-          <option name="distributionMsId" value="Ubuntu" />
-          <option name="projectRootOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/tmp/tmp.RStuLH1C5H&#10;, stderr=}/backend" />
+          <option name="projectRootOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/tmp/tmp.ExPIjk5PoA&#10;, stderr=}/backend" />
         </config>
         <ContributedStateBase type="JavaLanguageRuntime">
           <config>
             <option name="homePath" value="/opt/jdk-20.0.2" />
->>>>>>> d92c062e0ac13dd850c9621ccead7756dce12069
-            <option name="javaVersionString" value="20" />
+            <option name="javaVersionString" value="20.0.2" />
           </config>
         </ContributedStateBase>
       </target>

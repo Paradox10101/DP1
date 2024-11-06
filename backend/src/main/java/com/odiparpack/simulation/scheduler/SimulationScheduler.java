@@ -113,10 +113,6 @@ public class SimulationScheduler {
                 logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
-<<<<<<< HEAD
-    }*//*
-
-=======
     }
 
     private void scheduleWebSocketShipmentBroadcast() {
@@ -148,6 +144,5 @@ public class SimulationScheduler {
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
->>>>>>> main
 }
 */
