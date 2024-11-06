@@ -114,9 +114,9 @@ export default function Dashboard({ shipment }) {
       {
         label: 'Regiones con Mayor Demanda',
         data: [
-          data.regionConMayorDemanda?.Costa,
-          data.regionConMayorDemanda?.Sierra,
-          data.regionConMayorDemanda?.Selva,
+          data.regionConMayorDemanda?.COSTA,
+          data.regionConMayorDemanda?.SIERRA,
+          data.regionConMayorDemanda?.SELVA,
         ],
         backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
       },
@@ -163,7 +163,7 @@ export default function Dashboard({ shipment }) {
             <Pie data={pieData} />
           </div>
           <div className="chart-container">
-            <h4>Ciudades con mayor demanda de pedidos</h4>
+            <h4>Ciudades con mayor demanda</h4>
             <Bar data={barData} />
           </div>
           <div className="chart-container">

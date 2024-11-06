@@ -54,7 +54,7 @@ public class SimulationReport {
         return state.obteinCountOrder();
     }
 
-    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTELA EFICIENCIA DEL CALCULO DE RUTA
+    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA
                                                                     // RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
                                                                     // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
                                                                     // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
@@ -152,10 +152,11 @@ public class SimulationReport {
         } else {
             return "Selva";
         }*/
-        Map<String, Integer> regiones = new HashMap<>();
-        regiones.put("Costa", 51);
-        regiones.put("Sierra", 43);
-        regiones.put("Selva", 20);
+
+        Map<String, Integer> regiones = state.getPedidosPorRegion();
+        //regiones.put("Costa", 51);
+        //regiones.put("Sierra", 43);
+        //regiones.put("Selva", 20);
         return regiones;
     }
 

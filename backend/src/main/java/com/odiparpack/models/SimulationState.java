@@ -78,8 +78,7 @@ public class SimulationState {
     private List<Integer> orderbyDays;
     private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
-    // Mapa para almacenar la última vez que un vehículo hizo una parada en un almacén
-    private Map<String, LocalDateTime> ultimaParadaEnAlmacen = new HashMap<>();
+    private Map<String, Integer> pedidosPorRegion = new HashMap<>();
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -506,6 +505,11 @@ public class SimulationState {
         paradasAlmacenesOrderCount.put("150101", 0);//Lima
         paradasAlmacenesOrderCount.put("040201", 0);//Arequipa
         paradasAlmacenesOrderCount.put("130101", 0);//Trujillo
+
+        pedidosPorRegion.put("SELVA", 0);
+        pedidosPorRegion.put("COSTA", 0);
+        pedidosPorRegion.put("SIERRA", 0);
+
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
@@ -864,6 +868,34 @@ public class SimulationState {
     //
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
+
+    public Map<String, Integer> getPedidosPorRegion(){
+        return pedidosPorRegion;
+    }
+
+    public void asignarPedidoAlmacenCount(String ubigeoDestino){
+        // Obtener la región natural del pedido que se está asignando
+        String regionNatural = locations.get(ubigeoDestino).getNaturalRegion();
+
+        // Verificar la región y actualizar el contador correspondiente
+        if (regionNatural != null) {
+            switch (regionNatural.toUpperCase()) {
+                case "SELVA":
+                    pedidosPorRegion.put("SELVA", pedidosPorRegion.getOrDefault("SELVA", 0) + 1);
+                    break;
+                case "COSTA":
+                    pedidosPorRegion.put("COSTA", pedidosPorRegion.getOrDefault("COSTA", 0) + 1);
+                    break;
+                case "SIERRA":
+                    pedidosPorRegion.put("SIERRA", pedidosPorRegion.getOrDefault("SIERRA", 0) + 1);
+                    break;
+                default:
+                    // Región desconocida, no se actualiza nada
+                    System.out.println("Región desconocida para el ubigeo: " + ubigeoDestino);
+                    break;
+            }
+        }
+    }
 
     public Map<String, Integer> getDemandasAlmacenesOrderCount(){
         return paradasAlmacenesOrderCount;
