@@ -757,7 +757,7 @@ public class SimulationState {
 
         if (vehicleAssignmentsPerOrder.containsKey(order.getId())) {
             boolean firstVehicle = true;
-            if (lastClientJSON != null && lastClientJSON.get("orderId").getAsString() != "" && lastClientJSON.get("orderId").getAsInt() == order.getId()) {
+            if (lastClientJSON != null && lastClientJSON.has("orderId") && !lastClientJSON.get("orderId").getAsString().isEmpty() && lastClientJSON.get("orderId").getAsInt() == order.getId()) {
                 for (VehicleAssignment assignedVehicle : vehicleAssignmentsPerOrder.get(order.getId())) {
                     boolean attendedOrder = assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.DELIVERED) || assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.PENDING_PICKUP);
                     if (!firstVehicle) builder.append(",");
@@ -779,7 +779,7 @@ public class SimulationState {
 
                     // Primera ruta con campos vacíos para indicar el destino final
                     if (assignedVehicle.getRouteSegments() != null && !assignedVehicle.getRouteSegments().isEmpty()) {
-                        if (lastClientJSON != null && lastClientJSON.get("vehicleCode").getAsString() != "" && lastClientJSON.get("vehicleCode").getAsString().equals(assignedVehicle.getVehicle().getCode())) {
+                        if (lastClientJSON != null && lastClientJSON.has("vehicleCode") && !lastClientJSON.get("vehicleCode").getAsString().isEmpty() && lastClientJSON.get("vehicleCode").getAsString().equals(assignedVehicle.getVehicle().getCode())) {
                             builder.append("{")
                                     .append("\"originUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).append("\",")
                                     .append("\"originCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).getProvince()).append("\",")
