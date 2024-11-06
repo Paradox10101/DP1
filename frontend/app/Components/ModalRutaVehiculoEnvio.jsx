@@ -46,7 +46,7 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
                             (route?.status)&&
                             (
                             route.status==="IN_TRAVEL"?
-                            <Circle size={36} className="stroke-principal"/>
+                            <Circle size={36} className="stroke-principal" strokeWidth={4}/>
                             :
                             route.status==="TRAVELED"?
                             <IconoEstado Icono={Check} classNameContenedor={"bg-blue-500 w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>

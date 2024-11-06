@@ -17,7 +17,7 @@ export default function OpcionEnvios() {
     const [searchInput, setSearchInput] = useAtom(searchInputAtom);
     const [, setSearchQuery] = useAtom(searchQueryAtom);
     const [selectedShipmentIndex, setSelectedShipmentIndex] = useState(null); // Usar el átomo
-    const [selectedVehicle, setSelectedVehicle] = useState(null); // Define selectedVehicle
+    const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null); // Define selectedVehicle
 
     useEffect(() => {
         const debounceTimeout = setTimeout(() => {
@@ -117,7 +117,7 @@ export default function OpcionEnvios() {
                 </>
             )}
             {/* Modal */}
-            {(selectedShipmentIndex!==null&&selectedVehicle===null) && (
+            {(selectedShipmentIndex!==null&&selectedVehicleIndex===null) && (
                 <Modal
                     closeButton
                     isOpen={isOpen}
@@ -143,32 +143,32 @@ export default function OpcionEnvios() {
                             </div>
                         </ModalHeader>
                         <ModalBody>
-                            <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicle={setSelectedVehicle} sendMessage={sendMessage}/>
+                            <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
             )}
-            {(selectedShipmentIndex!==null&&selectedVehicle) && (
+            {(selectedShipmentIndex!==null&&selectedVehicleIndex!==null) && (
                 <Modal
                     closeButton
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
-                    onClose={()=>{setSelectedVehicle(null)}}
+                    onClose={()=>{setSelectedVehicleIndex(null)}}
                     isDismissable={true}
                     blur
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
                             <div className="flex flex-row gap-3">
-                                <button onClick={()=>{setSelectedVehicle(null)}}>
+                                <button onClick={()=>{setSelectedVehicleIndex(null)}}>
                                 <MoveLeft className="inline"/>
                                 </button>    
-                                <span className="subEncabezado">Información del vehiculo {selectedVehicle.vehicleCode}</span>
+                                <span className="subEncabezado">Información del vehiculo {shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex].vehicleCode}</span>
                             </div>
                       
                         </ModalHeader>
                         <ModalBody>
-                            <ModalRutaVehiculoEnvio selectedVehicle={selectedVehicle}/>
+                            <ModalRutaVehiculoEnvio selectedVehicle={shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]}/>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
