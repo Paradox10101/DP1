@@ -25,6 +25,7 @@ export const formattedShipmentsAtom = atom((get) => {
 
   return shipments.features.map(feature => {
     const order = feature.order;
+    
     return {
       id: order.id,
       orderCode: order.orderCode,
@@ -38,6 +39,7 @@ export const formattedShipmentsAtom = atom((get) => {
       dueTime: order.dueTime,
       timeElapsedDays: order.timeElapsedDays !== -1 ? order.timeElapsedDays : feature.timeElapsedDays,
       timeElapsedHours: order.timeElapsedHours !== -1 ? order.timeElapsedHours : feature.timeElapsedHours,
+      quantityVehicles: order.quantityVehicles,
       vehicles: feature.vehicles
     };
   });

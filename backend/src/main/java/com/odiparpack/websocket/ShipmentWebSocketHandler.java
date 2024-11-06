@@ -50,7 +50,7 @@ public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
         String message = gson.toJson(shipmentList);
 
         // Log del mensaje JSON antes de enviarlo
-        logger.info("Mensaje JSON para WebSocket: " + message);
+        //logger.info("Mensaje JSON para WebSocket: " + message);
 
         sessions.removeIf(session -> {
             if (!session.isOpen()) {

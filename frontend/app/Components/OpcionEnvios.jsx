@@ -16,8 +16,8 @@ export default function OpcionEnvios() {
     const shipments = useAtomValue(filteredShipmentsAtom);
     const [searchInput, setSearchInput] = useAtom(searchInputAtom);
     const [, setSearchQuery] = useAtom(searchQueryAtom);
-    const [selectedShipment, setSelectedShipment] = useAtom(selectedShipmentAtom); // Usar el átomo
-    const [selectedVehicle, setSelectedVehicle] = useState(null); // Define selectedVehicle
+    const [selectedShipmentIndex, setSelectedShipmentIndex] = useState(null); // Usar el átomo
+    const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null); // Define selectedVehicle
 
     useEffect(() => {
         const debounceTimeout = setTimeout(() => {
@@ -55,9 +55,9 @@ export default function OpcionEnvios() {
         const shipment = shipments[index];
         return (
             <div style={style}
-                className={`p-2 border-2 rounded-xl stroke-black ${selectedShipment?.id && selectedShipment.id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
+                className={`p-2 border-2 rounded-xl stroke-black ${shipments[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
                 onMouseDown={() => {
-                    setSelectedShipment(shipment);
+                    setSelectedShipmentIndex(index);
                     sendMessage({ orderId: shipment.id, vehicleCode: "" }); // Enviar mensaje al WebSocket
                     onOpen(); // Abrir modal
                 }}
@@ -117,7 +117,7 @@ export default function OpcionEnvios() {
                 </>
             )}
             {/* Modal */}
-            {(selectedShipment&&selectedVehicle===null) && (
+            {(selectedShipmentIndex!==null&&selectedVehicleIndex===null) && (
                 <Modal
                     closeButton
                     isOpen={isOpen}
@@ -128,13 +128,13 @@ export default function OpcionEnvios() {
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
                             <div className="flex flex-row gap-2">
-                                <div className="subEncabezado">Información del envío {selectedShipment.orderCode}</div>
+                                <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    selectedShipment.status === "REGISTERED" ? (
+                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].quantityVehicles===0 ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
-                                    ) : selectedShipment.status === "DELIVERED" || selectedShipment.status === "PENDING_PICKUP" ? (
+                                    ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                                    ) : selectedShipment.status === "FULLY_ASSIGNED" ? (
+                                    ) : shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                                     ) : (
                                         <></>
@@ -143,32 +143,32 @@ export default function OpcionEnvios() {
                             </div>
                         </ModalHeader>
                         <ModalBody>
-                            <ModalEnvios shipmentVehicles={selectedShipment.vehicles} shipment={selectedShipment} setSelectedVehicle={setSelectedVehicle} sendMessage={sendMessage}/>
+                            <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
             )}
-            {(selectedShipment&&selectedVehicle) && (
+            {(selectedShipmentIndex!==null&&selectedVehicleIndex!==null) && (
                 <Modal
                     closeButton
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
-                    onClose={()=>{setSelectedVehicle(null)}}
+                    onClose={()=>{setSelectedVehicleIndex(null)}}
                     isDismissable={true}
                     blur
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
                             <div className="flex flex-row gap-3">
-                                <button onClick={()=>{setSelectedVehicle(null)}}>
+                                <button onClick={()=>{setSelectedVehicleIndex(null)}}>
                                 <MoveLeft className="inline"/>
                                 </button>    
-                                <span className="subEncabezado">Información del vehiculo {selectedVehicle.vehicleCode}</span>
+                                <span className="subEncabezado">Información del vehiculo {shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex].vehicleCode}</span>
                             </div>
                       
                         </ModalHeader>
                         <ModalBody>
-                            <ModalRutaVehiculoEnvio selectedVehicle={selectedVehicle}/>
+                            <ModalRutaVehiculoEnvio selectedVehicle={shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]}/>
                         </ModalBody>
                     </ModalContent>
                 </Modal>

@@ -3,8 +3,7 @@ import { Button } from "@nextui-org/react"
 import { useAtomValue } from "jotai";
 import { Calendar, Clock, Eye, Filter, Flag, Globe, MapPin, Package } from "lucide-react"
 
-export default function ModalEnvios({shipmentVehicles, setSelectedVehicle, sendMessage}){
-    const shipment = useAtomValue(selectedShipmentAtom);
+export default function ModalEnvios({shipmentVehicles, setSelectedVehicleIndex, sendMessage, shipment}){
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-row justify-between">
@@ -68,7 +67,7 @@ export default function ModalEnvios({shipmentVehicles, setSelectedVehicle, sendM
                         </thead>
                         <tbody className="text-gray-700 text-sm font-light overflow-y-auto min-h-[325px] w-full">
                             {shipmentVehicles &&
-                                shipmentVehicles.map((vehicle) => (
+                                shipmentVehicles.map((vehicle, index) => (
                                     <tr className="border border-gray-200 w-full " key={vehicle.vehicleCode}>
                                         <td className="py-3 px-6 text-center w-1/4 whitespace-nowrap">{vehicle.vehicleCode}</td>
                                         <td className="py-3 px-6 text-center w-1/4 whitespace-nowrap">{vehicle.packageQuantity}</td>
@@ -91,7 +90,7 @@ export default function ModalEnvios({shipmentVehicles, setSelectedVehicle, sendM
                                             <button
                                                 className="bg-principal items-center p-2 rounded text-center flex flex-center justify-center"
                                                 onClick={() => {
-                                                    setSelectedVehicle(vehicle);
+                                                    setSelectedVehicleIndex(index);
                                                     sendMessage({ orderId: shipment.id, vehicleCode: vehicle.vehicleCode });
                                                 }}
                                             >
