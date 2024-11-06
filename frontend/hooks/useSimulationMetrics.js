@@ -6,8 +6,9 @@ import { simulationStatusAtom } from '../atoms/simulationAtoms';
 const WEBSOCKET_CONFIG = {
     MAX_RECONNECT_ATTEMPTS: 5,
     RECONNECT_DELAY: 3000,
-    URL: 'ws://1inf54-982-1a.inf.pucp.edu.pe/ws/simulation'
+    URL: 'wss://1inf54-982-1a.inf.pucp.edu.pe/ws/simulation'
 };
+
 
 const createError = (type, customMessage = null) => {
     const baseErrors = {
