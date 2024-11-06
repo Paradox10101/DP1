@@ -58,6 +58,15 @@ public class PlanificadorTask implements Runnable {
                             vehicleRoutes,
                             state
                     );
+
+                    for(VehicleAssignment vehicleAssingnment: assignments){
+                        if(!state.getVehicleAssignmentsPerOrder().containsKey(vehicleAssingnment.getOrder().getId()))
+                            state.getVehicleAssignmentsPerOrder().put(vehicleAssingnment.getOrder().getId(), new ArrayList<>());
+                        if(vehicleRoutes.containsKey(vehicleAssingnment.getVehicle().getCode()))
+                            vehicleAssingnment.getRouteSegments().addAll(vehicleRoutes.get(vehicleAssingnment.getVehicle().getCode()));
+                        state.getVehicleAssignmentsPerOrder().get(vehicleAssingnment.getOrder().getId()).add(vehicleAssingnment);
+                    }
+
                 }
             }
         } catch (Exception e) {
