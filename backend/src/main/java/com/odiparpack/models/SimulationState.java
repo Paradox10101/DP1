@@ -726,28 +726,30 @@ public class SimulationState {
                         .append("\"durationMinutes\":null,")
                         .append("\"distance\":null")
                         .append("},");
-
-                String currentUbigeo = assignedVehicle.getVehicle().getStatus().getCurrentSegmentUbigeo();
+                String currentUbigeo = "";
+                if(assignedVehicle.getVehicle().getStatus()!=null)
+                    currentUbigeo = assignedVehicle.getVehicle().getStatus().getCurrentSegmentUbigeo();
                 boolean traveled = true;
                 boolean inTravel = false;
-
-                for (RouteSegment routeSegment : assignedVehicle.getRouteSegments()) {
-                    if (!firstRoute) builder.append(",");
-                    if(!attendedOrder && currentUbigeo.equals(routeSegment.getToUbigeo())) {
-                        traveled = false;
-                        inTravel = true;
+                if(assignedVehicle!=null) {
+                    for (RouteSegment routeSegment : assignedVehicle.getRouteSegments()) {
+                        if (!firstRoute) builder.append(",");
+                        if (!attendedOrder && currentUbigeo.equals(routeSegment.getToUbigeo())) {
+                            traveled = false;
+                            inTravel = true;
+                        }
+                        builder.append("{")
+                                .append("\"originUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
+                                .append("\"destinationUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
+                                .append("\"originCity\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
+                                .append("\"destinationCity\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
+                                .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
+                                .append("\"status\":").append(attendedOrder || traveled ? "TRAVELED" : inTravel ? "IN_TRAVEL" : "NO_TRAVELED").append(",")
+                                .append("\"distance\":").append(routeSegment.getDistance())
+                                .append("}");
+                        firstRoute = false;
+                        inTravel = false;
                     }
-                    builder.append("{")
-                            .append("\"originUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
-                            .append("\"destinationUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
-                            .append("\"originCity\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
-                            .append("\"destinationCity\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
-                            .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
-                            .append("\"status\":").append(attendedOrder||traveled?"TRAVELED":inTravel?"IN_TRAVEL":"NO_TRAVELED").append(",")
-                            .append("\"distance\":").append(routeSegment.getDistance())
-                            .append("}");
-                    firstRoute = false;
-                    inTravel = false;
                 }
 
                 // Última ruta con campos vacíos para indicar el destino final
