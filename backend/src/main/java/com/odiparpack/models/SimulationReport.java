@@ -16,7 +16,7 @@ public class SimulationReport {
     private Map<String, Integer> demandasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
     private Map<String, Integer> regionConMayorDemanda;
-    private Map<String, Integer> estadoPaquetes;
+    private Map<String, Integer> estadoPedidos;
 
     private Map<String, String> ubigeoToProvincia = new HashMap<String, String>() {{
         put("150101", "Lima");
@@ -37,7 +37,7 @@ public class SimulationReport {
         this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
-        this.estadoPaquetes = calculateEstadoPaquetes(state);
+        this.estadoPedidos = calculateEstadoPedidos(state);
     }
 
     // Método para calcular la capacidad efectiva
@@ -45,7 +45,7 @@ public class SimulationReport {
         // CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO
         // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
         // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
-        return 1 - state.calculateAverageCapacity(); // Usar el promedio acumulado
+        return state.calculateAverageCapacity() * 100; // Usar el promedio acumulado
     }
 
     // Métodos para calcular los atributos restantes (actualmente hardcodeados)
@@ -55,9 +55,10 @@ public class SimulationReport {
         return state.getTotalOrdersCount2();
     }
 
-    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
-                                                                    // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
-                                                                    // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
+    private double calculateEficienciaRutas(SimulationState state) {
+        // ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
+        // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
+        // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
         //aqui lo que se hace es recoger el "map" y luego hacer sumatoria entre todos los valores encontrados (de la division)
         // y dividir entre la cantidad de pedidos totales.
 
@@ -72,7 +73,7 @@ public class SimulationReport {
         double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
 
         System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
-        return 1 - eficienciaPromedio;
+        return (1 - eficienciaPromedio) * 100;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {
@@ -172,7 +173,7 @@ public class SimulationReport {
         return regiones;
     }
 
-    private Map<String, Integer> calculateEstadoPaquetes(SimulationState state) {
+    private Map<String, Integer> calculateEstadoPedidos(SimulationState state) {
         // Valores hardcodeados por ahora
         Map<String, Integer> estados = new HashMap<>();
         estados.put("En Almacén", 50);

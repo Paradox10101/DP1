@@ -57,10 +57,10 @@ export default function Dashboard({ shipment }) {
     datasets: [
       {
         data: [
-          data.estadoPaquetes?.['En Almacén'],
-          data.estadoPaquetes?.['En Oficina'],
-          data.estadoPaquetes?.['En Entrega'],
-          data.estadoPaquetes?.['Entregado'],
+          data.estadoPedidos?.['En Almacén'],
+          data.estadoPedidos?.['En Oficina'],
+          data.estadoPedidos?.['En Entrega'],
+          data.estadoPedidos?.['Entregado'],
         ],
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
       },

@@ -74,6 +74,7 @@ public class SimulationState {
     private double totalCapacityUsed = 0;
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
+    private double averageCapacityMetric = 0;
     private int totalOrdersCount = 0;
     private int totalOrdersCount2 = 0;
     private int currentDayOrders = 0;
@@ -987,18 +988,23 @@ public class SimulationState {
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
     public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {
-        this.totalCapacityUsed += currentCapacityUsed;
-        this.totalCapacity += vehicleCapacity;
+        double aux = (double) currentCapacityUsed / vehicleCapacity;
+        //this.totalCapacityUsed += currentCapacityUsed;
+        //this.totalCapacity += vehicleCapacity;
+        this.averageCapacityMetric += aux;
         this.capacityRecordsCount++;
         logger.info("Actualizando métricas de capacidad: Capacidad Usada: " + currentCapacityUsed +
                 ", Capacidad Total: " + vehicleCapacity + ", Total Registros: " + capacityRecordsCount);
     }
 
     public double calculateAverageCapacity() {
-        if (capacityRecordsCount == 0 || totalCapacity == 0) {
+        /*if (capacityRecordsCount == 0 || totalCapacity == 0) {
+            return 0;
+        }*/
+        if(averageCapacityMetric == 0){
             return 0;
         }
-        return ((totalCapacityUsed / totalCapacity) * 100) / capacityRecordsCount;
+        return averageCapacityMetric / capacityRecordsCount;
     }
 
     public void guardarCiudadDestino(String destinationCity){
