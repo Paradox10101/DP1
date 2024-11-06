@@ -881,8 +881,17 @@ public class SimulationState {
         //aqui se debe dividir el tiempo estimado entre el tiempo limite. --> todo esto para 1 pedido se guarda en 1 indice de un MAP
         //luego se tiene que ir sumando en total
         //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
-        double eficiencia = (double) Duration.between(tiempoEstimado, tiempoLimite).getSeconds()
-                / (double) Duration.between(LocalDateTime.MIN, tiempoLimite).getSeconds();
+        // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
+        if (tiempoEstimado.isAfter(tiempoLimite)) {
+            throw new IllegalArgumentException("El tiempo estimado no puede ser después del tiempo límite");
+        }
+
+// Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
+        //long tiempoEstimadoSegundos = Duration.between(currentTime, tiempoEstimado).getSeconds();
+        //long tiempoLimiteSegundos = Duration.between(currentTime, tiempoLimite.getSeconds());
+
+        double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
+                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
 
         eficienciaPedidos.put(codigo, eficiencia);
     }
@@ -968,8 +977,9 @@ public class SimulationState {
         if (capacityRecordsCount == 0 || totalCapacity == 0) {
             return 0;
         }
-        return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
+        return ((totalCapacityUsed / totalCapacity) * 100) / capacityRecordsCount;
     }
+
     public void guardarCiudadDestino(String destinationCity){
         cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
     }

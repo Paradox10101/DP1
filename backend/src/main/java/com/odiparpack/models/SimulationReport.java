@@ -29,7 +29,7 @@ public class SimulationReport {
         // Cálculo real de capacidad efectiva
         this.capacidadEfectiva = calculateCapacidadEfectiva(state);
 
-        // Cálculo de otros atributos (inicialmente hardcodeados)
+        // Cálculo de otros atributos
         this.pedidosAtendidos = calculatePedidosAtendidos(state);
         this.eficienciaRutas = calculateEficienciaRutas(state);
         this.promedioPedidos = calculatePromedioPedidos(state);
@@ -41,16 +41,16 @@ public class SimulationReport {
     }
 
     // Método para calcular la capacidad efectiva
-    private double calculateCapacidadEfectiva(SimulationState state) {// CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO
-                                                                      // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
-                                                                      // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
-        return state.calculateAverageCapacity(); // Usar el promedio acumulado
+    private double calculateCapacidadEfectiva(SimulationState state) {
+        // CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO
+        // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
+        // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
+        return 1 - state.calculateAverageCapacity(); // Usar el promedio acumulado
     }
 
     // Métodos para calcular los atributos restantes (actualmente hardcodeados)
 
     private int calculatePedidosAtendidos(SimulationState state) {
-        //return state.obteinCountOrder();
         //return state.obteinCountOrder();
         return state.getTotalOrdersCount2();
     }
@@ -72,11 +72,10 @@ public class SimulationReport {
         double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
 
         System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
-        return eficienciaPromedio;
+        return 1 - eficienciaPromedio;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {
-        // Por ahora retornamos un valor hardcodeado
         List<Integer> orderbyDays = state.getOrderbyDays();
         if (orderbyDays.isEmpty()) {
             return 0.0; // Evitar división por cero
@@ -91,7 +90,6 @@ public class SimulationReport {
     }
 
     private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state) {
-        // Valores hardcodeados por ahora
         //Aqui se debe considerar solo cuando se realiza el pedido
         //!Cuando se entrega el pedido ya es otra metrica (que no estamos abarcando)
         //Entonces se debe colocar en el mismo lugar donde se esta asignando el pedido --> pero ahora la relevancia esta en el "DESTINO"
