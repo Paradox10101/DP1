@@ -67,7 +67,7 @@ export const useWebSocket = ({
   const checkSimulationStatus = useCallback(async () => {
     try {
       console.log('Verificando estado de simulación...');
-      const response = await fetch('http://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/status');
+      const response = await fetch('https://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/status');
       if (!response.ok) throw new Error('server_error');
 
       const data = await response.json();

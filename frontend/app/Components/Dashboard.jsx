@@ -12,7 +12,7 @@ export default function Dashboard({ shipment }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/report');
+        const response = await fetch('https://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/report');
         if (response.ok) {
           const result = await response.json();
           setData(result);
