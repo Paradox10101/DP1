@@ -22,7 +22,7 @@ export default function ModalEnvios({shipmentVehicles, setSelectedVehicleIndex, 
                         <div className="regular">Tiempo restante</div>
                     </div>
                     <div className="regular_bold">
-                        {"1"+"d "+"22"+"h:"+"33"+"m"}
+                        {shipment.timeRemainingDays +"d "+ shipment.timeRemainingHours +"h"}
                     </div>
                 </div>
             </div>

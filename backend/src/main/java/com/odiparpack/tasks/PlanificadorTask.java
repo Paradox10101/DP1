@@ -3,6 +3,7 @@ package com.odiparpack.tasks;
 import com.odiparpack.models.RouteSegment;
 import com.odiparpack.models.SimulationState;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -63,6 +64,8 @@ public class PlanificadorTask implements Runnable {
                         if(vehicleRoutes.containsKey(vehicleAssingnment.getVehicle().getCode())){
                             if(!state.getVehicleAssignmentsPerOrder().containsKey(vehicleAssingnment.getOrder().getId()))
                                 state.getVehicleAssignmentsPerOrder().put(vehicleAssingnment.getOrder().getId(), new ArrayList<>());
+                            if(vehicleAssingnment.getVehicle().getEstimatedDeliveryTime()!=null)
+                                vehicleAssingnment.setEstimatedDeliveryTime(vehicleAssingnment.getVehicle().getEstimatedDeliveryTime());
                             vehicleAssingnment.getRouteSegments().addAll(vehicleRoutes.get(vehicleAssingnment.getVehicle().getCode()));
                             state.getVehicleAssignmentsPerOrder().get(vehicleAssingnment.getOrder().getId()).add(vehicleAssingnment);
                         }
