@@ -103,7 +103,8 @@ public class VehiculoController {
             }
 
             VehicleAssignment assignment = new VehicleAssignment(vehicle, order, assignedQuantity);
-            simulationState.getVehicles().get(vehicleCode).startJourney(simulationState.getCurrentTime(), order);
+            Vehicle aux = simulationState.getVehicles().get(vehicleCode);
+            aux.startJourney(simulationState.getCurrentTime(), order, simulationState);
             
             response.status(200);
             return "Orden asignada al vehículo con éxito.";

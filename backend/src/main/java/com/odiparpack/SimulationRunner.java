@@ -461,14 +461,23 @@ public class SimulationRunner {
 
                     // Actualizar la métrica de capacidad efectiva acumulada
                     state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
+
                     //AQUI CREO QUE ES <------------------------------- OJITO
                     state.assignOrdersCount();
+
                     //Aqui se procesa el pedido para sacar su ubigeo
                     String destinationCity = order.getDestinationCity();
+
                     // Actualizar el contador en el mapa
                     state.guardarCiudadDestino(destinationCity);
-                    //cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
+
                     state.registrarParadaEnAlmacen(order.getOriginUbigeo()); //se analiza el ubigeo origen del pedido
+
+                    //Llamar para contar que se está haciendo un pedido en tal Region
+                    state.asignarPedidoAlmacenCount(order.getDestinationUbigeo());
+
+                    //state.calcularEficienciaPedido(vehicle.getCode(),vehicle.getEstimatedDeliveryTime(),order.getOrderTime());// AQUI YA NO PIPIPI
+
                     logger.info(logMessage);
 
                     //order.setAssignedPackages(unassignedPackages);
@@ -790,7 +799,7 @@ public class SimulationRunner {
                     Vehicle vehicle = assignment.getVehicle();
                     vehicle.setRoute(route);
                     if (state != null) {
-                        vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
+                        vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(),state);
                     }
                     System.out.println(vehicle.getRoute());
 
@@ -1037,7 +1046,7 @@ public class SimulationRunner {
             if (route != null) {
                 vehicle.setRoute(route);
                 if (state != null) {
-                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
+                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(),state);
                 }
                 logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo());
             } else {

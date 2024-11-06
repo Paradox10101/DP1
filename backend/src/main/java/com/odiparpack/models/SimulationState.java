@@ -9,6 +9,7 @@ import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
+import org.springframework.cglib.core.Local;
 
 
 import java.time.*;
@@ -74,12 +75,13 @@ public class SimulationState {
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
     private int totalOrdersCount = 0;
+    private int totalOrdersCount2 = 0;
     private int currentDayOrders = 0;
     private List<Integer> orderbyDays;
     private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
-    // Mapa para almacenar la última vez que un vehículo hizo una parada en un almacén
-    private Map<String, LocalDateTime> ultimaParadaEnAlmacen = new HashMap<>();
+    private Map<String, Integer> pedidosPorRegion = new HashMap<>();
+    private Map<String, Double> eficienciaPedidos = new HashMap<>();
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -506,6 +508,11 @@ public class SimulationState {
         paradasAlmacenesOrderCount.put("150101", 0);//Lima
         paradasAlmacenesOrderCount.put("040201", 0);//Arequipa
         paradasAlmacenesOrderCount.put("130101", 0);//Trujillo
+
+        pedidosPorRegion.put("SELVA", 0);
+        pedidosPorRegion.put("COSTA", 0);
+        pedidosPorRegion.put("SIERRA", 0);
+
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
@@ -867,6 +874,58 @@ public class SimulationState {
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
 
+
+    public Map<String, Double> getEficienciaPedidos() {
+        return eficienciaPedidos;
+    }
+
+    public void calcularEficienciaPedido(String codigo, LocalDateTime tiempoEstimado, LocalDateTime tiempoLimite) {
+        //aqui se debe dividir el tiempo estimado entre el tiempo limite. --> todo esto para 1 pedido se guarda en 1 indice de un MAP
+        //luego se tiene que ir sumando en total
+        //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
+        // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
+        if (tiempoEstimado.isAfter(tiempoLimite)) {
+            throw new IllegalArgumentException("El tiempo estimado no puede ser después del tiempo límite");
+        }
+
+// Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
+        //long tiempoEstimadoSegundos = Duration.between(currentTime, tiempoEstimado).getSeconds();
+        //long tiempoLimiteSegundos = Duration.between(currentTime, tiempoLimite.getSeconds());
+
+        double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
+                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+
+        eficienciaPedidos.put(codigo, eficiencia);
+    }
+
+    public Map<String, Integer> getPedidosPorRegion(){
+        return pedidosPorRegion;
+    }
+
+    public void asignarPedidoAlmacenCount(String ubigeoDestino){
+        // Obtener la región natural del pedido que se está asignando
+        String regionNatural = locations.get(ubigeoDestino).getNaturalRegion();
+
+        // Verificar la región y actualizar el contador correspondiente
+        if (regionNatural != null) {
+            switch (regionNatural.toUpperCase()) {
+                case "SELVA":
+                    pedidosPorRegion.put("SELVA", pedidosPorRegion.getOrDefault("SELVA", 0) + 1);
+                    break;
+                case "COSTA":
+                    pedidosPorRegion.put("COSTA", pedidosPorRegion.getOrDefault("COSTA", 0) + 1);
+                    break;
+                case "SIERRA":
+                    pedidosPorRegion.put("SIERRA", pedidosPorRegion.getOrDefault("SIERRA", 0) + 1);
+                    break;
+                default:
+                    // Región desconocida, no se actualiza nada
+                    System.out.println("Región desconocida para el ubigeo: " + ubigeoDestino);
+                    break;
+            }
+        }
+    }
+
     public Map<String, Integer> getDemandasAlmacenesOrderCount(){
         return paradasAlmacenesOrderCount;
     }
@@ -879,6 +938,11 @@ public class SimulationState {
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
+        totalOrdersCount2++;
+    }
+
+    public int getTotalOrdersCount2(){
+        return totalOrdersCount2;
     }
 
     public void guardarPedidosDiarios() {
@@ -915,8 +979,9 @@ public class SimulationState {
         if (capacityRecordsCount == 0 || totalCapacity == 0) {
             return 0;
         }
-        return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
+        return ((totalCapacityUsed / totalCapacity) * 100) / capacityRecordsCount;
     }
+
     public void guardarCiudadDestino(String destinationCity){
         cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
     }
