@@ -697,6 +697,7 @@ public class SimulationState {
                 .append("\"destinationCity\":\"").append(locations.get(order.getDestinationUbigeo()).getProvince()).append("\",")
                 .append("\"destinationRegion\":\"").append(locations.get(order.getDestinationUbigeo()).getNaturalRegion()).append("\",")
                 .append("\"orderTime\":\"").append(order.getOrderTime()).append("\",")
+                .append("\"quantityVehicles\":").append(!vehicleAssignmentsPerOrder.containsKey(order.getId())?0:vehicleAssignmentsPerOrder.get(order.getId()).size()).append(",")
                 .append("\"dueTime\":\"").append(order.getDueTime()).append("\",");
 
         // Calcular tiempo transcurrido solo si el estado no es DELIVERED o PENDING_PICKUP
