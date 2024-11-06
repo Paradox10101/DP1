@@ -3,7 +3,7 @@ import { useEffect, useCallback, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { shipmentsAtom } from '../atoms/shipmentAtoms';
 
-const WEBSOCKET_URL = 'ws://1inf54-982-1a.inf.pucp.edu.pe:4567/ws/shipments';
+const WEBSOCKET_URL = 'ws://1inf54-982-1a.inf.pucp.edu.pe/ws/shipments';
 
 export const useShipmentWebSocket = () => {
   const setShipments = useSetAtom(shipmentsAtom);
