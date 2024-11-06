@@ -103,23 +103,39 @@ return (
             <div className="flex flex-col gap-3 justify-between">
                 <div className="w-full flex flex-col gap-2 justify-between">
                     <div >
-                        <span className="encabezado">Tipo de Simulación</span>
+                        <span className="regular_bold">Tipo de Simulación</span>
                     </div>
                     <Tabs
-                        className="bg-grisFondo flex flex-col rounded border-2 border-black"
-                        selectedKey={tipoSimulacion}
-                        onSelectionChange={setTipoSimulacion}
+                      selectedKey={tipoSimulacion}
+                      onSelectionChange={setTipoSimulacion}
+                      className="bg-grisFondo flex flex-col rounded border-2"
+                      classNames={{
+                        tab: "text-white data-[selected=true]:text-white",
+                        tabContent: "group-data-[selected=true]:text-white",
+                        cursor: "bg-blue-500",
+                        panel: "text-white"
+                      }}
                     >
-                        <Tab key="1" title={"Semanal"} className={`${tipoSimulacion==="1"?"bg-principal text-blanco":'bg-blanco text-negro'}`+" rounded focus:outline-none"}>
-                        </Tab>
-                        <Tab key="2" title={"Colapso"} className={`${tipoSimulacion==="2"?"bg-principal text-blanco":'bg-blanco text-negro'}`+" rounded focus:outline-none"}>
-                        </Tab>
+                      <Tab 
+                        key="1" 
+                        title="Semanal"
+                        className={`${
+                          tipoSimulacion === "1" ? "bg-blue-500" : "bg-blanco"
+                        } rounded focus:outline-none`}
+                      />
+                      <Tab 
+                        key="2" 
+                        title="Colapso"
+                        className={`${
+                          tipoSimulacion === "2" ? "bg-blue-500" : "bg-blanco"
+                        } rounded focus:outline-none`}
+                      />
                     </Tabs>
                 </div>
                 
                 <div className="w-full flex flex-col gap-1">
                     <div>
-                        <span className="encabezado">Fecha de Inicio</span>
+                        <span className="regular_bold">Fecha de Inicio</span>
                     </div>
                     <div className="flex w-full gap-4">
                         <div className="flex flex-col gap-1">
