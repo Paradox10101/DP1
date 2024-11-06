@@ -6,8 +6,9 @@ import { serverAvailableAtom, simulationStatusAtom } from '../atoms/simulationAt
 const WEBSOCKET_CONFIG = {
   MAX_RECONNECT_ATTEMPTS: 5,
   RECONNECT_DELAY: 3000,
-  URL: 'ws://1inf54-982-1a.inf.pucp.edu.pe:4567/ws'
+  URL: 'wss://1inf54-982-1a.inf.pucp.edu.pe/ws'  // Cambiado a wss://
 };
+
 
 const createError = (type, customMessage = null) => {
   const baseErrors = {
