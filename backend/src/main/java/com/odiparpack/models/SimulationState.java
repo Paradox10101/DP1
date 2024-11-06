@@ -9,6 +9,7 @@ import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
+import org.springframework.cglib.core.Local;
 
 
 import java.time.*;
@@ -34,8 +35,9 @@ public class SimulationState {
     private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
     private static final int PLANNING_INTERVAL_MINUTES = 15;
     private WarehouseManager warehouseManager;
+    private Map<Integer, List<VehicleAssignment>> vehicleAssignmentsPerOrder = new HashMap<>();
     private List<Vehicle> vehiclesNeedingNewRoutes;
-    private List<String> almacenesPrincipales = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
+    private List<String> almacenesPrincipales = Arrays.asList("150101", "040101", "130101"); // Lima, Arequipa, Trujillo
     private RouteCache routeCache;
     private List<Blockage> activeBlockages;
     private long[][] currentTimeMatrix;
@@ -72,10 +74,15 @@ public class SimulationState {
     private double totalCapacityUsed = 0;
     private double totalCapacity = 0;
     private int capacityRecordsCount = 0;
+    private double averageCapacityMetric = 0;
     private int totalOrdersCount = 0;
+    private int totalOrdersCount2 = 0;
     private int currentDayOrders = 0;
     private List<Integer> orderbyDays;
     private Map<String, Integer> cityOrderCount = new HashMap<>(); //Aqui se tiene el Map para
+    private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
+    private Map<String, Integer> pedidosPorRegion = new HashMap<>();
+    private Map<String, Double> eficienciaPedidos = new HashMap<>();
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -498,6 +505,15 @@ public class SimulationState {
                 .map(long[]::clone)
                 .toArray(long[][]::new);
         this.orderbyDays = new ArrayList<>();
+        // Inicializa otras variables
+        paradasAlmacenesOrderCount.put("150101", 0);//Lima
+        paradasAlmacenesOrderCount.put("040201", 0);//Arequipa
+        paradasAlmacenesOrderCount.put("130101", 0);//Trujillo
+
+        pedidosPorRegion.put("SELVA", 0);
+        pedidosPorRegion.put("COSTA", 0);
+        pedidosPorRegion.put("SIERRA", 0);
+
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
@@ -612,57 +628,197 @@ public class SimulationState {
         }
     }
 
-    //Funcion para obtener el listado de envios
-    public JsonObject getShipmentListJson() {
+
+
+
+    public JsonObject getShipmentListJsonInPeriod(LocalDateTime initialDate, LocalDateTime endDate, String lastClientMessage) {
         StringBuilder builder = stringBuilderPool.borrow();
         try {
+            // Inicia el JSON con el contenedor de features
             builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
 
+            // Filtra las órdenes en el período
+            List<Order> ordersInPeriod = orders.stream()
+                    .filter(order -> {
+                        LocalDateTime orderTime = order.getOrderTime();
+                        return (orderTime.isAfter(initialDate) || orderTime.isEqual(initialDate)) &&
+                                (orderTime.isBefore(endDate) || orderTime.isEqual(endDate));
+                    })
+                    .collect(Collectors.toList());
+
+            // Añadir las características de los envíos
             boolean first = true;
-            for (Order order : orders) {
+            for (Order order : ordersInPeriod) {
                 if (order != null) {
                     if (!first) {
-                        builder.append(',');
+                        builder.append(','); // Añadir coma entre objetos, pero no al final
                     }
                     first = false;
-                    appendShipmentFeature(builder, order);
+
+                    // Asegúrate de que `appendShipmentFeature` no produzca un error
+                    try {
+                        appendShipmentFeature(builder, order, lastClientMessage);
+                    } catch (Exception e) {
+                        // Captura cualquier excepción durante la generación de características y decide cómo manejarlo
+                        System.err.println("Error procesando la orden: " + order);
+                    }
                 }
             }
-            builder.append("]")
-                    .append("}");
 
+            // Finaliza el JSON
+            builder.append("]}");  // Cierra los objetos
+
+            // Convertir la cadena generada en un JsonObject
             return JsonParser.parseString(builder.toString()).getAsJsonObject();
         } finally {
             stringBuilderPool.release(builder);
         }
     }
 
-    private void appendShipmentFeature(StringBuilder builder, Order order) {
+    private void appendShipmentFeature(StringBuilder builder, Order order, String lastClientMessage) {
         Order.OrderStatus currentOrderStatus = order.getStatus();
+        JsonObject lastClientJSON = new JsonObject();
+        if (lastClientMessage != null && !lastClientMessage.isEmpty()) {
+            try {
+                lastClientJSON = JsonParser.parseString(lastClientMessage).getAsJsonObject();
+            } catch (JsonSyntaxException e) {
+                lastClientJSON = null;
+                System.err.println("Error parsing JSON: " + e.getMessage());
+            }
+        }
+
+
+
         builder.append("{")
                 .append("\"type\":\"Feature\",")
                 .append("\"order\":{")
                 .append("\"id\":").append(order.getId()).append(",")
+                .append("\"orderCode\":\"").append(order.getOrderCode()).append("\",")
                 .append("\"status\":\"").append(currentOrderStatus).append("\",")
                 .append("\"quantity\":").append(order.getQuantity()).append(",")
                 .append("\"originCity\":\"").append(locations.get(order.getOriginUbigeo()).getProvince()).append("\",")
                 .append("\"destinationCity\":\"").append(locations.get(order.getDestinationUbigeo()).getProvince()).append("\",")
+                .append("\"destinationRegion\":\"").append(locations.get(order.getDestinationUbigeo()).getNaturalRegion()).append("\",")
                 .append("\"orderTime\":\"").append(order.getOrderTime()).append("\",")
+                .append("\"quantityVehicles\":").append(!vehicleAssignmentsPerOrder.containsKey(order.getId())?0:vehicleAssignmentsPerOrder.get(order.getId()).size()).append(",")
                 .append("\"dueTime\":\"").append(order.getDueTime()).append("\",");
 
+        // Calcular tiempo transcurrido solo si el estado no es DELIVERED o PENDING_PICKUP
         if (currentOrderStatus.equals(Order.OrderStatus.DELIVERED) || currentOrderStatus.equals(Order.OrderStatus.PENDING_PICKUP)) {
-            builder.append("\"timeElapsedDays\":-1,")
-                    .append("\"timeElapsedHours\":-1");
+            Optional<LocalDateTime> deliveryTime = vehicleAssignmentsPerOrder.containsKey(order.getId())? vehicleAssignmentsPerOrder.get(order.getId()).stream()
+                    .map(VehicleAssignment::getEstimatedDeliveryTime) // Extraer el atributo de fecha
+                    .filter(date -> date != null) // Filtrar fechas nulas
+                    .max((d1, d2) -> d1.isAfter(d2) ? 1 : (d2.isAfter(d1) ? -1 : 0)) : null;
+            if(deliveryTime!=null&&deliveryTime.isPresent()){
+                Duration timeElapsed = Duration.between(order.getOrderTime(), deliveryTime.get());
+                Duration timeRemaining = Duration.between(deliveryTime.get(), order.getDueTime());
+                builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
+                        .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                        .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                        .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
+            }
+            else{
+                builder.append("\"timeElapsedDays\":").append(0).append(",")
+                        .append("\"timeElapsedHours\":").append(0).append(",")
+                        .append("\"timeRemainingDays\":").append(0).append(",")
+                        .append("\"timeRemainingHours\":").append(0);
+            }
         } else {
             Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime);
+            Duration timeRemaining = Duration.between(currentTime, order.getDueTime());
             builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
-                    .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24);
+                    .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                    .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                    .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
         }
-        builder.append("}}");
+        builder.append("},");
 
+        // Construir el arreglo JSON de vehículos
+        builder.append("\"vehicles\":[");
 
+        if (vehicleAssignmentsPerOrder.containsKey(order.getId())) {
+            boolean firstVehicle = true;
+            if (lastClientJSON != null && lastClientJSON.get("orderId").getAsString() != "" && lastClientJSON.get("orderId").getAsInt() == order.getId()) {
+                for (VehicleAssignment assignedVehicle : vehicleAssignmentsPerOrder.get(order.getId())) {
+                    boolean attendedOrder = assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.DELIVERED) || assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.PENDING_PICKUP);
+                    if (!firstVehicle) builder.append(",");
+                    builder.append("{")
+                            .append("\"orderId\":").append(assignedVehicle.getOrder().getId()).append(",")
+                            .append("\"orderCode\":\"").append(assignedVehicle.getOrder().getOrderCode()).append("\",")
+                            .append("\"vehicleCode\":\"").append(assignedVehicle.getVehicle().getCode()).append("\",")
+                            .append("\"packageQuantity\":\"").append(assignedVehicle.getAssignedQuantity()).append("\",")
+                            .append("\"vehicleStatus\":\"").append(assignedVehicle.getVehicle().getStatus()).append("\",")
+                            .append("\"vehicleType\":\"").append(assignedVehicle.getVehicle().getType()).append("\",")
+                            .append("\"vehicleCapacity\":\"").append(assignedVehicle.getVehicle().getCapacity()).append("\",")
+                            .append("\"status\":\"").append(attendedOrder ? "ATTENDED" : "NO_ATTENDED").append("\",")
+                            .append("\"orderTime\":\"").append(assignedVehicle.getOrder().getOrderTime()).append("\",");
 
+                    // Construir el arreglo JSON de rutas (anidado dentro de cada vehículo)
+                    builder.append("\"routes\":[");
+
+                    boolean firstRoute = true;
+
+                    // Primera ruta con campos vacíos para indicar el destino final
+                    if (assignedVehicle.getRouteSegments() != null && !assignedVehicle.getRouteSegments().isEmpty()) {
+                        if (lastClientJSON != null && lastClientJSON.get("vehicleCode").getAsString() != "" && lastClientJSON.get("vehicleCode").getAsString().equals(assignedVehicle.getVehicle().getCode())) {
+                            builder.append("{")
+                                    .append("\"originUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).append("\",")
+                                    .append("\"originCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).getProvince()).append("\",")
+                                    .append("\"destinationUbigeo\":null,")
+                                    .append("\"durationMinutes\":null,")
+                                    .append("\"distance\":null")
+                                    .append("},");
+
+                            String currentUbigeo = "";
+                            if (assignedVehicle.getVehicle().getStatus() != null)
+                                currentUbigeo = assignedVehicle.getVehicle().getStatus().getCurrentSegmentUbigeo();
+                            boolean traveled = true;
+                            boolean inTravel = false;
+
+                            // Iterar por las rutas segmentadas
+                            for (RouteSegment routeSegment : assignedVehicle.getRouteSegments()) {
+                                if (!firstRoute) builder.append(",");
+                                if (!attendedOrder && currentUbigeo.equals(routeSegment.getToUbigeo())) {
+                                    traveled = false;
+                                    inTravel = true;
+                                }
+                                builder.append("{")
+                                        .append("\"originUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
+                                        .append("\"destinationUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
+                                        .append("\"originCity\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
+                                        .append("\"destinationCity\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
+                                        .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
+                                        .append("\"status\":\"").append(attendedOrder || traveled ? "TRAVELED" : inTravel ? "IN_TRAVEL" : "NO_TRAVELED").append("\",")
+                                        .append("\"distance\":").append(routeSegment.getDistance())
+                                        .append("}");
+                                firstRoute = false;
+                                inTravel = false;
+                            }
+
+                            // Última ruta con campos vacíos para indicar el destino final
+                            builder.append(",{")
+                                    .append("\"originUbigeo\":null,")
+                                    .append("\"destinationUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).append("\",")
+                                    .append("\"destinationCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).getProvince()).append("\",")
+                                    .append("\"durationMinutes\":null,")
+                                    .append("\"distance\":null")
+                                    .append("}");
+                        }
+                    }
+                    builder.append("]"); // Cerrar el arreglo de rutas
+                    // Cerrar el arreglo de rutas
+                    builder.append("}"); // Cerrar el vehículo actual
+                    firstVehicle = false;
+                }
+            }
+        }
+            builder.append("]"); // Cerrar el arreglo de vehículos
+
+        builder.append("}"); // Cerrar el objeto JSON principal
     }
+
+
+
 
 
 
@@ -757,9 +913,75 @@ public class SimulationState {
     //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
     // }
 
+
+    public Map<String, Double> getEficienciaPedidos() {
+        return eficienciaPedidos;
+    }
+
+    public void calcularEficienciaPedido(String codigo, LocalDateTime tiempoEstimado, LocalDateTime tiempoLimite) {
+        //aqui se debe dividir el tiempo estimado entre el tiempo limite. --> todo esto para 1 pedido se guarda en 1 indice de un MAP
+        //luego se tiene que ir sumando en total
+        //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
+        // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
+        if (tiempoEstimado.isAfter(tiempoLimite)) {
+            throw new IllegalArgumentException("El tiempo estimado no puede ser después del tiempo límite");
+        }
+
+// Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
+        //long tiempoEstimadoSegundos = Duration.between(currentTime, tiempoEstimado).getSeconds();
+        //long tiempoLimiteSegundos = Duration.between(currentTime, tiempoLimite.getSeconds());
+
+        double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
+                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+
+        eficienciaPedidos.put(codigo, eficiencia);
+    }
+
+    public Map<String, Integer> getPedidosPorRegion(){
+        return pedidosPorRegion;
+    }
+
+    public void asignarPedidoAlmacenCount(String ubigeoDestino){
+        // Obtener la región natural del pedido que se está asignando
+        String regionNatural = locations.get(ubigeoDestino).getNaturalRegion();
+
+        // Verificar la región y actualizar el contador correspondiente
+        if (regionNatural != null) {
+            switch (regionNatural.toUpperCase()) {
+                case "SELVA":
+                    pedidosPorRegion.put("SELVA", pedidosPorRegion.getOrDefault("SELVA", 0) + 1);
+                    break;
+                case "COSTA":
+                    pedidosPorRegion.put("COSTA", pedidosPorRegion.getOrDefault("COSTA", 0) + 1);
+                    break;
+                case "SIERRA":
+                    pedidosPorRegion.put("SIERRA", pedidosPorRegion.getOrDefault("SIERRA", 0) + 1);
+                    break;
+                default:
+                    // Región desconocida, no se actualiza nada
+                    System.out.println("Región desconocida para el ubigeo: " + ubigeoDestino);
+                    break;
+            }
+        }
+    }
+
+    public Map<String, Integer> getDemandasAlmacenesOrderCount(){
+        return paradasAlmacenesOrderCount;
+    }
+
+    public void registrarParadaEnAlmacen(String codigoAlmacen) {
+        //aqui falta ver que es el parametro. Si es un ubigeo se necesita hacer un match para ver cual de los 3 almacenes es el indicado
+        paradasAlmacenesOrderCount.put(codigoAlmacen, paradasAlmacenesOrderCount.getOrDefault(codigoAlmacen, 0) + 1);
+    }
+
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
+        totalOrdersCount2++;
+    }
+
+    public int getTotalOrdersCount2(){
+        return totalOrdersCount2;
     }
 
     public void guardarPedidosDiarios() {
@@ -785,19 +1007,25 @@ public class SimulationState {
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
     public void updateCapacityMetrics(int currentCapacityUsed, int vehicleCapacity) {
-        this.totalCapacityUsed += currentCapacityUsed;
-        this.totalCapacity += vehicleCapacity;
+        double aux = (double) currentCapacityUsed / vehicleCapacity;
+        //this.totalCapacityUsed += currentCapacityUsed;
+        //this.totalCapacity += vehicleCapacity;
+        this.averageCapacityMetric += aux;
         this.capacityRecordsCount++;
         logger.info("Actualizando métricas de capacidad: Capacidad Usada: " + currentCapacityUsed +
                 ", Capacidad Total: " + vehicleCapacity + ", Total Registros: " + capacityRecordsCount);
     }
 
     public double calculateAverageCapacity() {
-        if (capacityRecordsCount == 0 || totalCapacity == 0) {
+        /*if (capacityRecordsCount == 0 || totalCapacity == 0) {
+            return 0;
+        }*/
+        if(averageCapacityMetric == 0){
             return 0;
         }
-        return (totalCapacityUsed / totalCapacity) * 100 / capacityRecordsCount;
+        return averageCapacityMetric / capacityRecordsCount;
     }
+
     public void guardarCiudadDestino(String destinationCity){
         cityOrderCount.put(destinationCity, cityOrderCount.getOrDefault(destinationCity, 0) + 1);
     }
@@ -809,7 +1037,7 @@ public class SimulationState {
     private void handleMaintenance(Vehicle vehicle) {
         Maintenance mantenimiento = getCurrentMaintenance(vehicle.getCode());
         if (mantenimiento != null) {
-            handleVehicleInMaintenance(vehicle, mantenimiento);
+                handleVehicleInMaintenance(vehicle, mantenimiento);
         }
     }
 
@@ -829,6 +1057,20 @@ public class SimulationState {
 
     private void handleVehicleStatusUpdate(Vehicle vehicle, LocalDateTime currentTime) {
         vehicle.updateStatus(currentTime, warehouseManager);
+        /*String currentUbigeo = vehicle.getCurrentLocationUbigeo();
+        if (almacenesPrincipales.contains(currentUbigeo)) {
+            String vehicleCode = vehicle.getCode();  // Supongo que cada vehículo tiene un identificador único
+
+            // Verificar si el vehículo ya ha hecho una parada recientemente en el mismo almacén
+            LocalDateTime ultimaParada = ultimaParadaEnAlmacen.get(vehicleCode);
+
+            // Si no hay registro previo o han pasado más de 30 segundos, incrementamos el contador
+            if (ultimaParada == null || Duration.between(ultimaParada, currentTime).getSeconds() > 30) {
+                registrarParadaEnAlmacen(currentUbigeo);
+                // Actualizar el tiempo de la última parada de este vehículo
+                ultimaParadaEnAlmacen.put(vehicleCode, currentTime);
+            }
+        }*/
     }
 
     private void collectVehiclesNeedingNewRoutes(Vehicle vehicle, List<Vehicle> vehiclesNeedingNewRoutes, LocalDateTime currentTime) {
@@ -1724,6 +1966,12 @@ public class SimulationState {
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
     }
+
+    public Map<Integer, List<VehicleAssignment>> getVehicleAssignmentsPerOrder() {
+        return vehicleAssignmentsPerOrder;
+    }
+
+
 
     // Funcion para obtener todos los detalles de vehiculos
     // en un JSON

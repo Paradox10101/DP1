@@ -14,7 +14,7 @@ export default function OpcionVehiculos() {
   const [searchInput, setSearchInput] = useState(""); // Local search input state
 
   // Ensure vehiculos is an array to avoid TypeError
-  const vehiculosArray = Array.isArray(vehiculos.features) ? vehiculos.features : [];
+  const vehiculosArray = Array.isArray(vehiculos.features ) ? vehiculos.features : [];
 
   // Filter vehiculosArray based on search input
   const filteredVehiculosArray = vehiculosArray.filter((vehiculo) =>

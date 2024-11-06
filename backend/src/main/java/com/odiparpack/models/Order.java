@@ -29,6 +29,7 @@ public class Order {
     private OrderStatus status;
     private int assignedPackages;
     private int deliveredPackages;
+    private String orderCode;
 
     public LocalDateTime getPendingPickupStartTime() {
         return pendingPickupStartTime;
@@ -176,5 +177,13 @@ public class Order {
     public void setDelivered(LocalDateTime currentSimulationTime) {
         this.status = OrderStatus.DELIVERED;
         logger.info("Orden " + getId() + " marcada como DELIVERED a las " + currentSimulationTime);
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }

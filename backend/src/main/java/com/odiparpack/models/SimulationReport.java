@@ -13,52 +13,70 @@ public class SimulationReport {
     private double eficienciaRutas;
     private double promedioPedidos;
     private Map<String, Integer> demandasPorCiudad;
-    private Map<String, Integer> paradasEnAlmacenes;
+    private Map<String, Integer> demandasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
     private Map<String, Integer> regionConMayorDemanda;
-    private Map<String, Integer> estadoPaquetes;
+    private Map<String, Integer> estadoPedidos;
+
+    private Map<String, String> ubigeoToProvincia = new HashMap<String, String>() {{
+        put("150101", "Lima");
+        put("040101", "Arequipa");
+        put("130101", "Trujillo");
+    }};
 
     // Constructor, getters y setters
     public SimulationReport(SimulationState state) {
         // Cálculo real de capacidad efectiva
         this.capacidadEfectiva = calculateCapacidadEfectiva(state);
 
-        // Cálculo de otros atributos (inicialmente hardcodeados)
+        // Cálculo de otros atributos
         this.pedidosAtendidos = calculatePedidosAtendidos(state);
         this.eficienciaRutas = calculateEficienciaRutas(state);
         this.promedioPedidos = calculatePromedioPedidos(state);
         this.demandasPorCiudad = calculateDemandasPorCiudad(state);
-        this.paradasEnAlmacenes = calculateParadasEnAlmacenes(state);
+        this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
-        this.estadoPaquetes = calculateEstadoPaquetes(state);
+        this.estadoPedidos = calculateEstadoPedidos(state);
     }
 
     // Método para calcular la capacidad efectiva
-    private double calculateCapacidadEfectiva(SimulationState state) {// CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO
-                                                                      // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
-                                                                      // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
-        return state.calculateAverageCapacity(); // Usar el promedio acumulado
+    private double calculateCapacidadEfectiva(SimulationState state) {
+        // CADA VEZ QUE SE ASIGNA UN PEDIDO A UN VEHICULO
+        // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
+        // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
+        return state.calculateAverageCapacity() * 100; // Usar el promedio acumulado
     }
 
     // Métodos para calcular los atributos restantes (actualmente hardcodeados)
 
     private int calculatePedidosAtendidos(SimulationState state) {
-        // Por ahora retornamos un valor hardcodeado
         //return state.obteinCountOrder();
-        return state.obteinCountOrder();
+        return state.getTotalOrdersCount2();
     }
 
-    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTELA EFICIENCIA DEL CALCULO DE RUTA
-                                                                    // RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
-                                                                    // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
-                                                                    // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
-        // Por ahora retornamos un valor hardcodeado
-        return 85.0;
+    private double calculateEficienciaRutas(SimulationState state) {
+        // ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
+        // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
+        // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
+        //aqui lo que se hace es recoger el "map" y luego hacer sumatoria entre todos los valores encontrados (de la division)
+        // y dividir entre la cantidad de pedidos totales.
+
+        Map<String, Double> eficienciaPedidos = state.getEficienciaPedidos();
+        // Sumar todas las eficiencias almacenadas en el mapa
+        double sumaEficiencia = 0.0;
+        for (double eficiencia : eficienciaPedidos.values()) {
+            sumaEficiencia += eficiencia;
+        }
+
+        // Calcular el promedio de eficiencia
+        double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
+
+        System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
+        return (1 - eficienciaPromedio) * 100;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {
-        // Por ahora retornamos un valor hardcodeado
         List<Integer> orderbyDays = state.getOrderbyDays();
         if (orderbyDays.isEmpty()) {
             return 0.0; // Evitar división por cero
@@ -73,7 +91,6 @@ public class SimulationReport {
     }
 
     private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state) {
-        // Valores hardcodeados por ahora
         //Aqui se debe considerar solo cuando se realiza el pedido
         //!Cuando se entrega el pedido ya es otra metrica (que no estamos abarcando)
         //Entonces se debe colocar en el mismo lugar donde se esta asignando el pedido --> pero ahora la relevancia esta en el "DESTINO"
@@ -103,14 +120,25 @@ public class SimulationReport {
         return demandas;*/
     }
 
-    private Map<String, Integer> calculateParadasEnAlmacenes(SimulationState state) {
-        // Valores hardcodeados por ahora
-        //estos son las veces que el vehiculo regresa al almacen? o son las veces que un vehiculo sale de un almacen.
-        Map<String, Integer> paradas = new HashMap<>();
-        paradas.put("Trujillo", 10);
-        paradas.put("Lima", 15);
-        paradas.put("Arequipa", 8);
-        return paradas;
+    private Map<String, Integer> calculateDemandasEnAlmacenes(SimulationState state) {
+        // Obtener las paradas con los ubigeos del estado
+        Map<String, Integer> demandasUbigeos = state.getDemandasAlmacenesOrderCount();
+        Map<String, Integer> demandasConNombreProvincia = new HashMap<>();
+
+        // Convertir cada entrada del ubigeo al nombre de la provincia correspondiente
+        for (Map.Entry<String, Integer> entry : demandasUbigeos.entrySet()) {
+            String ubigeo = entry.getKey();
+            Integer count = entry.getValue();
+
+            // Obtener el nombre de la provincia a partir del ubigeo
+            String nombreProvincia = ubigeoToProvincia.get(ubigeo);
+
+            if (nombreProvincia != null) {
+                demandasConNombreProvincia.put(nombreProvincia, count);
+            }
+        }
+
+        return demandasConNombreProvincia;
     }
 
     private Map<String, Integer> calculateAveriasPorTipo(SimulationState state) {
@@ -137,14 +165,15 @@ public class SimulationReport {
         } else {
             return "Selva";
         }*/
-        Map<String, Integer> regiones = new HashMap<>();
-        regiones.put("Costa", 51);
-        regiones.put("Sierra", 43);
-        regiones.put("Selva", 20);
+
+        Map<String, Integer> regiones = state.getPedidosPorRegion();
+        //regiones.put("Costa", 51);
+        //regiones.put("Sierra", 43);
+        //regiones.put("Selva", 20);
         return regiones;
     }
 
-    private Map<String, Integer> calculateEstadoPaquetes(SimulationState state) {
+    private Map<String, Integer> calculateEstadoPedidos(SimulationState state) {
         // Valores hardcodeados por ahora
         Map<String, Integer> estados = new HashMap<>();
         estados.put("En Almacén", 50);

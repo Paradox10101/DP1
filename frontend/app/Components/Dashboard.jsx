@@ -57,10 +57,10 @@ export default function Dashboard({ shipment }) {
     datasets: [
       {
         data: [
-          data.estadoPaquetes?.['En Almacén'],
-          data.estadoPaquetes?.['En Oficina'],
-          data.estadoPaquetes?.['En Entrega'],
-          data.estadoPaquetes?.['Entregado'],
+          data.estadoPedidos?.['En Almacén'],
+          data.estadoPedidos?.['En Oficina'],
+          data.estadoPedidos?.['En Entrega'],
+          data.estadoPedidos?.['Entregado'],
         ],
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
       },
@@ -78,15 +78,15 @@ export default function Dashboard({ shipment }) {
     ],
   };
 
-  const almacenParadasData = {
+  const almacenDemandasData = {
     labels: ['Trujillo', 'Lima', 'Arequipa'],
     datasets: [
       {
-        label: 'Cantidad de paradas en almacén',
+        label: 'Cantidad de pedidos por almacén',
         data: [
-          data.paradasEnAlmacenes?.Trujillo,
-          data.paradasEnAlmacenes?.Lima,
-          data.paradasEnAlmacenes?.Arequipa,
+          data.demandasEnAlmacenes?.Trujillo,
+          data.demandasEnAlmacenes?.Lima,
+          data.demandasEnAlmacenes?.Arequipa,
         ],
         backgroundColor: '#284BCC',
       },
@@ -114,9 +114,9 @@ export default function Dashboard({ shipment }) {
       {
         label: 'Regiones con Mayor Demanda',
         data: [
-          data.regionConMayorDemanda?.Costa,
-          data.regionConMayorDemanda?.Sierra,
-          data.regionConMayorDemanda?.Selva,
+          data.regionConMayorDemanda?.COSTA,
+          data.regionConMayorDemanda?.SIERRA,
+          data.regionConMayorDemanda?.SELVA,
         ],
         backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
       },
@@ -142,7 +142,7 @@ export default function Dashboard({ shipment }) {
           </div>
           <div className="card border p-4 shadow-md">
             <p>Cantidad Promedio de Pedidos por Día</p>
-            <h3>{data.promedioPedidos}</h3>
+            <h3>{data.promedioPedidos.toFixed(2)}</h3>
           </div>
           <button className="bg-blue-700 text-white w-full rounded p-3 flex items-center justify-center mt-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,11 +159,11 @@ export default function Dashboard({ shipment }) {
             <Doughnut data={regionDemandaData} />
           </div>
           <div className="chart-container">
-            <h4>Estado de Paquetes</h4>
+            <h4>Estado de Pedidos</h4>
             <Pie data={pieData} />
           </div>
           <div className="chart-container">
-            <h4>Ciudades con mayor demanda de pedidos</h4>
+            <h4>Ciudades con mayor demanda</h4>
             <Bar data={barData} />
           </div>
           <div className="chart-container">
@@ -171,8 +171,8 @@ export default function Dashboard({ shipment }) {
             <Bar data={averiasData} />
           </div>
           <div className="chart-container">
-            <h4>Cantidad de paradas en almacén</h4>
-            <Bar data={almacenParadasData} />
+            <h4>Cantidad de Pedidos por almacén</h4>
+            <Bar data={almacenDemandasData} />
           </div>
         </div>
       </div>
