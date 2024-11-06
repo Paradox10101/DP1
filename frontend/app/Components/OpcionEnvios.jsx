@@ -127,7 +127,9 @@ export default function OpcionEnvios() {
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
+                        {shipments[selectedShipmentIndex]&&
                             <div className="flex flex-row gap-2">
+                                
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
                                     shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].quantityVehicles===0 ? (
@@ -139,8 +141,9 @@ export default function OpcionEnvios() {
                                     ) : (
                                         <></>
                                     )
-                                }
+                                }   
                             </div>
+                            }
                         </ModalHeader>
                         <ModalBody>
                             <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
@@ -159,16 +162,20 @@ export default function OpcionEnvios() {
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
+                            {shipments[selectedShipmentIndex]&&shipments[selectedShipmentIndex].vehicles&&shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]&&
                             <div className="flex flex-row gap-3">
                                 <button onClick={()=>{setSelectedVehicleIndex(null)}}>
                                 <MoveLeft className="inline"/>
                                 </button>    
                                 <span className="subEncabezado">Información del vehiculo {shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex].vehicleCode}</span>
                             </div>
+                            }
                       
                         </ModalHeader>
                         <ModalBody>
+                            {shipments[selectedShipmentIndex]&&shipments[selectedShipmentIndex].vehicles&&shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]&&
                             <ModalRutaVehiculoEnvio selectedVehicle={shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]}/>
+                            }
                         </ModalBody>
                     </ModalContent>
                 </Modal>
