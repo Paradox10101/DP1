@@ -68,7 +68,7 @@ export default function MapLegend({cornerPosition}){
                         </div>
                     </div>
                     )}
-                    <div className="bg-[#F4F4F4] w-[180px] text-center p-2 rounded text-black focus:outline-none">
+                    <div className="bg-[#F4F4F4] w-[180px] text-center rounded text-black focus:outline-none">
                         <Button disableRipple={true} onClick={()=>{setHideLegend((prev)=>!prev)}}>
                             {!hideLegend?"Ocultar Leyenda": "Mostrar Leyenda"}
                         </Button>
