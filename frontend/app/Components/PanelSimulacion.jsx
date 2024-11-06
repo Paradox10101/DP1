@@ -7,55 +7,14 @@ import OpcionSimulacion from "@/app/Components/OpcionSimulacion"
 import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
+import dynamic from "next/dynamic";
+
+const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), { ssr: false });
 
 export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error}){
     
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
-    const [opcionSeleccionada, setOpcionSelecionada] = useState(1)
-
-    const [horaActual, setHoraActual] = useState(null);
-    const [esCliente, setEsCliente] = useState(false);
-
-  useEffect(() => {
-    // Esto asegura que el componente solo se renderice en el cliente
-    setEsCliente(true);
-
-    if (esCliente) {
-      // Solo actualiza la hora si está en el cliente
-      const actualizarHora = () => {
-        setHoraActual(new Date());
-      };
-
-      actualizarHora(); // Muestra la hora actual de inmediato
-      const intervalo = setInterval(actualizarHora, 1000);
-
-      // Limpia el intervalo al desmontar el componente
-      return () => clearInterval(intervalo);
-    }
-  }, [esCliente]);
-
-  const formatTime = (date) => {
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    
-    // Convertir a formato 12 horas
-    hours = hours % 12;
-    hours = hours ? hours : 12; // si hours es 0, convertir a 12
-    hours = String(hours).padStart(2, '0');
-
-    return `${hours}:${minutes}:${seconds} ${ampm}`;
-  };
-
-  const formatDate = (date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    
-    return `${day}/${month}/${year}`;
-  };
-    
+    const [opcionSeleccionada, setOpcionSelecionada] = useState(1)    
     
     return(
     <>
@@ -72,17 +31,8 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
                             <span className="text-principal encabezado group-hover:brightness-110 transition-all duration-300">Pack</span>
                         </div>
                     </div>
-                    
                 </div>
-                <div className="flex flex-row gap-2 bg-gray-100 rounded-lg p-2 items-center cursor-pointer">
-                    <Clock size={18}/>
-                    {horaActual && (
-                        <span className="pequenno">
-                        {formatDate(horaActual)}, {formatTime(horaActual)}
-                        </span>
-                    )}
-                </div>
-                
+                <ClockContainer/>
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row gap-3">

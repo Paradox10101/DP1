@@ -11,7 +11,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @WebSocket
 public class SimulationMetricsWebSocketHandler extends BaseWebSocketHandler {
     private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
-    private static final int METRICS_BUFFER_SIZE = 1; // Solo necesitamos el último estado
     private static JsonObject lastMetrics; // Cache del último estado
 
     @Override
