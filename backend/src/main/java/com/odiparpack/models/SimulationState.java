@@ -687,6 +687,8 @@ public class SimulationState {
             }
         }
 
+
+
         builder.append("{")
                 .append("\"type\":\"Feature\",")
                 .append("\"order\":{")
@@ -703,12 +705,31 @@ public class SimulationState {
 
         // Calcular tiempo transcurrido solo si el estado no es DELIVERED o PENDING_PICKUP
         if (currentOrderStatus.equals(Order.OrderStatus.DELIVERED) || currentOrderStatus.equals(Order.OrderStatus.PENDING_PICKUP)) {
-            builder.append("\"timeElapsedDays\":-1,")
-                    .append("\"timeElapsedHours\":-1");
+            Optional<LocalDateTime> deliveryTime = vehicleAssignmentsPerOrder.containsKey(order.getId())? vehicleAssignmentsPerOrder.get(order.getId()).stream()
+                    .map(VehicleAssignment::getEstimatedDeliveryTime) // Extraer el atributo de fecha
+                    .filter(date -> date != null) // Filtrar fechas nulas
+                    .max((d1, d2) -> d1.isAfter(d2) ? 1 : (d2.isAfter(d1) ? -1 : 0)) : null;
+            if(deliveryTime!=null&&deliveryTime.isPresent()){
+                Duration timeElapsed = Duration.between(order.getOrderTime(), deliveryTime.get());
+                Duration timeRemaining = Duration.between(deliveryTime.get(), order.getDueTime());
+                builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
+                        .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                        .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                        .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
+            }
+            else{
+                builder.append("\"timeElapsedDays\":").append(0).append(",")
+                        .append("\"timeElapsedHours\":").append(0).append(",")
+                        .append("\"timeRemainingDays\":").append(0).append(",")
+                        .append("\"timeRemainingHours\":").append(0);
+            }
         } else {
             Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime);
+            Duration timeRemaining = Duration.between(currentTime, order.getDueTime());
             builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
-                    .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24);
+                    .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                    .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                    .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
         }
         builder.append("},");
 

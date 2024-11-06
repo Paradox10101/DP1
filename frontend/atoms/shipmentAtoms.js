@@ -37,9 +37,12 @@ export const formattedShipmentsAtom = atom((get) => {
       status: order.status,
       orderTime: order.orderTime,
       dueTime: order.dueTime,
-      timeElapsedDays: order.timeElapsedDays !== -1 ? order.timeElapsedDays : feature.timeElapsedDays,
-      timeElapsedHours: order.timeElapsedHours !== -1 ? order.timeElapsedHours : feature.timeElapsedHours,
+      timeElapsedDays: order.timeElapsedDays,
+      timeElapsedHours: order.timeElapsedHours,
       quantityVehicles: order.quantityVehicles,
+      timeRemainingDays: order?.timeRemainingDays?order.timeRemainingDays:0,
+      timeRemainingHours: order?.timeRemainingHours?order.timeRemainingHours:0,
+
       vehicles: feature.vehicles
     };
   });
