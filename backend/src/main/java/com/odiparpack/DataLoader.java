@@ -164,10 +164,12 @@ public class DataLoader {
 
                 Order order = new Order(orderId++, originUbigeo, destinationUbigeo, quantity,
                         orderDateTime, dueDateTime, clientId);
+                order.setOrderCode(String.format("P%d%06d", order.getId()/1000000, order.getId()%1000000));
                 orders.add(order);
 
                 // Debugging: print details of each order
                 System.out.println("Cargado Pedido: ID: " + order.getId() +
+                        ", Codigo: " + order.getOrderCode() +
                         ", Origen: " + order.getOriginUbigeo() +
                         ", Destino: " + order.getDestinationUbigeo() +
                         ", Cantidad: " + order.getQuantity() +

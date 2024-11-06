@@ -37,7 +37,7 @@ export default function App() {
         ) : (
           <button
             onClick={toggleControls}
-            className="bg-white w-[11vw] px-[22px] py-[11px] rounded text-principal encabezado absolute left-5 top-5 z-50 cursor-pointer flex flex-row justify-between items-center"
+            className="bg-white w-[11vw] min-w-[220px] px-[22px] py-[11px] rounded text-principal encabezado absolute left-5 top-5 z-50 cursor-pointer flex flex-row justify-between items-center"
           >
             <div>
               <span className="text-principal encabezado">Mostrar Panel</span>
