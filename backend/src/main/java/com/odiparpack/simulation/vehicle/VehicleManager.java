@@ -160,7 +160,7 @@ public class VehicleManager {
                 List<RouteSegment> route = routeManager.calculateRouteForAssignment(vehicle, order, timeMatrix);
                 if (route != null && !route.isEmpty()) {
                     vehicle.setRoute(route);
-                    vehicle.startJourney(currentTime, order);
+                    vehicle.startJourney(currentTime, order,simulationState);
                     logger.info(String.format("Vehículo %s asignado a ruta para entregar orden %d", vehicle.getCode(), order.getId()));
 
                     // Actualizar las métricas de capacidad efectiva acumulada

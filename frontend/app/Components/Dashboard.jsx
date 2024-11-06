@@ -159,7 +159,7 @@ export default function Dashboard({ shipment }) {
             <Doughnut data={regionDemandaData} />
           </div>
           <div className="chart-container">
-            <h4>Estado de Paquetes</h4>
+            <h4>Estado de Pedidos</h4>
             <Pie data={pieData} />
           </div>
           <div className="chart-container">

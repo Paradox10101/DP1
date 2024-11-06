@@ -51,14 +51,28 @@ public class SimulationReport {
 
     private int calculatePedidosAtendidos(SimulationState state) {
         //return state.obteinCountOrder();
-        return state.obteinCountOrder();
+        //return state.obteinCountOrder();
+        return state.getTotalOrdersCount2();
     }
 
-    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA
-                                                                    // RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
+    private double calculateEficienciaRutas(SimulationState state) {// ES IMPORTANTE LA EFICIENCIA DEL CALCULO DE RUTA RESPECTO AL TIEMPO (CUANDO SE CALCULA RUTA DE
                                                                     // VEHICULOS) -> VER SI SE PUEDE CALCULAR EL
                                                                     // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
-        return 85.0;
+        //aqui lo que se hace es recoger el "map" y luego hacer sumatoria entre todos los valores encontrados (de la division)
+        // y dividir entre la cantidad de pedidos totales.
+
+        Map<String, Double> eficienciaPedidos = state.getEficienciaPedidos();
+        // Sumar todas las eficiencias almacenadas en el mapa
+        double sumaEficiencia = 0.0;
+        for (double eficiencia : eficienciaPedidos.values()) {
+            sumaEficiencia += eficiencia;
+        }
+
+        // Calcular el promedio de eficiencia
+        double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
+
+        System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
+        return eficienciaPromedio;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {

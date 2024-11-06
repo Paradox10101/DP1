@@ -9,7 +9,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.lang.management.ManagementFactory;
 
-import com.odiparpack.simulation.state.SimulationState;
+import com.odiparpack.models.SimulationState;
 import com.sun.management.OperatingSystemMXBean;
 
 import java.nio.file.Files;
@@ -1110,7 +1110,7 @@ public class Main {
             }
 
             vehicle.setRoute(route);
-            vehicle.startJourney(state.getCurrentTime(), order);
+            vehicle.startJourney(state.getCurrentTime(), order, state);
             vehicleRoutes.put(vehicle.getCode(), route);
             logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + order.getDestinationUbigeo());
         }
@@ -1166,7 +1166,7 @@ public class Main {
             if (route != null) {
                 vehicle.setRoute(route);
                 if (state != null) {
-                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder());
+                    vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(), state);
                 }
                 logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo());
             } else {

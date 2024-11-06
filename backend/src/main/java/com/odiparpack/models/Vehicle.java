@@ -3,6 +3,7 @@ package com.odiparpack.models;
 import com.odiparpack.DataLoader;
 import com.odiparpack.Main;
 import com.odiparpack.services.LocationService;
+import org.springframework.cglib.core.Local;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -90,6 +91,7 @@ public class Vehicle {
     private int currentSegmentIndex; // Índice del tramo actual en la ruta
     private long elapsedTimeInSegment; // Tiempo transcurrido en el tramo actual (en minutos)
     LocalDateTime estimatedDeliveryTime;
+    LocalDateTime tiempoLimitedeLlegada;
     private long totalAveriaTime; // Tiempo total en estado de avería (en minutos)
     private LocalDateTime averiaStartTime; // Tiempo de inicio de la avería
     // Hora de inicio del viaje
@@ -102,6 +104,14 @@ public class Vehicle {
     public void setCurrentSegmentIndex(int currentSegmentIndex) {
         this.currentSegmentIndex = currentSegmentIndex;
     }
+
+    public LocalDateTime getEstimatedDeliveryTime() {
+        return estimatedDeliveryTime;
+    }
+    public void setEstimatedDeliveryTime(LocalDateTime estimatedDeliveryTime) {
+        this.estimatedDeliveryTime = estimatedDeliveryTime;
+    }
+
 
     public VehicleStatus getStatus() {
         return status;
@@ -683,7 +693,7 @@ public class Vehicle {
      * @param startTime        La hora de inicio del viaje.
      * @param order            La orden asignada al vehículo.
      */
-    public void startJourney(LocalDateTime startTime, Order order) {
+    public void startJourney(LocalDateTime startTime, Order order, SimulationState state) {
         if (this.route == null || this.route.isEmpty()) {
             logger.warning(String.format("Intento de iniciar un viaje para el vehículo %s con una ruta vacía.", this.getCode()));
             return;
@@ -718,8 +728,15 @@ public class Vehicle {
         logBuilder.append("Tiempo Estimado de Llegada: ").append(estimatedArrivalStr).append("\n");
         logBuilder.append("Tiempo Límite de Entrega: ").append(dueTimeStr).append("\n");
         logBuilder.append("-------------------------");
+        this.tiempoLimitedeLlegada = order.getDueTime();
+        // Llamar a la función calcularEficienciaPedido aquí
+        state.calcularEficienciaPedido(this.getCode(),estimatedDeliveryTime, tiempoLimitedeLlegada);
 
         logger.info(logBuilder.toString());
+    }
+
+    public LocalDateTime getTiempoLimitedeLlegada() {
+        return tiempoLimitedeLlegada;
     }
 
     public void startWarehouseJourney(LocalDateTime startTime, String destinationWarehouseUbigeo) {
