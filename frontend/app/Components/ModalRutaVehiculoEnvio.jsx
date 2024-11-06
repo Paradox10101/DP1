@@ -61,7 +61,7 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
                         <div className="flex flex-col">
                             <div className="text-left regular_bold">{route.originCity+" -> "+route.destinationCity}</div>
                             <div className="text-left text-black pequenno">{route.originUbigeo + " -> "+route.destinationUbigeo}</div>
-                            <div className="text-left text-black pequenno">Distancia: {route.distance+" km"}</div>
+                            <div className="text-left text-black pequenno">Distancia: {parseFloat(route.distance.toFixed(2))+" km"}</div>
                         </div>
                     </div>
                     :

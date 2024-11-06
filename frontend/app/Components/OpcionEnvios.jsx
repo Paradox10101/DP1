@@ -130,7 +130,7 @@ export default function OpcionEnvios() {
                             <div className="flex flex-row gap-2">
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    shipments[selectedShipmentIndex].status === "REGISTERED" ? (
+                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].quantityVehicles===0 ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                                     ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
