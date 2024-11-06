@@ -3,8 +3,7 @@ import { Button } from "@nextui-org/react"
 import { useAtomValue } from "jotai";
 import { Calendar, Clock, Eye, Filter, Flag, Globe, MapPin, Package } from "lucide-react"
 
-export default function ModalEnvios({shipmentVehicles, setSelectedVehicle, sendMessage}){
-    const shipment = useAtomValue(selectedShipmentAtom);
+export default function ModalEnvios({shipmentVehicles, setSelectedVehicle, sendMessage, shipment}){
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-row justify-between">

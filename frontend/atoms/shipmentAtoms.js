@@ -25,6 +25,7 @@ export const formattedShipmentsAtom = atom((get) => {
 
   return shipments.features.map(feature => {
     const order = feature.order;
+    
     return {
       id: order.id,
       orderCode: order.orderCode,
