@@ -943,7 +943,7 @@ public class SimulationState {
         //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
         // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
         if (tiempoEstimado.isAfter(tiempoLimite)) {
-            throw new IllegalArgumentException("El tiempo estimado no puede ser después del tiempo límite");
+            logger.info("El tiempo estimado no puede ser después del tiempo límite.\n");
         }
 
 // Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
@@ -1344,10 +1344,28 @@ public class SimulationState {
         }
     }
 
-    public static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state) {
-        logger.info("\n--- Inicio del cálculo de rutas con estrategias hacia almacen ---");
+    public static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state, Map<String, List<Vehicle>> groupedVehicles) {
+        // Log de inicio con los vehículos agrupados
+        StringBuilder initialLog = new StringBuilder("\n--- Inicio del cálculo de rutas con estrategias hacia almacen ---\n");
+        groupedVehicles.forEach((routeKey, vehicles) -> {
+            String vehicleCodes = vehicles.stream()
+                    .map(Vehicle::getCode)
+                    .collect(Collectors.joining(", "));
+            initialLog.append("Ruta ").append(routeKey).append(": Vehículos [").append(vehicleCodes).append("]\n");
+        });
+        logger.info(initialLog.toString());
+
         Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
         try {
+            // Log de intento de resolución con estrategias
+            logger.info("Intentando resolver con estrategias definidas para los siguientes vehículos:");
+            groupedVehicles.forEach((routeKey, vehicles) -> {
+                String vehicleCodes = vehicles.stream()
+                        .map(Vehicle::getCode)
+                        .collect(Collectors.joining(", "));
+                logger.info("Ruta " + routeKey + ": " + vehicleCodes);
+            });
+
             // Intentar resolver con las estrategias definidas
             Map<String, List<RouteSegment>> routes = trySolvingWithStrategies2(data, Arrays.asList(
                     FirstSolutionStrategy.Value.CHRISTOFIDES,
@@ -1356,7 +1374,17 @@ public class SimulationState {
 
             if (routes != null && !routes.isEmpty()) {
                 allRoutes.putAll(routes);
+                logger.info("Rutas calculadas exitosamente con la primera estrategia");
             } else {
+                // Log de división y resolución
+                logger.info("No se encontró solución inicial. Iniciando división y resolución para los siguientes vehículos:");
+                groupedVehicles.forEach((routeKey, vehicles) -> {
+                    String vehicleCodes = vehicles.stream()
+                            .map(Vehicle::getCode)
+                            .collect(Collectors.joining(", "));
+                    logger.info("Ruta " + routeKey + ": " + vehicleCodes);
+                });
+
                 // Si no se encuentra solución, dividir y resolver
                 List<RouteSolutionData> solutions = Collections.synchronizedList(new ArrayList<>());
                 divideAndSolveRoutes(state, data.starts, data.ends, Arrays.asList(
@@ -1375,7 +1403,15 @@ public class SimulationState {
             logger.log(Level.SEVERE, "Error durante el cálculo de rutas con estrategias.", e);
             return allRoutes;
         } finally {
-            logger.info("--- Fin del cálculo de rutas con estrategias ---\n");
+            // Log de finalización con resumen de vehículos
+            StringBuilder finalLog = new StringBuilder("--- Fin del cálculo de rutas con estrategias ---\n");
+            groupedVehicles.forEach((routeKey, vehicles) -> {
+                String vehicleCodes = vehicles.stream()
+                        .map(Vehicle::getCode)
+                        .collect(Collectors.joining(", "));
+                finalLog.append("Ruta ").append(routeKey).append(": Completado para vehículos [").append(vehicleCodes).append("]\n");
+            });
+            logger.info(finalLog.toString());
         }
     }
 
@@ -1662,7 +1698,7 @@ public class SimulationState {
             if (data == null || data.vehicleNumber == 0) {
                 logger.warning("No vehicles to calculate routes for. Skipping route calculation.");
             } else {
-                allRoutes = this.calculateRouteWithStrategies(data, this);
+                allRoutes = this.calculateRouteWithStrategies(data, this, groupedVehicles);
             }
         } else {
             logger.info("No new routes to calculate. All routes are in cache.");

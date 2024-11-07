@@ -195,90 +195,59 @@ function calculateSmoothVelocity(current, target, smoothing) {
 }
 
 export const useVehicleAnimation = (mapRef, updatePopups) => {
-  // Solo crear el PerformanceManager si estamos en el cliente
-  const performanceManagerRef = useRef(
-    typeof window !== 'undefined' ? new PerformanceManager() : null
-  );
+  const workerRef = useRef(null);
+  const performanceManagerRef = useRef(new PerformanceManager());
+  const isMountedRef = useRef(false);
 
-  const vehicleStatesRef = useRef(new Map());
-  const lastFrameTimeRef = useRef(
-      typeof window !== 'undefined' ? performance.now() : 0
-    );
-  
-  // Inicializar PerformanceManager en el montaje del componente
   useEffect(() => {
-    if (typeof window !== 'undefined' && !performanceManagerRef.current) {
-      performanceManagerRef.current = new PerformanceManager();
-    }
-  }, []);
+    isMountedRef.current = true;
 
-  const cleanup = useCallback(() => {
-    vehicleStatesRef.current.clear();
-  }, []);
-
-  const processVehicleBatch = useCallback((batch, deltaTime, config) => {
-    return batch.map(feature => {
-      const vehicleCode = feature.properties.vehicleCode;
-      let state = vehicleStatesRef.current.get(vehicleCode);
-      
-      if (!state) {
-        state = new OptimizedVehicleState(feature.geometry.coordinates);
-        vehicleStatesRef.current.set(vehicleCode, state);
-      }
-
-      const updated = state.updatePosition(
-        feature.geometry.coordinates,
-        deltaTime,
-        config
+    if (typeof window !== 'undefined') {
+      workerRef.current = new Worker(
+        new URL('../workers/vehicleWorker.js', import.meta.url)
       );
 
-      if (updated) {
-        return {
-          ...feature,
-          geometry: {
-            ...feature.geometry,
-            coordinates: state.getPosition()
+      workerRef.current.onmessage = (e) => {
+        if (!isMountedRef.current) return;
+
+        const { type, features } = e.data;
+        if (type === 'update') {
+          const source = mapRef.current.getSource('vehicles');
+          if (source) {
+            source.setData({
+              type: 'FeatureCollection',
+              features,
+            });
+            updatePopups({ type: 'FeatureCollection', features });
           }
-        };
+        }
+      };
+    }
+
+    return () => {
+      isMountedRef.current = false;
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
       }
-      return feature;
-    });
-  }, []);
+    };
+  }, [mapRef, updatePopups]);
 
   const animateTransition = useCallback((data) => {
-    if (!mapRef.current || !data?.features?.length) return;
+    if (!workerRef.current || !data?.features?.length) return;
 
-    const currentTime = typeof window !== 'undefined' ? performance.now() : 0;
-    const deltaTime = currentTime - lastFrameTimeRef.current;
+    const currentTime = performance.now();
+    const deltaTime = currentTime - (performanceManagerRef.current.lastFrameTime || currentTime);
+    performanceManagerRef.current.lastFrameTime = currentTime;
+
     const config = performanceManagerRef.current.getConfig();
+    config.deltaTime = deltaTime;
 
-    if (deltaTime < config.UPDATE_INTERVAL) return;
-
-    const batchSize = config.BATCH_SIZE;
-    const updatedFeatures = [];
-
-    for (let i = 0; i < data.features.length; i += batchSize) {
-      const batch = data.features.slice(i, Math.min(i + batchSize, data.features.length));
-      const processedBatch = processVehicleBatch(batch, deltaTime, config);
-      updatedFeatures.push(...processedBatch);
-    }
-
-    const source = mapRef.current.getSource('vehicles');
-    if (source) {
-      source.setData({
-        type: 'FeatureCollection',
-        features: updatedFeatures
-      });
-      updatePopups({ type: 'FeatureCollection', features: updatedFeatures });
-    }
-
-    lastFrameTimeRef.current = currentTime;
-    performanceManagerRef.current.metrics.frames++;
-  }, [processVehicleBatch, updatePopups]);
+    workerRef.current.postMessage({ data, config });
+  }, []);
 
   return {
     animateTransition,
-    cleanup,
-    performanceManager: performanceManagerRef.current
+    performanceManager: performanceManagerRef.current,
   };
 };

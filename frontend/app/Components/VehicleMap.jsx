@@ -37,7 +37,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
    // Obtener y actualizar ubicaciones con reintentos
    const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
     try {
-      const response = await fetch('https://1inf54-982-1a.inf.pucp.edu.pe/api/v1/locations');
+      const response = await fetch('http://localhost:4567/api/v1/locations');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -93,7 +93,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
 
   const { 
     animateTransition, 
-    cleanup: cleanupAnimation, 
     performanceManager 
   } = useVehicleAnimation(mapRef, updatePopups);
 
@@ -263,14 +262,14 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       setError('Error al inicializar el mapa');
     }
 
+    // Limpieza al desmontar el componente
     return () => {
-      cleanupAnimation();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, [cleanupAnimation]);
+  }, []);
 
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {

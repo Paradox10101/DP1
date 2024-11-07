@@ -338,7 +338,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const fetchLocations = async () => {
     try {
       console.log('Obteniendo ubicaciones del backend...');
-      const response = await fetch('https://1inf54-982-1a.inf.pucp.edu.pe/api/v1/locations');
+      const response = await fetch('http://localhost:4567/api/v1/locations');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
