@@ -17,7 +17,7 @@ const SimulationSpeedControl = ({ simulationStatus }) => {
         
         setIsChanging(true);
         try {
-            const response = await fetch('http://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/speed', {
+            const response = await fetch('http://localhost:4567/api/v1/simulation/speed', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

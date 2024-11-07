@@ -6,7 +6,7 @@ import { serverAvailableAtom, simulationStatusAtom } from '../atoms/simulationAt
 const WEBSOCKET_CONFIG = {
   MAX_RECONNECT_ATTEMPTS: 5,
   RECONNECT_DELAY: 3000,
-  URL: 'ws://1inf54-982-1a.inf.pucp.edu.pe:4567/ws'
+  URL: 'ws://localhost:4567/ws'
 };
 
 const createError = (type, customMessage = null) => {
@@ -67,7 +67,7 @@ export const useWebSocket = ({
   const checkSimulationStatus = useCallback(async () => {
     try {
       console.log('Verificando estado de simulación...');
-      const response = await fetch('http://1inf54-982-1a.inf.pucp.edu.pe:4567/api/v1/simulation/status');
+      const response = await fetch('http://localhost:4567/api/v1/simulation/status');
       if (!response.ok) throw new Error('server_error');
 
       const data = await response.json();
