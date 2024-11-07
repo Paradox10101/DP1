@@ -16,7 +16,7 @@ const createError = (type, customMessage = null) => {
             title: 'Error de conexión métricas',
             message: 'No se puede conectar con el servicio de métricas.',
             type: ErrorTypes.CONNECTION
-        },
+        }, 
         [ErrorTypes.DATA]: {
             title: 'Error de datos de métricas',
             message: 'Error al procesar datos de la simulación',
