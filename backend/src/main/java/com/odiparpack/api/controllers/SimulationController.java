@@ -48,7 +48,7 @@ public class SimulationController {
             setupWebSocket();
             configureServer();
             initializeRoutes();
-            logger.info("Servidor de simulación iniciado en http://localhost:4567");
+            logger.info("Servidor de simulación iniciado en 4567");
         } catch (Exception e) {
             logger.severe("Error al iniciar el servidor: " + e.getMessage());
             throw new RuntimeException("Error al iniciar el servidor", e);

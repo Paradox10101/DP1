@@ -369,28 +369,38 @@ public class SimulationState {
         logger.fine("Duraciones - Simulada: " + simulatedDuration.toString() +
                 ", Real: " + realDuration.toString());
 
-        // Convertir LocalDateTime a ZonedDateTime con zona horaria UTC
-        ZonedDateTime startZonedDateTime = simulationStartTime.atZone(ZoneOffset.UTC);
-        ZonedDateTime endZonedDateTime = simulationEndTime.atZone(ZoneOffset.UTC);
+        // Formatear fechas de inicio y fin con AM/PM
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a")
+                .withZone(ZoneOffset.UTC);
 
-        // Convertir ZonedDateTime a Instant
-        Instant startInstant = startZonedDateTime.toInstant();
-        Instant endInstant = endZonedDateTime.toInstant();
-
-        // Formatear fechas en ISO 8601 con zona horaria UTC
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-        String formattedStartTime = formatter.format(startInstant);
-        String formattedEndTime = formatter.format(endInstant);
+        String formattedStartTime = simulationStartTime.format(dateFormatter);
+        String formattedEndTime = simulationEndTime.format(dateFormatter);
 
         summary.addProperty("startTime", formattedStartTime);
         summary.addProperty("endTime", formattedEndTime);
 
-        // Tiempo simulado (duración en formato hh:mm:ss)
-        String simulatedTime = formatDuration(simulatedDuration);
-        summary.addProperty("simulatedTime", simulatedTime);
+        // Formatear tiempo simulado con días y AM/PM
+        LocalDateTime simulatedDateTime = simulationStartTime.plus(simulatedDuration);
+        long simulatedDays = simulatedDuration.toDays();
+        String simulatedTimeOfDay = simulatedDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String simulatedTime = String.format("%d días, %s", simulatedDays, simulatedTimeOfDay);
 
-        // Tiempo real efectivo (duración en formato hh:mm:ss)
-        String realTime = formatDuration(realDuration);
+        // Formatear tiempo real con días y AM/PM
+        long realDays = realDuration.toDays();
+        long realHours = realDuration.toHoursPart();
+        long realMinutes = realDuration.toMinutesPart();
+        long realSeconds = realDuration.toSecondsPart();
+
+        // Construir LocalTime para el tiempo real
+        LocalTime realTimeOfDay = LocalTime.of(
+                (int)realHours,
+                (int)realMinutes,
+                (int)realSeconds);
+
+        String realTimeFormatted = realTimeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String realTime = String.format("%d días, %s", realDays, realTimeFormatted);
+
+        summary.addProperty("simulatedTime", simulatedTime);
         summary.addProperty("realElapsedTime", realTime);
 
         // Log del resumen
@@ -406,6 +416,18 @@ public class SimulationState {
 
         // Enviar vía WebSocket
         SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(summary);
+    }
+
+    // Método auxiliar por si necesitas formatear otras duraciones
+    private String formatDurationWithDays(Duration duration) {
+        long days = duration.toDays();
+        LocalTime timeOfDay = LocalTime.of(
+                duration.toHoursPart(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()
+        );
+        String formattedTime = timeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        return String.format("%d días, %s", days, formattedTime);
     }
 
     private String formatDuration(Duration duration) {
