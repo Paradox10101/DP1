@@ -16,7 +16,6 @@ public class SimulationReport {
     private Map<String, Integer> demandasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
     private Map<String, Integer> regionConMayorDemanda;
-    private Map<String, Integer> estadoPedidos;
 
     private Map<String, String> ubigeoToProvincia = new HashMap<String, String>() {{
         put("150101", "Lima");
@@ -37,7 +36,6 @@ public class SimulationReport {
         this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
-        this.estadoPedidos = calculateEstadoPedidos(state);
     }
 
     // Método para calcular la capacidad efectiva
@@ -171,16 +169,6 @@ public class SimulationReport {
         //regiones.put("Sierra", 43);
         //regiones.put("Selva", 20);
         return regiones;
-    }
-
-    private Map<String, Integer> calculateEstadoPedidos(SimulationState state) {
-        // Valores hardcodeados por ahora
-        Map<String, Integer> estados = new HashMap<>();
-        estados.put("En Almacén", 50);
-        estados.put("En Oficina", 30);
-        estados.put("En Entrega", 40); // "En Entrega" es equivalente a "En Tránsito"
-        estados.put("Entregado", 80);
-        return estados;
     }
 
     // Método para convertir el reporte a JSON

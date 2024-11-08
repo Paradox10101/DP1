@@ -9,6 +9,7 @@ const WEBSOCKET_CONFIG = {
     URL: 'ws://localhost:4567/ws/simulation'
 };
 
+
 const createError = (type, customMessage = null) => {
     const baseErrors = {
         [ErrorTypes.CONNECTION]: {

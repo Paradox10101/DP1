@@ -2,6 +2,7 @@
 import { Pie, Bar, Doughnut } from "react-chartjs-2";
 import 'chart.js/auto';
 import { useEffect, useState } from "react";
+import { exportDataToCSV } from "./controls/exportDataCSVDash";
 
 export default function Dashboard({ shipment }) {
   // Estado para manejar los datos del dashboard
@@ -51,78 +52,6 @@ export default function Dashboard({ shipment }) {
   const barLabels = top5Cities.map(([city]) => capitalizeCityName(city));
   const barDataValues = top5Cities.map(([_, value]) => value);
 
-  // Datos de los gráficos con redondeo a dos decimales para porcentajes
-  const pieData = {
-    labels: ['En Almacén', 'En Oficina', 'En Entrega', 'Entregado'],
-    datasets: [
-      {
-        data: [
-          data.estadoPedidos?.['En Almacén'],
-          data.estadoPedidos?.['En Oficina'],
-          data.estadoPedidos?.['En Entrega'],
-          data.estadoPedidos?.['Entregado'],
-        ],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-      },
-    ],
-  };
-
-  const barData = {
-    labels: barLabels, // Utilizar las etiquetas dinámicas obtenidas del backend
-    datasets: [
-      {
-        label: 'Demandas por Ciudad',
-        data: barDataValues, // Utilizar los valores de demanda obtenidos del backend
-        backgroundColor: '#284BCC',
-      },
-    ],
-  };
-
-  const almacenDemandasData = {
-    labels: ['Trujillo', 'Lima', 'Arequipa'],
-    datasets: [
-      {
-        label: 'Cantidad de pedidos por almacén',
-        data: [
-          data.demandasEnAlmacenes?.Trujillo,
-          data.demandasEnAlmacenes?.Lima,
-          data.demandasEnAlmacenes?.Arequipa,
-        ],
-        backgroundColor: '#284BCC',
-      },
-    ],
-  };
-
-  const averiasData = {
-    labels: ['Tipo 1', 'Tipo 2', 'Tipo 3'],
-    datasets: [
-      {
-        label: 'Número de Averías por Tipo',
-        data: [
-          data.averiasPorTipo?.['Tipo 1'],
-          data.averiasPorTipo?.['Tipo 2'],
-          data.averiasPorTipo?.['Tipo 3'],
-        ],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-      },
-    ],
-  };
-
-  const regionDemandaData = {
-    labels: ['Costa', 'Sierra', 'Selva'],
-    datasets: [
-      {
-        label: 'Regiones con Mayor Demanda',
-        data: [
-          data.regionConMayorDemanda?.COSTA,
-          data.regionConMayorDemanda?.SIERRA,
-          data.regionConMayorDemanda?.SELVA,
-        ],
-        backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
-      },
-    ],
-  };
-
   return (
     <div className="dashboard-container">
       <div className="grid grid-cols-4 gap-4">
@@ -144,7 +73,10 @@ export default function Dashboard({ shipment }) {
             <p>Cantidad Promedio de Pedidos por Día</p>
             <h3>{data.promedioPedidos.toFixed(2)}</h3>
           </div>
-          <button className="bg-blue-700 text-white w-full rounded p-3 flex items-center justify-center mt-4">
+          <button
+            onClick={() => exportDataToCSV(data)} 
+            className="bg-blue-700 text-white w-full rounded p-3 flex items-center justify-center mt-4"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16m8-8H4" />
             </svg>
@@ -154,25 +86,90 @@ export default function Dashboard({ shipment }) {
 
         {/* Gráficos */}
         <div className="col-span-3 grid grid-cols-2 gap-4">
-          <div className="chart-container">
-            <h4>Regiones con Mayor Demanda</h4>
-            <Doughnut data={regionDemandaData} />
+          <div className="chart-container" style={{ height: '250px' }}>
+            <h4>Demanda por Region</h4>
+            <Doughnut
+              data={{
+                labels: ['Costa', 'Sierra', 'Selva'],
+                datasets: [
+                  {
+                    label: 'Demanda',
+                    data: [
+                      data.regionConMayorDemanda?.COSTA,
+                      data.regionConMayorDemanda?.SIERRA,
+                      data.regionConMayorDemanda?.SELVA,
+                    ],
+                    backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
+                  },
+                ],
+              }}
+              options={{
+                maintainAspectRatio: false,
+              }}
+            />
           </div>
-          <div className="chart-container">
-            <h4>Estado de Pedidos</h4>
-            <Pie data={pieData} />
+          <div className="chart-container" style={{ height: '300px' }}>
+            <h4>Demanda por Ciudad</h4>
+            <Bar
+              data={{
+                labels: barLabels,
+                datasets: [
+                  {
+                    label: 'Demanda',
+                    data: barDataValues,
+                    backgroundColor: '#284BCC',
+                  },
+                ],
+              }}
+              options={{
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Invertir ejes para mostrar barras horizontales
+              }}
+            />
           </div>
-          <div className="chart-container">
-            <h4>Ciudades con mayor demanda</h4>
-            <Bar data={barData} />
-          </div>
-          <div className="chart-container">
+          <div className="chart-container" style={{ height: '250px' }}>
             <h4>Número de Averías por Tipo</h4>
-            <Bar data={averiasData} />
+            <Bar
+              data={{
+                labels: ['Tipo 1', 'Tipo 2', 'Tipo 3'],
+                datasets: [
+                  {
+                    label: 'Número de Averías por Tipo',
+                    data: [
+                      data.averiasPorTipo?.['Tipo 1'],
+                      data.averiasPorTipo?.['Tipo 2'],
+                      data.averiasPorTipo?.['Tipo 3'],
+                    ],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                  },
+                ],
+              }}
+              options={{
+                maintainAspectRatio: false,
+              }}
+            />
           </div>
-          <div className="chart-container">
-            <h4>Cantidad de Pedidos por almacén</h4>
-            <Bar data={almacenDemandasData} />
+          <div className="chart-container" style={{ height: '250px' }}>
+            <h4>Demanda de Pedidos por Almacen</h4>
+            <Bar
+              data={{
+                labels: ['Trujillo', 'Lima', 'Arequipa'],
+                datasets: [
+                  {
+                    label: 'Demanda por Almacen',
+                    data: [
+                      data.demandasEnAlmacenes?.Trujillo,
+                      data.demandasEnAlmacenes?.Lima,
+                      data.demandasEnAlmacenes?.Arequipa,
+                    ],
+                    backgroundColor: '#284BCC',
+                  },
+                ],
+              }}
+              options={{
+                maintainAspectRatio: false,
+              }}
+            />
           </div>
         </div>
       </div>
