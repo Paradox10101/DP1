@@ -1,6 +1,7 @@
 package com.odiparpack.api.routers;
 
 import com.google.gson.Gson;
+import com.odiparpack.models.CollapseReport;
 import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import spark.Spark;
@@ -29,6 +30,20 @@ public class ReportRouter extends BaseRouter {
 
             response.status(200);
             return reportJson;
+        });
+
+        // ReportRouter.java
+        Spark.get("/api/v1/simulation/collapse_report/:codigoPedido", (request, response) -> {
+            response.type("application/json");
+            
+            String codigoPedido = request.params("codigoPedido");
+
+            // Crear el reporte de colapso para un pedido específico
+            CollapseReport collapseReport = new CollapseReport(simulationState, codigoPedido);
+            String collapseReportJson = collapseReport.toJson();
+
+            response.status(200);
+            return collapseReportJson;
         });
     }
 }
