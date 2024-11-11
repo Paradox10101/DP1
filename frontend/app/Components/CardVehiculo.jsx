@@ -14,7 +14,7 @@ export default function CardVehiculo({ vehiculo }) {
     };
 
     return (
-        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
+        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1 w-full">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     {vehiculo.tipo === "A" ? (

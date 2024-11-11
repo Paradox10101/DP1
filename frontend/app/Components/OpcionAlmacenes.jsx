@@ -1,19 +1,22 @@
 import { useAtomValue, useAtom } from "jotai";
 import { filteredLocationsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/locationAtoms';
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { Filter, Map, SearchX } from "lucide-react";
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import CapacidadTotalAlmacenes from '../Components/CapacidadTotalAlmacenes';
 import LocationCard from './LocationCard';
 import { useWarehouseWebSocket } from '../../hooks/useWarehouseWebSocket';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import ModalOficina from './ModalOficina'
+import ModalAlmacen from './ModalAlmacen'
 
 export default function OpcionAlmacenes() {
-    useWarehouseWebSocket();
-
+  useWarehouseWebSocket();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const locations = useAtomValue(filteredLocationsAtom);
   const [searchInput, setSearchInput] = useAtom(searchInputAtom);
+  const [selectedLocationIndex, setSelectedLocationtIndex] = useState(null);
   const [, setSearchQuery] = useAtom(searchQueryAtom);
 
   useEffect(() => {
@@ -31,7 +34,7 @@ export default function OpcionAlmacenes() {
   const NoDataMessage = () => (
     <div className="flex flex-col items-center justify-center p-8 text-gray-500">
       <Map size={48} className="mb-4 opacity-50" />
-      <p className="text-lg font-medium">No hay ubicaciones disponibles</p>
+      <p className="text-lg font-medium">No hay almacenes disponibles</p>
       <p className="text-sm">Por favor, intente más tarde</p>
     </div>
   );
@@ -54,7 +57,12 @@ export default function OpcionAlmacenes() {
   const Row = ({ index, style }) => {
     const location = locations[index];
     return (
-      <div style={style}>
+      <div style={style}
+      onMouseDown={() => {
+        setSelectedLocationtIndex(index);
+        //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
+        onOpen(); // Abrir modal
+    }}>
         <LocationCard
           key={location.ubigeo}
           {...location}
@@ -115,6 +123,40 @@ export default function OpcionAlmacenes() {
           </div>
         </>
       )}
+
+      {/* Modal */}
+      {(true) && (
+          <Modal
+              closeButton
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              isDismissable={true}
+              blur
+          >
+              <ModalContent className="h-[775px] min-w-[850px]">
+                  <ModalHeader>
+                      {"Información de " + (locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="office"?
+                      `oficina ${locations[selectedLocationIndex].province}`
+                      :
+                      locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="warehouse"?
+                      `almacén ${locations[selectedLocationIndex].province}`
+                      :
+                      ""
+                      )}
+                  </ModalHeader>
+                  <ModalBody>
+                      {locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="office"?
+                      <ModalOficina office={locations[selectedLocationIndex]} />
+                      :
+                      locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="warehouse"?
+                      <ModalAlmacen warehouse={locations[selectedLocationIndex]}/>
+                      :
+                      <></>
+                      }
+                  </ModalBody>
+              </ModalContent>
+          </Modal>
+        )}
     </div>
   );
 }

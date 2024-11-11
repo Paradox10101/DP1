@@ -103,31 +103,3 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
         </div>
     )
 }
-
-//<div>{parseFloat(selectedVehicle.routes.reduce((sum, route) => sum + route.distance, 0)).toFixed(2)}% de la ruta completada</div>
-
-
-//Se tomara el siguente codigo cuando un vehiculo este pasando por una ruta bloqueada y se detenga a esperar,
-//sera solo en caso de que si o si se de la espera de desbloqueo de la ruta en su trayecto
-/*
-<div className="flex items-center bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
-                    <AlertTriangle className="mr-3 text-yellow-500" />
-                    <span className="text-sm">Bloqueo en la ruta.</span>
-</div>
-*/
-
-
-//Se tomara en cuenta cuando en la verificacion del trayecto actual del vehiculo
-/*
-<div className="flex flex-row gap-2 items-center">
-                    <div>
-                        <IconoEstado Icono={Check} classNameContenedor={"bg-blue-500 w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
-                    </div>
-                    <div className="flex flex-col">
-                        <div className="text-left regular_bold">{"Lima"+" -> "+"Huancayo"}</div>
-                        <div className="text-left text-[#B9B9B9] pequenno">Ubigeo: {"150101"}</div>
-                        <div className="text-left text-[#B9B9B9] pequenno">Distancia: {"298"+" km"}</div>
-                    </div>
-                </div>
-
-*/
