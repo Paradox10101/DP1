@@ -93,7 +93,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
 
   const { 
     animateTransition, 
-    cleanup: cleanupAnimation, 
     performanceManager 
   } = useVehicleAnimation(mapRef, updatePopups);
 
@@ -263,14 +262,14 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       setError('Error al inicializar el mapa');
     }
 
+    // Limpieza al desmontar el componente
     return () => {
-      cleanupAnimation();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, [cleanupAnimation]);
+  }, []);
 
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {

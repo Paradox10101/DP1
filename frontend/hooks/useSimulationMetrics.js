@@ -9,6 +9,7 @@ const WEBSOCKET_CONFIG = {
     URL: 'ws://localhost:4567/ws/simulation'
 };
 
+
 const createError = (type, customMessage = null) => {
     const baseErrors = {
         [ErrorTypes.CONNECTION]: {
@@ -49,10 +50,7 @@ export const useSimulationMetrics = () => {
             websocketRef.current.close();
             websocketRef.current = null;
         }
-        setIsConnected(prev => {
-            if (prev !== false) return false;
-            return prev;
-        });
+        setIsConnected(false);
     }, []);
 
     const handleMetricsMessage = useCallback((event) => {
@@ -61,26 +59,14 @@ export const useSimulationMetrics = () => {
             if (data.startTime && data.endTime &&
                 data.simulatedTime && data.realElapsedTime) {
 
-                // Formateamos las métricas aquí
+                // Utilizamos los datos tal cual vienen del backend
                 const formattedData = {
-                    startTime: new Date(data.startTime).toLocaleString('es-ES', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    }),
-                    endTime: new Date(data.endTime).toLocaleString('es-ES', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    }),
-                    simulatedTime: data.simulatedTime || "--:--:--",
-                    realElapsedTime: data.realElapsedTime || "--:--:--"
+                    startTime: data.startTime,
+                    endTime: data.endTime,
+                    simulatedTime: data.simulatedTime,
+                    realElapsedTime: data.realElapsedTime,
+                    isPaused: data.isPaused,
+                    isStopped: data.isStopped
                 };
 
                 setMetrics(prevMetrics => {
@@ -89,7 +75,7 @@ export const useSimulationMetrics = () => {
                     }
                     return prevMetrics;
                 });
-                setError(prevError => (prevError ? null : prevError));
+                setError(null);
             } else {
                 console.warn('Datos incompletos recibidos:', data);
                 throw new Error('Formato de métricas inválido');
@@ -103,7 +89,7 @@ export const useSimulationMetrics = () => {
     const attemptReconnect = useCallback(() => {
         if (reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS) {
             console.log('Máximo número de intentos de reconexión de métricas alcanzado');
-            setError(prevError => createError(
+            setError(createError(
                 ErrorTypes.CONNECTION,
                 'No se pudo reconectar al servicio de métricas.'
             ));
@@ -127,20 +113,14 @@ export const useSimulationMetrics = () => {
 
             websocketRef.current.onopen = () => {
                 console.log('WebSocket de métricas conectado');
-                setIsConnected(prev => {
-                    if (prev !== true) return true;
-                    return prev;
-                });
-                setError(prev => (prev ? null : prev));
-                setReconnectAttempts(prev => (prev !== 0 ? 0 : prev));
+                setIsConnected(true);
+                setError(null);
+                setReconnectAttempts(0);
             };
 
             websocketRef.current.onclose = () => {
                 console.log('WebSocket de métricas cerrado');
-                setIsConnected(prev => {
-                    if (prev !== false) return false;
-                    return prev;
-                });
+                setIsConnected(false);
                 if (simulationStatus === 'running') {
                     attemptReconnect();
                 }

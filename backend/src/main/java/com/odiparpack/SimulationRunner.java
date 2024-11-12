@@ -4,10 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 import com.odiparpack.models.*;
-import com.odiparpack.tasks.PlanificadorTask;
-import com.odiparpack.tasks.TimeAdvancementTask;
-import com.odiparpack.tasks.WebSocketShipmentBroadcastTask;
-import com.odiparpack.tasks.WebSocketVehicleBroadcastTask;
+import com.odiparpack.tasks.*;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
 
@@ -34,7 +31,7 @@ public class SimulationRunner {
     private static ExecutorService mainExecutorService;
     private static ScheduledExecutorService scheduledExecutorService;
     private static ScheduledExecutorService webSocketExecutorService;
-    private static ExecutorService computeIntensiveExecutor;
+    private static ForkJoinPool computeIntensiveExecutor;
 
     private static final Logger logger = Logger.getLogger(SimulationRunner.class.getName());
     private static final int SIMULATION_DAYS = 7;
@@ -61,8 +58,14 @@ public class SimulationRunner {
             webSocketExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
         }
 
+        // Usar ForkJoinPool en lugar de FixedThreadPool para tareas intensivas en cómputo
         if (computeIntensiveExecutor == null || computeIntensiveExecutor.isShutdown()) {
-            computeIntensiveExecutor = Executors.newFixedThreadPool(Math.max(1, cores - 1), threadFactory);
+            computeIntensiveExecutor = new ForkJoinPool(
+                    Math.max(1, cores - 1),  // Número de hilos en función de los núcleos disponibles
+                    ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                    null,                    // Manejo de excepciones predeterminado
+                    true                     // Activar el modo asíncrono para mejorar el rendimiento
+            );
         }
     }
 
@@ -176,14 +179,11 @@ public class SimulationRunner {
                     return t;
                 }
         );
-        computeIntensiveExecutor = Executors.newFixedThreadPool(
+        computeIntensiveExecutor = new ForkJoinPool(
                 Math.max(1, cores - 1),
-                r -> {
-                    Thread t = threadFactory.newThread(r);
-                    t.setName("compute-intensive-" + t.getName());
-                    t.setPriority(Thread.MIN_PRIORITY);
-                    return t;
-                }
+                ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                null,
+                true  // Usar modo asíncrono para mejorar el rendimiento en tareas recursivas
         );
     }
 
@@ -553,28 +553,29 @@ public class SimulationRunner {
                 filteredAssignments, locationIndices,
                 locationNames, locationUbigeos);
 
-        // Usar computeIntensiveExecutor en lugar de executorService
-        Future<?> calculation = computeIntensiveExecutor.submit(() -> {
-            try {
-                Map<String, List<RouteSegment>> newRoutes = calculateRouteWithStrategies(data, state);
-                // Asignar rutas a todos los vehículos en los grupos correspondientes
-                applyRoutesToVehiclesWithGroups(newRoutes, assignmentGroups, state);
-                vehicleRoutes.putAll(newRoutes);
+        // Crear la tarea recursiva
+        CalculateRoutesTask task = new CalculateRoutesTask(data, state, assignmentGroups, vehicleRoutes);
 
-                logger.info("Nuevas rutas calculadas y agregadas en tiempo de simulación: " + state.getCurrentTime());
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error durante el cálculo de rutas", e);
+        // Ejecutar la tarea en el ForkJoinPool
+        ForkJoinTask<?> forkJoinTask = computeIntensiveExecutor.submit(task);
+
+        // Programar la cancelación si excede el tiempo límite
+        ScheduledFuture<?> timeoutFuture = scheduledExecutorService.schedule(() -> {
+            if (!forkJoinTask.isDone()) {
+                logger.warning("Cálculo de rutas excedió tiempo máximo de 240 segundos");
+                forkJoinTask.cancel(true);
             }
-        });
+        }, 240, TimeUnit.SECONDS);
 
-        // Opcional: Esperar con timeout
         try {
-            calculation.get(240, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            logger.warning("Cálculo de rutas excedió tiempo máximo de 120 segundos");
-            calculation.cancel(true);
+            // Esperar a que la tarea termine
+            forkJoinTask.get();
+        } catch (CancellationException e) {
+            logger.warning("Cálculo de rutas fue cancelado");
         } catch (InterruptedException | ExecutionException e) {
             logger.log(Level.SEVERE, "Error en cálculo de rutas", e);
+        } finally {
+            timeoutFuture.cancel(false); // Cancelar la tarea de timeout si ya no es necesaria
         }
     }
 
@@ -625,10 +626,32 @@ public class SimulationRunner {
             } else {
                 // Si no se encuentra solución, dividir y resolver
                 List<SolutionData> solutions = Collections.synchronizedList(new ArrayList<>());
-                divideAndSolve(state, data.assignments, Arrays.asList(
-                        FirstSolutionStrategy.Value.CHRISTOFIDES,
-                        FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC
-                ), solutions);
+
+                // Crear una tarea para `divideAndSolve`
+                ForkJoinTask<?> task = computeIntensiveExecutor.submit(() ->
+                        divideAndSolve(state, data.assignments, Arrays.asList(
+                                FirstSolutionStrategy.Value.CHRISTOFIDES,
+                                FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC
+                        ), solutions, computeIntensiveExecutor)
+                );
+
+                // Programar timeout si es necesario
+                ScheduledFuture<?> timeoutFuture = scheduledExecutorService.schedule(() -> {
+                    if (!task.isDone()) {
+                        logger.warning("divideAndSolve excedió tiempo máximo");
+                        task.cancel(true);
+                    }
+                }, 240, TimeUnit.SECONDS);
+
+                try {
+                    task.get();
+                } catch (CancellationException e) {
+                    logger.warning("divideAndSolve fue cancelado");
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.log(Level.SEVERE, "Error en divideAndSolve", e);
+                } finally {
+                    timeoutFuture.cancel(false);
+                }
 
                 // Combinar soluciones
                 for (SolutionData solutionData : solutions) {
@@ -644,6 +667,7 @@ public class SimulationRunner {
             logger.info("--- Fin del cálculo de rutas con estrategias ---\n");
         }
     }
+
 
     private static Map<String, List<RouteSegment>> trySolvingWithStrategies(DataModel data, List<FirstSolutionStrategy.Value> strategies) {
         for (FirstSolutionStrategy.Value strategy : strategies) {
@@ -669,7 +693,7 @@ public class SimulationRunner {
         return null; // No se encontró solución con las estrategias dadas
     }
 
-    public static void divideAndSolve(SimulationState state, List<VehicleAssignment> assignments, List<FirstSolutionStrategy.Value> strategies, List<Main.SolutionData> solutions) {
+    /*public static void divideAndSolve(SimulationState state, List<VehicleAssignment> assignments, List<FirstSolutionStrategy.Value> strategies, List<Main.SolutionData> solutions) {
         if (assignments == null || strategies == null || solutions == null) {
             throw new IllegalArgumentException("Los argumentos no pueden ser nulos.");
         }
@@ -695,7 +719,20 @@ public class SimulationRunner {
                 executor.shutdownNow();
             }
         }
+    }*/
+
+    public static void divideAndSolve(SimulationState state, List<VehicleAssignment> assignments,
+                                      List<FirstSolutionStrategy.Value> strategies, List<SolutionData> solutions,
+                                      ForkJoinPool forkJoinPool) {
+        if (assignments == null || strategies == null || solutions == null) {
+            throw new IllegalArgumentException("Los argumentos no pueden ser nulos.");
+        }
+
+        int maxDepth = 10;
+
+        forkJoinPool.invoke(new ProcessSubsetTask(state, assignments, strategies, solutions, 0, maxDepth));
     }
+
 
     private static void processSubset(SimulationState state, List<VehicleAssignment> subset,
                                       List<FirstSolutionStrategy.Value> strategies,
@@ -779,7 +816,7 @@ public class SimulationRunner {
     }
 
 
-    private static void applyRoutesToVehiclesWithGroups(Map<String, List<RouteSegment>> allRoutes, Map<String, List<VehicleAssignment>> assignmentGroups, SimulationState state) {
+    public static void applyRoutesToVehiclesWithGroups(Map<String, List<RouteSegment>> allRoutes, Map<String, List<VehicleAssignment>> assignmentGroups, SimulationState state) {
         for (String key : assignmentGroups.keySet()) {
             List<VehicleAssignment> group = assignmentGroups.get(key);
             VehicleAssignment representativeAssignment = group.get(0);

@@ -369,28 +369,38 @@ public class SimulationState {
         logger.fine("Duraciones - Simulada: " + simulatedDuration.toString() +
                 ", Real: " + realDuration.toString());
 
-        // Convertir LocalDateTime a ZonedDateTime con zona horaria UTC
-        ZonedDateTime startZonedDateTime = simulationStartTime.atZone(ZoneOffset.UTC);
-        ZonedDateTime endZonedDateTime = simulationEndTime.atZone(ZoneOffset.UTC);
+        // Formatear fechas de inicio y fin con AM/PM
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a")
+                .withZone(ZoneOffset.UTC);
 
-        // Convertir ZonedDateTime a Instant
-        Instant startInstant = startZonedDateTime.toInstant();
-        Instant endInstant = endZonedDateTime.toInstant();
-
-        // Formatear fechas en ISO 8601 con zona horaria UTC
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-        String formattedStartTime = formatter.format(startInstant);
-        String formattedEndTime = formatter.format(endInstant);
+        String formattedStartTime = simulationStartTime.format(dateFormatter);
+        String formattedEndTime = simulationEndTime.format(dateFormatter);
 
         summary.addProperty("startTime", formattedStartTime);
         summary.addProperty("endTime", formattedEndTime);
 
-        // Tiempo simulado (duración en formato hh:mm:ss)
-        String simulatedTime = formatDuration(simulatedDuration);
-        summary.addProperty("simulatedTime", simulatedTime);
+        // Formatear tiempo simulado con días y AM/PM
+        LocalDateTime simulatedDateTime = simulationStartTime.plus(simulatedDuration);
+        long simulatedDays = simulatedDuration.toDays();
+        String simulatedTimeOfDay = simulatedDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String simulatedTime = String.format("%d días, %s", simulatedDays, simulatedTimeOfDay);
 
-        // Tiempo real efectivo (duración en formato hh:mm:ss)
-        String realTime = formatDuration(realDuration);
+        // Formatear tiempo real con días y AM/PM
+        long realDays = realDuration.toDays();
+        long realHours = realDuration.toHoursPart();
+        long realMinutes = realDuration.toMinutesPart();
+        long realSeconds = realDuration.toSecondsPart();
+
+        // Construir LocalTime para el tiempo real
+        LocalTime realTimeOfDay = LocalTime.of(
+                (int)realHours,
+                (int)realMinutes,
+                (int)realSeconds);
+
+        String realTimeFormatted = realTimeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String realTime = String.format("%d días, %s", realDays, realTimeFormatted);
+
+        summary.addProperty("simulatedTime", simulatedTime);
         summary.addProperty("realElapsedTime", realTime);
 
         // Log del resumen
@@ -406,6 +416,18 @@ public class SimulationState {
 
         // Enviar vía WebSocket
         SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(summary);
+    }
+
+    // Método auxiliar por si necesitas formatear otras duraciones
+    private String formatDurationWithDays(Duration duration) {
+        long days = duration.toDays();
+        LocalTime timeOfDay = LocalTime.of(
+                duration.toHoursPart(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()
+        );
+        String formattedTime = timeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        return String.format("%d días, %s", days, formattedTime);
     }
 
     private String formatDuration(Duration duration) {
@@ -933,7 +955,7 @@ public class SimulationState {
         //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
         // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
         if (tiempoEstimado.isAfter(tiempoLimite)) {
-            throw new IllegalArgumentException("El tiempo estimado no puede ser después del tiempo límite");
+            logger.info("El tiempo estimado no puede ser después del tiempo límite.\n");
         }
 
 // Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
@@ -1334,10 +1356,28 @@ public class SimulationState {
         }
     }
 
-    public static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state) {
-        logger.info("\n--- Inicio del cálculo de rutas con estrategias hacia almacen ---");
+    public static Map<String, List<RouteSegment>> calculateRouteWithStrategies(DataModel data, SimulationState state, Map<String, List<Vehicle>> groupedVehicles) {
+        // Log de inicio con los vehículos agrupados
+        StringBuilder initialLog = new StringBuilder("\n--- Inicio del cálculo de rutas con estrategias hacia almacen ---\n");
+        groupedVehicles.forEach((routeKey, vehicles) -> {
+            String vehicleCodes = vehicles.stream()
+                    .map(Vehicle::getCode)
+                    .collect(Collectors.joining(", "));
+            initialLog.append("Ruta ").append(routeKey).append(": Vehículos [").append(vehicleCodes).append("]\n");
+        });
+        logger.info(initialLog.toString());
+
         Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
         try {
+            // Log de intento de resolución con estrategias
+            logger.info("Intentando resolver con estrategias definidas para los siguientes vehículos:");
+            groupedVehicles.forEach((routeKey, vehicles) -> {
+                String vehicleCodes = vehicles.stream()
+                        .map(Vehicle::getCode)
+                        .collect(Collectors.joining(", "));
+                logger.info("Ruta " + routeKey + ": " + vehicleCodes);
+            });
+
             // Intentar resolver con las estrategias definidas
             Map<String, List<RouteSegment>> routes = trySolvingWithStrategies2(data, Arrays.asList(
                     FirstSolutionStrategy.Value.CHRISTOFIDES,
@@ -1346,7 +1386,17 @@ public class SimulationState {
 
             if (routes != null && !routes.isEmpty()) {
                 allRoutes.putAll(routes);
+                logger.info("Rutas calculadas exitosamente con la primera estrategia");
             } else {
+                // Log de división y resolución
+                logger.info("No se encontró solución inicial. Iniciando división y resolución para los siguientes vehículos:");
+                groupedVehicles.forEach((routeKey, vehicles) -> {
+                    String vehicleCodes = vehicles.stream()
+                            .map(Vehicle::getCode)
+                            .collect(Collectors.joining(", "));
+                    logger.info("Ruta " + routeKey + ": " + vehicleCodes);
+                });
+
                 // Si no se encuentra solución, dividir y resolver
                 List<RouteSolutionData> solutions = Collections.synchronizedList(new ArrayList<>());
                 divideAndSolveRoutes(state, data.starts, data.ends, Arrays.asList(
@@ -1365,7 +1415,15 @@ public class SimulationState {
             logger.log(Level.SEVERE, "Error durante el cálculo de rutas con estrategias.", e);
             return allRoutes;
         } finally {
-            logger.info("--- Fin del cálculo de rutas con estrategias ---\n");
+            // Log de finalización con resumen de vehículos
+            StringBuilder finalLog = new StringBuilder("--- Fin del cálculo de rutas con estrategias ---\n");
+            groupedVehicles.forEach((routeKey, vehicles) -> {
+                String vehicleCodes = vehicles.stream()
+                        .map(Vehicle::getCode)
+                        .collect(Collectors.joining(", "));
+                finalLog.append("Ruta ").append(routeKey).append(": Completado para vehículos [").append(vehicleCodes).append("]\n");
+            });
+            logger.info(finalLog.toString());
         }
     }
 
@@ -1652,7 +1710,7 @@ public class SimulationState {
             if (data == null || data.vehicleNumber == 0) {
                 logger.warning("No vehicles to calculate routes for. Skipping route calculation.");
             } else {
-                allRoutes = this.calculateRouteWithStrategies(data, this);
+                allRoutes = this.calculateRouteWithStrategies(data, this, groupedVehicles);
             }
         } else {
             logger.info("No new routes to calculate. All routes are in cache.");

@@ -1,6 +1,7 @@
 import { Button, Tab, Tabs, useDisclosure } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 import Dashboard from "@/app/Components/Dashboard"
+import CollapseDashboard from "@/app/Components/CollapseDashboard"
 import ModalContainer from "@/app/Components/ModalContainer"
 import SimulationControls from '../Components/SimulationControls';
 import { useAtom } from "jotai";
@@ -197,7 +198,7 @@ return (
                     <div className="text-xl font-bold">Reporte de Simulación</div>
                 </div>
                 }
-                body={<Dashboard />}
+                body={tipoSimulacion === "1" ? <Dashboard /> : <CollapseDashboard />}
             />
         </div>
         
