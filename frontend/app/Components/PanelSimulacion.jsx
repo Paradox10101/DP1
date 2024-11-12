@@ -9,13 +9,9 @@ import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
 import dynamic from "next/dynamic";
 
-<<<<<<< HEAD
-export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error, shipments, vehicles}){
-=======
 const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), { ssr: false });
 
 export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error}){
->>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
     
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
     const [opcionSeleccionada, setOpcionSelecionada] = useState(1)    
@@ -83,11 +79,7 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
                 :
                 opcionSeleccionada==3 ? <OpcionAlmacenes />
                 :
-<<<<<<< HEAD
-                opcionSeleccionada==4 ? <OpcionVehiculos vehicles = {vehicles}/>
-=======
                 opcionSeleccionada==4 ? <OpcionVehiculos />
->>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
                 :
                 <></>
             }

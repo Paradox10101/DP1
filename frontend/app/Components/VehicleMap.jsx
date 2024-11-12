@@ -15,7 +15,6 @@ import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 
-<<<<<<< HEAD
 const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -31,16 +30,6 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   const [reconnectAttemptsWSShipments, setReconnectAttemptsWSShipments] = useState(0);
   const [reconnectAttemptsWSSVehiclesInfo, setReconnectAttemptsWSVehiclesInfo] = useState(0);
   const [locations, setLocations] = useState(null);
-=======
-const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
-  const mapContainerRef = useRef(null);
-  const mapRef = useRef(null);
-  const popupsRef = useRef({});
-  const [positions, setPositions] = useAtom(vehiclePositionsAtom);
-  const [loading, setLoading] = useAtom(loadingAtom);
-  const [error, setError] = useAtom(errorAtom);
-  const [locations, setLocations] = useAtom(locationsAtom);
->>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const [locationError, setLocationError] = useState(null);
@@ -514,7 +503,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   };
 
-<<<<<<< HEAD
   // Conexión WebSocket de vehiculos
   const connectWebSocketVehicles = () => {
     socketRefVehicles.current = new WebSocket('ws://localhost:4567/wsVehicles');
@@ -702,8 +690,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     };
   }, [simulationStatus]);
 
-=======
->>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
   // Actualizar posiciones de vehículos
   useEffect(() => {
     if (!mapRef.current || !positions?.features) return;
