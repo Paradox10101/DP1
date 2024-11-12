@@ -60,6 +60,8 @@ export default function OpcionAlmacenes() {
       <div style={style}
       onMouseDown={() => {
         setSelectedLocationtIndex(index);
+        console.log("=============================================")
+        console.log(location)
         //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
         onOpen(); // Abrir modal
     }}>

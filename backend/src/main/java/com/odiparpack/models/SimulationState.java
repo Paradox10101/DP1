@@ -2014,6 +2014,7 @@ public class SimulationState {
     }
     
     private void appendVehicleFullDataFeature(StringBuilder builder, Vehicle vehicle, Position position) {
+
         builder.append("{\"type\":\"Feature\",\"properties\":{")
                 .append("\"vehicleCode\":\"").append(vehicle.getCode()).append("\",")
                 .append("\"ubicacionActual\":\"").append(vehicle.getCurrentLocationUbigeo()).append("\",")
@@ -2022,10 +2023,83 @@ public class SimulationState {
                 .append("\"tipo\":\"").append(vehicle.getType()).append("\",")
                 .append("\"capacidadUsada\":").append(vehicle.getCurrentCapacity()).append(",")
                 .append("\"capacidadMaxima\":").append(vehicle.getCapacity()).append(",")
+                .append("\"cantidadRutas\":").append(vehicle.getRoute()!=null?vehicle.getRoute().size():0).append(",")
                 .append("\"status\":\"").append(vehicle.getEstado().toString()).append("\",")
-                .append("\"velocidad\":").append(vehicle.getStatus() != null ? vehicle.getStatus().getCurrentSpeed() : 0)
-                .append("},");
-    
+                .append("\"velocidad\":").append(vehicle.getStatus() != null ? vehicle.getStatus().getCurrentSpeed() : 0).append(",");
+
+        // Manejo de currentRoute
+        builder.append("\"currentRoute\":[");
+        StringBuilder routeContentBuilder = new StringBuilder();
+
+        try {
+            if (vehicle.getRoute() != null && !vehicle.getRoute().isEmpty()) {
+                boolean isFirst = true;
+                for (RouteSegment routeSegment : vehicle.getRoute()) {
+                    if (!isFirst) {
+                        routeContentBuilder.append(",");
+                    }
+                    else{
+                        routeContentBuilder.append("{")
+                                .append("\"city\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
+                                .append("\"status\":\"").append("listo").append("\",")
+                                .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getFromUbigeo())?"wareouse":"office").append("\"")
+                                .append("},");
+                    }
+                    routeContentBuilder.append("{")
+                            .append("\"city\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
+                            .append("\"status\":\"").append("listo").append("\",")
+                            .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getToUbigeo())?"wareouse":"office").append("\"")
+                            .append("}");
+                    isFirst = false;
+                }
+            }
+            else{
+                routeContentBuilder.append("{")
+                        .append("\"city\":\"").append(locations.get(vehicle.getCurrentLocationUbigeo()).getProvince()).append("\",")
+                        .append("\"status\":\"").append("listo").append("\",")
+                        .append("\"type\":\"").append(almacenesPrincipales.contains(vehicle.getCurrentLocationUbigeo())?"wareouse":"office").append("\"")
+                        .append("}");
+            }
+            builder.append(routeContentBuilder);
+        } catch (Exception e) {
+            // En caso de error, dejamos el arreglo vacío
+        }
+        builder.append("],");
+
+        builder.append("\"shipmentsVehicle\":[");
+        StringBuilder shipmentsContentBuilder = new StringBuilder();
+
+        try {
+            List<VehicleAssignment> vehicleAssignmentPerVehicle = vehicleAssignmentsPerOrder.values().stream()  // Obtenemos todos los valores del mapa (List<VehicleAssignment>)
+                    .flatMap(List::stream)
+                    .filter(assignment -> assignment.getVehicle().getCode().equals(vehicle.getCode()))
+                    .collect(Collectors.toList());
+
+            if (vehicleAssignmentPerVehicle != null && !vehicleAssignmentPerVehicle.isEmpty()) {
+                boolean isFirst = true;
+
+                for (VehicleAssignment vehicleAssignment : vehicleAssignmentPerVehicle) {
+                    if (!isFirst) {
+                        shipmentsContentBuilder.append(",");
+                    }
+                    shipmentsContentBuilder.append("{")
+                            .append("\"code\":\"").append(vehicleAssignment.getOrder().getOrderCode()).append("\",")
+                            .append("\"quantity\":\"").append(vehicleAssignment.getAssignedQuantity()).append("\",")
+                            .append("\"status\":\"").append("listo").append("\",")
+                            .append("\"originCity\":\"").append(locations.get(vehicleAssignment.getOrder().getOriginUbigeo()).getProvince()).append("\",")
+                            .append("\"destinationCity\":\"").append(locations.get(vehicleAssignment.getOrder().getDestinationUbigeo()).getProvince()).append("\",")
+                            .append("\"dueTime\":\"").append(vehicleAssignment.getOrder().getDueTime()).append("\"")
+                            .append("}");
+                    isFirst = false;
+                }
+            }
+            builder.append(shipmentsContentBuilder);
+        } catch (Exception e) {
+            // En caso de error, dejamos el arreglo vacío
+        }
+        builder.append("]");
+
+        builder.append("},");
         // Add the geometry (location)
         builder.append("\"geometry\":{\"type\":\"Point\",\"coordinates\":[")
                 .append(position.getLongitude()).append(",")

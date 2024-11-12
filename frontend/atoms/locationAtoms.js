@@ -68,7 +68,8 @@ export const formattedLocationsAtom = atom((get) => {
       latitude: feature.geometry.coordinates[1],
       longitude: feature.geometry.coordinates[0],
       capacity: properties.capacity,
-      occupiedPercentage: update ? update.occupiedPercentage : (properties.occupiedPercentage || 0)
+      occupiedPercentage: update ? update.occupiedPercentage : (properties.occupiedPercentage || 0),
+      shipments: properties?.message?properties.message:[]
     };
   });
 });
