@@ -2026,6 +2026,10 @@ public class SimulationState {
         return vehicleAssignmentsPerOrder;
     }
 
+    public List<VehicleAssignment> getVehicleAssignments(Integer id_OrderFound) {
+        return vehicleAssignmentsPerOrder.get(id_OrderFound);
+    }
+
 
 
     // Funcion para obtener todos los detalles de vehiculos
