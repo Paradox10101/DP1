@@ -2,24 +2,10 @@ import { Button } from "@nextui-org/react"
 import { AlertTriangle, Building, Car, CarFront, Check, Circle, Clock, Eye, Filter, Flag, Globe, MapPin, Package, Truck, Warehouse } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
-<<<<<<< HEAD
 import { useEffect } from "react"
 
 export default function ModalRutaVehiculoEnvio({selectedVehicle}){
     
-=======
-import { useMemo } from "react"
-
-export default function ModalRutaVehiculoEnvio({selectedVehicle}){
-    const percentage = useMemo(() => {
-        if (selectedVehicle.routes && selectedVehicle.routes.length > 0) {
-          const traveledDistance = selectedVehicle.routes.reduce((sum, route) => route?.status && route.status === 'TRAVELED' ? sum + (route?.distance?route.distance:0) : sum, 0);
-          const totalDistance = selectedVehicle.routes.reduce((sum, route) => sum + (route?.distance?route.distance:0), 0);
-          return (traveledDistance / totalDistance) * 100;
-        }
-        return 0; // Retorna 0 si no hay rutas
-      }, [selectedVehicle.routes, selectedVehicle]);
->>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
 
     return (
         <div className="flex flex-col gap-2 justify-between h-full ">
