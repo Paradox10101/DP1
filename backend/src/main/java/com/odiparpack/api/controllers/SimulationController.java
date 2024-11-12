@@ -1,25 +1,32 @@
 package com.odiparpack.api.controllers;
 
 import com.google.gson.JsonObject;
+import com.odiparpack.DataLoader;
 import com.odiparpack.SimulationRunner;
+import com.odiparpack.models.Location;
 import com.odiparpack.api.routers.*;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
 import com.odiparpack.websocket.VehicleInfoWebSocketHandler;
 import com.odiparpack.websocket.VehicleWebSocketHandler;
+import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
+import com.odiparpack.websocket.WarehouseOccupancyWebSocketHandler;
 import spark.Spark;
 
+import static com.odiparpack.Main.initializeSimulationState;
 import static spark.Spark.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 public class SimulationController {
-    private final SimulationState simulationState;
+    private SimulationState simulationState;
     private final List<BaseRouter> routers;
     private ExecutorService simulationExecutor;
     private Future<?> simulationFuture;
@@ -30,7 +37,8 @@ public class SimulationController {
         this.routers = Arrays.asList(
                 new LocationRouter(),
                 new VehicleRouter(simulationState),
-                new SimulationRouter(simulationState),
+                new SimulationRouter(simulationState, this),
+                new ReportRouter(simulationState),
                 new ShipmentRouter(simulationState)
         );
     }
@@ -41,7 +49,7 @@ public class SimulationController {
             setupWebSocket();
             configureServer();
             initializeRoutes();
-            logger.info("Servidor de simulación iniciado en http://localhost:4567");
+            logger.info("Servidor de simulación iniciado en 4567");
         } catch (Exception e) {
             logger.severe("Error al iniciar el servidor: " + e.getMessage());
             throw new RuntimeException("Error al iniciar el servidor", e);
@@ -54,12 +62,11 @@ public class SimulationController {
     }
 
     private void setupWebSocket() {
-        webSocket("/wsVehicles", VehicleWebSocketHandler.class);
-        webSocket("/wsShipments", ShipmentWebSocketHandler.class);
-        webSocket("/wsVehiclesInfo", VehicleInfoWebSocketHandler.class);
-        VehicleWebSocketHandler.setSimulationState(simulationState);
-        ShipmentWebSocketHandler.setSimulationState(simulationState);
-        VehicleInfoWebSocketHandler.setSimulationState(simulationState);
+        webSocket("/ws", VehicleWebSocketHandler.class);
+        webSocket("/ws/simulation", SimulationMetricsWebSocketHandler.class);
+        webSocket("/ws/occupancy", WarehouseOccupancyWebSocketHandler.class);  // Nueva línea
+        //VehicleWebSocketHandler.setSimulationState(simulationState);
+        webSocket("/ws/shipments", ShipmentWebSocketHandler.class);
     }
 
     private void initializeRoutes() {
@@ -116,6 +123,35 @@ public class SimulationController {
             errorResponse.addProperty("path", request.pathInfo());
             return errorResponse;
         });
+    }
+
+    public void resetSimulationState() {
+        if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
+            simulationExecutor.shutdownNow();
+        }
+        simulationExecutor = null;
+        SimulationState newState = createNewSimulationState();
+        this.simulationState = newState;
+
+        // Actualizar los routers
+        routers.forEach(router -> {
+            if (router instanceof SimulationRouter) {
+                ((SimulationRouter) router).updateSimulationState(newState);
+            }
+        });
+    }
+
+    private SimulationState createNewSimulationState() {
+        try {
+            return initializeSimulationState();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create new SimulationState", e);
+        }
+    }
+
+    // Método para exponer a SimulationRouter
+    public void handleStopSimulation() {
+        simulationState.stopSimulation();
     }
 
     public void stop() {

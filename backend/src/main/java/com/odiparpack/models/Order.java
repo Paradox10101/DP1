@@ -3,6 +3,8 @@ package com.odiparpack.models;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import com.odiparpack.services.LocationService;
+
 import static com.odiparpack.Main.logger;
 
 public class Order {
@@ -27,6 +29,7 @@ public class Order {
     private OrderStatus status;
     private int assignedPackages;
     private int deliveredPackages;
+    private String orderCode;
 
     public LocalDateTime getPendingPickupStartTime() {
         return pendingPickupStartTime;
@@ -161,9 +164,26 @@ public class Order {
         return this.status == OrderStatus.PENDING_PICKUP &&
                 currentTime.isAfter(this.pendingPickupStartTime.plus(PICKUP_DURATION));
     }
+    
+    public String getDestinationCity() {
+        LocationService locationService = LocationService.getInstance();
+        return locationService.getLocation(this.destinationUbigeo).getProvince();
+    }
+
+    public boolean isDeliveredOnTime() {
+        return this.status == OrderStatus.DELIVERED && this.orderTime.isBefore(this.dueTime);
+    }
 
     public void setDelivered(LocalDateTime currentSimulationTime) {
         this.status = OrderStatus.DELIVERED;
         logger.info("Orden " + getId() + " marcada como DELIVERED a las " + currentSimulationTime);
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }

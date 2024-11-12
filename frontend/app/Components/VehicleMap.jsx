@@ -1,15 +1,21 @@
-// src/components/VehicleMap.js
 'use client';
 import { useAtom } from 'jotai';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom,
-  errorAtom,
+  loadingAtom
 } from '../atoms';
+import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
+import ErrorDisplay from '../Components/ErrorDisplay';
+import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
+import { locationsAtom } from '../../atoms/locationAtoms';
 
+<<<<<<< HEAD
 const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -25,7 +31,133 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   const [reconnectAttemptsWSShipments, setReconnectAttemptsWSShipments] = useState(0);
   const [reconnectAttemptsWSSVehiclesInfo, setReconnectAttemptsWSVehiclesInfo] = useState(0);
   const [locations, setLocations] = useState(null);
+=======
+const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const popupsRef = useRef({});
+  const [positions, setPositions] = useAtom(vehiclePositionsAtom);
+  const [loading, setLoading] = useAtom(loadingAtom);
+  const [error, setError] = useAtom(errorAtom);
+  const [locations, setLocations] = useAtom(locationsAtom);
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
+  const [locationError, setLocationError] = useState(null);
+  const locationRetryTimeoutRef = useRef(null);
+
+   // Función auxiliar para crear mensajes de error
+   const createError = (type, customMessage = null) => ({
+    ...ERROR_MESSAGES[type],
+    message: customMessage || ERROR_MESSAGES[type].message
+  });
+  
+   // Obtener y actualizar ubicaciones con reintentos
+   const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
+    try {
+      const response = await fetch('http://localhost:4567/api/v1/locations');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("ubicaciones: ", data);
+      if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+        setLocations(data); // Actualizar el átomo compartido
+        setError(null);
+        return true;
+      } else {
+        throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
+      }
+    } catch (err) {
+      console.error('Error al obtener las ubicaciones:', err);
+      setError(createError(ErrorTypes.CONNECTION, 'No se pudieron cargar las ubicaciones de oficinas y almacenes.'));
+
+      if (retryCount < maxRetries) {
+        console.log(`Reintentando carga de ubicaciones (${retryCount + 1}/${maxRetries})...`);
+        locationRetryTimeoutRef.current = setTimeout(() => {
+          fetchLocations(retryCount + 1, maxRetries);
+        }, 2000 * (retryCount + 1));
+      }
+      return false;
+    }
+  }, [setLocations, setError]);
+
+  // Limpiar timeout de reintento si existe
+  const clearLocationRetryTimeout = useCallback(() => {
+    if (locationRetryTimeoutRef.current) {
+      clearTimeout(locationRetryTimeoutRef.current);
+      locationRetryTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Manejar la reconexión exitosa
+  const handleConnectionSuccess = useCallback(() => {
+    clearLocationRetryTimeout();
+    if (!locations) {
+      fetchLocations();
+    }
+  }, [fetchLocations, locations, clearLocationRetryTimeout]);
+
+  // Actualizar posición de popups
+  const updatePopups = (geojson) => {
+    geojson.features.forEach((feature) => {
+      const vehicleCode = feature.properties.vehicleCode;
+      const popup = popupsRef.current[vehicleCode];
+      if (popup) {
+        popup.setLngLat(feature.geometry.coordinates);
+      }
+    });
+  };
+
+  const { 
+    animateTransition, 
+    performanceManager 
+  } = useVehicleAnimation(mapRef, updatePopups);
+
+  // Actualizar las métricas de rendimiento
+  useEffect(() => {
+    if (performanceManager) {
+      const updateInterval = setInterval(() => {
+        setPerformanceMetrics({
+          fps: performanceManager.metrics.fps,
+          frameTime: performanceManager.metrics.frameTime,
+          vehicleCount: performanceManager.metrics.vehicleCount,
+          performanceLevel: performanceManager.performanceLevel
+        });
+      }, 1000 / 5); // 5 actualizaciones por segundo
+
+      return () => clearInterval(updateInterval);
+    }
+  }, [performanceManager, setPerformanceMetrics]);
+
+  // Manejador de mensajes WebSocket
+  const handleWebSocketMessage = useCallback((data) => {
+    setPositions(data);
+  }, [setPositions]);
+
+  // Manejador de cambios de conexión
+  const handleConnectionChange = useCallback((status) => {
+    setLoading(status === 'loading');
+    if (status === 'failed') {
+      setError(createError(ErrorTypes.CONNECTION));
+    }
+  }, [setLoading, setError]);
+
+  // Usar el nuevo hook de WebSocket
+  const { 
+    connect,
+    disconnect,
+    checkStatus,
+    isRetrying
+  } = useWebSocket({
+    onMessage: handleWebSocketMessage,
+    onConnectionChange: handleConnectionChange,
+  });
+
+  // Verificar estado inicial
+  useEffect(() => {
+    checkStatus();
+  }, []);
 
   // Función personalizada para cargar imágenes
   const loadCustomImage = async (name, url) => {
@@ -41,11 +173,9 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
       }
     } catch (error) {
       console.error(`Error al cargar icono ${name}:`, error);
-      setError(`Error al cargar icono ${name}`);
+      setError(createError(ErrorTypes.SIMULATION, `Error al cargar icono ${name}`));
     }
   };
-
-
 
   // Inicializar el mapa
   useEffect(() => {
@@ -54,13 +184,12 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
       console.log('Inicializando mapa...');
       mapRef.current = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD',
-        center: [-76.991, -12.046],
-        zoom: 6,
+        style: MAP_CONFIG.STYLE_URL,
+        center: MAP_CONFIG.DEFAULT_CENTER,
+        zoom: MAP_CONFIG.DEFAULT_ZOOM,
         attributionControl: false,
       });
 
-      // Agregar controles de navegación
       mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
       // Botón para centrar en Perú
@@ -82,7 +211,10 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
           this.container.style.cursor = 'pointer';
 
           this.container.onclick = () => {
-            map.flyTo({ center: [-76.991, -12.046], zoom: 6 });
+            map.flyTo({ 
+              center: MAP_CONFIG.DEFAULT_CENTER, 
+              zoom: MAP_CONFIG.DEFAULT_ZOOM 
+            });
           };
 
           return this.container;
@@ -96,112 +228,60 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
 
       mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
-      
-      // Configurar el mapa cuando esté cargado
-      
-      
       mapRef.current.on('load', async () => {
         console.log('Mapa completamente cargado');
 
-        // Cargar imágenes de íconos
-        await loadCustomImage('warehouse-icon', '/warehouse-icon.png');
-        await loadCustomImage('office-icon', '/office-icon.png');
+        // Cargar imágenes definidas en la configuración
+        for (const [key, image] of Object.entries(MAP_CONFIG.IMAGES)) {
+          await loadCustomImage(image.id, image.url);
+        }
 
         // Configurar la fuente de vehículos
-        if (!mapRef.current.getSource('vehicles')) {
-          mapRef.current.addSource('vehicles', {
+        if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
+          mapRef.current.addSource(MAP_CONFIG.SOURCES.VEHICLES.id, {
             type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
+            data: { type: 'FeatureCollection', features: [] }
           });
         }
-
-        // Configurar la capa de círculos para vehículos
-        if (!mapRef.current.getLayer('vehicles-circle-layer')) {
+        
+        // Configurar capas de vehículos
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.CIRCLE)) {
           mapRef.current.addLayer({
-            id: 'vehicles-circle-layer',
+            id: MAP_CONFIG.LAYERS.VEHICLES.CIRCLE,
             type: 'circle',
-            source: 'vehicles',
-            paint: {
-              'circle-radius': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                5, 10,
-                10, 12,
-                15, 14,
-              ],
-              'circle-color': '#FF0000',
-              'circle-stroke-color': '#FFFFFF',
-              'circle-stroke-width': 2,
-            },
+            source: MAP_CONFIG.SOURCES.VEHICLES.id,
+            paint: LAYER_STYLES.vehicles.circle.paint
           });
         }
-
-        // Configurar la capa de texto para vehículos
-        if (!mapRef.current.getLayer('vehicles-text-layer')) {
+        
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.TEXT)) {
           mapRef.current.addLayer({
-            id: 'vehicles-text-layer',
+            id: MAP_CONFIG.LAYERS.VEHICLES.TEXT,
             type: 'symbol',
-            source: 'vehicles',
-            layout: {
-              'text-field': ['get', 'vehicleCode'],
-              'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-              'text-size': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                5, 12,
-                10, 14,
-                15, 16,
-              ],
-              'text-offset': [0, 0],
-              'text-anchor': 'center',
-            },
-            paint: {
-              'text-color': '#FFFFFF',
-              'text-halo-color': '#000000',
-              'text-halo-width': 1,
-            },
+            source: MAP_CONFIG.SOURCES.VEHICLES.id,
+            layout: LAYER_STYLES.vehicles.text.layout,
+            paint: LAYER_STYLES.vehicles.text.paint
           });
         }
-
-        // Configurar eventos de click en vehículos
-        mapRef.current.on('click', 'vehicles-circle-layer', handleVehicleClick);
-        mapRef.current.on('mouseenter', 'vehicles-circle-layer', () => {
+        
+        // Configurar eventos
+        mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, handleVehicleClick);
+        mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
         });
-        mapRef.current.on('mouseleave', 'vehicles-circle-layer', () => {
+        mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
-
-        // **Eliminar la configuración de eventos para clusters aquí**
         
-        // Evento de clic en clusters para hacer zoom
-        mapRef.current.on('click', 'clusters', (e) => {
-          // ...
-        });
-
-        // Cambiar el cursor al pasar sobre clusters
-        mapRef.current.on('mouseenter', 'clusters', () => {
-          // ...
-        });
-        mapRef.current.on('mouseleave', 'clusters', () => {
-          // ...
-        });
-        
-
         setMapLoaded(true);
       });
-      
-     //ACA FINALIZA
     } catch (error) {
       console.error('Error al inicializar el mapa:', error);
       setError('Error al inicializar el mapa');
     }
-    
 
+    // Limpieza al desmontar el componente
     return () => {
-      console.log('Limpiando mapa...');
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -212,7 +292,7 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
     const features = mapRef.current.queryRenderedFeatures(e.point, {
-      layers: ['vehicles-circle-layer'],
+      layers: [MAP_CONFIG.LAYERS.VEHICLES.CIRCLE],
     });
     if (!features.length) return;
 
@@ -248,12 +328,7 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
     popupContent.appendChild(vehicleInfo);
     popupContent.appendChild(closeButton);
 
-    const popup = new maplibregl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      offset: 15,
-      anchor: 'top',
-    })
+    const popup = new maplibregl.Popup(POPUP_CONFIG)
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
@@ -261,36 +336,21 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
     popupsRef.current[vehicleCode] = popup;
   };
 
-  // Obtener ubicaciones del backend
-  const fetchLocations = async () => {
-    try {
-      console.log('Obteniendo ubicaciones del backend...');
-      const response = await fetch('http://localhost:4567/api/v1/locations');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('Datos de ubicaciones recibidos:', data);
-      if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        setLocations(data);
-      } else {
-        throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
-      }
-    } catch (err) {
-      console.error('Error al obtener las ubicaciones:', err);
-      setError('Error al obtener ubicaciones');
-    }
-  };
-  
-  // Cargar ubicaciones cuando el mapa esté listo
+  // Efecto para cargar ubicaciones cuando el mapa está listo
   useEffect(() => {
-    if (mapLoaded) {
+    if (mapLoaded && !locations) {
       fetchLocations();
     }
-  }, [mapLoaded]);
-  
+  }, [mapLoaded, locations, fetchLocations]);
+
+  // Limpiar timeouts al desmontar
+  useEffect(() => {
+    return () => {
+      clearLocationRetryTimeout();
+    };
+  }, [clearLocationRetryTimeout]);
+
   // Actualizar ubicaciones en el mapa
-  
   useEffect(() => {
     const updateMap = async () => {
       if (!mapRef.current || !mapLoaded || !locations) {
@@ -454,6 +514,7 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
     }
   };
 
+<<<<<<< HEAD
   // Conexión WebSocket de vehiculos
   const connectWebSocketVehicles = () => {
     socketRefVehicles.current = new WebSocket('ws://localhost:4567/wsVehicles');
@@ -641,120 +702,39 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
     };
   }, [simulationStatus]);
 
+=======
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
   // Actualizar posiciones de vehículos
-  
   useEffect(() => {
-    if (!mapRef.current || !mapRef.current.getSource('vehicles')) {
-      console.log('Mapa o fuente de vehículos no está lista');
-      return;
+    if (!mapRef.current || !positions?.features) return;
+
+    try {
+      animateTransition(positions);
+    } catch (error) {
+      console.error('Error al actualizar posiciones:', error);
+      setError('Error al actualizar posiciones de vehículos');
     }
+  }, [positions, animateTransition]);
 
-    if (!positions || !positions.features || positions.features.length === 0) {
-      console.log('No hay posiciones para actualizar');
-      return;
+  const handleRetry = useCallback(() => {
+    const currentError = error;
+    if (!currentError) return;
+
+    switch (currentError.type) {
+      case ErrorTypes.CONNECTION:
+        connect();
+        break;
+      case ErrorTypes.SIMULATION:
+        checkStatus();
+        break;
+      default:
+        // Si el error está relacionado con ubicaciones, intentar cargar nuevamente
+        if (currentError.message?.includes('ubicaciones')) {
+          fetchLocations();
+        }
     }
+  }, [error, connect, checkStatus, fetchLocations]);
 
-    console.log('Actualizando posiciones de vehículos en el mapa:', positions);
-
-    // Validar que 'positions' sea un FeatureCollection válido
-    if (!(positions.type === 'FeatureCollection' && Array.isArray(positions.features))) {
-      console.error('Datos de posiciones no son un FeatureCollection válido:', positions);
-      setError('Datos de posiciones inválidos');
-      return;
-    }
-
-    // Actualizar la fuente de datos
-    mapRef.current.getSource('vehicles').setData(positions);
-
-    // Animar la transición
-    if (previousPositions && previousPositions.type === 'FeatureCollection') {
-      animateTransition(previousPositions, positions);
-    } else {
-      // Ajustar la vista del mapa para incluir todas las posiciones
-      fitMapToVehicles(positions);
-    }
-
-    // Actualizar la posición de los popups
-    updatePopups(positions);
-
-    setPreviousPositions(positions);
-  }, [positions]);
-  
-
-  // Ajustar vista del mapa
-  const fitMapToVehicles = (geojson) => {
-    if (!mapRef.current) return;
-
-    const bounds = new maplibregl.LngLatBounds();
-
-    geojson.features.forEach((feature) => {
-      const [lng, lat] = feature.geometry.coordinates;
-      bounds.extend([lng, lat]);
-    });
-
-    mapRef.current.fitBounds(bounds, { padding: 50, animate: true });
-  };
-
-  // Animar transición de posiciones
-  const animateTransition = (fromData, toData) => {
-    const animationDuration = 1000;
-    const frameRate = 60;
-    const frameCount = (animationDuration / 1000) * frameRate;
-    let frame = 0;
-
-    const fromFeaturesMap = {};
-    fromData.features.forEach((feature) => {
-      const vehicleCode = feature.properties.vehicleCode;
-      fromFeaturesMap[vehicleCode] = feature;
-    });
-
-    const animate = () => {
-      if (frame > frameCount) return;
-
-      const interpolatedFeatures = toData.features.map((toFeature) => {
-        const vehicleCode = toFeature.properties.vehicleCode;
-        const fromFeature = fromFeaturesMap[vehicleCode] || toFeature;
-
-        const fromCoords = fromFeature.geometry.coordinates;
-        const toCoords = toFeature.geometry.coordinates;
-
-        const lng = fromCoords[0] + ((toCoords[0] - fromCoords[0]) * frame) / frameCount;
-        const lat = fromCoords[1] + ((toCoords[1] - fromCoords[1]) * frame) / frameCount;
-
-        return {
-          ...toFeature,
-          geometry: {
-            ...toFeature.geometry,
-            coordinates: [lng, lat],
-          },
-        };
-      });
-
-      const interpolatedData = {
-        ...toData,
-        features: interpolatedFeatures,
-      };
-
-      mapRef.current.getSource('vehicles').setData(interpolatedData);
-      updatePopups(interpolatedData);
-
-      frame++;
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-  };
-
-  // Actualizar posición de popups
-  const updatePopups = (geojson) => {
-    geojson.features.forEach((feature) => {
-      const vehicleCode = feature.properties.vehicleCode;
-      const popup = popupsRef.current[vehicleCode];
-      if (popup) {
-        popup.setLngLat(feature.geometry.coordinates);
-      }
-    });
-  };
 
   return (
     <div className="relative w-full h-full">
@@ -764,14 +744,19 @@ const VehicleMap = ({ simulationStatus, setShipments, setVehicles }) => {
         </div>
       )}
 
-      {error && (
-        <div className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full bg-red-500 bg-opacity-50">
-          <div className="text-white">Error: {error}</div>
+      <ErrorDisplay 
+        error={error}
+        onRetry={handleRetry}
+        isRetrying={isRetrying}
+      />
+
+      {performanceManager && (
+        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-2 rounded">
+          FPS: {Math.round(performanceManager.metrics.fps)}
         </div>
       )}
-
+      
       <div ref={mapContainerRef} className="w-full h-full" />
-
     </div>
   );
 };

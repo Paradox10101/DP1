@@ -1,11 +1,13 @@
 import type { Config } from "tailwindcss";
 import plugin from 'tailwindcss/plugin'
+const {nextui} = require("@nextui-org/react");
 
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -26,16 +28,17 @@ const config: Config = {
 
   },
   plugins: [
-    plugin(function({addUtilities}){
+    nextui(),
+    plugin(function({ addUtilities }) {
       const newUtilites = {
-        '.regular_bold':{
+        '.regular_bold': {
           fontSize: '16px',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
         },
-        '.regular':{
+        '.regular': {
           fontSize: '16px',
-        },        
-        '.subEncabezado':{
+        },
+        '.subEncabezado': {
           fontSize: '22px',
         },
         '.subEncabezado_bold':{
@@ -43,23 +46,19 @@ const config: Config = {
           fontWeight: 'bold'
         },
         '.encabezado':{
-          fontSize: '18px',
-          fontWeight: 'bold'
+          fontSize: '17px',
+          fontWeight: 'bold',
         },
-        '.pequenno':{
+        '.pequenno': {
           fontSize: '13px',
         },
-        '.pequenno_bold':{
+        '.pequenno_bold': {
           fontSize: '13px',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
         },
-
-
-      }
-      addUtilities(newUtilites)
-    })
-
-
+      };
+      addUtilities(newUtilites);
+    }),
   ],
 };
 export default config;

@@ -1,6 +1,9 @@
 package com.odiparpack.api.routers;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.odiparpack.api.controllers.SimulationController;
+import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 import spark.Spark;
@@ -8,10 +11,13 @@ import spark.Spark;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class SimulationRouter extends BaseRouter {
-    private final SimulationState simulationState;
+    private SimulationState simulationState;
+    private SimulationController simulationController;
+
     private static final Logger logger = Logger.getLogger(SimulationRouter.class.getName());
 
     private ExecutorService simulationExecutor;
@@ -19,8 +25,9 @@ public class SimulationRouter extends BaseRouter {
     private volatile boolean isSimulationRunning = false;
     private volatile boolean isShutdown = false;
 
-    public SimulationRouter(SimulationState simulationState) {
+    public SimulationRouter(SimulationState simulationState, SimulationController simulationController) {
         this.simulationState = simulationState;
+        this.simulationController = simulationController;
     }
 
     @Override
@@ -35,8 +42,8 @@ public class SimulationRouter extends BaseRouter {
             }
 
             // Reiniciar el estado si estaba apagado
-            if (isShutdown) {
-                resetSimulationState();
+            if (simulationState.isStopped()) {
+                simulationController.resetSimulationState();
             }
 
             startSimulation();
@@ -53,9 +60,33 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("La simulación no está en ejecución.");
             }
 
-            pauseSimulation();
+            if (simulationState.isPaused()) {
+                response.status(400);
+                return createErrorResponse("La simulación ya está pausada.");
+            }
+
+            simulationState.pauseSimulation();
             response.status(200);
             return createSuccessResponse("Simulación pausada.");
+        });
+
+        // Reanudar simulación
+        Spark.post("/api/v1/simulation/resume", (request, response) -> {
+            response.type("application/json");
+
+            if (!isSimulationRunning) {
+                response.status(400);
+                return createErrorResponse("La simulación no está en ejecución.");
+            }
+
+            if (!simulationState.isPaused()) {
+                response.status(400);
+                return createErrorResponse("La simulación no está pausada.");
+            }
+
+            simulationState.resumeSimulation();
+            response.status(200);
+            return createSuccessResponse("Simulación reanudada.");
         });
 
         // Detener simulación
@@ -67,7 +98,10 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("La simulación no está en ejecución.");
             }
 
-            stopSimulation();
+            simulationController.handleStopSimulation();
+            isSimulationRunning = false;
+            isShutdown = true;
+
             response.status(200);
             return createSuccessResponse("Simulación detenida.");
         });
@@ -95,6 +129,36 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("Error al reiniciar la simulación: " + e.getMessage());
             }
         });
+
+        // Nueva ruta para cambiar velocidad
+        Spark.post("/api/v1/simulation/speed", (request, response) -> {
+            response.type("application/json");
+
+            try {
+                JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+                String speedStr = body.get("speed").getAsString();
+                SimulationRunner.SimulationSpeed speed = SimulationRunner.SimulationSpeed.valueOf(speedStr.toUpperCase());
+                SimulationRunner.setSimulationSpeed(speed);
+
+                response.status(200);
+                return createSuccessResponse("Velocidad de simulación actualizada a " + speed.getMinutesPerSecond() + " minutos por segundo");
+            } catch (IllegalArgumentException e) {
+                response.status(400);
+                return createErrorResponse("Velocidad inválida. Opciones válidas: FAST, MEDIUM, SLOW");
+            } catch (Exception e) {
+                response.status(500);
+                return createErrorResponse("Error al actualizar la velocidad: " + e.getMessage());
+            }
+        });
+        /*// Agregar el endpoint para el reporte de capacidades
+        Spark.get("/api/v1/simulation/report", (request, response) -> {
+            response.type("application/json");
+
+            JsonObject report = simulationReport.generateCapacityReport();
+
+            response.status(200);
+            return gson.toJson(report);
+        });*/
     }
 
     private void resetSimulationState() {
@@ -102,14 +166,26 @@ public class SimulationRouter extends BaseRouter {
         isSimulationRunning = false;
         if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
             simulationExecutor.shutdownNow();
+            try {
+                if (!simulationExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    simulationExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                simulationExecutor.shutdownNow();
+            }
         }
         simulationExecutor = null;
         simulationFuture = null;
+
         simulationState.reset();
     }
 
     private void startSimulation() {
         isSimulationRunning = true;
+
+        // Reinitialize executor services if they have been shut down
+        SimulationRunner.initializeExecutorServices();
+
         simulationExecutor = Executors.newSingleThreadExecutor();
         simulationFuture = simulationExecutor.submit(() -> {
             try {
@@ -121,6 +197,10 @@ public class SimulationRouter extends BaseRouter {
                 isSimulationRunning = false;
             }
         });
+    }
+
+    public void updateSimulationState(SimulationState newState) {
+        this.simulationState = newState;
     }
 
     private void stopSimulation() {

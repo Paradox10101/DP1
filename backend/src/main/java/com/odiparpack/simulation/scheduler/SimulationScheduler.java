@@ -1,3 +1,4 @@
+/*
 package com.odiparpack.simulation.scheduler;
 
 import com.odiparpack.simulation.state.SimulationState;
@@ -100,7 +101,8 @@ public class SimulationScheduler {
         }, 0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
     }
 
-    private void scheduleWebSocketBroadcast() {
+    */
+/*private void scheduleWebSocketBroadcast() {
         webSocketExecutorService = Executors.newSingleThreadScheduledExecutor();
         webSocketExecutorService.scheduleAtFixedRate(() -> {
             try {
@@ -146,3 +148,4 @@ public class SimulationScheduler {
     }
 
 }
+*/

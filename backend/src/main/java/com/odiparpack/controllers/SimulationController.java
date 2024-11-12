@@ -310,15 +310,10 @@ public class SimulationController {
     public void start() {
         port(4567);
 
-
         // Configurar WebSockets
         configureWebSockets();
 
-        VehicleWebSocketHandler.setSimulationState(simulationState);
-        ShipmentWebSocketHandler.setSimulationState(simulationState);
-
         //oficinasws
-
 
         new OficinaController();
         new AlmacenController();
@@ -639,54 +634,14 @@ public class SimulationController {
             return gson.toJson(historyJson);
         });
 
-        // Add this method to SimulationController
-        get("/vehicles/formatted-list", (request, response) -> {
-            // Retrieve all vehicles from the simulation state
-            Map<String, Vehicle> vehicles = simulationState.getVehicles();
-            LocalDateTime simulationTime = simulationState.getCurrentTime();
-
-            // Prepare a JSON array to hold the formatted vehicle information
-            JsonArray vehicleArray = new JsonArray();
-
-            for (Vehicle vehicle : vehicles.values()) {
-                Position currentPosition = vehicle.getCurrentPosition(simulationTime);
-                String currentLocation = vehicle.getCurrentLocationUbigeo();
-                String nextLocation = vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
-                        ? vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()
-                        : "Unknown";
-
-                // Calculate remaining time
-                Duration remainingTime = Duration.between(simulationTime, vehicle.estimatedDeliveryTime);
-                long days = remainingTime.toDays();
-                long hours = remainingTime.toHours() % 24;
-
-                // Prepare vehicle data in JSON format
-                JsonObject vehicleJson = new JsonObject();
-                vehicleJson.addProperty("id", Integer.parseInt(vehicle.getCode().replaceAll("\\D+", ""))); // Extract numeric ID from code
-                JsonArray geocode = new JsonArray();
-                geocode.add(currentPosition.getLongitude());
-                geocode.add(currentPosition.getLatitude());
-                vehicleJson.add("geocode", geocode);
-                vehicleJson.addProperty("ubicacionActual", currentLocation);
-                vehicleJson.addProperty("ubicacionSiguiente", nextLocation);
-                vehicleJson.addProperty("fechaDeInicio", vehicle.getJourneyStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy, hh:mm a")));
-                vehicleJson.addProperty("tiempoRestante", String.format("%dd %dh", days, hours));
-                vehicleJson.addProperty("capacidadUsada", vehicle.getCurrentOrder() != null ? vehicle.getCurrentOrder().getDeliveredPackages() : 0);
-                vehicleJson.addProperty("capacidadMaxima", vehicle.getCapacity());
-                vehicleJson.addProperty("estado", vehicle.getEstado().toString());
-                vehicleJson.addProperty("codigo", vehicle.getCode());
-                vehicleJson.addProperty("velocidad", vehicle.getStatus().getCurrentSpeed());
-                vehicleJson.addProperty("tipo", vehicle.getType());
-                vehicleJson.addProperty("fechaEstimadaLlegada", vehicle.estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a")));
-
-                vehicleArray.add(vehicleJson);
-            }
+        // Endpoint para obtener el reporte del dashboard
+        get("/dashboardData", (request, response) -> {
+            // Crear el reporte usando el estado actual de la simulación
+            SimulationReport report = new SimulationReport(simulationState);
 
             response.type("application/json");
-            return gson.toJson(vehicleArray);
+            return gson.toJson(report);
         });
-
-
 
         // Manejo global de excepciones
         exception(Exception.class, (exception, request, response) -> {

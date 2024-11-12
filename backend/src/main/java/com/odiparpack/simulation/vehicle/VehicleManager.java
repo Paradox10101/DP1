@@ -3,9 +3,7 @@ package com.odiparpack.simulation.vehicle;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.odiparpack.models.*;
-import com.odiparpack.models.WarehouseManager;
 import com.odiparpack.simulation.maintenance.MaintenanceManager;
-import com.odiparpack.simulation.order.OrderManager;
 import com.odiparpack.simulation.route.RouteManager;
 
 import java.time.LocalDateTime;
@@ -29,6 +27,7 @@ public class VehicleManager {
     private final List<String> mainWarehouses = Arrays.asList("150101", "040201", "130101"); // Lima, Arequipa, Trujillo
     private static final Map<String, List<String>> breakdownLogs = new HashMap<>();
 
+    private final SimulationState simulationState; // Añadir este campo para mantener la referencia
     /**
      * Constructor de VehicleManager.
      *
@@ -38,11 +37,12 @@ public class VehicleManager {
      * @param maintenanceManager Instancia de MaintenanceManager.
      */
     public VehicleManager(Map<String, Vehicle> vehicles, WarehouseManager warehouseManager,
-                          RouteManager routeManager, MaintenanceManager maintenanceManager) {
+                          RouteManager routeManager, MaintenanceManager maintenanceManager, SimulationState simulationState) {
         this.vehicles = vehicles;
         this.warehouseManager = warehouseManager;
         this.routeManager = routeManager;
         this.maintenanceManager = maintenanceManager;
+        this.simulationState = simulationState;
     }
 
     // Método para obtener los logs de averías de un vehículo específico
@@ -73,6 +73,9 @@ public class VehicleManager {
 
                 if (vehicle.shouldUpdateStatus()) {
                     vehicle.updateStatus(currentTime, warehouseManager);
+                    // Añadir la actualización de métricas aquí también
+                    simulationState.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
+                    simulationState.assignOrdersCount();//AQUI NO FUNCIONA
                 }
 
                 if (vehicle.shouldCalculateNewRoute(currentTime)) {
@@ -157,8 +160,16 @@ public class VehicleManager {
                 List<RouteSegment> route = routeManager.calculateRouteForAssignment(vehicle, order, timeMatrix);
                 if (route != null && !route.isEmpty()) {
                     vehicle.setRoute(route);
-                    vehicle.startJourney(currentTime, order);
+                    vehicle.startJourney(currentTime, order,simulationState);
                     logger.info(String.format("Vehículo %s asignado a ruta para entregar orden %d", vehicle.getCode(), order.getId()));
+
+                    // Actualizar las métricas de capacidad efectiva acumulada
+                    //state.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
+                    // Notificar a SimulationState de la nueva asignación
+                    simulationState.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
+                    //AL PARECER COLOCARLO AQUI NO FUNCIONA <----------------
+                    simulationState.assignOrdersCount();
+
                 } else {
                     logger.warning(String.format("No se pudo calcular ruta para el vehículo %s y la orden %d", vehicle.getCode(), order.getId()));
                 }

@@ -4,6 +4,7 @@ import ModalContainer from "@/app/Components/ModalContainer"
 import { useDisclosure } from "@nextui-org/react";
 import ModalEnvios from "@/app/Components/ModalEnvios"
 import ModalRutaVehiculoEnvio from "@/app/Components/ModalRutaVehiculoEnvio"
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 
 export default function CardEnvio({shipment}){
@@ -39,21 +40,49 @@ export default function CardEnvio({shipment}){
     },[onOpenChange])
 
 
+=======
+import { memo, useState } from "react";
+
+const CardEnvio = memo(({
+    orderCode,
+    status,
+    quantity,
+    originCity,
+    destinationCity,
+    orderTime,
+    dueTime,
+    timeElapsedDays,
+    timeElapsedHours,
+    quantityVehicles,
+}) => {
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
     return (
-        <>
-        <button className="w-full" onClick={onOpen}>
-        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
+        
+        <div className="flex flex-col p-4 gap-1">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <Hash size={16}/>
-                    <div className="pequenno_bold">{'P' + String(shipment.orderCode).padStart(5, '0')}</div>    
+                    <div className="pequenno_bold">{orderCode}</div>    
                 </div>
-                <div className="pequenno">{shipment.startTime}</div>
+                {
+                status==="REGISTERED"||quantityVehicles===0?
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                :
+                status==="DELIVERED"||status==="PENDING_PICKUP"?
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                :
+                <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                }
             </div>
+            
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     <MapPin size={16}/>
+<<<<<<< HEAD
                     <div className="pequenno">{shipment.originCity + " -> " + shipment.destinyCity}</div>
+=======
+                    <div className="pequenno">{originCity + " -> " + destinationCity}</div>
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
                 </div>
                 {
                 shipment.status==="REGISTERED"?
@@ -72,7 +101,19 @@ export default function CardEnvio({shipment}){
                 <div className="flex flex-row gap-2 items-center">
                     <Package size={16}/>
                     <div 
-                    className="pequenno">{shipment.remainingPackages + (shipment.remainingPackages>1?" paquetes":" paquete")}</div>
+                    className="pequenno">{quantity + (quantity>1?" paquetes":" paquete")}</div>
+                </div>
+            </div>
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-row gap-2 items-center">
+                    <Clock size={16}/>
+                    <div className="pequenno">Fecha de inicio: {new Date(orderTime).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}</div>
+                </div>
+            </div>
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-row gap-2 items-center">
+                    <Calendar size={16}/>
+                    <div className="pequenno">Fecha Limite: {new Date(dueTime).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}</div>
                 </div>
             </div>
             <div className="flex flex-row gap-2 items-center">
@@ -81,6 +122,7 @@ export default function CardEnvio({shipment}){
             </div>
             <div className="flex flex-row gap-2 items-center">
                     <Clock size={16}/>
+<<<<<<< HEAD
                     <div className="pequenno">Tiempo transcurrido: {shipment.remainingTimeDays + " d " + String(shipment.remainingTimeHours).padStart(2, '0')+" h"}</div>
             </div>
         </div>
@@ -131,12 +173,16 @@ export default function CardEnvio({shipment}){
         />
         }
         </>
+=======
+                    <div className="pequenno">{`${timeElapsedDays} d ${String(timeElapsedHours).padStart(2, '0')} h`}</div>
+                </div>
+            </div>
+            
+            
+        </div>
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
         
     )
-}
+});
 
-/*
-
-:
-
-*/
+export default CardEnvio;

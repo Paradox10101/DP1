@@ -1,109 +1,74 @@
 package com.odiparpack.websocket;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.ortools.constraintsolver.Assignment;
-import com.odiparpack.models.Location;
-import com.odiparpack.models.Order;
-import com.odiparpack.models.SimulationState;
-import com.odiparpack.models.VehicleAssignment;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @WebSocket
-public class ShipmentWebSocketHandler {
-    private static Set<Session> sessions = ConcurrentHashMap.newKeySet();
-    private static Gson gson = new Gson();
-    private static SimulationState simulationState;
+public class ShipmentWebSocketHandler extends BaseWebSocketHandler{
+    private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private static final Object lock = new Object();
+    private static JsonObject lastShipmentList;
+    private static String lastClientMessage = null;
 
-    public ShipmentWebSocketHandler() {
-        // No-arg constructor required by Spark
-    }
-
-    // Provide a setter for simulationState
-    public static void setSimulationState(SimulationState state) {
-        simulationState = state;
-    }
-
-    public ShipmentWebSocketHandler(SimulationState state) {
-        simulationState = state;
-    }
-
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
+    @Override
+    protected void handleConnect(Session session) {
         sessions.add(session);
-        System.out.println("(WebSocket de envíos) Cliente conectado : " + session.getRemoteAddress().getAddress());
+        // Enviar último estado conocido al nuevo cliente
+        if (lastShipmentList != null) {
+            try {
+                session.getRemote().sendString(gson.toJson(lastShipmentList));
+            } catch (IOException e) {
+                logger.warning("Error sending initial state to new client: " + e.getMessage());
+            }
+        }
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason) {
+    @Override
+    protected void handleDisconnect(Session session) {
         sessions.remove(session);
-        System.out.println("(WebSocket de envíos) Cliente desconectado : " + session.getRemoteAddress().getAddress());
+    }
+
+    @Override
+    protected void broadcastMessage(JsonObject positions) {
+        broadcastShipments(positions);
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) {
-        // Manejar mensajes entrantes si es necesario
+    public void handleMessage(Session session, String message) {
+        System.out.println("Mensaje recibido del cliente: " + message);
+        lastClientMessage = message;
     }
 
-    @OnWebSocketError
-    public void onError(Session session, Throwable error) {
-        System.err.println("(WebSocket de envíos) Error: " + error.getMessage());
-    }
+    public static void broadcastShipments(JsonObject shipmentList) {
+        // Si se proporciona una cadena opcional, agrégala al JSON con la clave "message"
+        lastShipmentList = shipmentList; // Actualizar cache
+        String message = gson.toJson(shipmentList);
 
-    //envios de estados de los envios
-    public static void broadcastShipments() {
-        if (simulationState != null) {
-            List<Order>orders = simulationState.getOrders();
-            Map<String, Location> locations = simulationState.getLocations();
-            JsonObject featureCollection = new JsonObject();
-            featureCollection.addProperty("type", "FeatureCollection");
-            JsonArray features = new JsonArray();
-            JsonObject feature = new JsonObject();
+        // Log del mensaje JSON antes de enviarlo
+        //logger.info("Mensaje JSON para WebSocket: " + message);
 
-            for (Order order : orders) {
-                String status = order.getStatus().toString();
-                feature.addProperty("orderCode", order.getId());
-                feature.addProperty("startTime", order.getOrderTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
-                feature.addProperty("limitTime", order.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")));
-                if(!order.getStatus().equals(Order.OrderStatus.DELIVERED)&&!order.getStatus().equals(Order.OrderStatus.PENDING_PICKUP)){
-                    feature.addProperty("remainingTimeDays",  Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toDays());
-                    feature.addProperty("remainingTimeHours", Duration.between(simulationState.getCurrentTime(), order.getDueTime()).toHours() % 24);
-                }
-                else{
-                    feature.addProperty("remainingTimeDays", "--");
-                    feature.addProperty("remainingTimeHours", "--");
-                }
-
-                feature.addProperty("originCity", locations.get(order.getOriginUbigeo()).getProvince());
-                feature.addProperty("destinyCity", locations.get(order.getDestinationUbigeo()).getProvince());
-                feature.addProperty("remainingPackages", order.getQuantity());
-                feature.addProperty("status", status);
-                features.add(feature);
+        sessions.removeIf(session -> {
+            if (!session.isOpen()) {
+                return true;
             }
-            featureCollection.add("features", features);
-            broadcast(featureCollection.toString());
-        }
+
+            try {
+                session.getRemote().sendString(message);
+                return false;
+            } catch (IOException e) {
+                logger.warning("Error sending metrics to session: " + e.getMessage());
+                return true;
+            }
+        });
     }
 
-    private static void broadcast(String message) {
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                try {
-                    session.getRemote().sendString(message);
-                } catch (IOException e) {
-                    System.err.println("(WebSocket de envíos) Error al enviar mensaje: " + e.getMessage());
-                }
-            }
-        }
+    public static String getLastClientMessage() {
+        return lastClientMessage;
     }
+
 }

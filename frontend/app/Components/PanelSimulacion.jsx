@@ -7,64 +7,43 @@ import OpcionSimulacion from "@/app/Components/OpcionSimulacion"
 import OpcionEnvios from "@/app/Components/OpcionEnvios"
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes"
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos"
+import dynamic from "next/dynamic";
 
+<<<<<<< HEAD
 export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error, shipments, vehicles}){
+=======
+const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), { ssr: false });
+
+export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error}){
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
     
-    const [currentTime, setCurrentTime] = useState(new Date())
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
-    const [opcionSeleccionada, setOpcionSelecionada] = useState(1)
-
-    const [horaActual, setHoraActual] = useState(null);
-    const [esCliente, setEsCliente] = useState(false);
-
-  useEffect(() => {
-    // Esto asegura que el componente solo se renderice en el cliente
-    setEsCliente(true);
-
-    if (esCliente) {
-      // Solo actualiza la hora si está en el cliente
-      const actualizarHora = () => {
-        setHoraActual(new Date());
-      };
-
-      actualizarHora(); // Muestra la hora actual de inmediato
-      const intervalo = setInterval(actualizarHora, 1000);
-
-      // Limpia el intervalo al desmontar el componente
-      return () => clearInterval(intervalo);
-    }
-  }, [esCliente]);
-
-
-    
+    const [opcionSeleccionada, setOpcionSelecionada] = useState(1)    
     
     return(
     <>
         <div className={"bg-blanco w-[22vw] h-[95%] p-[22px] flex flex-col gap-3 absolute left-5 z-50 top-1/2 transform -translate-y-1/2 rounded min-w-[400px]"}>
             <div className="flex flex-row justify-between w-full ">
-                <div className="flex flex-row gap-1 items-center basis-1/4">
-                    <Truck size={40} className="stroke-principal inline"/>
-                    <div>
-                        <span className="text-negro encabezado">Odipar</span>
-                        <span className="text-principal encabezado">Pack</span>
+                <div className="flex flex-row gap-2 items-center">
+                    <button onClick={toggleControls} className="flex flex-row gap-1 items-center basis-1/7 cursor-pointer">
+                        <PanelLeftClose size={30} className="stroke-principal inline"/>
+                    </button>
+                    <div className="flex flex-row gap-2 items-center hover:bg-gray-100 transition-all duration-300 ease-in-out rounded-lg p-2 cursor-pointer group">
+                        <Truck size={30} className="stroke-principal" />
+                        <div>
+                            <span className="text-negro encabezado group-hover:text-gray-800 transition-colors duration-300">Odipar</span>
+                            <span className="text-principal encabezado group-hover:brightness-110 transition-all duration-300">Pack</span>
+                        </div>
                     </div>
                 </div>
-                <div className="inline-flex bg-grisFondo rounded px-3 py-2 gap-2 basis-3/6 items-center">
-                    <Clock className="inline-block"/>
-                    {horaActual&&<span className="pequenno">{horaActual.getDate()}/{String(horaActual.getMonth()+1).padStart(2, '0')}/{horaActual.getFullYear()}
-                    , {String(horaActual.getHours()).padStart(2,'0')}:{String(horaActual.getMinutes()).padStart(2,'0')}:{String(horaActual.getSeconds()).padStart(2,'0')}</span>}
-                    
-                </div>
-                <button onClick={toggleControls} className="flex flex-row gap-1 items-center basis-1/7 cursor-pointer">
-                    <PanelLeftClose size={40} className="stroke-principal inline"/>
-                </button>
+                <ClockContainer/>
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row gap-3">
                     <button onClick={()=>{alert("Pantalla anterior")}}>
                         <MoveLeft className="inline"/>
                     </button>
-                    <span className="encabezado">Simulación de escenarios</span>
+                    <span className="text-lg font-medium">Simulación de escenarios</span>
                 </div>
                 
                 <div>
@@ -98,13 +77,17 @@ export default function PanelSimulacion({simulationStatus, handleSimulationContr
                 </div>
             </div>
             {
-                opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion}  simulationStatus={simulationStatus} handleSimulationControl={handleSimulationControl} error={error}/>
+                opcionSeleccionada==1 ? <OpcionSimulacion tipoSimulacion={tipoSimulacion} setTipoSimulacion={setTipoSimulacion} error={error}/>
                 :
-                opcionSeleccionada==2 ? <OpcionEnvios shipments={shipments}/>
+                opcionSeleccionada==2 ? <OpcionEnvios/>
                 :
-                opcionSeleccionada==3 ? <OpcionAlmacenes datos={datos} />
+                opcionSeleccionada==3 ? <OpcionAlmacenes />
                 :
+<<<<<<< HEAD
                 opcionSeleccionada==4 ? <OpcionVehiculos vehicles = {vehicles}/>
+=======
+                opcionSeleccionada==4 ? <OpcionVehiculos />
+>>>>>>> 3ea7c0fccae3d4027d771983996a2ada537b7fba
                 :
                 <></>
             }
