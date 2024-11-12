@@ -84,13 +84,11 @@ public class Vehicle {
     private boolean isAvailable;
     private String homeUbigeo;
     private VehicleStatus status;
-
     private boolean isRouteBeingCalculated;
     private LocalDateTime repairEndTime;
     private Order currentOrder;
     private List<RouteSegment> route;
     private int currentSegmentIndex; // Índice del tramo actual en la ruta
-
     private long elapsedTimeInSegment; // Tiempo transcurrido en el tramo actual (en minutos)
     LocalDateTime estimatedDeliveryTime;
     LocalDateTime tiempoLimitedeLlegada;
@@ -98,13 +96,6 @@ public class Vehicle {
     private LocalDateTime averiaStartTime; // Tiempo de inicio de la avería
     // Hora de inicio del viaje
     private LocalDateTime journeyStartTime;
-    public LocalDateTime getJourneyStartTime() {
-        return journeyStartTime;
-    }
-    public void setJourneyStartTime(LocalDateTime journeyStartTime) {
-        this.journeyStartTime = journeyStartTime;
-    }
-
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
 
     public int getCurrentSegmentIndex() {
@@ -800,5 +791,4 @@ public class Vehicle {
     public void setRouteBeingCalculated(boolean routeBeingCalculated) {
         isRouteBeingCalculated = routeBeingCalculated;
     }
-
 }
