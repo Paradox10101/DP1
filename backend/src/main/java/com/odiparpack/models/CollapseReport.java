@@ -26,17 +26,18 @@ public class CollapseReport {
     private String fechaEntregaEstimada;
     private String fechaLimiteEntrega;
     private String estadoPedido;
-    private Map<String, Map<String, Object>> camionesAsignados;
+    private Map<String, Map<String, Object>> camionesAsignados = new HashMap<>();
     private List<Order> orders;
     private Order order;
-    // Constructor que recibe el estado de la simulación y llama a los métodos para
-    // llenar cada campo.
+
+    // Constructor que recibe el estado de la simulación y llama a los métodos para llenar cada campo.
     public CollapseReport(SimulationState state, String codigoPedido) {
         this.codigoPedido = codigoPedido; // Usamos el código del pedido proporcionado
         this.orders = state.getOrders();
-        this.order = getOrderRep(codigoPedido);//este es el pedido que se elige desde front <----
-        this.camionesAsignados = new HashMap<>();
-
+        this.order = getOrderRep(codigoPedido); // Este es el pedido que se elige desde front
+        if (this.order == null) {
+            throw new IllegalArgumentException("No se encontró un pedido con el código: " + codigoPedido);
+        }
         this.rutaPedido = calculateRutaPedido(state);
         this.cantidadPaquetes = calculateCantidadPaquetes(state);
         this.fechaInicioPedido = calculateFechaInicioPedido(state);
@@ -45,6 +46,7 @@ public class CollapseReport {
         this.estadoPedido = calculateEstadoPedido(state);
         this.camionesAsignados = calculateCamionesAsignados(state);
     }
+
     public Order getOrderRep(String codigoPedido) {
         // Iterar sobre la lista de pedidos para encontrar el pedido con el código dado
         for (Order order : orders) {
@@ -57,79 +59,115 @@ public class CollapseReport {
     }
 
     private String calculateRutaPedido(SimulationState state) {
-        // Obtener los ubigeos del pedido
-        String originUbigeo = order.getOriginUbigeo();
-        String destinationUbigeo = order.getDestinationUbigeo();
+        try {
+            String originUbigeo = order.getOriginUbigeo();
+            String destinationUbigeo = order.getDestinationUbigeo();
 
-        // Obtener las ubicaciones a partir de los ubigeos
-        Location originLocation = state.getLocations().get(originUbigeo);
-        Location destinationLocation = state.getLocations().get(destinationUbigeo);
+            Location originLocation = state.getLocations().get(originUbigeo);
+            Location destinationLocation = state.getLocations().get(destinationUbigeo);
 
-        // Asegurarse de que las ubicaciones existan en el mapa
-        if (originLocation == null || destinationLocation == null) {
-            return "Ubicación no encontrada";
+            if (originLocation == null || destinationLocation == null) {
+                return "Ubicación no encontrada";
+            }
+
+            String originCity = originLocation.getProvince();
+            String destinationCity = destinationLocation.getProvince();
+
+            return originCity + " - " + destinationCity;
+        } catch (Exception e) {
+            return "Error al calcular la ruta del pedido: " + e.getMessage();
         }
-
-        // Obtener los nombres de las ciudades
-        String originCity = originLocation.getProvince();
-        String destinationCity = destinationLocation.getProvince();
-
-        // Construir y retornar la ruta en formato "Origen - Destino"
-        return originCity + " - " + destinationCity;
     }
 
     private int calculateCantidadPaquetes(SimulationState state) {
-        return order.getQuantity();
+        try {
+            return order.getQuantity();
+        } catch (Exception e) {
+            System.err.println("Error al calcular la cantidad de paquetes: " + e.getMessage());
+            return 0;
+        }
     }
 
     private String calculateFechaInicioPedido(SimulationState state) {
-        return order.getOrderTime().toString();
+        try {
+            LocalDateTime orderTime = order.getOrderTime();
+            if (orderTime == null) {
+                return "Fecha de inicio no disponible";
+            }
+            return orderTime.toString();
+        } catch (Exception e) {
+            return "Error al calcular la fecha de inicio del pedido: " + e.getMessage();
+        }
     }
 
     private String calculateFechaEntregaEstimada(SimulationState state) {
-        //return order.getEstimatedArrivalTime().toString();//este metodo es de vehiculo <-------- NO CREO QUE VAYA, YA QUE UN PEDIDO PUEDE TENER VARIOS VEHICULOS
-        return "15/04/2024 - 19:00 pm"; //TIENE QUE IR POR CADA VEHICULO <-- CAMBIO EL DISEÑO
+        return "15/04/2024 - 19:00 pm"; // TIENE QUE IR POR CADA VEHICULO <-- CAMBIO EL DISEÑO
     }
 
     private String calculateFechaLimiteEntrega(SimulationState state) {
-        // Retornar la fecha límite de entrega del pedido (hardcodeado por ahora)
-        return order.getDueTime().toString();
+        try {
+            LocalDateTime dueTime = order.getDueTime();
+            if (dueTime == null) {
+                return "Fecha límite de entrega no disponible";
+            }
+            return dueTime.toString();
+        } catch (Exception e) {
+            return "Error al calcular la fecha límite de entrega: " + e.getMessage();
+        }
     }
 
     private String calculateEstadoPedido(SimulationState state) {
-        return order.getStatus().toString();
+        try {
+            return order.getStatus().toString();
+        } catch (Exception e) {
+            return "Error al calcular el estado del pedido: " + e.getMessage();
+        }
     }
 
     private Map<String, Map<String, Object>> calculateCamionesAsignados(SimulationState state) {
         List<VehicleAssignment> vehiculosAsignados = state.getVehicleAssignments(order.getId());
-        //Map<String, Map<String, Object>> camionesAsignados = new HashMap<>();
+        Map<String, Map<String, Object>> camionesAsignados = new HashMap<>();
+
+        if (vehiculosAsignados == null) {
+            System.err.println("No se encontraron vehículos asignados para el pedido con ID: " + order.getId());
+            return camionesAsignados;
+        }
 
         for (VehicleAssignment assignment : vehiculosAsignados) {
-            Map<String, Object> camionData = new HashMap<>();
-            camionData.put("paquetes", assignment.getAssignedQuantity() + " paquetes");
+            try {
+                Map<String, Object> camionData = new HashMap<>();
+                camionData.put("paquetes", assignment.getAssignedQuantity() + " paquetes");
 
-            // Manejar fecha nula
-            LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
-            camionData.put("fechaEntregaEstimada", estimatedDeliveryTime != null
-                    ? estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm a"))
-                    : "Fecha no disponible");
-
-            List<Map<String, String>> rutaDelPedido = new ArrayList<>();
-            for (RouteSegment segment : assignment.getRouteSegments()) {
-                Map<String, String> tramoData = new HashMap<>();
-                tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
-                tramoData.put("destino", state.getLocations().get(segment.getToUbigeo()).getProvince());
-
-                String estadoTramo = "Tramo Por Recorrer";
-                if (assignment.getVehicle().getCurrentSegmentIndex() > assignment.getRouteSegments().indexOf(segment)) {
-                    estadoTramo = "Tramo Recorrido";
+                LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
+                if (estimatedDeliveryTime == null) {
+                    camionData.put("fechaEntregaEstimada", "Fecha no disponible");
+                } else {
+                    camionData.put("fechaEntregaEstimada", estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm a")));
                 }
-                tramoData.put("estadoTramo", estadoTramo);
-                rutaDelPedido.add(tramoData);
-            }
 
-            camionData.put("rutaDelPedido", rutaDelPedido);
-            camionesAsignados.put(assignment.getVehicle().getCode(), camionData);
+                List<Map<String, String>> rutaDelPedido = new ArrayList<>();
+                for (RouteSegment segment : assignment.getRouteSegments()) {
+                    try {
+                        Map<String, String> tramoData = new HashMap<>();
+                        tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
+                        tramoData.put("destino", state.getLocations().get(segment.getToUbigeo()).getProvince());
+
+                        String estadoTramo = "Tramo Por Recorrer";
+                        if (assignment.getVehicle().getCurrentSegmentIndex() > assignment.getRouteSegments().indexOf(segment)) {
+                            estadoTramo = "Tramo Recorrido";
+                        }
+                        tramoData.put("estadoTramo", estadoTramo);
+                        rutaDelPedido.add(tramoData);
+                    } catch (Exception e) {
+                        System.err.println("Error al procesar el tramo de la ruta: " + e.getMessage());
+                    }
+                }
+
+                camionData.put("rutaDelPedido", rutaDelPedido);
+                camionesAsignados.put(assignment.getVehicle().getCode(), camionData);
+            } catch (Exception e) {
+                System.err.println("Error al procesar el vehículo asignado: " + e.getMessage());
+            }
         }
 
         return camionesAsignados;
@@ -141,12 +179,20 @@ public class CollapseReport {
                 .registerTypeAdapter(LocalDateTime.class, new TypeAdapter<LocalDateTime>() {
                     @Override
                     public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-                        jsonWriter.value(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        if (localDateTime == null) {
+                            jsonWriter.nullValue();
+                        } else {
+                            jsonWriter.value(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        }
                     }
 
                     @Override
                     public LocalDateTime read(JsonReader jsonReader) throws IOException {
-                        return LocalDateTime.parse(jsonReader.nextString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        String dateTimeString = jsonReader.nextString();
+                        if (dateTimeString == null || dateTimeString.isEmpty()) {
+                            return null;
+                        }
+                        return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                     }
                 })
                 .create();
