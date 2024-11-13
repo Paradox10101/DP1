@@ -45,13 +45,12 @@ public class ReportRouter extends BaseRouter {
             response.type("application/json");
 
             try {
-                // Validar que la simulación esté corriendo
-                if (simulationState == null || simulationState.isStopped()) {
+                // Obtener la lista de pedidos
+                if (simulationState == null) {
                     response.status(400); // Bad Request
-                    return gson.toJson(Collections.singletonMap("error", "Simulación no está corriendo o no ha sido inicializada."));
+                    return gson.toJson(Collections.singletonMap("error", "Simulación no ha sido inicializada."));
                 }
 
-                // Obtener la lista de pedidos
                 List<Order> orders = simulationState.getOrders();
 
                 // Convertir la lista de pedidos a JSON
