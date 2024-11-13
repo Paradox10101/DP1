@@ -16,8 +16,9 @@ export default function OpcionEnvios() {
     const shipments = useAtomValue(filteredShipmentsAtom);
     const [searchInput, setSearchInput] = useAtom(searchInputAtom);
     const [, setSearchQuery] = useAtom(searchQueryAtom);
-    const [selectedShipmentIndex, setSelectedShipmentIndex] = useState(null); // Usar el átomo
+    const [selectedShipmentIndex, setSelectedShipmentIndex] = useState(null);
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null); // Define selectedVehicle
+
 
     useEffect(() => {
         const debounceTimeout = setTimeout(() => {
@@ -146,7 +147,9 @@ export default function OpcionEnvios() {
                             }
                         </ModalHeader>
                         <ModalBody>
+                            {shipments&&shipments[selectedShipmentIndex]&&
                             <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
+                            }
                         </ModalBody>
                     </ModalContent>
                 </Modal>

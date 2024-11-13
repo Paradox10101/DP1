@@ -39,6 +39,7 @@ public class OficinaController {
                     officeInfo.addProperty("naturalRegion", loc.getNaturalRegion());
                     officeInfo.addProperty("capacityTotal", loc.getWarehouseCapacity()); // Capacidad total
                     officeInfo.addProperty("capacityCurrent", 0); // Capacidad actual inicia en 0
+
                     return officeInfo;
                 })
                 .collect(Collectors.toList()));

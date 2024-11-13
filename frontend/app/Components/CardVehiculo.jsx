@@ -2,8 +2,9 @@ import { Progress } from "@nextui-org/react";
 import { Car, CarFront, Truck, MapPin, Calendar, Package } from "lucide-react";
 import BarraProgreso from "@/app/Components/BarraProgreso";
 import IconoEstado from "./IconoEstado";
+import { useEffect } from "react";
 
-export default function CardVehiculo({ vehiculo }) {
+export default function CardVehiculo({ vehiculo, renderStatus}) {
     // Helper function to format status text
     const formatStatus = (status) => {
         if (status === "EN_TRANSITO_ORDEN") return "En Tránsito";
@@ -12,9 +13,12 @@ export default function CardVehiculo({ vehiculo }) {
             .replace(/_/g, " ")
             .replace(/\b\w/g, (char) => char.toUpperCase());
     };
+    
+
+    
 
     return (
-        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1">
+        <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1 w-full">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-2 items-center">
                     {vehiculo.tipo === "A" ? (
@@ -26,22 +30,17 @@ export default function CardVehiculo({ vehiculo }) {
                     ) : null}
                     <div className="pequenno_bold">{vehiculo.vehicleCode}</div>
                 </div>
-                <div className={`pequenno border rounded-xl w-[140px] text-center ${
-                    vehiculo.status === "EN_TRANSITO_ORDEN" ? "bg-[#284BCC] text-[#BECCFF]" :
-                    vehiculo.status === "EN_ALMACEN" ? "bg-[#DEA71A] text-[#F9DF9B]" :
-                    vehiculo.status === "AVERIADO" ? "bg-[#BE0627] text-[#FFB9C1]" :
-                    vehiculo.status === "EN_MANTENIMIENTO" ? "bg-[#7B15FA] text-[#D0B0F8]" : ""
-                }`}>
-                    {formatStatus(vehiculo.status)}
-                </div>
+                {
+                    renderStatus
+                }
             </div>
             <div className="flex flex-row gap-2 items-center">
                 <MapPin size={16} />
-                <div className="pequenno">Tramo actual: {vehiculo.ubicacionActual} ➔ {vehiculo.ubicacionSiguiente}</div>
+                <div className="pequenno">Tramo actual: {vehiculo.ubicacionActual + (vehiculo.ubicacionSiguiente!==" "?" -> " + vehiculo.ubicacionSiguiente:"")}</div>
             </div>
             <div className="flex flex-row gap-2 items-center">
                 <Calendar size={16} />
-                <div className="pequenno">Velocidad: {vehiculo.velocidad} km/h</div>
+                <div className="pequenno">Velocidad: {parseFloat(vehiculo.velocidad).toFixed(0)} km/h</div>
             </div>
             <div className="flex flex-row gap-2 items-center">
                 <Package size={16} />
@@ -56,3 +55,8 @@ export default function CardVehiculo({ vehiculo }) {
         </div>
     );
 }
+/*
+<div className={`pequenno border rounded-xl w-[140px] text-center`}>
+    {formatStatus(vehiculo.status)}
+</div>
+*/

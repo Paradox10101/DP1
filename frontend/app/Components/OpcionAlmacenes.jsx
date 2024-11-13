@@ -1,20 +1,37 @@
 import { useAtomValue, useAtom } from "jotai";
 import { filteredLocationsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/locationAtoms';
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { Filter, Map, SearchX } from "lucide-react";
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import CapacidadTotalAlmacenes from '../Components/CapacidadTotalAlmacenes';
 import LocationCard from './LocationCard';
 import { useWarehouseWebSocket } from '../../hooks/useWarehouseWebSocket';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import ModalOficina from './ModalOficina'
+import ModalAlmacen from './ModalAlmacen'
+import { useShipmentWebSocket } from "@/hooks/useShipmentWebSocket";
 
 export default function OpcionAlmacenes() {
-    useWarehouseWebSocket();
-
+  useWarehouseWebSocket();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const locations = useAtomValue(filteredLocationsAtom);
   const [searchInput, setSearchInput] = useAtom(searchInputAtom);
+  const [selectedLocationIndex, setSelectedLocationtIndex] = useState(null);
   const [, setSearchQuery] = useAtom(searchQueryAtom);
+
+  // Estado para la lista ordenada de ubicaciones
+  const [sortedLocations, setSortedLocations] = useState([]);
+
+  // Actualizar la lista ordenada cada vez que `locations` cambie
+  useEffect(() => {
+    const sorted = [...locations].sort((a, b) => {
+      if (a.type === 'warehouse' && b.type !== 'warehouse') return -1;
+      if (a.type !== 'warehouse' && b.type === 'warehouse') return 1;
+      return a.province.localeCompare(b.province);
+    });
+    setSortedLocations(sorted);
+  }, [locations]);
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -31,7 +48,7 @@ export default function OpcionAlmacenes() {
   const NoDataMessage = () => (
     <div className="flex flex-col items-center justify-center p-8 text-gray-500">
       <Map size={48} className="mb-4 opacity-50" />
-      <p className="text-lg font-medium">No hay ubicaciones disponibles</p>
+      <p className="text-lg font-medium">No hay almacenes disponibles</p>
       <p className="text-sm">Por favor, intente más tarde</p>
     </div>
   );
@@ -44,17 +61,22 @@ export default function OpcionAlmacenes() {
     </div>
   );
 
-  const warehouseCount = locations?.filter(l => l?.type === 'warehouse').length || 0;
+  const warehouseCount = sortedLocations?.filter(l => l?.type === 'warehouse').length || 0;
 
-  // Determinar si no hay datos iniciales vs. no hay resultados de búsqueda
-  const hasInitialData = Array.isArray(locations);
-  const hasSearchResults = hasInitialData && locations.length > 0;
+  const hasInitialData = Array.isArray(sortedLocations);
+  const hasSearchResults = hasInitialData && sortedLocations.length > 0;
   const isSearching = searchInput.length > 0;
 
   const Row = ({ index, style }) => {
-    const location = locations[index];
+    const location = sortedLocations[index];
     return (
-      <div style={style}>
+      <div style={style}
+      onMouseDown={() => {
+        setSelectedLocationtIndex(index);
+        console.log(location)
+        
+        onOpen();
+    }}>
         <LocationCard
           key={location.ubigeo}
           {...location}
@@ -95,7 +117,7 @@ export default function OpcionAlmacenes() {
 
           <CapacidadTotalAlmacenes />
 
-          <div className="h-3/4 w-full overflow-y-auto">
+          <div className="h-3/4 w-full overflow-y-auto scroll-area">
             {!hasSearchResults && isSearching ? (
               <NoResultsMessage />
             ) : (
@@ -103,7 +125,7 @@ export default function OpcionAlmacenes() {
                 {({ height, width }) => (
                   <List
                     height={height}
-                    itemCount={locations.length}
+                    itemCount={sortedLocations.length}
                     itemSize={200}
                     width={width}
                   >
@@ -115,6 +137,44 @@ export default function OpcionAlmacenes() {
           </div>
         </>
       )}
+
+      {/* Modal */}
+      {(
+          <Modal
+              closeButton
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              onClose={()=>{
+                setSelectedLocationtIndex(null);
+                
+              }}
+              isDismissable={true}
+              blur
+          >
+              <ModalContent className="h-[800px] min-w-[850px]">
+                  <ModalHeader>
+                      {"Información de " + (sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
+                      `oficina ${sortedLocations[selectedLocationIndex].province}`
+                      :
+                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
+                      `almacén ${sortedLocations[selectedLocationIndex].province}`
+                      :
+                      ""
+                      )}
+                  </ModalHeader>
+                  <ModalBody>
+                      {sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
+                      <ModalOficina office={sortedLocations[selectedLocationIndex]} />
+                      :
+                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
+                      <ModalAlmacen warehouse={sortedLocations[selectedLocationIndex]}/>
+                      :
+                      <></>
+                      }
+                  </ModalBody>
+              </ModalContent>
+          </Modal>
+        )}
     </div>
   );
 }

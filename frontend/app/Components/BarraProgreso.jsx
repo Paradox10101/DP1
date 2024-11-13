@@ -4,7 +4,7 @@ const BarraProgreso = ({ porcentaje, uniqueColor }) => {
         
         
         <div
-          className={"absolute h-full rounded-full transition-all duration-300 " 
+          className={"absolute h-full rounded-full transition-all duration-300 overflow-x-hidden " 
             +
             (uniqueColor? "bg-blue-500"
             :
@@ -18,7 +18,7 @@ const BarraProgreso = ({ porcentaje, uniqueColor }) => {
             )
             
           }
-          style={{ width: `${porcentaje}%` }}
+          style={{ width: `${porcentaje>100?100:porcentaje}%` }}
         />
         </div>
         
