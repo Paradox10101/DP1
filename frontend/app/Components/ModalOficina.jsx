@@ -73,7 +73,7 @@ export default function ModalOficina({office}){
             <div className="bg-[#F7F7F7] p-4 rounded flex flex-row justify-around">
                 <div className="flex flex-col justify-center text-center">
                     <Container size={32} className="stroke-[#ADADAD] self-center"/>
-                    <div className="regular">{"40"}</div>
+                    <div className="regular">{shipmentsPerOffice.length}</div>
                     <div className="text-[#8E8D8D] pequenno">Envíos Realizados</div>
                 </div>
                 <div className="flex flex-col justify-center text-center">
