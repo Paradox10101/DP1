@@ -3,12 +3,25 @@ import { useAtom } from 'jotai';
 import { errorAtom, ErrorTypes } from '../atoms/errorAtoms';
 import { serverAvailableAtom, simulationStatusAtom } from '../atoms/simulationAtoms';
 
+/*
 const WEBSOCKET_CONFIG = {
   MAX_RECONNECT_ATTEMPTS: 5,
   RECONNECT_DELAY: 3000,
   URL: 'ws://localhost:4567/api/v1/ws'
 };
+*/
 
+const WEBSOCKET_CONFIG = {
+  MAX_RECONNECT_ATTEMPTS: 5,
+  RECONNECT_DELAY: 3000,
+  URL: process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD
+    : process.env.NEXT_PUBLIC_WEBSOCKET_URL,
+};
+
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const createError = (type, customMessage = null) => {
   const baseErrors = {
@@ -68,7 +81,7 @@ export const useWebSocket = ({
   const checkSimulationStatus = useCallback(async () => {
     try {
       console.log('Verificando estado de simulación...');
-      const response = await fetch('http://localhost:4567/api/v1/simulation/status');
+      const response = await fetch(`${API_BASE_URL}/simulation/status`);
       if (!response.ok) throw new Error('server_error');
 
       const data = await response.json();

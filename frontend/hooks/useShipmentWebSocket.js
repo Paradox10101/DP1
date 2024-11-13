@@ -3,7 +3,9 @@ import { useEffect, useCallback, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { shipmentsAtom } from '../atoms/shipmentAtoms';
 
-const WEBSOCKET_URL = 'ws://localhost:4567/api/v1/ws/shipments';
+const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
+  ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD}/shipments`
+  : `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/shipments`;
 
 export const useShipmentWebSocket = () => {
   const setShipments = useSetAtom(shipmentsAtom);

@@ -3,7 +3,9 @@ import { useEffect, useCallback } from 'react';
 import { useSetAtom } from 'jotai';
 import { occupancyUpdatesAtom, totalStatsAtom } from '../atoms/locationAtoms';
 
-const WEBSOCKET_URL = 'ws://localhost:4567/api/v1/ws/occupancy';
+const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
+  ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD}/occupancy`
+  : `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/occupancy`;
 
 export const useWarehouseWebSocket = () => {
   const setOccupancyUpdates = useSetAtom(occupancyUpdatesAtom);
