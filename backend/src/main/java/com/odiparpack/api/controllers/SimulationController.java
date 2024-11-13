@@ -24,12 +24,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class SimulationController {
     private SimulationState simulationState;
     private final List<BaseRouter> routers;
     private ExecutorService simulationExecutor;
     private Future<?> simulationFuture;
     private static final Logger logger = Logger.getLogger(SimulationController.class.getName());
+
+    // Inicializar dotenv para cargar las variables de entorno
+    private static final Dotenv dotenv = Dotenv.load();
 
     public SimulationController(SimulationState simulationState) {
         this.simulationState = simulationState;
@@ -44,11 +49,12 @@ public class SimulationController {
 
     public void start() {
         try {
-            port(4567);
+            int port = Integer.parseInt(dotenv.get("SERVER_PORT", "4567")); // Usa la variable de entorno o el valor por defecto
+            port(port);
             setupWebSocket();
             configureServer();
             initializeRoutes();
-            logger.info("Servidor de simulación iniciado en 4567");
+            logger.info("Servidor de simulación iniciado en el puerto " + port);
         } catch (Exception e) {
             logger.severe("Error al iniciar el servidor: " + e.getMessage());
             throw new RuntimeException("Error al iniciar el servidor", e);
@@ -61,11 +67,11 @@ public class SimulationController {
     }
 
     private void setupWebSocket() {
-        webSocket("/ws", VehicleWebSocketHandler.class);
-        webSocket("/ws/simulation", SimulationMetricsWebSocketHandler.class);
-        webSocket("/ws/occupancy", WarehouseOccupancyWebSocketHandler.class);  // Nueva línea
+        webSocket("/api/v1/ws", VehicleWebSocketHandler.class);
+        webSocket("/api/v1/ws/simulation", SimulationMetricsWebSocketHandler.class);
+        webSocket("/api/v1/ws/occupancy", WarehouseOccupancyWebSocketHandler.class);  // Nueva línea
         //VehicleWebSocketHandler.setSimulationState(simulationState);
-        webSocket("/ws/shipments", ShipmentWebSocketHandler.class);
+        webSocket("/api/v1/ws/shipments", ShipmentWebSocketHandler.class);
     }
 
     private void initializeRoutes() {
@@ -81,6 +87,8 @@ public class SimulationController {
     }
 
     private void setupCORS() {
+        String allowOrigin = dotenv.get("ALLOW_ORIGIN", "*");
+
         options("/*", (request, response) -> {
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
@@ -96,7 +104,7 @@ public class SimulationController {
         });
 
         before((request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Origin", allowOrigin);
             response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
             response.type("application/json");

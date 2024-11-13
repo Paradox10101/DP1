@@ -6,7 +6,7 @@ import { serverAvailableAtom, simulationStatusAtom } from '../atoms/simulationAt
 const WEBSOCKET_CONFIG = {
   MAX_RECONNECT_ATTEMPTS: 5,
   RECONNECT_DELAY: 3000,
-  URL: 'ws://localhost:4567/ws'
+  URL: 'ws://localhost:4567/api/v1/ws'
 };
 
 

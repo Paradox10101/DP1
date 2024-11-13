@@ -37,7 +37,6 @@ public class SimulationController {
 
         setupRoutes();
 
-        System.out.println("Servidor de simulación iniciado en http://localhost:4567");
     }
 
     private void setupRoutes() {
@@ -320,7 +319,6 @@ public class SimulationController {
 
         setupRoutes();
 
-        System.out.println("Servidor de simulación iniciado en http://localhost:4567");
     }
 
     // Método para iniciar el servidor
@@ -339,7 +337,6 @@ public class SimulationController {
         // Start Spark server
         init();
 
-        System.out.println("Servidor de simulación iniciado en http://localhost:4567");
     }*/
 
 
@@ -773,8 +770,8 @@ public class SimulationController {
 
     // Método para configurar WebSockets
     private void configureWebSockets() {
-        webSocket("/wsVehicles", VehicleWebSocketHandler.class);
-        webSocket("/wsShipments", ShipmentWebSocketHandler.class);
+        webSocket("/api/v1/wsVehicles", VehicleWebSocketHandler.class);
+        webSocket("/api/v1/wsShipments", ShipmentWebSocketHandler.class);
     }
 
     // Método para validar el tipo de avería
