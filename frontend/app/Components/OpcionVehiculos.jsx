@@ -17,6 +17,7 @@ export default function OpcionVehiculos() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [searchInput, setSearchInput] = useState("");
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null);
+  
 
   // Ensure vehiculos is an array to avoid TypeError
   const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
@@ -50,6 +51,36 @@ export default function OpcionVehiculos() {
     </div>
   );
 
+  
+  const renderStatus = (status) => {
+    switch (status) {
+        case "EN_ALMACEN":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                    En Almacén
+                </div>
+            );
+        case "AVERIADO":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                    Averiado
+                </div>
+            );
+        case "EN_MANTENIMIENTO":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                    En Mantenimiento
+                </div>
+            );
+        default:
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+                    En Tránsito
+                </div>
+            );
+    }
+};
+  
   const hasInitialData = Array.isArray(vehiculos);
   const hasSearchResults = hasInitialData && vehiculos.length > 0;
   const isSearching = searchInput.length > 0;
@@ -59,16 +90,20 @@ export default function OpcionVehiculos() {
     console.log(vehicle)
     return (
       (vehicle&&vehicle?.properties)&&
-      <div style={style}
+      <div
+        style={style}
+        key={vehicle.properties.vehicleCode}
         //className={`p-2 border-2 rounded-xl stroke-black ${filteredVehiculosArray[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
         onMouseDown={() => {
             setSelectedVehicleIndex(index);
+            console.log("==============================================")
+            console.log(vehicle)
             //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
             onOpen(); // Abrir modal
         }}
       >
 
-        <CardVehiculo key={vehicle.properties.vehicleCode} vehiculo={vehicle.properties} />
+        <CardVehiculo vehiculo={vehicle.properties} renderStatus={renderStatus(vehicle.properties.status)} />
       </div>
     )
   }
@@ -150,20 +185,11 @@ export default function OpcionVehiculos() {
                   <ModalHeader>
 
                   {filteredVehiculosArray&&filteredVehiculosArray[selectedVehicleIndex]&&filteredVehiculosArray[selectedVehicleIndex]?.properties&&
+                    
                     <div className="flex flex-row gap-2">
                         
                         <div className="subEncabezado">Información del vehiculo {filteredVehiculosArray[selectedVehicleIndex].properties.vehicleCode}</div>
-                        {
-                              filteredVehiculosArray[selectedVehicleIndex].properties.status === "EN_TRANSITO_ORDEN"|| filteredVehiculosArray[selectedVehicleIndex].properties.status === "HACIA_ALMACEN"? (
-                              <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>EN TRANSITO</div>
-                          ) : filteredVehiculosArray[selectedVehicleIndex].properties.status === "EN_MANTENIMIENTO"? (
-                              <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                          ) : filteredVehiculosArray[selectedVehicleIndex].properties.status.includes("AVERIADO_")? (
-                              <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>AVERIADO</div>
-                          ) : (
-                            <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-gray text-black rounded-xl"}>INACTIVO</div>
-                          )
-                        }   
+                        {renderStatus(filteredVehiculosArray[selectedVehicleIndex].properties.status)}
                     </div>
                     }
                   </ModalHeader>

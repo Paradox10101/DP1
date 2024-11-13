@@ -14,7 +14,15 @@ export default function ModalVehiculo({vehicle}){
             <div key={shipment.code} style={style} className="grid grid-cols-10 w-full items-center p-1 border-b-3">
                 <div className="text-center col-span-1 pequenno">{shipment.code}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
-                <div className="text-center col-span-2 pequenno">{shipment.status}</div>
+                {
+                    shipment.status==="REGISTERED"?
+                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                    :
+                    shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
+                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                    :
+                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                }
                 <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
                 <div className="text-center col-span-2 pequenno">{shipment.originCity}</div>
                 <div className="text-center col-span-2 break-all pequenno">{shipment.destinationCity}</div>
@@ -38,7 +46,7 @@ export default function ModalVehiculo({vehicle}){
                 </div>
                 <div className="flex flex-col justify-center text-center">
                     <Gauge size={32} className="stroke-[#ADADAD] self-center"/>
-                    <div className="regular">{vehicle.velocidad + " Km/h"}</div>
+                    <div className="regular">{parseFloat(vehicle.velocidad).toFixed(0) + " Km/h"}</div>
                     <div className="text-[#8E8D8D] pequenno">Velocidad actual</div>
                 </div>
             </div>
@@ -63,20 +71,52 @@ export default function ModalVehiculo({vehicle}){
                                 </div>
                                 
                             }
+                            {index!==0?
                             <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
                                 <div className="text-center mx-auto">
-                                    {location.type==="office"?
+                                    
+                                    {location.status==="Recorrido"?
                                     <IconoEstado Icono={Check} classNameContenedor={"bg-blue-500 w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                                     :
-                                    <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
+                                    location.status==="Por Recorrer"?
+                                    <Circle size={36}/>
+                                    :
+                                    location.status==="Actual"?
+                                    <Circle size={36} className="stroke-principal" strokeWidth={4}/>
+                                    :
+                                    <></>
                                     }
                                 </div>
                                 <div className="flex flex-col">
                                     <div className="text-center regular_bold">{(location.type==="office"?"Oficina ":"Almacén ") + location.city}</div>
-                                    <div className="text-center text-black pequenno">{index!=0?location.status:"Inicio"}</div>
+                                    <div className="text-center text-black pequenno">{location.status}</div>
                                 </div>
                             </div>
-                            
+                            :
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                                {location.type==="office"?
+                                <>
+                                    <div className="text-center mx-auto">
+                                        <IconoEstado Icono={Building} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="text-center regular_bold">{("Oficina ") + location.city}</div>
+                                        <div className="text-center text-black pequenno">Inicio</div>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <div className="text-center mx-auto">
+                                        <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <div className="text-center regular_bold">{("Almacén ") + location.city}</div>
+                                        <div className="text-center text-black pequenno">Inicio</div>
+                                    </div>
+                                </>
+                                }
+                            </div>
+                            }
                         </>
                     )
                     )
@@ -88,7 +128,7 @@ export default function ModalVehiculo({vehicle}){
                                 <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-center regular_bold text-principal">{"Almacen " + vehicle.currentRoute[0].city}</div>
+                                <div className="text-center regular_bold text-principal">{(vehicle.currentRoute[0].type==="office"?"Oficina ":"Almacén ") + vehicle.currentRoute[0].city}</div>
                                 <div className="text-center pequenno text-principal">Inicio</div>
                             </div>
                         </div>
@@ -149,84 +189,3 @@ export default function ModalVehiculo({vehicle}){
         </div>
     )
 }
-
-
-
-
-/*
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-    <IconoEstado Icono={Check} classNameContenedor={"bg-blue-500 w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">Recorrido</div>
-</div>
-</div>
-
-<div className="flex flex-col justify-center">
-<ArrowRight />
-</div>
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-    <Circle size={36} className="stroke-principal" strokeWidth={4}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">En curso</div>
-</div>
-</div>
-
-<div className="flex flex-col justify-center">
-<ArrowRight />
-</div>
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-<Circle size={36}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">Por recorrer</div>
-</div>
-</div>
-
-<div className="flex flex-col justify-center">
-<ArrowRight />
-</div>
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-<Circle size={36}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">Por recorrer</div>
-</div>
-</div>
-
-<div className="flex flex-col justify-center">
-<ArrowRight />
-</div>
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-<Circle size={36}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">Por recorrer</div>
-</div>
-</div>
-
-<div className="flex flex-col justify-center">
-<ArrowRight />
-</div>
-
-<div className="inline-flex flex-col gap-2 text-center">
-<div className="text-center mx-auto">
-<Circle size={36}/>
-</div>
-<div className="flex flex-col">
-    <div className="text-center regular_bold">{"Oficina " + "AYACUCHO"}</div>
-    <div className="text-center text-black pequenno">Por recorrer</div>
-</div>
-</div>
-*/

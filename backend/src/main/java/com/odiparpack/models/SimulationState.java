@@ -2075,11 +2075,14 @@ public class SimulationState {
 
         builder.append("{\"type\":\"Feature\",\"properties\":{")
                 .append("\"vehicleCode\":\"").append(vehicle.getCode()).append("\",")
-                .append("\"ubicacionActual\":\"").append(vehicle.getCurrentLocationUbigeo()).append("\",")
+                //.append("\"ubicacionActual\":\"").append(vehicle.getCurrentLocationUbigeo()).append("\",")
+                //.append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
+                //        ? vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo() : " ").append("\",")
+                .append("\"ubicacionActual\":\"").append(locations.get(vehicle.getCurrentLocationUbigeo()).getProvince()).append("\",")
                 .append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
-                        ? vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo() : " ").append("\",")
+                        ? locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getProvince() : " ").append("\",")
                 .append("\"tipo\":\"").append(vehicle.getType()).append("\",")
-                .append("\"capacidadUsada\":").append(vehicle.getCurrentCapacity()).append(",")
+                .append("\"capacidadUsada\":").append(vehicle.getCurrentOrder()==null?0:vehicle.getCurrentCapacity()).append(",")
                 .append("\"capacidadMaxima\":").append(vehicle.getCapacity()).append(",")
                 .append("\"cantidadRutas\":").append(vehicle.getRoute()!=null?vehicle.getRoute().size():0).append(",")
                 .append("\"status\":\"").append(vehicle.getEstado().toString()).append("\",")
@@ -2092,29 +2095,42 @@ public class SimulationState {
         try {
             if (vehicle.getRoute() != null && !vehicle.getRoute().isEmpty()) {
                 boolean isFirst = true;
+                //boolean alreadyAttended = vehicle.getCurrentOrder()!=null;
+                String currentUbigeo = "";
+                if (vehicle.getStatus() != null)
+                    currentUbigeo = vehicle.getStatus().getCurrentSegmentUbigeo();
+                boolean traveled = true;
+                boolean inTravel = false;
+
                 for (RouteSegment routeSegment : vehicle.getRoute()) {
+                    if (currentUbigeo.equals(routeSegment.getToUbigeo())) {
+                        traveled = false;
+                        inTravel = true;
+                    }
                     if (!isFirst) {
                         routeContentBuilder.append(",");
                     }
                     else{
                         routeContentBuilder.append("{")
                                 .append("\"city\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
-                                .append("\"status\":\"").append("listo").append("\",")
+                                .append("\"status\":\"").append("Actual").append("\",")
                                 .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getFromUbigeo())?"wareouse":"office").append("\"")
                                 .append("},");
                     }
                     routeContentBuilder.append("{")
                             .append("\"city\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
-                            .append("\"status\":\"").append("listo").append("\",")
+                            .append("\"status\":\"").append(traveled ? "Recorrido" : inTravel ? "Actual" : "Por Recorrer").append("\",")
                             .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getToUbigeo())?"wareouse":"office").append("\"")
                             .append("}");
+
                     isFirst = false;
+                    inTravel = false;
                 }
             }
             else{
                 routeContentBuilder.append("{")
                         .append("\"city\":\"").append(locations.get(vehicle.getCurrentLocationUbigeo()).getProvince()).append("\",")
-                        .append("\"status\":\"").append("listo").append("\",")
+                        .append("\"status\":\"").append("Actual").append("\",")
                         .append("\"type\":\"").append(almacenesPrincipales.contains(vehicle.getCurrentLocationUbigeo())?"wareouse":"office").append("\"")
                         .append("}");
             }
@@ -2140,10 +2156,11 @@ public class SimulationState {
                     if (!isFirst) {
                         shipmentsContentBuilder.append(",");
                     }
+
                     shipmentsContentBuilder.append("{")
                             .append("\"code\":\"").append(vehicleAssignment.getOrder().getOrderCode()).append("\",")
                             .append("\"quantity\":\"").append(vehicleAssignment.getAssignedQuantity()).append("\",")
-                            .append("\"status\":\"").append("listo").append("\",")
+                            .append("\"status\":\"").append(vehicleAssignment.getOrder().getStatus()).append("\",")
                             .append("\"originCity\":\"").append(locations.get(vehicleAssignment.getOrder().getOriginUbigeo()).getProvince()).append("\",")
                             .append("\"destinationCity\":\"").append(locations.get(vehicleAssignment.getOrder().getDestinationUbigeo()).getProvince()).append("\",")
                             .append("\"dueTime\":\"").append(vehicleAssignment.getOrder().getDueTime()).append("\"")
