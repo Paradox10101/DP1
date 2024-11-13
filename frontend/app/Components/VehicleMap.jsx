@@ -15,6 +15,11 @@ import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
+  : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
+
+
 const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -37,7 +42,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
    // Obtener y actualizar ubicaciones con reintentos
    const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
     try {
-      const response = await fetch('http://localhost:4567/api/v1/locations');
+      const response = await fetch(`${API_BASE_URL}/locations`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

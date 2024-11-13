@@ -4,6 +4,10 @@ import 'chart.js/auto';
 import { useEffect, useState } from "react";
 import { exportDataToCSV } from "./controls/exportDataCSVDash";
 
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function Dashboard({ shipment }) {
   // Estado para manejar los datos del dashboard
   const [data, setData] = useState(null);
@@ -13,7 +17,7 @@ export default function Dashboard({ shipment }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:4567/api/v1/simulation/report');
+        const response = await fetch(`${API_BASE_URL}/simulation/report`);
         if (response.ok) {
           const result = await response.json();
           setData(result);

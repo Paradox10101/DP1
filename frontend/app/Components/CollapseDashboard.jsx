@@ -2,6 +2,11 @@
 import { useEffect, useState } from "react";
 import { FaDownload, FaWarehouse, FaBuilding, FaTruck } from "react-icons/fa";
 
+// Definir las URLs de la API y WebSocket basadas en el entorno
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // Función para formatear las fechas de manera más amigable, incluyendo AM/PM
 const formatDate = (dateString) => {
   if (!dateString) return "---";
@@ -21,7 +26,7 @@ export default function CollapseDashboard() {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const response = await fetch('http://localhost:4567/api/v1/simulation/list_pedidos');
+        const response = await fetch(`${API_BASE_URL}/simulation/list_pedidos`);
         if (response.ok) {
           const result = await response.json();
           setPedidos(result); // Guardar la lista de pedidos
@@ -41,7 +46,7 @@ export default function CollapseDashboard() {
       const fetchCollapseData = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:4567/api/v1/simulation/collapse_report/${pedidoSeleccionado}`);
+          const response = await fetch(`${API_BASE_URL}/simulation/collapse_report/${pedidoSeleccionado}`);
           if (response.ok) {
             const result = await response.json();
             setData(result);

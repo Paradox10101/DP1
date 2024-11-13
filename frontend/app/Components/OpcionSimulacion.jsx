@@ -13,6 +13,10 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 import SimulationSpeedControl from '../Components/SimulationSpeedControl';
 import MetricsDisplay from '../Components/MetricsDisplay';
 
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const SimulationStates = {
     RUNNING: 'running',
     PAUSED: 'paused',
@@ -54,7 +58,7 @@ const SimulationStates = {
               ? 'resume'
               : action;
             
-            const response = await fetch(`http://localhost:4567/api/v1/simulation/${endpoint}`, {
+              const response = await fetch(`${API_BASE_URL}/simulation/${endpoint}`, {
               method: 'POST',
             });
             
