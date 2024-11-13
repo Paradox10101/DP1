@@ -32,7 +32,7 @@ export default function CollapseDashboard() {
       const fetchCollapseData = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:4567/api/v1/simulation/collapse_report?codigoPedido=${pedidoSeleccionado}`);
+          const response = await fetch(`http://localhost:4567/api/v1/simulation/collapse_report/${pedidoSeleccionado}`);
           if (response.ok) {
             const result = await response.json();
             setData(result);
@@ -86,29 +86,63 @@ export default function CollapseDashboard() {
     </div>
   );
 
-  // Renderiza la leyenda con los íconos
-  const renderLegend = () => (
-    <div className="bg-white shadow-md p-4 mb-4 rounded-lg flex items-center space-x-6">
-      <h3 className="font-bold">Leyenda:</h3>
-      <div className="flex items-center space-x-2">
-        <FaWarehouse className="text-blue-500" />
-        <span>Almacén</span>
+  // Define el color y el texto del estado del pedido en función de `estadoPedido`
+  const getEstadoPedidoTag = (estado) => {
+    switch (estado) {
+      case "REGISTERED":
+        return {
+          text: "REGISTRADO",
+          bgColor: "bg-[#B0F8F4]",
+          textColor: "text-[#4B9490]"
+        };
+      case "DELIVERED":
+      case "PENDING_PICKUP":
+        return {
+          text: "ENTREGADO",
+          bgColor: "bg-[#D0B0F8]",
+          textColor: "text-[#7B15FA]"
+        };
+      case "FULLY_ASSIGNED":
+        return {
+          text: "EN TRÁNSITO",
+          bgColor: "bg-[#284BCC]",
+          textColor: "text-[#BECCFF]"
+        };
+      default:
+        return {
+          text: "---",
+          bgColor: "bg-gray-300",
+          textColor: "text-gray-700"
+        };
+    }
+  };
+
+  // Renderiza la leyenda con los íconos y el estado del pedido
+  const renderLegend = () => {
+    const estadoPedidoTag = data ? getEstadoPedidoTag(data.estadoPedido) : getEstadoPedidoTag(null);
+    return (
+      <div className="bg-white shadow-md p-4 mb-4 rounded-lg flex items-center space-x-6">
+        <h3 className="font-bold">Leyenda:</h3>
+        <div className="flex items-center space-x-2">
+          <FaWarehouse className="text-blue-500" />
+          <span>Almacén</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <FaBuilding className="text-green-500" />
+          <span>Oficina</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <FaTruck className="text-red-500" />
+          <span>Transporte</span>
+        </div>
+        <div className="ml-auto flex items-center space-x-2">
+          <span className={`${estadoPedidoTag.bgColor} ${estadoPedidoTag.textColor} px-3 py-1 rounded-full font-bold`}>
+            {estadoPedidoTag.text}
+          </span>
+        </div>
       </div>
-      <div className="flex items-center space-x-2">
-        <FaBuilding className="text-green-500" />
-        <span>Oficina</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <FaTruck className="text-red-500" />
-        <span>Transporte</span>
-      </div>
-      <div className="ml-auto flex items-center space-x-2">
-        <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full font-bold">
-          {data ? data.estadoPedido : "---"}
-        </span>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Renderiza la información del reporte de colapso para el pedido seleccionado o muestra valores predeterminados
   const renderCollapseReport = () => (
@@ -153,7 +187,7 @@ export default function CollapseDashboard() {
           <h2 className="font-bold text-xl mb-4">Ruta del Vehículo - {camion}</h2>
           {detalles.rutaDelPedido.map((ruta, index) => (
             <div key={index} className="flex items-center bg-gray-50 p-3 my-2 rounded-lg">
-              <FaBuilding className={`mr-2 ${ruta.estadoTramo === "Tramo Recorrido" ? "text-pink-500" : "text-red-500"}`} />
+              <FaBuilding className={`mr-2 ${ruta.estadoTramo === "Tramo Recorrido" ? "text-green-500" : "text-green-500"}`} />
               <p className="flex-grow"><strong>Origen:</strong> {ruta.origen} → <strong>Destino:</strong> {ruta.destino}</p>
               <span className={`px-2 py-1 rounded-lg ${ruta.estadoTramo === "Tramo Recorrido" ? "bg-green-300" : "bg-blue-300"}`}>{ruta.estadoTramo}</span>
             </div>
