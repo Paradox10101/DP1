@@ -32,7 +32,7 @@ export default function ModalVehiculo({vehicle}){
     };
 
     return (
-        <div className="flex flex-col gap-6 justify-between overflow-y-auto max-h-[650px] scroll-area">
+        <div className="flex flex-col gap-6 justify-between overflow-y-auto max-h-[840px] scroll-area">
             <div className="bg-[#F7F7F7] p-4 rounded flex flex-row justify-around">
                 <div className="flex flex-col justify-center text-center">
                     {vehicle.tipo==="A"?
@@ -184,7 +184,7 @@ export default function ModalVehiculo({vehicle}){
                         <div className="py-3 px-2 text-center col-span-2">DESTINO</div>
                     </div>
 
-                <div className="overflow-y-auto h-[320px] border stroke-black rounded w-full scroll-area overflow-x-hidden">
+                <div className="overflow-y-auto h-[250px] border stroke-black rounded w-full scroll-area overflow-x-hidden">
                     <AutoSizer>
                         {({ height, width }) => (
                             <List

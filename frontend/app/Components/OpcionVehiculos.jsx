@@ -152,7 +152,7 @@ export default function OpcionVehiculos() {
               </div>
             </div>
           </div>
-          <div className="h-3/4 w-full overflow-y-auto">
+          <div className="h-3/4 w-full overflow-y-auto scroll-area">
                 {!hasSearchResults && isSearching ? (
                   <NoResultsMessage />
                 ) : (
@@ -181,7 +181,7 @@ export default function OpcionVehiculos() {
               isDismissable={true}
               blur
           >
-              <ModalContent className="h-[750px] min-w-[850px]">
+              <ModalContent className="h-[940px] min-w-[850px]">
                   <ModalHeader>
 
                   {filteredVehiculosArray&&filteredVehiculosArray[selectedVehicleIndex]&&filteredVehiculosArray[selectedVehicleIndex]?.properties&&

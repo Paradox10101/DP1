@@ -21,9 +21,11 @@ export default function ModalAlmacen({warehouse}){
     const Row = ({ index, style }) => {
         const shipment = shipmentsPerWarehouse[index];
         return (
-            <div key={shipment.code} style={style} className="grid grid-cols-10 w-full items-center p-1 border-b-3">
-                <div className="text-center col-span-1 pequenno">{shipment.code}</div>
+            <div key={shipment.code} style={style} className="grid grid-cols-8 w-full items-center p-1 border-b-3">
+                <div className="text-center col-span-1 pequenno">{shipment.orderCode}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
+                <div className="text-center col-span-2 pequenno break-all">{shipment.destinationCity}</div>
+                <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
                 {
                     shipment.status==="REGISTERED"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
@@ -33,9 +35,6 @@ export default function ModalAlmacen({warehouse}){
                     :
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
                 }
-                <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
-                <div className="text-center col-span-2 pequenno">{shipment.originCity}</div>
-                <div className="text-center col-span-2 break-all pequenno">{shipment.destinationCity}</div>
             </div>
             
         );
@@ -73,13 +72,12 @@ export default function ModalAlmacen({warehouse}){
                 </Button>
             </div>
             <div className="flex flex-col gap-0">
-                    <div className="bg-gray-50 text-gray-500 uppercase text-sm leading-normal w-full grid grid-cols-10 items-center">
+                    <div className="bg-gray-50 text-gray-500 uppercase text-sm leading-normal w-full grid grid-cols-8 items-center">
                         <div className="py-3 px-2 text-center col-span-1">CÓDIGO DE ENVÍO</div>
                         <div className="py-3 px-2 text-center col-span-1">CANTIDAD DE PAQUETES</div>
-                        <div className="py-3 px-2 text-center col-span-2">ESTADO</div>
-                        <div className="py-3 px-2 text-center col-span-2">FECHA LÍMITE</div>
-                        <div className="py-3 px-2 text-center col-span-2">ORIGEN</div>
                         <div className="py-3 px-2 text-center col-span-2">DESTINO</div>
+                        <div className="py-3 px-2 text-center col-span-2">FECHA LÍMITE</div>
+                        <div className="py-3 px-2 text-center col-span-2">ESTADO</div>
                     </div>
 
                 <div className="overflow-y-auto h-[350px] border stroke-black rounded w-full scroll-area overflow-x-hidden">
