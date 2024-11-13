@@ -1,5 +1,4 @@
 package com.odiparpack.models;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -26,18 +25,20 @@ public class CollapseReport {
     private String fechaEntregaEstimada;
     private String fechaLimiteEntrega;
     private String estadoPedido;
-    private Map<String, Map<String, Object>> camionesAsignados = new HashMap<>();
-    private List<Order> orders;
+    private Map<String, Map<String, Object>> camionesAsignados;
     private Order order;
 
     // Constructor que recibe el estado de la simulación y llama a los métodos para llenar cada campo.
     public CollapseReport(SimulationState state, String codigoPedido) {
         this.codigoPedido = codigoPedido; // Usamos el código del pedido proporcionado
-        this.orders = state.getOrders();
-        this.order = getOrderRep(codigoPedido); // Este es el pedido que se elige desde front
+        List<Order> orders = state.getOrders();
+        this.order = getOrderRep(orders, codigoPedido); // Este es el pedido que se elige desde front
+        this.camionesAsignados = new HashMap<>();
+
         if (this.order == null) {
             throw new IllegalArgumentException("No se encontró un pedido con el código: " + codigoPedido);
         }
+
         this.rutaPedido = calculateRutaPedido(state);
         this.cantidadPaquetes = calculateCantidadPaquetes(state);
         this.fechaInicioPedido = calculateFechaInicioPedido(state);
@@ -47,7 +48,7 @@ public class CollapseReport {
         this.camionesAsignados = calculateCamionesAsignados(state);
     }
 
-    public Order getOrderRep(String codigoPedido) {
+    public Order getOrderRep(List<Order> orders, String codigoPedido) {
         // Iterar sobre la lista de pedidos para encontrar el pedido con el código dado
         for (Order order : orders) {
             if (order.getOrderCode().equals(codigoPedido)) {
@@ -90,11 +91,7 @@ public class CollapseReport {
 
     private String calculateFechaInicioPedido(SimulationState state) {
         try {
-            LocalDateTime orderTime = order.getOrderTime();
-            if (orderTime == null) {
-                return "Fecha de inicio no disponible";
-            }
-            return orderTime.toString();
+            return order.getOrderTime().toString();
         } catch (Exception e) {
             return "Error al calcular la fecha de inicio del pedido: " + e.getMessage();
         }
@@ -106,11 +103,7 @@ public class CollapseReport {
 
     private String calculateFechaLimiteEntrega(SimulationState state) {
         try {
-            LocalDateTime dueTime = order.getDueTime();
-            if (dueTime == null) {
-                return "Fecha límite de entrega no disponible";
-            }
-            return dueTime.toString();
+            return order.getDueTime().toString();
         } catch (Exception e) {
             return "Error al calcular la fecha límite de entrega: " + e.getMessage();
         }
@@ -139,11 +132,9 @@ public class CollapseReport {
                 camionData.put("paquetes", assignment.getAssignedQuantity() + " paquetes");
 
                 LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
-                if (estimatedDeliveryTime == null) {
-                    camionData.put("fechaEntregaEstimada", "Fecha no disponible");
-                } else {
-                    camionData.put("fechaEntregaEstimada", estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm a")));
-                }
+                camionData.put("fechaEntregaEstimada", estimatedDeliveryTime != null
+                        ? estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm a"))
+                        : "Fecha no disponible");
 
                 List<Map<String, String>> rutaDelPedido = new ArrayList<>();
                 for (RouteSegment segment : assignment.getRouteSegments()) {
@@ -188,11 +179,7 @@ public class CollapseReport {
 
                     @Override
                     public LocalDateTime read(JsonReader jsonReader) throws IOException {
-                        String dateTimeString = jsonReader.nextString();
-                        if (dateTimeString == null || dateTimeString.isEmpty()) {
-                            return null;
-                        }
-                        return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        return LocalDateTime.parse(jsonReader.nextString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                     }
                 })
                 .create();
