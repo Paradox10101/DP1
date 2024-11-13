@@ -87,7 +87,7 @@ public class LocationRouter extends BaseRouter {
             properties.addProperty("province", loc.getProvince());
             properties.addProperty("department", loc.getDepartment());
             properties.addProperty("region", loc.getNaturalRegion());
-            properties.addProperty("message", "test");
+
             // Capacidad solo para oficinas
             if (!almacenesPrincipales.contains(loc.getUbigeo())) {
                 properties.addProperty("capacity", loc.getWarehouseCapacity());

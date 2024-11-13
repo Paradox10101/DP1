@@ -19,6 +19,7 @@ export default function OpcionEnvios() {
     const [selectedShipmentIndex, setSelectedShipmentIndex] = useState(null);
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null); // Define selectedVehicle
 
+
     useEffect(() => {
         const debounceTimeout = setTimeout(() => {
             setSearchQuery(searchInput);

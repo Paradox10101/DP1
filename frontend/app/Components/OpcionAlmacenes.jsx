@@ -10,6 +10,7 @@ import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ModalOficina from './ModalOficina'
 import ModalAlmacen from './ModalAlmacen'
+import { useShipmentWebSocket } from "@/hooks/useShipmentWebSocket";
 
 export default function OpcionAlmacenes() {
   useWarehouseWebSocket();
@@ -18,6 +19,19 @@ export default function OpcionAlmacenes() {
   const [searchInput, setSearchInput] = useAtom(searchInputAtom);
   const [selectedLocationIndex, setSelectedLocationtIndex] = useState(null);
   const [, setSearchQuery] = useAtom(searchQueryAtom);
+
+  // Estado para la lista ordenada de ubicaciones
+  const [sortedLocations, setSortedLocations] = useState([]);
+
+  // Actualizar la lista ordenada cada vez que `locations` cambie
+  useEffect(() => {
+    const sorted = [...locations].sort((a, b) => {
+      if (a.type === 'warehouse' && b.type !== 'warehouse') return -1;
+      if (a.type !== 'warehouse' && b.type === 'warehouse') return 1;
+      return a.province.localeCompare(b.province);
+    });
+    setSortedLocations(sorted);
+  }, [locations]);
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -47,23 +61,21 @@ export default function OpcionAlmacenes() {
     </div>
   );
 
-  const warehouseCount = locations?.filter(l => l?.type === 'warehouse').length || 0;
+  const warehouseCount = sortedLocations?.filter(l => l?.type === 'warehouse').length || 0;
 
-  // Determinar si no hay datos iniciales vs. no hay resultados de búsqueda
-  const hasInitialData = Array.isArray(locations);
-  const hasSearchResults = hasInitialData && locations.length > 0;
+  const hasInitialData = Array.isArray(sortedLocations);
+  const hasSearchResults = hasInitialData && sortedLocations.length > 0;
   const isSearching = searchInput.length > 0;
 
   const Row = ({ index, style }) => {
-    const location = locations[index];
+    const location = sortedLocations[index];
     return (
       <div style={style}
       onMouseDown={() => {
         setSelectedLocationtIndex(index);
-        console.log("=============================================")
         console.log(location)
-        //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
-        onOpen(); // Abrir modal
+        
+        onOpen();
     }}>
         <LocationCard
           key={location.ubigeo}
@@ -113,7 +125,7 @@ export default function OpcionAlmacenes() {
                 {({ height, width }) => (
                   <List
                     height={height}
-                    itemCount={locations.length}
+                    itemCount={sortedLocations.length}
                     itemSize={200}
                     width={width}
                   >
@@ -127,31 +139,35 @@ export default function OpcionAlmacenes() {
       )}
 
       {/* Modal */}
-      {(true) && (
+      {(
           <Modal
               closeButton
               isOpen={isOpen}
               onOpenChange={onOpenChange}
+              onClose={()=>{
+                setSelectedLocationtIndex(null);
+                
+              }}
               isDismissable={true}
               blur
           >
-              <ModalContent className="h-[775px] min-w-[850px]">
+              <ModalContent className="h-[800px] min-w-[850px]">
                   <ModalHeader>
-                      {"Información de " + (locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="office"?
-                      `oficina ${locations[selectedLocationIndex].province}`
+                      {"Información de " + (sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
+                      `oficina ${sortedLocations[selectedLocationIndex].province}`
                       :
-                      locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="warehouse"?
-                      `almacén ${locations[selectedLocationIndex].province}`
+                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
+                      `almacén ${sortedLocations[selectedLocationIndex].province}`
                       :
                       ""
                       )}
                   </ModalHeader>
                   <ModalBody>
-                      {locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="office"?
-                      <ModalOficina office={locations[selectedLocationIndex]} />
+                      {sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
+                      <ModalOficina office={sortedLocations[selectedLocationIndex]} />
                       :
-                      locations&&locations[selectedLocationIndex]&&locations[selectedLocationIndex].type==="warehouse"?
-                      <ModalAlmacen warehouse={locations[selectedLocationIndex]}/>
+                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
+                      <ModalAlmacen warehouse={sortedLocations[selectedLocationIndex]}/>
                       :
                       <></>
                       }

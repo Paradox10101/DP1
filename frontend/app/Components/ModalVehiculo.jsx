@@ -35,7 +35,15 @@ export default function ModalVehiculo({vehicle}){
         <div className="flex flex-col gap-6 justify-between overflow-y-auto max-h-[650px] scroll-area">
             <div className="bg-[#F7F7F7] p-4 rounded flex flex-row justify-around">
                 <div className="flex flex-col justify-center text-center">
-                    <Package size={32} className="stroke-[#ADADAD] self-center"/>
+                    {vehicle.tipo==="A"?
+                    <Truck size={32} className="stroke-[#ADADAD] self-center"/>
+                    :
+                    vehicle.tipo==="B"?
+                    <CarFront size={32} className="stroke-[#ADADAD] self-center"/>
+                    :
+                    <Car size={32} className="stroke-[#ADADAD] self-center"/>
+                    }
+                    
                     <div className="regular">{vehicle.tipo}</div>
                     <div className="text-[#8E8D8D] pequenno">Tipo de vehículo</div>
                 </div>
@@ -97,7 +105,7 @@ export default function ModalVehiculo({vehicle}){
                                 {location.type==="office"?
                                 <>
                                     <div className="text-center mx-auto">
-                                        <IconoEstado Icono={Building} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
+                                        <IconoEstado Icono={Building} classNameContenedor={"bg-[#2ACF58] w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                                     </div>
                                     <div className="flex flex-col">
                                         <div className="text-center regular_bold">{("Oficina ") + location.city}</div>
@@ -114,6 +122,7 @@ export default function ModalVehiculo({vehicle}){
                                         <div className="text-center text-black pequenno">Inicio</div>
                                     </div>
                                 </>
+                                
                                 }
                             </div>
                             }
@@ -122,17 +131,30 @@ export default function ModalVehiculo({vehicle}){
                     )
                     :
                     vehicle.currentRoute.length==1?
-                    <>
-                        <div className="inline-flex flex-col gap-2 items-center">
+                    <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                        {vehicle.currentRoute[0].type==="office"?
+                        <>
+                            <div className="text-center mx-auto">
+                                <IconoEstado Icono={Building} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="text-center regular_bold">{("Oficina ") + vehicle.currentRoute[0].city}</div>
+                                <div className="text-center text-black pequenno">Inicio</div>
+                            </div>
+                        </>
+                        :
+                        <>
                             <div className="text-center mx-auto">
                                 <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                             </div>
                             <div className="flex flex-col">
-                                <div className="text-center regular_bold text-principal">{(vehicle.currentRoute[0].type==="office"?"Oficina ":"Almacén ") + vehicle.currentRoute[0].city}</div>
-                                <div className="text-center pequenno text-principal">Inicio</div>
+                                <div className="text-center regular_bold">{("Almacén ") + vehicle.currentRoute[0].city}</div>
+                                <div className="text-center text-black pequenno">Inicio</div>
                             </div>
-                        </div>
-                    </>
+                        </>
+                        
+                        }
+                    </div>
                     :
                     <></>
                     

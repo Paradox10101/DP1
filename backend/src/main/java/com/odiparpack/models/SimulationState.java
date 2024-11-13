@@ -667,16 +667,18 @@ public class SimulationState {
 
             // Añadir las características de los envíos
             boolean first = true;
+            boolean existOrder = true;
             for (Order order : ordersInPeriod) {
                 if (order != null) {
                     if (!first) {
-                        builder.append(','); // Añadir coma entre objetos, pero no al final
+                        if(existOrder)
+                            builder.append(','); // Añadir coma entre objetos, pero no al final
                     }
                     first = false;
 
                     // Asegúrate de que `appendShipmentFeature` no produzca un error
                     try {
-                        appendShipmentFeature(builder, order, lastClientMessage);
+                        existOrder = appendShipmentFeature(builder, order, lastClientMessage);
                     } catch (Exception e) {
                         // Captura cualquier excepción durante la generación de características y decide cómo manejarlo
                         System.err.println("Error procesando la orden: " + order);
@@ -694,7 +696,7 @@ public class SimulationState {
         }
     }
 
-    private void appendShipmentFeature(StringBuilder builder, Order order, String lastClientMessage) {
+    private boolean appendShipmentFeature(StringBuilder builder, Order order, String lastClientMessage) {
         Order.OrderStatus currentOrderStatus = order.getStatus();
         JsonObject lastClientJSON = new JsonObject();
         if (lastClientMessage != null && !lastClientMessage.isEmpty()) {
@@ -705,8 +707,6 @@ public class SimulationState {
                 System.err.println("Error parsing JSON: " + e.getMessage());
             }
         }
-
-
 
         builder.append("{")
                 .append("\"type\":\"Feature\",")
@@ -753,15 +753,24 @@ public class SimulationState {
         builder.append("},");
 
         builder.append("\"vehicles\":[");
-
+        StringBuilder vehiclesContentBuilder = new StringBuilder();
         try {
+
             if (vehicleAssignmentsPerOrder.containsKey(order.getId())) {
                 boolean firstVehicle = true;
-                if (lastClientJSON != null && lastClientJSON.has("orderId") && !lastClientJSON.get("orderId").getAsString().isEmpty() && lastClientJSON.get("orderId").getAsInt() == order.getId()) {
+                if (lastClientJSON != null &&
+                        ((lastClientJSON.has("orderId") &&
+                        !lastClientJSON.get("orderId").getAsString().isEmpty() &&
+                        lastClientJSON.get("orderId").getAsInt() == order.getId())
+                        )
+                ) {
                     for (VehicleAssignment assignedVehicle : vehicleAssignmentsPerOrder.get(order.getId())) {
-                        boolean attendedOrder = assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.DELIVERED) || assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.PENDING_PICKUP);
-                        if (!firstVehicle) builder.append(",");
-                        builder.append("{")
+                        boolean attendedOrder = assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.DELIVERED)
+                                || assignedVehicle.getOrder().getStatus().equals(Order.OrderStatus.PENDING_PICKUP)
+                                || assignedVehicle.getVehicle().getCurrentOrder() == null
+                                || assignedVehicle.getVehicle().getCurrentOrder().getId() != order.getId();
+                        if (!firstVehicle) vehiclesContentBuilder.append(",");
+                        vehiclesContentBuilder.append("{")
                                 .append("\"orderId\":").append(assignedVehicle.getOrder().getId()).append(",")
                                 .append("\"orderCode\":\"").append(assignedVehicle.getOrder().getOrderCode()).append("\",")
                                 .append("\"vehicleCode\":\"").append(assignedVehicle.getVehicle().getCode()).append("\",")
@@ -773,15 +782,20 @@ public class SimulationState {
                                 .append("\"orderTime\":\"").append(assignedVehicle.getOrder().getOrderTime()).append("\",");
 
                         // Construir el arreglo JSON de rutas (anidado dentro de cada vehículo)
-                        builder.append("\"routes\":[");
+                        vehiclesContentBuilder.append("\"routes\":[");
+                        StringBuilder routeContentBuilder = new StringBuilder();
 
                         try {
                             boolean firstRoute = true;
-
                             // Primera ruta con campos vacíos para indicar el destino final
                             if (assignedVehicle.getRouteSegments() != null && !assignedVehicle.getRouteSegments().isEmpty()) {
-                                if (lastClientJSON != null && lastClientJSON.has("vehicleCode") && !lastClientJSON.get("vehicleCode").getAsString().isEmpty() && lastClientJSON.get("vehicleCode").getAsString().equals(assignedVehicle.getVehicle().getCode())) {
-                                    builder.append("{")
+                                if (lastClientJSON != null &&
+                                        ((lastClientJSON.has("vehicleCode") &&
+                                        !lastClientJSON.get("vehicleCode").getAsString().isEmpty() &&
+                                        lastClientJSON.get("vehicleCode").getAsString().equals(assignedVehicle.getVehicle().getCode()))
+                                        )
+                                ) {
+                                    routeContentBuilder.append("{")
                                             .append("\"originUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).append("\",")
                                             .append("\"originCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).getProvince()).append("\",")
                                             .append("\"destinationUbigeo\":null,")
@@ -797,12 +811,12 @@ public class SimulationState {
 
                                     // Iterar por las rutas segmentadas
                                     for (RouteSegment routeSegment : assignedVehicle.getRouteSegments()) {
-                                        if (!firstRoute) builder.append(",");
+                                        if (!firstRoute) routeContentBuilder.append(",");
                                         if (!attendedOrder && currentUbigeo.equals(routeSegment.getToUbigeo())) {
                                             traveled = false;
                                             inTravel = true;
                                         }
-                                        builder.append("{")
+                                        routeContentBuilder.append("{")
                                                 .append("\"originUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
                                                 .append("\"destinationUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
                                                 .append("\"originCity\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
@@ -816,7 +830,7 @@ public class SimulationState {
                                     }
 
                                     // Última ruta con campos vacíos para indicar el destino final
-                                    builder.append(",{")
+                                    routeContentBuilder.append(",{")
                                             .append("\"originUbigeo\":null,")
                                             .append("\"destinationUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).append("\",")
                                             .append("\"destinationCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).getProvince()).append("\",")
@@ -825,27 +839,28 @@ public class SimulationState {
                                             .append("}");
                                 }
                             }
+                            vehiclesContentBuilder.append(routeContentBuilder);
                         } catch (Exception e) {
-                            builder.append("]"); // Si ocurre un error en el arreglo de rutas, se cierra el arreglo vacío
-                            System.err.println("Error building routes for vehicle " + assignedVehicle.getVehicle().getCode() + ": " + e.getMessage());
+
                         }
 
-                        builder.append("]"); // Cerrar el arreglo de rutas
+                        vehiclesContentBuilder.append("]"); // Cerrar el arreglo de rutas
                         // Cerrar el vehículo actual
-                        builder.append("}");
+                        vehiclesContentBuilder.append("}");
                         firstVehicle = false;
                     }
                 }
             }
+            builder.append(vehiclesContentBuilder);
         } catch (Exception e) {
-            builder.append("]"); // Si ocurre un error en el arreglo de vehículos, se cierra el arreglo vacío
-            System.err.println("Error building vehicles: " + e.getMessage());
+
         }
 
         builder.append("]"); // Cerrar el arreglo de vehículos
 
 
         builder.append("}"); // Cerrar el objeto JSON principal
+        return true;
     }
 
 
