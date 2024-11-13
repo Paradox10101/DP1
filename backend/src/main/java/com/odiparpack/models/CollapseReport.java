@@ -138,7 +138,8 @@ public class CollapseReport {
                         : "Fecha no disponible");
 
                 List<Map<String, String>> rutaDelPedido = new ArrayList<>();
-                for (RouteSegment segment : assignment.getRouteSegments()) {
+                boolean inTransit = true;
+                /*for (RouteSegment segment : assignment.getRouteSegments()) {
                     try {
                         Map<String, String> tramoData = new HashMap<>();
                         tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
@@ -152,6 +153,57 @@ public class CollapseReport {
                         rutaDelPedido.add(tramoData);
                     } catch (Exception e) {
                         System.err.println("Error al procesar el tramo de la ruta: " + e.getMessage());
+                    }
+                }*/
+                // Verificar si el estado del pedido es entregado o pendiente por recogida
+                if ("DELIVERED".equals(order.getStatus()) || "PENDING_PICKUP".equals(order.getStatus())) {
+                    // Marcar todos los tramos como "Tramo Recorrido"
+                    for (RouteSegment segment : assignment.getRouteSegments()) {
+                        Map<String, String> tramoData = new HashMap<>();
+                        tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
+                        tramoData.put("destino", state.getLocations().get(segment.getToUbigeo()).getProvince());
+                        tramoData.put("estadoTramo", "Tramo Recorrido");
+                        rutaDelPedido.add(tramoData);
+                    }
+                } else {
+                    // Verificar la ubicación actual del vehículo y marcar los tramos
+                    /*String currentUbigeo = assignment.getVehicle().getCurrentLocationUbigeo();
+                    for (RouteSegment segment : assignment.getRouteSegments()) {
+                        Map<String, String> tramoData = new HashMap<>();
+                        tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
+                        tramoData.put("destino", state.getLocations().get(segment.getToUbigeo()).getProvince());
+
+                        if (inTransit) {
+                            if (currentUbigeo.equals(segment.getFromUbigeo())) {
+                                // Si el ubigeo actual coincide con el origen del segmento, marcamos este como "actual"
+                                tramoData.put("estadoTramo", "Tramo Por Recorrer");
+                                inTransit = false; // Todos los tramos siguientes estarán por recorrer
+                            } else {
+                                // Todos los tramos anteriores al ubigeo actual se marcan como recorridos
+                                tramoData.put("estadoTramo", "Tramo Recorrido");
+                            }
+                        } else {
+                            // Todos los tramos después del ubigeo actual están "Por Recorrer"
+                            tramoData.put("estadoTramo", "Tramo Por Recorrer");
+                        }
+
+                        rutaDelPedido.add(tramoData);
+                    }*/
+                    for (RouteSegment segment : assignment.getRouteSegments()) {
+                        try {
+                            Map<String, String> tramoData = new HashMap<>();
+                            tramoData.put("origen", state.getLocations().get(segment.getFromUbigeo()).getProvince());
+                            tramoData.put("destino", state.getLocations().get(segment.getToUbigeo()).getProvince());
+
+                            String estadoTramo = "Tramo Por Recorrer";
+                            if (assignment.getVehicle().getCurrentSegmentIndex() > assignment.getRouteSegments().indexOf(segment)) {
+                                estadoTramo = "Tramo Recorrido";
+                            }
+                            tramoData.put("estadoTramo", estadoTramo);
+                            rutaDelPedido.add(tramoData);
+                        } catch (Exception e) {
+                            System.err.println("Error al procesar el tramo de la ruta: " + e.getMessage());
+                        }
                     }
                 }
 
