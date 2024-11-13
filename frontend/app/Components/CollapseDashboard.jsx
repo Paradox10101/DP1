@@ -54,6 +54,9 @@ export default function CollapseDashboard() {
         setLoading(false);
       };
       fetchCollapseData();
+    } else {
+      // Reiniciar los valores cuando se selecciona "Seleccione un pedido"
+      setData(null);
     }
   }, [pedidoSeleccionado]);
 
@@ -194,7 +197,7 @@ export default function CollapseDashboard() {
           Object.entries(data.camionesAsignados).map(([camion, detalles]) => (
             <div key={camion} className="bg-gray-100 p-4 mb-4 rounded-lg">
               <p className="flex items-center">
-                <FaTruck className="text-blue-500 mr-2" />
+                <FaTruck className="text-red-500 mr-2" />
                 <strong>{camion}:</strong> {detalles.paquetes}
               </p>
               <p><strong>Fecha de Entrega Estimada:</strong> {formatDate(detalles.fechaEntregaEstimada)}</p>
@@ -215,7 +218,11 @@ export default function CollapseDashboard() {
           <h2 className="font-bold text-xl mb-4">Ruta del Vehículo - {camion}</h2>
           {detalles.rutaDelPedido.map((ruta, index) => (
             <div key={index} className="flex items-center bg-gray-50 p-3 my-2 rounded-lg">
-              <FaBuilding className={`mr-2 ${ruta.estadoTramo === "Tramo Recorrido" ? "text-green-500" : "text-green-500"}`} />
+              {index === 0 ? (
+                <FaWarehouse className="mr-2 text-blue-500" />
+              ) : (
+                <FaBuilding className="mr-2 text-green-500" />
+              )}
               <p className="flex-grow"><strong>Origen:</strong> {ruta.origen} → <strong>Destino:</strong> {ruta.destino}</p>
               <span className={`px-2 py-1 rounded-lg ${ruta.estadoTramo === "Tramo Recorrido" ? "bg-green-300" : "bg-blue-300"}`}>{ruta.estadoTramo}</span>
             </div>
