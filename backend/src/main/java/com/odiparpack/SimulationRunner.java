@@ -1111,6 +1111,8 @@ public class SimulationRunner {
         );
     }
 
+    // Esto un test
+
     public static void printSolution(
             DataModel data, RoutingModel routing, RoutingIndexManager manager, Assignment solution) {
         // Objetivo de la solución.
