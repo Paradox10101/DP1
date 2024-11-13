@@ -42,7 +42,7 @@ public class CollapseReport {
         this.rutaPedido = calculateRutaPedido(state);
         this.cantidadPaquetes = calculateCantidadPaquetes(state);
         this.fechaInicioPedido = calculateFechaInicioPedido(state);
-        this.fechaEntregaEstimada = calculateFechaEntregaEstimada(state);
+        //this.fechaEntregaEstimada = calculateFechaEntregaEstimada(state);//ESTO NO ES UTIL <-- NO SIRVE --> EL VERDADERO FECHA ESTIMADA ES POR CADA VEHICULO Y ESTA AHI DENTRO
         this.fechaLimiteEntrega = calculateFechaLimiteEntrega(state);
         this.estadoPedido = calculateEstadoPedido(state);
         this.camionesAsignados = calculateCamionesAsignados(state);
@@ -97,9 +97,9 @@ public class CollapseReport {
         }
     }
 
-    private String calculateFechaEntregaEstimada(SimulationState state) {
+    /*private String calculateFechaEntregaEstimada(SimulationState state) {
         return "15/04/2024 - 19:00 pm"; // TIENE QUE IR POR CADA VEHICULO <-- CAMBIO EL DISEÑO
-    }
+    }*/
 
     private String calculateFechaLimiteEntrega(SimulationState state) {
         try {
@@ -131,9 +131,10 @@ public class CollapseReport {
                 Map<String, Object> camionData = new HashMap<>();
                 camionData.put("paquetes", assignment.getAssignedQuantity() + " paquetes");
 
+                // Cambiar formato de fecha a ISO_LOCAL_DATE_TIME
                 LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
                 camionData.put("fechaEntregaEstimada", estimatedDeliveryTime != null
-                        ? estimatedDeliveryTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm a"))
+                        ? estimatedDeliveryTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                         : "Fecha no disponible");
 
                 List<Map<String, String>> rutaDelPedido = new ArrayList<>();
