@@ -2,6 +2,15 @@
 import { useEffect, useState } from "react";
 import { FaDownload, FaWarehouse, FaBuilding, FaTruck } from "react-icons/fa";
 
+// Función para formatear las fechas de manera más amigable, incluyendo AM/PM
+const formatDate = (dateString) => {
+  if (!dateString) return "---";
+  const date = new Date(dateString);
+  const hours = date.getHours();
+  const suffix = hours >= 12 ? "PM" : "AM";
+  return `${date.toLocaleDateString()} - ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${suffix}`;
+};
+
 export default function CollapseDashboard() {
   const [data, setData] = useState(null); // Datos del pedido seleccionado
   const [loading, setLoading] = useState(false); // Estado de carga para el reporte de colapso
@@ -50,7 +59,27 @@ export default function CollapseDashboard() {
 
   // Descargar el reporte en CSV
   const downloadCSV = () => {
-    const csvData = `Ruta del Pedido,${data ? data.rutaPedido : "---"}\nCantidad de Paquetes,${data ? data.cantidadPaquetes : "---"}\nFecha de Inicio del Pedido,${data ? data.fechaInicioPedido : "---"}\nFecha de Entrega Estimada,${data ? data.fechaEntregaEstimada : "---"}\nFecha Límite de Entrega,${data ? data.fechaLimiteEntrega : "---"}\nEstado del Pedido,${data ? data.estadoPedido : "---"}\n`;
+    if (!data) return;
+
+    let csvData = `Código del Pedido,${data.codigoPedido}\n`;
+    csvData += `Ruta del Pedido,${data.rutaPedido}\n`;
+    csvData += `Cantidad de Paquetes,${data.cantidadPaquetes}\n`;
+    csvData += `Fecha de Inicio del Pedido,${formatDate(data.fechaInicioPedido)}\n`;
+    csvData += `Fecha Límite de Entrega,${formatDate(data.fechaLimiteEntrega)}\n`;
+    csvData += `Estado del Pedido,${data.estadoPedido}\n`;
+
+    // Agregar información de los camiones asignados
+    if (data.camionesAsignados) {
+      csvData += `Camiones Asignados:\n`;
+      Object.entries(data.camionesAsignados).forEach(([camion, detalles]) => {
+        csvData += `Camión,${camion}\n`;
+        csvData += `Paquetes,${detalles.paquetes}\n`;
+        csvData += `Fecha de Entrega Estimada,${formatDate(detalles.fechaEntregaEstimada)}\n`;
+        detalles.rutaDelPedido.forEach((ruta, index) => {
+          csvData += `Tramo ${index + 1},Origen: ${ruta.origen},Destino: ${ruta.destino},Estado: ${ruta.estadoTramo}\n`;
+        });
+      });
+    }
 
     const blob = new Blob([csvData], { type: 'text/csv' });
     const link = document.createElement('a');
@@ -153,10 +182,8 @@ export default function CollapseDashboard() {
         <div className="grid grid-cols-2 gap-4">
           <div><strong>Ruta del Pedido:</strong> {data ? data.rutaPedido : "---"}</div>
           <div><strong>Cantidad de Paquetes:</strong> {data ? data.cantidadPaquetes : "---"}</div>
-          <div><strong>Fecha de Inicio del Pedido:</strong> {data ? data.fechaInicioPedido : "---"}</div>
-          <div><strong>Fecha de Entrega Estimada:</strong> {data ? data.fechaEntregaEstimada : "---"}</div>
-          <div><strong>Fecha Límite de Entrega:</strong> {data ? data.fechaLimiteEntrega : "---"}</div>
-          <div><strong>Estado del Pedido:</strong> {data ? data.estadoPedido : "---"}</div>
+          <div><strong>Fecha de Inicio del Pedido:</strong> {data ? formatDate(data.fechaInicioPedido) : "---"}</div>
+          <div><strong>Fecha Límite de Entrega:</strong> {data ? formatDate(data.fechaLimiteEntrega) : "---"}</div>
         </div>
       </div>
 
@@ -170,6 +197,7 @@ export default function CollapseDashboard() {
                 <FaTruck className="text-blue-500 mr-2" />
                 <strong>{camion}:</strong> {detalles.paquetes}
               </p>
+              <p><strong>Fecha de Entrega Estimada:</strong> {formatDate(detalles.fechaEntregaEstimada)}</p>
             </div>
           ))
         ) : (
