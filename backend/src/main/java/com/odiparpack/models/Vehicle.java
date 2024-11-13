@@ -731,8 +731,13 @@ public class Vehicle {
         this.tiempoLimitedeLlegada = order.getDueTime();
         // Llamar a la función calcularEficienciaPedido aquí
         state.calcularEficienciaPedido(this.getCode(),estimatedDeliveryTime, tiempoLimitedeLlegada);
+        //order.setEstimedTime(estimatedDeliveryTime);
 
         logger.info(logBuilder.toString());
+    }
+
+    public LocalDateTime getEstimatedArrivalTime() {
+        return estimatedDeliveryTime;
     }
 
     public LocalDateTime getTiempoLimitedeLlegada() {

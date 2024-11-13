@@ -2,6 +2,10 @@ import { useState, useCallback } from 'react';
 import { Button } from "@nextui-org/react";
 import { Clock } from "lucide-react";
 
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const SimulationSpeedControl = ({ simulationStatus }) => {
     const [currentSpeed, setCurrentSpeed] = useState('SLOW');
     const [isChanging, setIsChanging] = useState(false);
@@ -17,7 +21,7 @@ const SimulationSpeedControl = ({ simulationStatus }) => {
         
         setIsChanging(true);
         try {
-            const response = await fetch('http://localhost:4567/api/v1/simulation/speed', {
+            const response = await fetch(`${API_BASE_URL}/simulation/speed`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
