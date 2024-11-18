@@ -1,8 +1,8 @@
-import { Button } from "@nextui-org/react"
-import { AlertTriangle, ArrowRight, Building, Building2, Building2Icon, Calendar, Car, CarFront, Check, Circle, CircleAlert, CircleAlertIcon, Clock, Container, Eye, Filter, Flag, Gauge, Globe, Globe2, GlobeIcon, MapPin, Package, Pin, Truck, Warehouse } from "lucide-react"
+import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@nextui-org/react"
+import { AlertTriangle, ArrowRight, Building, Building2, Building2Icon, Calendar, Car, CarFront, Check, ChevronDown, Circle, CircleAlert, CircleAlertIcon, Clock, Container, Eye, Filter, Flag, Gauge, Globe, Globe2, GlobeIcon, MapPin, Package, Pin, Truck, Warehouse, X } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { filteredShipmentsAtom } from "@/atoms/shipmentAtoms"
 import { useAtomValue } from "jotai"
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -11,6 +11,30 @@ import { FixedSizeList as List } from 'react-window';
 export default function ModalOficina({office}){
     const shipments = useAtomValue(filteredShipmentsAtom);
     const [shipmentsPerOffice, setShipmentsPerOffice] = useState([]);
+    const [isFilterModalVisible, setFilterModalVisible] = useState(false);
+    const modalRef = useRef(null); // Referencia para el modal de filtros
+    const [selectedKeys, setSelectedKeys] = useState(new Set());
+    const selectedValue = selectedKeys.size > 0
+        ? Array.from(selectedKeys).join(", ")
+        : "Seleccione un estado";
+
+    // Cierra el modal si se hace clic fuera de él
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                setFilterModalVisible(false);
+            }
+        }
+
+        // Añade el listener al montar
+        document.addEventListener("mousedown", handleClickOutside);
+
+        // Limpia el listener al desmontar
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
 
     useEffect(()=>{
         if(shipments!=null)
@@ -88,15 +112,181 @@ export default function ModalOficina({office}){
                 </div>
             </div>
             
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between relative">
                 <div className="text-black regular_bold">Envíos recibidos</div>
                 <Button
                 disableRipple={true}
                 startContent={<Filter className="size-2"/>}
                 className="focus:outline-none border stroke-black rounded h-8 pequenno w-[22%] bg-[#F4F4F4]"
+                onClick={() => setFilterModalVisible(!isFilterModalVisible)}
                 >
                 Filtros
                 </Button>
+                {/* Modal de Filtros */}
+                {isFilterModalVisible && (
+                    <div
+                        ref={modalRef} // Asigna la referencia al contenedor del modal
+                        className="absolute top-10 right-0 bg-white shadow-lg rounded border p-4 w-[400px] z-50"
+                    >
+                        
+                        
+                        <div className="w-full flex flex-row justify-between items-center">
+                            <div className="text-black subEncabezado_bold">Opciones de Filtro</div>
+                            <button
+                                onClick={() => setFilterModalVisible(false)}
+                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-300 transition duration-200"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex flex-col gap-4">
+                            {/* Contenido de filtros */}
+                            <div className="h-[325px] overflow-y-auto scroll-area">
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Estado:
+                                    </div>
+                                    <Dropdown className="w-full">
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="REGISTERED">Registrado</DropdownItem>
+                                            <DropdownItem key="DELIVERED">Entregado</DropdownItem>
+                                            <DropdownItem key="IN_TRANSIT">En tránsito</DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                            </div>
+
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Almacén origen:
+                                    </div>
+                                    <Dropdown className="w-full">
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="REGISTERED">Registrado</DropdownItem>
+                                            <DropdownItem key="DELIVERED">Entregado</DropdownItem>
+                                            <DropdownItem key="IN_TRANSIT">En tránsito</DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                            </div>
+
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Cantidad de paquetes:
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between gap-2">
+                                        <Input
+                                            type="number"
+                                            defaultValue={0}
+                                            min={0}
+                                            step="1"
+                                            className="w-full text-right"
+                                        />
+                                        <div className="flex items-center">hasta</div>
+                                        <Input
+                                            type="number"
+                                            defaultValue={0}
+                                            min={0}
+                                            step="1"
+                                            className="w-full text-right"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="w-full flex flex-row gap-4">
+                                    <div className="flex flex-col gap-1 w-full">
+                                        <div className="regular_bold">
+                                            Fecha límite desde:
+                                        </div>
+                                        <div className="w-full flex flex-row justify-between gap-2">
+                                            <DatePicker className="" />
+                                            <Input
+                                                type="time"
+                                                defaultValue="12:00"
+                                                className="w-full"
+                                                aria-label="Time Input"
+                                            />
+                                        </div>
+                                    </div>
+                            </div>
+                            <div className="w-full flex flex-row gap-4">
+                                    <div className="flex flex-col gap-1 w-full">
+                                        <div className="regular_bold">
+                                            Fecha límite hasta:
+                                        </div>
+                                        <div className="w-full flex flex-row justify-between gap-2">
+                                            <DatePicker className="" />
+                                            <Input
+                                                type="time"
+                                                defaultValue="12:00"
+                                                className="w-full"
+                                                aria-label="Time Input"
+                                            />
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+                            
+                            <div className="w-full flex flex-row justify-between gap-4">
+                                <Button
+                                    onClick={() => setFilterModalVisible(false)}
+                                >
+                                    Eliminar Filtros
+                                </Button>
+                                <Button
+                                    onClick={() => setFilterModalVisible(false)}
+                                    className="bg-principal text-white"
+                                >
+                                    Aplicar Filtros
+                                </Button>
+                            </div>
+                            </div>
+                        </div>
+                    
+                )}
             </div>
             
                 
