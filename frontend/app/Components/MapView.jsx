@@ -120,12 +120,12 @@ export default function MapView({ datos, mostrarRutas, estadoSimulacion }) {
           markerDiv.style.textAlign = 'center'; // Alineación del texto
           markerDiv.style.cursor = 'pointer'; // Cambia el cursor al pasar el mouse
           const popupContent = ReactDOMServer.renderToStaticMarkup(
-            <VehiculoPopUp
+            /*<VehiculoPopUp
               title={vehiculo.popup}
               capacidadMaxima={vehiculo.capacidadMaxima}
               capacidadUtilizada={vehiculo.capacidadUtilizada}
               iconoHtmlString = {vehiculoIconHtmlString} // Aquí se pasa el ícono como prop <--------------ARREGLA ESTO
-            />
+            />*/
           );
           const popup = new maplibregl.Popup({ offset: 25, closeButton: true, closeOnClick: true, anchor: 'left' }) // Offset ajusta la posición del popup
             .setHTML(popupContent);
