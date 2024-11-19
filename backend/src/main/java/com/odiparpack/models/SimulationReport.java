@@ -59,7 +59,11 @@ public class SimulationReport {
         // PROMEDIO PROGRESIVAMENTE Y NO AL FINAL
         //aqui lo que se hace es recoger el "map" y luego hacer sumatoria entre todos los valores encontrados (de la division)
         // y dividir entre la cantidad de pedidos totales.
-
+        /*
+        * Se evalua la diferencia entre tiempo actual y el "limite" y/ "estimado".
+        * Lo ideal: Diferencia con "estimado" debe ser menor que con "limite", eso provoca que el valor sea muy pequeño.
+        *
+        * */
         Map<String, Double> eficienciaPedidos = state.getEficienciaPedidos();
         // Sumar todas las eficiencias almacenadas en el mapa
         double sumaEficiencia = 0.0;
