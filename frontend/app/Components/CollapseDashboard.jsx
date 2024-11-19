@@ -24,46 +24,58 @@ export default function CollapseDashboard() {
 
   // Petición para obtener la lista de pedidos disponibles
   useEffect(() => {
-    const fetchPedidos = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/simulation/list_pedidos`);
-        if (response.ok) {
-          const result = await response.json();
-          setPedidos(result); // Guardar la lista de pedidos
-        } else {
-          console.error('Error al obtener la lista de pedidos: ', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching pedidos:', error);
+  let isMounted = true; // Añadir un flag
+
+  const fetchPedidos = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/simulation/list_pedidos`);
+      if (response.ok && isMounted) {
+        const result = await response.json();
+        setPedidos(result);
+      } else {
+        console.error('Error al obtener la lista de pedidos: ', response.statusText);
       }
-    };
-    fetchPedidos();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching pedidos:', error);
+    }
+  };
+  fetchPedidos();
+
+  return () => {
+    isMounted = false; // Desmontar flag
+  };
+}, []);
 
   // Petición para obtener los datos específicos de colapso cuando hay un pedido seleccionado
   useEffect(() => {
-    if (pedidoSeleccionado !== "") {
-      const fetchCollapseData = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(`${API_BASE_URL}/simulation/collapse_report/${pedidoSeleccionado}`);
-          if (response.ok) {
-            const result = await response.json();
-            setData(result);
-          } else {
-            console.error('Error al obtener los datos de colapso: ', response.statusText);
-          }
-        } catch (error) {
-          console.error('Error fetching collapse data:', error);
+  if (pedidoSeleccionado !== "") {
+    let isMounted = true;
+    const fetchCollapseData = async () => {
+      
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/simulation/collapse_report/${pedidoSeleccionado}`);
+        if (response.ok && isMounted) {
+          const result = await response.json();
+          setData(result);
+        } else {
+          console.error('Error al obtener los datos de colapso: ', response.statusText);
         }
+      } catch (error) {
+        console.error('Error fetching collapse data:', error);
+      } finally {
         setLoading(false);
-      };
-      fetchCollapseData();
-    } else {
-      // Reiniciar los valores cuando se selecciona "Seleccione un pedido"
-      setData(null);
-    }
-  }, [pedidoSeleccionado]);
+      }
+    };
+    fetchCollapseData();
+
+    return () => {
+      isMounted = false;
+    };
+  } else {
+    setData(null);
+  }
+}, [pedidoSeleccionado]);
 
   // Descargar el reporte en CSV
   const downloadCSV = () => {
