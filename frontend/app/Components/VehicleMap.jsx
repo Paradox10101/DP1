@@ -14,6 +14,9 @@ import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
+import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps'
+import ReactDOM from 'react-dom';
+
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -293,10 +296,13 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
 
     const popupContent = document.createElement('div');
+    
     popupContent.style.display = 'flex';
     popupContent.style.flexDirection = 'column';
     popupContent.style.alignItems = 'flex-start';
-
+    popupContent.style.width = 'auto';
+    popupContent.style.height = 'auto';
+    /*
     const vehicleInfo = document.createElement('div');
     vehicleInfo.innerHTML = `<strong>Vehículo:</strong> ${vehicleCode}`;
 
@@ -314,11 +320,16 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
 
     popupContent.appendChild(vehicleInfo);
     popupContent.appendChild(closeButton);
+    */
+    ReactDOM.render(
+      <VehiculoPopUp title={vehicleCode}/>,
+      popupContent
+    );
 
     const popup = new maplibregl.Popup(POPUP_CONFIG)
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
-      .addTo(mapRef.current);
+      .addTo(mapRef.current)
 
     popupsRef.current[vehicleCode] = popup;
   };

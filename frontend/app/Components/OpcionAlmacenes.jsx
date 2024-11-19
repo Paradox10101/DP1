@@ -1,7 +1,7 @@
 import { useAtomValue, useAtom } from "jotai";
 import { filteredLocationsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/locationAtoms';
-import { Button, Input, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { Filter, Map, SearchX } from "lucide-react";
+import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { ChevronDown, Filter, Map, SearchX } from "lucide-react";
 import { useEffect, useCallback, useState } from 'react';
 import CapacidadTotalAlmacenes from '../Components/CapacidadTotalAlmacenes';
 import LocationCard from './LocationCard';
@@ -19,18 +19,25 @@ export default function OpcionAlmacenes() {
   const [searchInput, setSearchInput] = useAtom(searchInputAtom);
   const [selectedLocationIndex, setSelectedLocationtIndex] = useState(null);
   const [, setSearchQuery] = useAtom(searchQueryAtom);
+  const [isFilterModalOpen, setFilterModalOpen] = useState(false); // Estado para el modal de filtros
+  const [selectedKeys, setSelectedKeys] = useState(new Set());
+  const selectedValue = selectedKeys.size > 0 
+        ? Array.from(selectedKeys).join(", ") 
+        : "Seleccione una ubicación";
 
   // Estado para la lista ordenada de ubicaciones
   const [sortedLocations, setSortedLocations] = useState([]);
 
   // Actualizar la lista ordenada cada vez que `locations` cambie
   useEffect(() => {
+    
     const sorted = [...locations].sort((a, b) => {
       if (a.type === 'warehouse' && b.type !== 'warehouse') return -1;
       if (a.type !== 'warehouse' && b.type === 'warehouse') return 1;
       return a.province.localeCompare(b.province);
     });
     setSortedLocations(sorted);
+      
   }, [locations]);
 
   useEffect(() => {
@@ -106,8 +113,13 @@ export default function OpcionAlmacenes() {
               disableRipple={true}
               startContent={<Filter size="18" />}
               className="bg-[#F4F4F4]"
+              onClick={
+                  ()=>{
+                      setFilterModalOpen(true)
+                  }
+              }
             >
-              Filtros
+            Filtros
             </Button>
           </div>
 
@@ -175,6 +187,178 @@ export default function OpcionAlmacenes() {
               </ModalContent>
           </Modal>
         )}
+        {/* Modal de Filtros */}
+        {isFilterModalOpen && (
+            <Modal
+                    closeButton
+                    isOpen={isFilterModalOpen}
+                    onOpenChange={setFilterModalOpen}
+                    blur
+            >
+                <ModalContent className="h-[450px] min-w-[650px]">
+                    <ModalHeader>
+                        <span className="subEncabezado">Opciones de Filtro para Almacenes</span>
+                    </ModalHeader>
+                    <ModalBody>
+                        <div className="flex flex-col gap-4">
+                            {/* Contenido de filtros */}
+                            <div className="w-1/2 flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Tipo de almacén:
+                                    </div>
+                                    <Dropdown
+                                        className>
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="text">Oficina</DropdownItem>
+                                            <DropdownItem key="number">Almacén Principal</DropdownItem>
+                                        </DropdownMenu>
+                                </Dropdown>
+                                </div>
+
+                            </div>
+
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Departamento:
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between gap-2">
+                                    <Dropdown
+                                                className>
+                                                <DropdownTrigger>
+                                                    <Button
+                                                        variant="bordered"
+                                                        className="capitalize w-full relative"
+                                                        disableRipple={true}
+                                                    >
+                                                        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                            {selectedValue}
+                                                        </span>
+                                                        <ChevronDown size={18} className="absolute right-4" />
+                                                    </Button>
+                                                </DropdownTrigger>
+                                                <DropdownMenu
+                                                    closeOnSelect={true}
+                                                    selectionMode="single"
+                                                    selectedKeys={selectedKeys}
+                                                    onSelectionChange={setSelectedKeys}
+                                                    disableRipple={true}
+                                                    className="w-full"
+                                                    
+                                                >
+                                                    <DropdownItem key=">">{">"}</DropdownItem>
+                                                    <DropdownItem key="<">{"<"}</DropdownItem>
+                                                    <DropdownItem key="=">{"="}</DropdownItem>
+                                                </DropdownMenu>
+                                            </Dropdown>
+
+                                </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Provincia:
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between gap-2">
+                                      <Dropdown
+                                        className>
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                            
+                                        >
+                                            <DropdownItem key=">">{">"}</DropdownItem>
+                                            <DropdownItem key="<">{"<"}</DropdownItem>
+                                            <DropdownItem key="=">{"="}</DropdownItem>
+                                        </DropdownMenu>
+                                      </Dropdown>
+
+                                    </div>
+                                  </div>
+                                  
+                            </div>
+                            <div className="w-1/2 flex flex-row gap-4">
+                              <div className="flex flex-col gap-1 w-full">
+                                  <div className="regular_bold">
+                                      Cantidad de paquetes:
+                                  </div>
+                                  <div className="w-full flex flex-row justify-between gap-2">
+                                      <Input
+                                          type="number"
+                                          defaultValue={0}
+                                          min={0}
+                                          step="1"
+                                          className="w-full text-right"
+                                      />
+                                      <div className="flex items-center">hasta</div>
+                                      <Input
+                                          type="number"
+                                          defaultValue={0}
+                                          min={0}
+                                          step="1"
+                                          className="w-full text-right"
+                                      />
+
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                        
+                    </ModalBody>
+                    <ModalFooter>
+                        <div className="w-full flex flex-row justify-between">
+                            <Button
+                                onClick={() => setFilterModalOpen(false)}
+                            >
+                                Eliminar Filtros
+                            </Button>
+                            <Button
+                                onClick={() => setFilterModalOpen(false)}
+                                className="bg-principal text-white"
+                            >
+                                Aplicar Filtros
+                            </Button>
+                        </div>
+                        
+                      </ModalFooter>
+                  </ModalContent>
+                </Modal>
+            )}
     </div>
   );
 }
