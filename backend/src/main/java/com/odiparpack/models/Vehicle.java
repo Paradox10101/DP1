@@ -618,8 +618,24 @@ public class Vehicle {
     }
 
     private void updateWarehouseCapacity(WarehouseManager warehouseManager, int deliverablePackages) {
+        // Actualizar la ubicación actual del vehículo al destino de la orden
         this.currentLocationUbigeo = currentOrder.getDestinationUbigeo();
+
+        // Reducir la capacidad actual del vehículo según los paquetes entregados
+        this.currentCapacity -= deliverablePackages;
+
+        // Verificar que la capacidad actual no sea negativa (caso de error)
+        if (this.currentCapacity < 0) {
+            logger.warning(String.format("Capacidad actual del vehículo %s es negativa. Ajustando a 0.", this.getCode()));
+            this.currentCapacity = 0;
+        }
+
+        // Disminuir la capacidad del almacén
         warehouseManager.decreaseCapacity(currentOrder.getDestinationUbigeo(), deliverablePackages);
+
+        // Log de la actualización de la capacidad
+        logger.info(String.format("Vehículo %s ha liberado %d paquetes. Capacidad actual: %d paquetes.",
+                this.getCode(), deliverablePackages, this.currentCapacity));
     }
 
     private void updateOrderStatus(LocalDateTime currentTime, int deliverablePackages) {
