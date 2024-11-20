@@ -1,8 +1,8 @@
 import { useAtomValue, useAtom } from "jotai";
 import { filteredLocationsAtom, searchInputAtom, searchQueryAtom } from '../../atoms/locationAtoms';
 import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { ChevronDown, Filter, Map, SearchX } from "lucide-react";
-import { useEffect, useCallback, useState } from 'react';
+import { ChevronDown, Filter, Map, SearchX, X } from "lucide-react";
+import { useEffect, useCallback, useState, useRef } from 'react';
 import CapacidadTotalAlmacenes from '../Components/CapacidadTotalAlmacenes';
 import LocationCard from './LocationCard';
 import { useWarehouseWebSocket } from '../../hooks/useWarehouseWebSocket';
@@ -20,25 +20,31 @@ export default function OpcionAlmacenes() {
   const [selectedLocationIndex, setSelectedLocationtIndex] = useState(null);
   const [, setSearchQuery] = useAtom(searchQueryAtom);
   const [isFilterModalOpen, setFilterModalOpen] = useState(false); // Estado para el modal de filtros
-  const [selectedKeys, setSelectedKeys] = useState(new Set());
-  const selectedValue = selectedKeys.size > 0 
-        ? Array.from(selectedKeys).join(", ") 
-        : "Seleccione una ubicación";
+  const [departments, setDepartments] = useState(null);
+  const [storageTypes, setStorageTypes] = useState(null);
+  const [loadingFilters, setLoadingFilters] = useState(true);
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  const [vehicleTypes, setVehicleTypes] = useState([])
+  
+  const initialFilterStateRef = useRef(
+      {
+      storageType: "",
+      department: "",
+      minQuantity: 0,
+      maxQuantity: null,
+      }
+  )
+  const [locationsFilter, setLocationsFilter] = useState(initialFilterStateRef.current);
 
-  // Estado para la lista ordenada de ubicaciones
-  const [sortedLocations, setSortedLocations] = useState([]);
-
-  // Actualizar la lista ordenada cada vez que `locations` cambie
+  
   useEffect(() => {
+    if(!isFilterModalOpen)return;
+    setLoadingFilters(true)
+    setDepartments(Array.isArray(locations) ? [...new Set(locations.map(location => location.department))].sort((a, b) => a.localeCompare(b)): []);
+    setStorageTypes(["PRINCIPAL", "OFICINA"]);
+    setLoadingFilters(false)
+}, [isFilterModalOpen]);
     
-    const sorted = [...locations].sort((a, b) => {
-      if (a.type === 'warehouse' && b.type !== 'warehouse') return -1;
-      if (a.type !== 'warehouse' && b.type === 'warehouse') return 1;
-      return a.province.localeCompare(b.province);
-    });
-    setSortedLocations(sorted);
-      
-  }, [locations]);
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -47,6 +53,52 @@ export default function OpcionAlmacenes() {
 
     return () => clearTimeout(debounceTimeout);
   }, [searchInput, setSearchQuery]);
+
+
+
+  useEffect(() => {
+        
+    if(!locations){
+        setFilteredLocations([]);
+        return
+    }
+    
+    if(locationsFilter === initialFilterStateRef.current){
+        setFilteredLocations(locations)
+        return
+    }
+        
+    const filtered = locations.filter((location) => {
+        
+      // Filtrar por departamento
+        const matchesType = locationsFilter.storageType
+        ? (location.type === "warehouse" && locationsFilter.storageType === "PRINCIPAL")||
+        (location.type === "office" && locationsFilter.storageType === "OFICINA")
+        : true;
+      
+        // Filtrar por departamento
+        const matchesDepartment = locationsFilter.department
+        ? location.department === locationsFilter.department
+        : true;
+    
+        // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
+        const matchesMinQuantity = locationsFilter.minQuantity
+        ? location.capacity >= locationsFilter.minQuantity
+        : true;
+
+        // Filtrar por maxQuantity (si se tiene un valor en shipmentsFilter.maxQuantity)
+        const matchesMaxQuantity = locationsFilter.maxQuantity
+            ? location.capacity <= locationsFilter.maxQuantity
+            : true;
+
+
+      // Retornar true solo si todos los filtros coinciden
+      return matchesType && matchesDepartment && matchesMinQuantity && matchesMaxQuantity
+    });
+  
+    // Establecer la lista filtrada en filteredShipments
+    setFilteredLocations(filtered);
+}, [locations, locationsFilter]);
 
   const handleSearchChange = useCallback((e) => {
     setSearchInput(e.target.value);
@@ -68,14 +120,14 @@ export default function OpcionAlmacenes() {
     </div>
   );
 
-  const warehouseCount = sortedLocations?.filter(l => l?.type === 'warehouse').length || 0;
+  //const warehouseCount = filteredLocations?.filter(l => l?.type === 'warehouse').length || 0;
 
-  const hasInitialData = Array.isArray(sortedLocations);
-  const hasSearchResults = hasInitialData && sortedLocations.length > 0;
+  const hasInitialData = Array.isArray(locations);
+  const hasSearchResults = hasInitialData && filteredLocations.length > 0;
   const isSearching = searchInput.length > 0;
 
   const Row = ({ index, style }) => {
-    const location = sortedLocations[index];
+    const location = filteredLocations[index];
     return (
       <div style={style}
       onMouseDown={() => {
@@ -109,22 +161,49 @@ export default function OpcionAlmacenes() {
               onClear={() => setSearchInput('')}
               isClearable
             />
-            <Button
-              disableRipple={true}
-              startContent={<Filter size="18" />}
-              className="bg-[#F4F4F4]"
-              onClick={
-                  ()=>{
-                      setFilterModalOpen(true)
-                  }
+              {locationsFilter === initialFilterStateRef.current?
+                        (
+                        <Button
+                            disableRipple={true}
+                            startContent={<Filter size="18" />}
+                            className="bg-[#F4F4F4] text-black"
+                            onClick={
+                                ()=>{
+                                    setFilterModalOpen(true)
+                                }
+                            }
+                        >
+                            Filtros
+                        </Button>
+                        )
+                        :
+                        (
+                            <>
+                            <Button
+                                disableRipple={true}
+                                startContent={<Filter size="18" />}
+                                className="bg-principal text-white"
+                                onClick={
+                                    ()=>{
+                                        setFilterModalOpen(true)
+                                    }
+                                }
+                            >
+                                Filtros
+                            </Button>
+                            <div 
+                                className="hover:bg-gray-100 hover:rounded-full cursor-pointer transition-all duration-200"
+                                onClick={() => setLocationsFilter(initialFilterStateRef.current)}
+                            >
+                            <X size="18" />
+                            </div>
+                            </>
+                        )
               }
-            >
-            Filtros
-            </Button>
           </div>
 
           <div className="text-right text-sm text-[#939393]">
-            Cantidad de almacenes: {warehouseCount}
+            Cantidad de almacenes: {filteredLocations.length}
           </div>
 
           <CapacidadTotalAlmacenes />
@@ -137,7 +216,7 @@ export default function OpcionAlmacenes() {
                 {({ height, width }) => (
                   <List
                     height={height}
-                    itemCount={sortedLocations.length}
+                    itemCount={filteredLocations.length}
                     itemSize={200}
                     width={width}
                   >
@@ -165,21 +244,21 @@ export default function OpcionAlmacenes() {
           >
               <ModalContent className="h-[800px] min-w-[850px]">
                   <ModalHeader>
-                      {"Información de " + (sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
-                      `oficina ${sortedLocations[selectedLocationIndex].province}`
+                      {"Información de " + (filteredLocations && filteredLocations[selectedLocationIndex] && filteredLocations[selectedLocationIndex].type==="office" ?
+                      `oficina ${filteredLocations[selectedLocationIndex].province}`
                       :
-                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
-                      `almacén ${sortedLocations[selectedLocationIndex].province}`
+                      filteredLocations && filteredLocations[selectedLocationIndex] && filteredLocations[selectedLocationIndex].type==="warehouse" ?
+                      `almacén ${filteredLocations[selectedLocationIndex].province}`
                       :
                       ""
                       )}
                   </ModalHeader>
                   <ModalBody>
-                      {sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="office" ?
-                      <ModalOficina office={sortedLocations[selectedLocationIndex]} />
+                      {filteredLocations && filteredLocations[selectedLocationIndex] && filteredLocations[selectedLocationIndex].type==="office" ?
+                      <ModalOficina office={filteredLocations[selectedLocationIndex]} />
                       :
-                      sortedLocations && sortedLocations[selectedLocationIndex] && sortedLocations[selectedLocationIndex].type==="warehouse" ?
-                      <ModalAlmacen warehouse={sortedLocations[selectedLocationIndex]}/>
+                      filteredLocations && filteredLocations[selectedLocationIndex] && filteredLocations[selectedLocationIndex].type==="warehouse" ?
+                      <ModalAlmacen warehouse={filteredLocations[selectedLocationIndex]}/>
                       :
                       <></>
                       }
@@ -216,7 +295,7 @@ export default function OpcionAlmacenes() {
                                                 disableRipple={true}
                                             >
                                                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    {selectedValue}
+                                                {locationsFilter.storageType || "Selecciona un tipo"}
                                                 </span>
                                                 <ChevronDown size={18} className="absolute right-4" />
                                             </Button>
@@ -224,13 +303,19 @@ export default function OpcionAlmacenes() {
                                         <DropdownMenu
                                             closeOnSelect={true}
                                             selectionMode="single"
-                                            selectedKeys={selectedKeys}
-                                            onSelectionChange={setSelectedKeys}
+                                            onSelectionChange={(keys) => {
+                                              const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                              setLocationsFilter((prev) => ({
+                                                  ...prev,
+                                                  storageType: value,
+                                              }));
+                                              }}
                                             disableRipple={true}
-                                            className="w-full"
+                                            className="max-h-[400px] overflow-y-auto w-full"
                                         >
-                                            <DropdownItem key="text">Oficina</DropdownItem>
-                                            <DropdownItem key="number">Almacén Principal</DropdownItem>
+                                            {storageTypes && storageTypes.length > 0 && storageTypes.map((storageType) => (
+                                                  <DropdownItem key={storageType}>{storageType}</DropdownItem>
+                                            ))}
                                         </DropdownMenu>
                                 </Dropdown>
                                 </div>
@@ -238,78 +323,45 @@ export default function OpcionAlmacenes() {
                             </div>
 
                             <div className="w-full flex flex-row gap-4">
-                                <div className="flex flex-col gap-1 w-full">
+                                <div className="flex flex-col gap-1 w-1/2">
                                     <div className="regular_bold">
                                         Departamento:
                                     </div>
                                     <div className="w-full flex flex-row justify-between gap-2">
-                                    <Dropdown
-                                                className>
-                                                <DropdownTrigger>
-                                                    <Button
-                                                        variant="bordered"
-                                                        className="capitalize w-full relative"
-                                                        disableRipple={true}
-                                                    >
-                                                        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                            {selectedValue}
-                                                        </span>
-                                                        <ChevronDown size={18} className="absolute right-4" />
-                                                    </Button>
-                                                </DropdownTrigger>
-                                                <DropdownMenu
-                                                    closeOnSelect={true}
-                                                    selectionMode="single"
-                                                    selectedKeys={selectedKeys}
-                                                    onSelectionChange={setSelectedKeys}
-                                                    disableRipple={true}
-                                                    className="w-full"
-                                                    
-                                                >
-                                                    <DropdownItem key=">">{">"}</DropdownItem>
-                                                    <DropdownItem key="<">{"<"}</DropdownItem>
-                                                    <DropdownItem key="=">{"="}</DropdownItem>
-                                                </DropdownMenu>
-                                            </Dropdown>
+                                      <Dropdown className="my-dropdown">
+                                              <DropdownTrigger>
+                                                  <Button
+                                                  variant="bordered"
+                                                  className="capitalize w-full relative"
+                                                  disableRipple={true}
+                                                  >
+                                                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                      {locationsFilter.department || "Selecciona una ubicación"}
+                                                  </span>
+                                                  <ChevronDown size={18} className="absolute right-4" />
+                                                  </Button>
+                                              </DropdownTrigger>
+                                              <DropdownMenu
+                                                  closeOnSelect={true}
+                                                  selectionMode="single"
+                                                  onSelectionChange={(keys) => {
+                                                  const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                                  setLocationsFilter((prev) => ({
+                                                      ...prev,
+                                                      department: value,
+                                                  }));
+                                                  }}
+                                                  disableRipple={true}
+                                                  className="max-h-[400px] overflow-y-auto w-full"
+                                              >
+                                                  {departments && departments.length > 0 && departments.map((department) => (
+                                                  <DropdownItem key={department}>{department}</DropdownItem>
+                                                  ))}
+                                              </DropdownMenu>
+                                          </Dropdown>
 
                                 </div>
                                 </div>
-                                <div className="flex flex-col gap-1 w-full">
-                                    <div className="regular_bold">
-                                        Provincia:
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between gap-2">
-                                      <Dropdown
-                                        className>
-                                        <DropdownTrigger>
-                                            <Button
-                                                variant="bordered"
-                                                className="capitalize w-full relative"
-                                                disableRipple={true}
-                                            >
-                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    {selectedValue}
-                                                </span>
-                                                <ChevronDown size={18} className="absolute right-4" />
-                                            </Button>
-                                        </DropdownTrigger>
-                                        <DropdownMenu
-                                            closeOnSelect={true}
-                                            selectionMode="single"
-                                            selectedKeys={selectedKeys}
-                                            onSelectionChange={setSelectedKeys}
-                                            disableRipple={true}
-                                            className="w-full"
-                                            
-                                        >
-                                            <DropdownItem key=">">{">"}</DropdownItem>
-                                            <DropdownItem key="<">{"<"}</DropdownItem>
-                                            <DropdownItem key="=">{"="}</DropdownItem>
-                                        </DropdownMenu>
-                                      </Dropdown>
-
-                                    </div>
-                                  </div>
                                   
                             </div>
                             <div className="w-1/2 flex flex-row gap-4">
@@ -320,18 +372,37 @@ export default function OpcionAlmacenes() {
                                   <div className="w-full flex flex-row justify-between gap-2">
                                       <Input
                                           type="number"
-                                          defaultValue={0}
+                                          value={locationsFilter.minQuantity || 0}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
+                                          onChange={(e) => {
+                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            
+                                            setLocationsFilter((prev) => ({
+                                                ...prev,
+                                                minQuantity: value,
+                                            }));
+                                            
+                                        }}
                                       />
                                       <div className="flex items-center">hasta</div>
                                       <Input
                                           type="number"
-                                          defaultValue={0}
+                                          value={locationsFilter.maxQuantity || 0}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
+                                          onChange={(e) => {
+                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            
+                                            setLocationsFilter((prev) => ({
+                                                ...prev,
+                                                maxQuantity: value,
+                                            }));
+                                            
+                                            
+                                        }}
                                       />
 
                                   </div>
@@ -341,17 +412,11 @@ export default function OpcionAlmacenes() {
                         
                     </ModalBody>
                     <ModalFooter>
-                        <div className="w-full flex flex-row justify-between">
+                      <div className="w-full flex flex-row justify-end">
                             <Button
-                                onClick={() => setFilterModalOpen(false)}
+                                onClick={() => setLocationsFilter(initialFilterStateRef.current)}
                             >
                                 Eliminar Filtros
-                            </Button>
-                            <Button
-                                onClick={() => setFilterModalOpen(false)}
-                                className="bg-principal text-white"
-                            >
-                                Aplicar Filtros
                             </Button>
                         </div>
                         

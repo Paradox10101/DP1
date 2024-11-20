@@ -2,6 +2,7 @@ package com.odiparpack.models;
 
 import com.odiparpack.DataLoader;
 import com.odiparpack.Main;
+import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.services.LocationService;
 import org.springframework.cglib.core.Local;
 
@@ -97,6 +98,16 @@ public class Vehicle {
     // Hora de inicio del viaje
     private LocalDateTime journeyStartTime;
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
+    private LocalDateTime maintenanceStartTime;
+
+    // Métodos getter y setter para maintenanceStartTime
+    public LocalDateTime getMaintenanceStartTime() {
+        return maintenanceStartTime;
+    }
+
+    public void setMaintenanceStartTime(LocalDateTime maintenanceStartTime) {
+        this.maintenanceStartTime = maintenanceStartTime;
+    }
 
     public int getCurrentSegmentIndex() {
         return currentSegmentIndex;
@@ -135,7 +146,7 @@ public class Vehicle {
         public Position getPosition() { return position; }
     }
 
-    // Método para agregar una posición al historial
+    /*// Método para agregar una posición al historial
     public void addPositionToHistory(LocalDateTime timestamp, Position position) {
         positionHistory.add(new PositionTimestamp(timestamp, position));
     }
@@ -143,52 +154,9 @@ public class Vehicle {
     // Getter para el historial de posiciones
     public List<PositionTimestamp> getPositionHistory() {
         return positionHistory;
-    }
-
-    // Método para obtener la posición actual del vehículo
-    /*public Position getCurrentPosition(LocalDateTime simulationTime, Map<String, Location> locations) {
-        if (route == null || route.isEmpty() || journeyStartTime == null) {
-            // El vehículo está estacionario en su ubicación actual
-            Location loc = locations.get(currentLocationUbigeo);
-            return new Position(loc.getLatitude(), loc.getLongitude());
-        }
-
-        // Calcular el tiempo transcurrido desde el inicio del viaje en minutos
-        long minutesSinceStart = ChronoUnit.MINUTES.between(journeyStartTime, simulationTime);
-
-        long accumulatedTime = 0;
-        for (RouteSegment segment : route) {
-            accumulatedTime += segment.getDurationMinutes();
-            if (minutesSinceStart <= accumulatedTime) {
-                // El vehículo está dentro de este segmento
-                long timeInSegment = segment.getDurationMinutes() - (accumulatedTime - minutesSinceStart);
-                double progress = (double) timeInSegment / segment.getDurationMinutes();
-
-                // Obtener las coordenadas de las ubicaciones de inicio y fin directamente por ubigeo
-                String fromUbigeo = segment.getFromUbigeo();
-                String toUbigeo = segment.getToUbigeo();
-
-                Location fromLocation = locations.get(fromUbigeo);
-                Location toLocation = locations.get(toUbigeo);
-
-                if (fromLocation == null || toLocation == null) {
-                    logger.warning("No se encontró ubicación para los ubigeos: " + fromUbigeo + ", " + toUbigeo);
-                    return null;
-                }
-
-                // Interpolar la posición
-                double lat = fromLocation.getLatitude() + (toLocation.getLatitude() - fromLocation.getLatitude()) * progress;
-                double lon = fromLocation.getLongitude() + (toLocation.getLongitude() - fromLocation.getLongitude()) * progress;
-
-                return new Position(lat, lon);
-            }
-        }
-
-        // Si el viaje está completo, el vehículo está en la última ubicación
-        Location loc = locations.get(getCurrentLocationUbigeo());
-        return new Position(loc.getLatitude(), loc.getLongitude());
     }*/
-    public Position getCurrentPosition(LocalDateTime simulationTime) {
+
+    public Position getCurrentPosition(LocalDateTime simulationTime, SimulationRouter.SimulationType simulationType) {
         LocationService locationService = LocationService.getInstance();
 
         if (route == null || route.isEmpty() || journeyStartTime == null) {
@@ -200,14 +168,27 @@ public class Vehicle {
             return new Position(loc.getLatitude(), loc.getLongitude());
         }
 
-        long minutesSinceStart = ChronoUnit.MINUTES.between(journeyStartTime, simulationTime);
+        long elapsedTime;
+        if (simulationType == SimulationRouter.SimulationType.DAILY) {
+            elapsedTime = ChronoUnit.SECONDS.between(journeyStartTime, simulationTime);
+        } else {
+            elapsedTime = ChronoUnit.MINUTES.between(journeyStartTime, simulationTime);
+        }
+
         long accumulatedTime = 0;
 
         for (RouteSegment segment : route) {
             accumulatedTime += segment.getDurationMinutes();
-            if (minutesSinceStart <= accumulatedTime) {
-                long timeInSegment = segment.getDurationMinutes() - (accumulatedTime - minutesSinceStart);
-                double progress = (double) timeInSegment / segment.getDurationMinutes();
+            if (elapsedTime <= accumulatedTime * (simulationType == SimulationRouter.SimulationType.DAILY ? 60 : 1)) {
+                long timeInSegment;
+                double progress;
+                if (simulationType == SimulationRouter.SimulationType.DAILY) {
+                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes()) * 60;
+                    progress = (double) timeInSegment / (segment.getDurationMinutes() * 60);
+                } else {
+                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes());
+                    progress = (double) timeInSegment / segment.getDurationMinutes();
+                }
 
                 Location fromLocation = locationService.getLocation(segment.getFromUbigeo());
                 Location toLocation = locationService.getLocation(segment.getToUbigeo());
@@ -482,15 +463,15 @@ public class Vehicle {
         this.route = new ArrayList<>(route);
     }
 
-    public void updateStatus(LocalDateTime currentTime, WarehouseManager warehouseManager) {
+    public void updateStatus(LocalDateTime currentTime, WarehouseManager warehouseManager, SimulationRouter.SimulationType type) {
         if (isWaiting(currentTime)) {
             return;
         }
 
         // Calcular la posición actual
-        Position currentPosition = getCurrentPosition(currentTime);
+        //Position currentPosition = getCurrentPosition(currentTime, type);
         // Agregar la posición al historial
-        addPositionToHistory(currentTime, currentPosition);
+        //addPositionToHistory(currentTime, currentPosition);
 
         if (status == null) { // || currentOrder == null
             return;
@@ -499,7 +480,7 @@ public class Vehicle {
         if (hasArrivedAtDestination(currentTime)) {
             handleArrivalAtDestination(currentTime, warehouseManager);
         } else {
-            updateCurrentSegmentStatus(currentTime);
+            updateCurrentSegmentStatus(currentTime, type);
         }
     }
 
@@ -690,11 +671,25 @@ public class Vehicle {
         //this.setAvailable(true);
     }
 
-    private void updateCurrentSegmentStatus(LocalDateTime currentTime) {
-        long elapsedMinutes = ChronoUnit.MINUTES.between(status.getSegmentStartTime(), currentTime);
-        logger.info(String.format("Vehículo %s - Velocidad: %.2f km/h, Tramo: %s (%s), Tiempo en tramo: %d minutos",
+    private void updateCurrentSegmentStatus(LocalDateTime currentTime, SimulationRouter.SimulationType simulationType) {
+        long elapsedTime;
+        String timeUnit;
+
+        // Determinar la unidad de tiempo basada en el tipo de simulación
+        if (simulationType == SimulationRouter.SimulationType.DAILY) {
+            // Simulación diaria: calcular en segundos
+            elapsedTime = ChronoUnit.SECONDS.between(status.getSegmentStartTime(), currentTime);
+            timeUnit = "segundos";
+        } else {
+            // Otras simulaciones: calcular en minutos
+            elapsedTime = ChronoUnit.MINUTES.between(status.getSegmentStartTime(), currentTime);
+            timeUnit = "minutos";
+        }
+
+        // Registro actualizado con la unidad de tiempo correcta
+        logger.info(String.format("Vehículo %s - Velocidad: %.2f km/h, Tramo: %s (%s), Tiempo en tramo: %d %s",
                 this.getCode(), status.getCurrentSpeed(), status.getCurrentSegment(),
-                status.getCurrentSegmentUbigeo(), elapsedMinutes));
+                status.getCurrentSegmentUbigeo(), elapsedTime, timeUnit));
     }
 
     private LocalDateTime calculateEstimatedArrivalTime(LocalDateTime startTime, List<RouteSegment> route) {

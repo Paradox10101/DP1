@@ -1,8 +1,10 @@
 package com.odiparpack.tasks;
 
+import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.RouteSegment;
 import com.odiparpack.models.SimulationState;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -10,20 +12,34 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import static com.odiparpack.Main.logger;
+import static com.odiparpack.SimulationRunner.TIME_ADVANCEMENT_INTERVAL_MINUTES;
+import static com.odiparpack.SimulationRunner.TIME_ADVANCEMENT_INTERVAL_SECONDS;
 
 public class TimeAdvancementTask implements Runnable {
     private final SimulationState state;
-    private final LocalDateTime endTime;
     private final AtomicBoolean isSimulationRunning;
+    private final LocalDateTime endTime;
     private final Map<String, List<RouteSegment>> vehicleRoutes;
+    private final boolean isDaily;
 
-    public TimeAdvancementTask(SimulationState state, LocalDateTime endTime,
+    public TimeAdvancementTask(SimulationState state,
                                AtomicBoolean isSimulationRunning,
-                               Map<String, List<RouteSegment>> vehicleRoutes) {
+                               Map<String, List<RouteSegment>> vehicleRoutes,
+                               boolean isDaily) {
         this.state = state;
-        this.endTime = endTime;
         this.isSimulationRunning = isSimulationRunning;
+        this.endTime = state.getCurrentTime().plusDays(state.getSimulationType().getDays());
         this.vehicleRoutes = vehicleRoutes;
+        this.isDaily = isDaily;
+    }
+
+    private Duration getCurrentTimeToAdvance() {
+        if (isDaily) {
+            return Duration.ofSeconds(TIME_ADVANCEMENT_INTERVAL_SECONDS);
+        } else {
+            // Para simulaciones semanales/colapso, obtener el valor actual
+            return Duration.ofMinutes(TIME_ADVANCEMENT_INTERVAL_MINUTES);
+        }
     }
 
     @Override
@@ -33,26 +49,38 @@ public class TimeAdvancementTask implements Runnable {
                 return;
             }
 
-            state.updateSimulationTime();
+            // Obtener el timeToAdvance actual en cada ejecución
+            Duration timeToAdvance = getCurrentTimeToAdvance();
+            state.updateSimulationTime(timeToAdvance);
             LocalDateTime currentTime = state.getCurrentTime();
 
             // Verificar si ha pasado un día completo
-
             long hours = state.calculateIntervalTime();
             if (hours != 0 && hours % 24 == 0) {
                 // Llamar al método para guardar los pedidos del día actual
                 state.guardarPedidosDiarios();
+
+                // Si es simulación diaria, terminar después de un día
+                if (state.getSimulationType() == SimulationRouter.SimulationType.DAILY) {
+                    logger.info("Simulación diaria completada.");
+                    isSimulationRunning.set(false);
+                    state.stopSimulation();
+                    return;
+                }
             }
 
             state.updateBlockages(currentTime, state.getAllBlockages());
             state.updateVehicleStates();
             state.updateOrderStatuses();
 
-            if (currentTime.isAfter(endTime)) {
+            // Solo verificar endTime si no es simulación por colapso
+            if (state.getSimulationType() != SimulationRouter.SimulationType.COLLAPSE &&
+                    endTime != null && currentTime.isAfter(endTime)) {
                 logger.info("Simulación completada.");
                 isSimulationRunning.set(false);
                 state.stopSimulation();
             }
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en actualización de tiempo", e);
         }

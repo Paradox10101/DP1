@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 
 const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), { ssr: false });
 
-export default function PanelSimulacion({simulationStatus, handleSimulationControl, datos, toggleControls, error}){
+export default function PanelSimulacion({toggleControls, error}){
     
     const [tipoSimulacion, setTipoSimulacion] = useState(1)
     const [opcionSeleccionada, setOpcionSelecionada] = useState(1)    

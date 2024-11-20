@@ -1,3 +1,4 @@
+/*
 package com.odiparpack.simulation.vehicle;
 
 import com.google.gson.JsonArray;
@@ -12,10 +13,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+*/
 /**
  * La clase VehicleManager gestiona los vehículos, incluyendo sus estados,
  * asignación de rutas y manejo de averías.
- */
+ *//*
+
 public class VehicleManager {
     private static final Logger logger = Logger.getLogger(VehicleManager.class.getName());
 
@@ -28,14 +31,16 @@ public class VehicleManager {
     private static final Map<String, List<String>> breakdownLogs = new HashMap<>();
 
     private final SimulationState simulationState; // Añadir este campo para mantener la referencia
-    /**
+    */
+/**
      * Constructor de VehicleManager.
      *
      * @param vehicles           Mapa de vehículos gestionados.
      * @param warehouseManager   Instancia de WarehouseManager.
      * @param routeManager       Instancia de RouteManager.
      * @param maintenanceManager Instancia de MaintenanceManager.
-     */
+     *//*
+
     public VehicleManager(Map<String, Vehicle> vehicles, WarehouseManager warehouseManager,
                           RouteManager routeManager, MaintenanceManager maintenanceManager, SimulationState simulationState) {
         this.vehicles = vehicles;
@@ -50,11 +55,13 @@ public class VehicleManager {
         return breakdownLogs.getOrDefault(vehicleCode, Collections.emptyList());
     }
 
-    /**
+    */
+/**
      * Actualiza los estados de los vehículos en función del tiempo actual.
      *
      * @param currentTime El tiempo actual de la simulación.
-     */
+     *//*
+
     public void updateVehicleStates(LocalDateTime currentTime, long[][] timeMatrix) {
         lock.lock();
         try {
@@ -72,7 +79,7 @@ public class VehicleManager {
                 }
 
                 if (vehicle.shouldUpdateStatus()) {
-                    vehicle.updateStatus(currentTime, warehouseManager);
+                    //vehicle.updateStatus(currentTime, warehouseManager);
                     // Añadir la actualización de métricas aquí también
                     simulationState.updateCapacityMetrics(vehicle.getCurrentCapacity(), vehicle.getCapacity());
                     simulationState.assignOrdersCount();//AQUI NO FUNCIONA
@@ -93,11 +100,13 @@ public class VehicleManager {
         }
     }
 
-    /**
+    */
+/**
      * Registra los vehículos que necesitan nuevas rutas.
      *
      * @param vehiclesNeedingNewRoutes Lista de vehículos que necesitan nuevas rutas.
-     */
+     *//*
+
     private void logVehiclesNeedingNewRoutes(List<Vehicle> vehiclesNeedingNewRoutes) {
         String vehicleCodes = vehiclesNeedingNewRoutes.stream()
                 .map(Vehicle::getCode)
@@ -105,12 +114,14 @@ public class VehicleManager {
         logger.info("Vehículos que necesitan nuevas rutas: " + vehicleCodes);
     }
 
-    /**
+    */
+/**
      * Procesa la asignación de nuevas rutas a los vehículos.
      *
      * @param vehiclesNeedingNewRoutes Lista de vehículos que necesitan nuevas rutas.
      * @param currentTime              El tiempo actual de la simulación.
-     */
+     *//*
+
     private void processNewRoutes(List<Vehicle> vehiclesNeedingNewRoutes, LocalDateTime currentTime, long[][] timeMatrix) {
         new Thread(() -> {
             Map<Vehicle, List<RouteSegment>> calculatedRoutes = routeManager.calculateRoutesToWarehouses(vehiclesNeedingNewRoutes, mainWarehouses, timeMatrix);
@@ -127,11 +138,13 @@ public class VehicleManager {
         }).start();
     }
 
-    /**
+    */
+/**
      * Obtiene una lista de vehículos disponibles para asignaciones.
      *
      * @return Lista de vehículos disponibles.
-     */
+     *//*
+
     public List<Vehicle> getAvailableVehicles() {
         lock.lock();
         try {
@@ -143,12 +156,14 @@ public class VehicleManager {
         }
     }
 
-    /**
+    */
+/**
      * Asigna rutas a los vehículos basándose en las asignaciones proporcionadas.
      *
      * @param assignments Lista de asignaciones de vehículos.
      * @param currentTime El tiempo actual de la simulación.
-     */
+     *//*
+
     public void assignRoutesToVehicles(List<VehicleAssignment> assignments, LocalDateTime currentTime, long[][] timeMatrix) {
         lock.lock();
         try {
@@ -179,13 +194,15 @@ public class VehicleManager {
         }
     }
 
-    /**
+    */
+/**
      * Provoca una avería en un vehículo específico.
      *
      * @param vehicleCode    Código del vehículo.
      * @param breakdownType  Tipo de avería ("1", "2", "3").
      * @param currentTime    El tiempo actual de la simulación.
-     */
+     *//*
+
     public void provocarAveria(String vehicleCode, String breakdownType, LocalDateTime currentTime) {
         lock.lock();
         try {
@@ -229,12 +246,14 @@ public class VehicleManager {
         breakdownLogs.computeIfAbsent(vehicleCode, k -> new ArrayList<>()).add(message);
     }
 
-    /**
+    */
+/**
      * Obtiene las posiciones actuales de los vehículos en formato GeoJSON.
      *
      * @param currentTime El tiempo actual de la simulación.
      * @return Objeto JSON representando las posiciones de los vehículos.
-     */
+     *//*
+
     public JsonObject getCurrentPositionsGeoJSON(LocalDateTime currentTime) {
         JsonObject featureCollection = new JsonObject();
         featureCollection.addProperty("type", "FeatureCollection");
@@ -282,12 +301,15 @@ public class VehicleManager {
                 .collect(Collectors.toList());
     }
 
-    /**
+    */
+/**
      * Obtiene el mapa de vehículos gestionados.
      *
      * @return Mapa de vehículos.
-     */
+     *//*
+
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
     }
 }
+*/

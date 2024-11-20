@@ -1,3 +1,4 @@
+/*
 package com.odiparpack.simulation.state;
 
 import com.odiparpack.models.*;
@@ -11,10 +12,12 @@ import com.odiparpack.models.SimulationState;
 import java.time.LocalDateTime;
 import java.util.*;
 
+*/
 /**
  * La clase SimulationInitializer se encarga de inicializar los componentes de la simulación
  * a partir de los datos cargados por DataService.
- */
+ *//*
+
 public class SimulationInitializer {
     private final DataService dataService;
 
@@ -106,3 +109,4 @@ public class SimulationInitializer {
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 }
+*/

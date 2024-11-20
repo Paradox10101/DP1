@@ -3,6 +3,7 @@ package com.odiparpack;
 import com.google.gson.JsonObject;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
+import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
 import com.odiparpack.tasks.*;
 import com.odiparpack.websocket.ShipmentWebSocketHandler;
@@ -35,11 +36,24 @@ public class SimulationRunner {
 
     private static final Logger logger = Logger.getLogger(SimulationRunner.class.getName());
     private static final int SIMULATION_DAYS = 7;
-    private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
+
+    public static volatile int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5; // Por defecto para semanal y colapso
+    public static volatile int TIME_ADVANCEMENT_INTERVAL_SECONDS = 1; // Por defecto para diaria
+    public static volatile int SIMULATION_SPEED = 5; // Por defecto para semanal y colapso
     private static final int PLANNING_INTERVAL_MINUTES = 15;
-    public static int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5;
+
     public static ScheduledExecutorService simulationExecutorService;
     private static final int BROADCAST_INTERVAL = 500; // 100ms = 10 updates/segundo
+
+
+    public static void setSimulationParameters(int timeAdvancementValue) {
+        if (timeAdvancementValue <= 0) {
+            throw new IllegalArgumentException("Los parámetros de simulación deben ser positivos.");
+        }
+
+        TIME_ADVANCEMENT_INTERVAL_MINUTES = timeAdvancementValue;
+        logger.info("Configurada tiempo de avance de simulación: " + timeAdvancementValue);
+    }
 
     public static void initializeExecutorServices() {
         int cores = Runtime.getRuntime().availableProcessors();
@@ -67,33 +81,6 @@ public class SimulationRunner {
                     true                     // Activar el modo asíncrono para mejorar el rendimiento
             );
         }
-    }
-
-    public static void pauseSimulation() {
-        /*List<ExecutorService> executors = Arrays.asList(
-                scheduledExecutorService,
-                webSocketExecutorService
-        );
-
-        for (ExecutorService executor : executors) {
-            if (executor instanceof ScheduledExecutorService) {
-                // Para servicios programados, cancelar tareas futuras pero permitir que las actuales terminen
-                ((ScheduledExecutorService) executor).shutdown();
-            }
-        }*/
-    }
-
-    public static void resumeSimulation() {
-        /*// Reiniciar los servicios si es necesario
-        if (webSocketExecutorService == null || webSocketExecutorService.isShutdown()) {
-            webSocketExecutorService = Executors.newSingleThreadScheduledExecutor(createThreadFactory());
-        }
-        if (scheduledExecutorService == null || scheduledExecutorService.isShutdown()) {
-            scheduledExecutorService = Executors.newScheduledThreadPool(
-                    Runtime.getRuntime().availableProcessors(),
-                    createThreadFactory()
-            );
-        }*/
     }
 
     public static void stopSimulation() {
@@ -195,7 +182,7 @@ public class SimulationRunner {
         List<String> locationNames = state.getLocationNames();
         List<String> locationUbigeos = state.getLocationUbigeos();
 
-        LocalDateTime endTime = state.getCurrentTime().plusDays(SIMULATION_DAYS);
+        //LocalDateTime endTime = state.getCurrentTime().plusDays(SIMULATION_DAYS);
         AtomicBoolean isSimulationRunning = new AtomicBoolean(true);
         Map<String, List<RouteSegment>> vehicleRoutes = new ConcurrentHashMap<>();
 
@@ -206,7 +193,7 @@ public class SimulationRunner {
 
             // Programar tareas principales
             Future<?> timeAdvancement = scheduleTimeAdvancement(
-                    state, endTime, isSimulationRunning, vehicleRoutes);
+                    state, isSimulationRunning, vehicleRoutes);
             Future<?> planning = schedulePlanning(
                     state, isSimulationRunning, vehicleRoutes);
 
@@ -279,70 +266,23 @@ public class SimulationRunner {
         );
     }
 
-    /*private static void scheduleWebSocketShipmentBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
-        webSocketExecutorService.scheduleAtFixedRate(() -> {
-            try {
-                if (state.isPaused() || state.isStopped()) return;
-
-                // Broadcast shipment list via WebSocket
-                ShipmentWebSocketHandler.broadcastShipments();
-
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error in WebSocket broadcast task", e);
-            }
-        }, 0, 1000, TimeUnit.MILLISECONDS);
-    }*/
-
-    /*private static void scheduleTimeAdvancement(SimulationState state, LocalDateTime endTime,
-                                                AtomicBoolean isSimulationRunning,
-                                                Map<String, List<RouteSegment>> vehicleRoutes,
-                                                ScheduledExecutorService executorService) {
-        executorService.scheduleAtFixedRate(() -> {
-            try {
-                // Si está pausado, esperar
-                if (state.isPaused()) {
-                    return;
-                }
-
-                if (!isSimulationRunning.get() || state.isStopped()) {
-                    return;
-                }
-
-                state.updateSimulationTime();
-                LocalDateTime currentTime = state.getCurrentTime();
-
-                // Verificar si ha pasado un día completo
-
-                long hours = state.calculateIntervalTime();
-                if (hours != 0 && hours % 24 == 0) {
-                    // Llamar al método para guardar los pedidos del día actual
-                    state.guardarPedidosDiarios();
-                }
-                // Actualizar estado de la simulación
-                state.updateBlockages(currentTime, state.getAllBlockages());
-                state.updateVehicleStates();
-                state.updateOrderStatuses();
-
-                if (currentTime.isAfter(endTime)) {
-                    logger.info("Simulación completada.");
-                    isSimulationRunning.set(false);
-                    state.stopSimulation();
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error en la tarea de avance del tiempo", e);
-            }
-        }, 0, TIME_ADVANCEMENT_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
-    }*/
-
     private static Future<?> scheduleTimeAdvancement(
             SimulationState state,
-            LocalDateTime endTime,
             AtomicBoolean isSimulationRunning,
             Map<String, List<RouteSegment>> vehicleRoutes) {
 
+        Runnable task;
+        long intervalMillis;
+
+        // Determinar si es una simulación diaria o no
+        boolean isDaily = state.getSimulationType() == SimulationRouter.SimulationType.DAILY;
+        intervalMillis = 1000L; // 1 segundo real
+        task = new TimeAdvancementTask(state, isSimulationRunning, vehicleRoutes, isDaily);
+
         return scheduledExecutorService.scheduleAtFixedRate(
-                new TimeAdvancementTask(state, endTime, isSimulationRunning, vehicleRoutes),
-                0, TIME_ADVANCEMENT_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED,
+                task,
+                0,
+                intervalMillis,
                 TimeUnit.MILLISECONDS
         );
     }
@@ -354,7 +294,7 @@ public class SimulationRunner {
 
         return scheduledExecutorService.scheduleAtFixedRate(
                 new PlanificadorTask(state, isSimulationRunning, vehicleRoutes),
-                0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED,
+                0, PLANNING_INTERVAL_MINUTES * 200, // cada 3 segundos
                 TimeUnit.MILLISECONDS
         );
     }
