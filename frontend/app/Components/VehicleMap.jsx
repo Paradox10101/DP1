@@ -585,11 +585,17 @@ const getVehicleIconHtml = (vehicleType) => {
         iconoComponent={
           <IconoEstado
             Icono={Icono}
-            classNameContenedor="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"
-            classNameContenido="w-[15px] h-[15px] stroke-white z-10"
+            tipo={vehicleType}
+            capacidadUsada={capacidadUsada}
           />
         }
         vehicleData={vehicleData}
+        onViewDetail={() => {
+          // Manejar la vista detallada
+        }}
+        onReportIssue={() => {
+          // Manejar el reporte de avería
+        }}
       />
     );
 
@@ -784,49 +790,22 @@ const getVehicleIconHtml = (vehicleType) => {
       setError('Error al agregar capas de ubicaciones');
     }
   };
-
-  // Actualizar posiciones de vehículos <- asi estaba antes y nada.
-  /*useEffect(() => {
+  
+  useEffect(() => {
     if (!mapRef.current || !positions?.features) return;
-
+  
     try {
-      animateTransition(positions);
+      const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+      if (vehiclesSource) {
+        // Actualiza directamente los datos en la fuente GeoJSON existente
+        vehiclesSource.setData(positions);
+        addVehicleLayerEvents();
+      }
     } catch (error) {
       console.error('Error al actualizar posiciones:', error);
       setError('Error al actualizar posiciones de vehículos');
     }
-  }, [positions, animateTransition]);*/
-  
-    useEffect(() => {
-      let animationFrameId;
-
-      const animate = () => {
-        if (!mapRef.current || !positions?.features) return;
-
-        try {
-          const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
-          if (vehiclesSource) {
-            vehiclesSource.setData(positions);
-          }
-        } catch (error) {
-          console.error('Error al actualizar posiciones:', error);
-          setError('Error al actualizar posiciones de vehículos');
-        }
-
-        animationFrameId = requestAnimationFrame(animate);
-      };
-
-      if (positions) {
-        animationFrameId = requestAnimationFrame(() => {
-          animate();
-          addVehicleLayerEvents(); // Vincular eventos inmediatamente después de actualizar
-        });
-      }
-
-      return () => {
-        cancelAnimationFrame(animationFrameId);
-      };
-    }, [positions]);
+  }, [positions]);
    
 
   // Añadir eventos a la capa de vehículos
