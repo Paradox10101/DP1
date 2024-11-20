@@ -127,9 +127,11 @@ const VehiculoPopUp = ({
   onViewDetail,
   onReportIssue
 }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const handleViewDetail = (e) => {
     e.stopPropagation();
-    onViewDetail?.(vehicleData);
+    //onViewDetail?.(vehicleData);
+    onOpen();
   };
 
   const handleReportIssue = (e) => {
@@ -193,6 +195,28 @@ const VehiculoPopUp = ({
           Ver Detalle
         </button>
       </div>
+      {/* Modal de Detalle del Vehículo */}
+      {isOpen && (
+        <Modal
+          closeButton
+          isOpen={isOpen}
+          onClose={onClose}
+          isDismissable={true}
+          blur
+        >
+          <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
+            <ModalHeader>
+              <div className="flex flex-row gap-2">
+                <div className="subEncabezado">Información del vehículo {title}</div>
+                <StatusBadge status={estado} />
+              </div>
+            </ModalHeader>
+            <ModalBody>
+              <ModalVehiculo vehicle={vehicleData} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </div>
   );
 };
