@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VehicleRouter extends BaseRouter {
-    private final SimulationState simulationState;
-
-    public VehicleRouter(SimulationState simulationState) {
-        this.simulationState = simulationState;
+    public VehicleRouter() {
     }
 
     @Override
@@ -67,7 +64,7 @@ public class VehicleRouter extends BaseRouter {
             return createErrorResponse("Vehículo no encontrado");
         }
 
-        Position position = vehicle.getCurrentPosition(simulationState.getCurrentTime());
+        Position position = vehicle.getCurrentPosition(simulationState.getCurrentTime(), simulationState.getSimulationType());
         if (position == null) {
             return createErrorResponse("Posición no disponible");
         }
@@ -81,7 +78,7 @@ public class VehicleRouter extends BaseRouter {
         JsonArray features = new JsonArray();
 
         for (Map.Entry<String, Vehicle> entry : simulationState.getVehicles().entrySet()) {
-            Position position = entry.getValue().getCurrentPosition(simulationState.getCurrentTime());
+            Position position = entry.getValue().getCurrentPosition(simulationState.getCurrentTime(), simulationState.getSimulationType());
             if (position != null) {
                 features.add(createFeature(entry.getKey(), position));
             }

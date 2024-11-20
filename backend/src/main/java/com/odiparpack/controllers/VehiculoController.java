@@ -50,7 +50,7 @@ public class VehiculoController {
         });
 
         // Endpoint para reiniciar la simulación
-        post("/resetSimulation", (request, response) -> {
+        /*post("/resetSimulation", (request, response) -> {
             try {
                 simulationState.reset();
                 response.status(200);
@@ -59,7 +59,7 @@ public class VehiculoController {
                 response.status(500);
                 return "Error al reiniciar la simulación: " + e.getMessage();
             }
-        });
+        });*/
 
         // Endpoint para obtener el estado de un vehículo específico
         get("/vehicleState/:vehicleCode", (request, response) -> {

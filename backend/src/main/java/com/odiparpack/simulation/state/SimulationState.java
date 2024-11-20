@@ -1,3 +1,4 @@
+/*
 package com.odiparpack.simulation.state;
 
 import com.google.gson.JsonObject;
@@ -14,10 +15,12 @@ import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+*/
 /**
  * La clase SimulationState es responsable de gestionar el estado global de la simulación,
  * coordinando las interacciones entre los diferentes managers y servicios.
- */
+ *//*
+
 public class SimulationState {
     private static final Logger logger = Logger.getLogger(SimulationState.class.getName());
 
@@ -35,9 +38,11 @@ public class SimulationState {
     private volatile boolean isPaused = false;
     private volatile boolean isStopped = false;
 
-    /**
+    */
+/**
      * Constructor que inicializa el estado de la simulación y carga los datos iniciales.
-     */
+     *//*
+
     public SimulationState() {
         LocationService.getInstance(); // Inicializar el singleton de LocationService
         DataService dataService = new DataService(); // Instancia de DataService
@@ -61,53 +66,67 @@ public class SimulationState {
         return blockageManager.getCurrentTimeMatrix();
     }
 
-    /**
+    */
+/**
      * Actualiza el estado de la simulación, incluyendo bloqueos, vehículos y órdenes.
-     */
+     *//*
+
     public void updateSimulationState() {
         blockageManager.updateBlockages(currentTime);
         vehicleManager.updateVehicleStates(currentTime, getCurrentTimeMatrix());
         orderManager.updateOrderStatuses(currentTime, warehouseManager);
     }
 
-    /**
+    */
+/**
      * Pausa la simulación.
-     */
+     *//*
+
     public void pauseSimulation() {
         isPaused = true;
     }
 
-    /**
+    */
+/**
      * Reanuda la simulación.
-     */
+     *//*
+
     public void resumeSimulation() {
         isPaused = false;
     }
 
-    /**
+    */
+/**
      * Detiene la simulación.
-     */
+     *//*
+
     public void stopSimulation() {
         isStopped = true;
     }
 
-    /**
+    */
+/**
      * Verifica si la simulación está pausada.
-     */
+     *//*
+
     public boolean isPaused() {
         return isPaused;
     }
 
-    /**
+    */
+/**
      * Verifica si la simulación está detenida.
-     */
+     *//*
+
     public boolean isStopped() {
         return isStopped;
     }
 
-    /**
+    */
+/**
      * Obtiene el tiempo actual de la simulación de manera segura.
-     */
+     *//*
+
     public LocalDateTime getCurrentTime() {
         lock.lock();
         try {
@@ -117,9 +136,11 @@ public class SimulationState {
         }
     }
 
-    /**
+    */
+/**
      * Avanza el tiempo de la simulación en minutos.
-     */
+     *//*
+
     public void advanceTime(int minutes) {
         lock.lock();
         try {
@@ -129,9 +150,11 @@ public class SimulationState {
         }
     }
 
-    /**
+    */
+/**
      * Obtiene las posiciones actuales de los vehículos en formato GeoJSON.
-     */
+     *//*
+
     public JsonObject getCurrentPositionsGeoJSON() {
         return vehicleManager.getCurrentPositionsGeoJSON(currentTime);
     }
@@ -144,3 +167,4 @@ public class SimulationState {
         return vehicleManager;
     }
 }
+*/

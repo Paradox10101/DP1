@@ -6,18 +6,21 @@ import ModalContainer from "@/app/Components/ModalContainer"
 import SimulationControls from '../Components/SimulationControls';
 import { useAtom } from "jotai";
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '../../atoms/errorAtoms';
-import { simulationStatusAtom } from "@/atoms/simulationAtoms";
+import { simulationStatusAtom, simulationTypeAtom, showSimulationModalAtom } from "@/atoms/simulationAtoms";
 import { useCallback, useState, useEffect, useMemo } from "react";
 import { serverAvailableAtom } from '@/atoms/simulationAtoms';
 import { useWebSocket } from "@/hooks/useWebSocket";
 import SimulationSpeedControl from '../Components/SimulationSpeedControl';
 import MetricsDisplay from '../Components/MetricsDisplay';
+import SimulationTypeDisplay from '../Components/SimulationPanel/SimulationTypeDisplay';
+import SimulationSummary from '@/app/Components/SimulationPanel/SimulationSummary';
+import ErrorDisplay from "./ErrorDisplay"
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
   : process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const SimulationStates = {
+  const SimulationStates = {
     RUNNING: 'running',
     PAUSED: 'paused',
     STOPPED: 'stopped',
@@ -26,71 +29,89 @@ const SimulationStates = {
   
   export default function OpcionSimulacion({
     tipoSimulacion,
-    setTipoSimulacion,
-    date,
-    fechaError,
-    tiemposSimulacion,
   }) {    
     const [error, setError] = useAtom(errorAtom);
     const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
     const [serverAvailable, setServerAvailable] = useAtom(serverAvailableAtom);
+    const [simulationType] = useAtom(simulationTypeAtom);
+    const [showModal, setShowModal] = useAtom(showSimulationModalAtom);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  
     
+    // Función para traducir el tipo de simulación
+    const getSimulationTypeText = (type) => {
+      return type === 'semanal' ? 'Simulación Semanal' : 
+            type === 'colapso' ? 'Simulación hasta Colapso' : 
+            'Tipo de simulación no seleccionado';
+    };
+
     const handleWebSocketMessage = useCallback((data) => {
         //console.log('Datos recibidos del WebSocket:', data);
       }, []);
     
-      const handleConnectionChange = useCallback((status) => {
-        setServerAvailable(status === 'connected');
-        if (status !== 'connected') {
-          setSimulationStatus(SimulationStates.DISCONNECTED);
-        }
-      }, [setServerAvailable, setSimulationStatus]);
-
+    const handleConnectionChange = useCallback((status) => {
+      setServerAvailable(status === 'connected');
+      if (status !== 'connected') {
+        setSimulationStatus(SimulationStates.DISCONNECTED);
+      }
+    }, [setServerAvailable, setSimulationStatus]);
+  
     const { connect, checkStatus } = useWebSocket({
-        onMessage: handleWebSocketMessage,
-        onConnectionChange: handleConnectionChange,
+      onMessage: handleWebSocketMessage,
+      onConnectionChange: handleConnectionChange,
     });
 
-    const handleSimulationControl = useCallback(async (action) => {
-        if (!error || error.type !== ErrorTypes.CONNECTION) {
-          try {
-            const endpoint = simulationStatus === 'paused' && action === 'start'
-              ? 'resume'
-              : action;
-            
-              const response = await fetch(`${API_BASE_URL}/simulation/${endpoint}`, {
-              method: 'POST',
-            });
-            
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || `Failed to ${action} simulation`);
-            }
-            
-            switch (action) {
-              case 'start':
-                setSimulationStatus(SimulationStates.RUNNING);
-                break;
-              case 'pause':
-                setSimulationStatus(SimulationStates.PAUSED);
-                break;
-              case 'stop':
-                setSimulationStatus(SimulationStates.STOPPED);
-                break;
-            }
-            setError(null);
-          } catch (err) {
-            console.error(`Error ${action}ing simulation:`, err);
-            checkStatus();
-          }
+    // Manejadores específicos para cada acción
+  const handlePauseResume = useCallback(async () => {
+    if (!error || error.type !== ErrorTypes.CONNECTION) {
+      try {
+        const action = simulationStatus === SimulationStates.RUNNING ? 'pause' : 'resume';
+        const response = await fetch(`${API_BASE_URL}/simulation/${action}`, {
+          method: 'POST',
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Failed to ${action} simulation`);
         }
-      }, [simulationStatus, setSimulationStatus, setError, error]);
+        
+        setSimulationStatus(
+          action === 'pause' ? SimulationStates.PAUSED : SimulationStates.RUNNING
+        );
+        setError(null);
+      } catch (err) {
+        console.error('Error toggling simulation:', err);
+        checkStatus();
+      }
+    }
+  }, [simulationStatus, setSimulationStatus, setError, error, checkStatus]);
+
+  const handleStop = useCallback(async () => {
+    if (!error || error.type !== ErrorTypes.CONNECTION) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/simulation/stop`, {
+          method: 'POST',
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to stop simulation');
+        }
+        
+        setSimulationStatus(SimulationStates.STOPPED);
+        setError(null);
+      } catch (err) {
+        console.error('Error stopping simulation:', err);
+        checkStatus();
+      }
+    }
+  }, [setSimulationStatus, setError, error, checkStatus]);
   
-    const effectiveStatus = useMemo(() => 
-        error?.type === ErrorTypes.CONNECTION 
-          ? SimulationStates.DISCONNECTED 
-          : simulationStatus
-      , [error, simulationStatus]);
+  const effectiveStatus = useMemo(() => 
+    error?.type === ErrorTypes.CONNECTION 
+      ? SimulationStates.DISCONNECTED 
+      : simulationStatus
+  , [error, simulationStatus]);
     
     useEffect(() => {
         console.log("estado: ", effectiveStatus);
@@ -100,99 +121,46 @@ const SimulationStates = {
         console.log("servidor disponible: ", serverAvailable);
     }, [serverAvailable])
 
-    // Hook para controlar el modal
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
 return (
 
-        <div className="h-full flex flex-col justify-between">
+        <div className="h-full flex flex-col justify-between gap-2">
             <div className="flex flex-col gap-3 justify-between">
-                <div className="w-full flex flex-col gap-2 justify-between">
-                    <div >
-                        <span className="regular_bold">Tipo de Simulación</span>
-                    </div>
-                    <Tabs
-                      selectedKey={tipoSimulacion}
-                      onSelectionChange={setTipoSimulacion}
-                      className="bg-grisFondo flex flex-col rounded border-2"
-                      classNames={{
-                        tab: "text-white data-[selected=true]:text-white",
-                        tabContent: "group-data-[selected=true]:text-white",
-                        cursor: "bg-blue-500",
-                        panel: "text-white"
-                      }}
-                    >
-                      <Tab 
-                        key="1" 
-                        title="Semanal"
-                        className={`${
-                          tipoSimulacion === "1" ? "bg-blue-500" : "bg-blanco"
-                        } rounded focus:outline-none`}
-                      />
-                      <Tab 
-                        key="2" 
-                        title="Colapso"
-                        className={`${
-                          tipoSimulacion === "2" ? "bg-blue-500" : "bg-blanco"
-                        } rounded focus:outline-none`}
-                      />
-                    </Tabs>
-                </div>
-                
-                <div className="w-full flex flex-col gap-1">
-                    <div>
-                        <span className="regular_bold">Fecha de Inicio</span>
-                    </div>
-                    <div className="flex w-full gap-4">
-                        <div className="flex flex-col gap-1">
-                            <div>
-                            <input
-                                id="date-input"
-                                type="date"
-                                value={date !== null ? date : ""}
-                                className="border-2 stroke-black rounded-2xl w-[180px] px-2"
-                            />
-                            </div>
-                            <div className={`text-red-500 regular h-4`}>{fechaError?"Error en la fecha ingresada":" "}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="flex w-full flex-col gap-3">
-                    <SimulationControls 
-                        simulationStatus={effectiveStatus}
-                        isServerAvailable={!error?.type || error.type !== ErrorTypes.CONNECTION}
-                        handleSimulationControl={handleSimulationControl}
-                    />
 
-                    <SimulationSpeedControl
-                        simulationStatus={effectiveStatus}
-                    />
-                </div>
+              {tipoSimulacion !== 'diaria' && (
+                <SimulationTypeDisplay 
+                  simulationType={simulationType}
+                  simulationStatus={effectiveStatus}
+                  setShowModal={setShowModal}
+                />
+              )}
+                
+              <div className="flex w-full flex-col gap-3">
+                <SimulationControls 
+                  simulationStatus={effectiveStatus}
+                  isServerAvailable={!error?.type || error.type !== ErrorTypes.CONNECTION}
+                  onPauseResume={handlePauseResume}
+                  onStop={handleStop}
+                />
 
-                {error?.message && (
-                    <div className="p-2 mb-2 text-sm text-red-600 bg-red-100 rounded-lg">
-                        {error.message}
-                    </div>
+                {tipoSimulacion !== 'diaria' && (
+                  <SimulationSpeedControl
+                    simulationStatus={effectiveStatus}
+                  />
                 )}
-                
-                <div className="flex flex-col gap-3">
-                    <div>
-                        <span className="regular_bold">Resumen de la simulación</span>
-                    </div>
-                    <MetricsDisplay/>
-                </div>
+              </div>
+
+              <ErrorDisplay error={error}/>
+              <SimulationSummary/>
 
             </div>
-            <div>
-                <Button disableRipple={true} 
+            <Button disableRipple={true} 
                     className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
                     startContent={<ChartColumnIncreasing />}
                     onClick={onOpen}
-                >
-                    Visualizar Reporte
-                </Button>    
-                
-            </div>
+            >
+              Visualizar Reporte
+            </Button>
             <ModalContainer
                 isOpen={isOpen}
                 onOpen={onOpen}
@@ -202,7 +170,7 @@ return (
                     <div className="text-xl font-bold">Reporte de Simulación</div>
                 </div>
                 }
-                body={tipoSimulacion === "1" ? <Dashboard /> : <CollapseDashboard />}
+                body={<Dashboard />}
             />
         </div>
         

@@ -253,7 +253,8 @@ public class SimulationController {
         return breakdownType.equals("1") || breakdownType.equals("2") || breakdownType.equals("3");
     }
 }
-*/
+*//*
+
 package com.odiparpack.controllers;
 
 import com.google.gson.Gson;
@@ -322,7 +323,8 @@ public class SimulationController {
     }
 
     // Método para iniciar el servidor
-    /*public void start() {
+    */
+/*public void start() {
         port(4567);
 
         // Configure WebSockets before any route mapping
@@ -337,7 +339,8 @@ public class SimulationController {
         // Start Spark server
         init();
 
-    }*/
+    }*//*
+
 
 
     private void setupRoutes() {
@@ -787,7 +790,7 @@ public class SimulationController {
         }
         simulationExecutor = null;
         simulationFuture = null;
-        simulationState.reset(); // Necesitas implementar este método en SimulationState
+        //simulationState.reset(); // Necesitas implementar este método en SimulationState
     }
 
     private void stopSimulation() {
@@ -825,7 +828,8 @@ public class SimulationController {
         }
     }
 
-    /*private void runSimulation() {
+    */
+/*private void runSimulation() {
         try {
             while (isSimulationRunning && !isShutdown) {
                 simulationState.advanceTime();
@@ -838,9 +842,11 @@ public class SimulationController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }*/
+    }*//*
+
 
     private void pauseSimulation() {
         simulationState.pauseSimulation();
     }
 }
+*/

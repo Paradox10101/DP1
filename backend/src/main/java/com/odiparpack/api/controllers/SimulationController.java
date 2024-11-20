@@ -15,7 +15,14 @@ import spark.Spark;
 import static com.odiparpack.Main.initializeSimulationState;
 import static spark.Spark.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +32,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import java.time.LocalDateTime;
 
 public class SimulationController {
     private SimulationState simulationState;
@@ -36,14 +44,14 @@ public class SimulationController {
     // Inicializar dotenv para cargar las variables de entorno
     private static final Dotenv dotenv = Dotenv.load();
 
-    public SimulationController(SimulationState simulationState) {
-        this.simulationState = simulationState;
+    public SimulationController() {
         this.routers = Arrays.asList(
                 new LocationRouter(),
-                new VehicleRouter(simulationState),
-                new SimulationRouter(simulationState, this),
-                new ReportRouter(simulationState),
-                new ShipmentRouter(simulationState)
+                new VehicleRouter(),
+                new SimulationRouter(this),
+                new ReportRouter(),
+                new ShipmentRouter(),
+                new OrderRouter()
         );
     }
 
@@ -132,12 +140,36 @@ public class SimulationController {
         });
     }
 
-    public void resetSimulationState() {
+    public void initializeSimulation(LocalDateTime startDateTime, LocalDateTime endDateTime, SimulationRouter.SimulationType type) {
+        try {
+            this.simulationState = initializeSimulationState(startDateTime, endDateTime, type);
+
+            // Actualizar los routers
+            routers.forEach(router -> {
+                if (router instanceof SimulationRouter) {
+                    ((SimulationRouter) router).setSimulationState(this.simulationState);
+                } else if (router instanceof VehicleRouter) {
+                    ((VehicleRouter) router).setSimulationState(this.simulationState);
+                } else if (router instanceof ReportRouter) {
+                    ((ReportRouter) router).setSimulationState(this.simulationState);
+                } else if (router instanceof ShipmentRouter) {
+                    ((ShipmentRouter) router).setSimulationState(this.simulationState);
+                }
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize SimulationState", e);
+        }
+    }
+
+    public void resetSimulationState(LocalDateTime startDateTime, LocalDateTime endDateTime,
+                                     SimulationRouter.SimulationType type) {
         if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
             simulationExecutor.shutdownNow();
         }
+
         simulationExecutor = null;
-        SimulationState newState = createNewSimulationState();
+        SimulationState newState = createNewSimulationState(startDateTime, endDateTime, type);
         this.simulationState = newState;
 
         // Actualizar los routers
@@ -148,13 +180,56 @@ public class SimulationController {
         });
     }
 
-    private SimulationState createNewSimulationState() {
+    private SimulationState createNewSimulationState(LocalDateTime startDateTime, LocalDateTime endDateTime, SimulationRouter.SimulationType type) {
         try {
-            return initializeSimulationState();
+            return initializeSimulationState(startDateTime, endDateTime, type);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create new SimulationState", e);
         }
     }
+
+    public LocalDateTime getFirstAvailableDateTime(int year, int month) {
+        String fileName = String.format("src/main/resources/c.1inf54.ventas%04d%02d.txt", year, month);
+        File file = new File(fileName);
+
+        if (!file.exists()) {
+            logger.warning("Archivo de ventas no encontrado: " + fileName);
+            return null; // No hay pedidos para este mes
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty() || line.startsWith("#")) continue;
+
+                String[] parts = line.split(",");
+                if (parts.length < 1) continue;
+
+                // Parsear día y hora
+                String dayAndTimeStr = parts[0].trim(); // e.g., "14 00:27"
+                String[] dayTimeParts = dayAndTimeStr.split(" ");
+                if (dayTimeParts.length != 2) continue;
+
+                int day = Integer.parseInt(dayTimeParts[0]);
+                LocalTime time = LocalTime.parse(dayTimeParts[1], timeFormatter);
+
+                LocalDate date = LocalDate.of(year, month, day);
+                LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+                // Agregar logging del datetime
+                DateTimeFormatter logFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                logger.info("DateTime encontrado: " + dateTime.format(logFormatter));
+
+                return dateTime; // Retornar la primera fecha y hora disponible
+            }
+        } catch (IOException e) {
+            logger.severe("Error al leer el archivo de ventas: " + e.getMessage());
+        }
+
+        return null; // Si no se encontró ninguna fecha
+    }
+
 
     // Método para exponer a SimulationRouter
     public void handleStopSimulation() {
@@ -172,22 +247,5 @@ public class SimulationController {
         } catch (Exception e) {
             logger.severe("Error al detener el servidor: " + e.getMessage());
         }
-    }
-
-    // Métodos auxiliares para el manejo de la simulación
-    private void startSimulationThread() {
-        if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
-            logger.warning("Intento de iniciar una simulación cuando ya hay una en ejecución");
-            return;
-        }
-
-        simulationExecutor = Executors.newSingleThreadExecutor();
-        simulationFuture = simulationExecutor.submit(() -> {
-            try {
-                SimulationRunner.runSimulation(simulationState);
-            } catch (Exception e) {
-                logger.severe("Error en el hilo de simulación: " + e.getMessage());
-            }
-        });
     }
 }

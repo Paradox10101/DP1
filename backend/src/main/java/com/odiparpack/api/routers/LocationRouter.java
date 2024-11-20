@@ -47,6 +47,7 @@ public class LocationRouter extends BaseRouter {
 
             locationInfo.addProperty("province", loc.getProvince());
             locationInfo.addProperty("ubigeo", loc.getUbigeo());
+            locationInfo.addProperty("naturalRegion", loc.getNaturalRegion());
             boolean isWarehouse = almacenesPrincipales.contains(loc.getUbigeo());
             locationInfo.addProperty("type", isWarehouse ? "WAREHOUSE" : "OFFICE");
 

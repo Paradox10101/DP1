@@ -271,6 +271,7 @@ export default function OpcionEnvios() {
                     </div>
                 </>
             )}
+            
             {/* Modal */}
             {(selectedShipmentIndex!==null&&selectedVehicleIndex===null) && (
                 <Modal
