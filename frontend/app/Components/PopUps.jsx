@@ -76,13 +76,13 @@ const renderStatus = (status) => {
 const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoComponent, estado, vehicleData }) => {
     // Mover la generación de alertaIconHtmlString fuera del render para evitar problemas de renderización
     const alertaIconHtmlString = `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`;
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedVehicle, setSelectedVehicle] = useState(null);
 
     // Función para manejar el clic en "Ver Detalle"
     const handleViewDetail = () => {
       setSelectedVehicle(vehicleData); // Establece el vehículo seleccionado
-      setIsModalOpen(true); // Abre el modal
+      onOpen(); // Abre el modal
     };
 
     return (
@@ -93,15 +93,20 @@ const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoCompon
               {iconoComponent}
               <h3 className="font-semibold text-base text-gray-800">Vehículo: {title}</h3>
             </div>
-            <span className={"pequenno border " +
-              (
-                estado === "En Tránsito" ? "bg-[#284BCC] text-[#BECCFF] rounded-xl w-[100px] text-center" :
-                estado === "En Almacén" ? "bg-[#DEA71A] text-[#F9DF9B] rounded-xl w-[100px] text-center" :
-                estado === "Averiado" ? "bg-[#BE0627] text-[#FFB9C1] rounded-xl w-[100px] text-center" :
-                estado === "En Mantenimiento" ? "bg-[#7B15FA] text-[#D0B0F8] rounded-xl w-[100px] text-center" :
-                ""
-              )
-            }>
+            <span
+              className={
+                "pequenno border " +
+                (estado === "En Tránsito"
+                  ? "bg-[#284BCC] text-[#BECCFF] rounded-xl w-[100px] text-center"
+                  : estado === "En Almacén"
+                  ? "bg-[#DEA71A] text-[#F9DF9B] rounded-xl w-[100px] text-center"
+                  : estado === "Averiado"
+                  ? "bg-[#BE0627] text-[#FFB9C1] rounded-xl w-[100px] text-center"
+                  : estado === "En Mantenimiento"
+                  ? "bg-[#7B15FA] text-[#D0B0F8] rounded-xl w-[100px] text-center"
+                  : "")
+              }
+            >
               {estado}
             </span>
           </div>
@@ -110,7 +115,12 @@ const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoCompon
           </div>
           <div className="flex justify-between items-center mt-2">
             <button className="bg-red-500 text-white py-1 px-3 rounded flex items-center transition duration-300 hover:bg-red-700">
-              <div dangerouslySetInnerHTML={{ __html: alertaIconHtmlString }} className="mr-2" />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`
+                }}
+                className="mr-2"
+              />
               Reportar Avería
             </button>
             <button
@@ -123,9 +133,27 @@ const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoCompon
         </div>
 
         {/* Modal para ver detalles */}
-        {isModalOpen && selectedVehicle && (
-          <ModalVehiculo vehicle={selectedVehicle} />
-        )}
+        <Modal
+          closeButton
+          isOpen={isOpen}
+          onOpenChange={onClose}
+          blur
+          aria-labelledby="modal-vehiculo"
+        >
+          <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
+            <ModalHeader>
+              <div className="flex flex-row gap-2">
+                <div className="subEncabezado">Información del vehículo {selectedVehicle?.vehicleCode}</div>
+                {/* Agrega un indicador del estado, si es necesario */}
+              </div>
+            </ModalHeader>
+            <ModalBody>
+              {selectedVehicle && (
+                <ModalVehiculo vehicle={selectedVehicle} />
+              )}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </>
     );
 };
