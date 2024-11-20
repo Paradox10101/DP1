@@ -98,6 +98,16 @@ public class Vehicle {
     // Hora de inicio del viaje
     private LocalDateTime journeyStartTime;
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
+    private LocalDateTime maintenanceStartTime;
+
+    // Métodos getter y setter para maintenanceStartTime
+    public LocalDateTime getMaintenanceStartTime() {
+        return maintenanceStartTime;
+    }
+
+    public void setMaintenanceStartTime(LocalDateTime maintenanceStartTime) {
+        this.maintenanceStartTime = maintenanceStartTime;
+    }
 
     public int getCurrentSegmentIndex() {
         return currentSegmentIndex;

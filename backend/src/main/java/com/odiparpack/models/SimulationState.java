@@ -725,21 +725,55 @@ public class SimulationState {
         lastUpdateTimestamp.set(0);
     }
 
+    private void initiateMaintenance(Vehicle vehicle, Maintenance mantenimiento) {
+        if (vehicle.getEstado() == Vehicle.EstadoVehiculo.EN_ALMACEN) {
+            vehicle.setEstado(Vehicle.EstadoVehiculo.EN_MANTENIMIENTO);
+            vehicle.setAvailable(false);
+            vehicle.setMaintenanceStartTime(currentTime);
+            logger.info("Vehículo " + vehicle.getCode() + " enviado a mantenimiento hasta " + mantenimiento.getEndTime());
+        } else {
+            logger.info("Vehículo " + vehicle.getCode() + " en ruta, irá a mantenimiento después de completar la entrega.");
+        }
+    }
+
     public void updateVehicleStates() {
         lock.lock();
         try {
             List<Vehicle> vehiclesNeedingNewRoutes = new ArrayList<>();
 
             for (Vehicle vehicle : vehicles.values()) {
-                if (vehicle.isInMaintenance()) {
-                    handleMaintenance(vehicle);
+
+                // Verificar si es momento de entrar en mantenimiento
+                Maintenance mantenimiento = getCurrentMaintenance(vehicle.getCode());
+                if (mantenimiento != null) { // Se encontró mantenimiento a aplicar
+                    if (!vehicle.isInMaintenance()) {
+                        // Transición inicial a mantenimiento
+                        initiateMaintenance(vehicle, mantenimiento);
+                    } else {
+                        // Calcular el tiempo transcurrido en mantenimiento
+                        if (vehicle.getMaintenanceStartTime() != null) {
+                            Duration duration = Duration.between(vehicle.getMaintenanceStartTime(), currentTime);
+                            if (simulationType == SimulationRouter.SimulationType.DAILY) {
+                                logger.info("Tiempo en mantenimiento para el vehículo " + vehicle.getCode() + ": " + duration.toSeconds() + " segundos.");
+                            } else {
+                                logger.info("Tiempo en mantenimiento para el vehículo " + vehicle.getCode() + ": " + duration.toMinutes() + " minutos.");
+                            }
+                        }
+                    }
                     continue;
+                } else {
+                    if (vehicle.getMaintenanceStartTime() != null) { // Significa que acabó su periodo de mantenimiento
+                        vehicle.setEstado(Vehicle.EstadoVehiculo.EN_ALMACEN);
+                        vehicle.setAvailable(true);
+                        logger.info("Vehículo " + vehicle.getCode() + " ha finalizado el mantenimiento.");
+                        vehicle.setMaintenanceStartTime(null);
+                    }
                 }
 
                 if (vehicle.isUnderRepair()) {
                     handleRepairCompletion(vehicle, currentTime);
                     vehicle.updateAveriaTime(currentTime);  // Actualizar el tiempo en estado de avería
-
+                    continue;
                 }
 
                 if (vehicle.shouldUpdateStatus()) {

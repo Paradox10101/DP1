@@ -430,7 +430,7 @@ public class DataLoader {
                 try {
                     LocalDate date = LocalDate.parse(dateStr, formatter);
                     LocalDateTime startTime = date.atStartOfDay();
-                    LocalDateTime endTime = date.plusDays(0).atTime(1, 0);
+                    LocalDateTime endTime = date.plusDays(2).atTime(23, 59);
 
                     Maintenance maintenance = new Maintenance(vehicleCode, startTime, endTime);
                     maintenances.add(maintenance);
