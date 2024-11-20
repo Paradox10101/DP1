@@ -1,6 +1,7 @@
 'use client';
 import { useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
@@ -367,7 +368,7 @@ const handleWebSocketMessage = useCallback((data) => {
       popupsRef.current[vehicleCode] = popup;
       return;
     }
-    console.log('vehiculo encontradooooooooooooooooo: '+ vehiculo);
+    console.log('vehiculo encontradooooooooooooooooo: ', vehiculo);
 
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
@@ -379,15 +380,15 @@ const handleWebSocketMessage = useCallback((data) => {
       case "EN_ALMACEN":
         status = "En Almacén";
         break;
-      case "EN_RUTA":
-        status = "En Ruta";
+      case "AVERIADO":
+        status = "Averiado";
         break;
-      case "ENTREGADO":
-        status = "Entregado";
+      case "EN_MANTENIMIENTO":
+        status = "En mantenimiento";
         break;
       default:
         console.warn(`Status desconocido para vehículo ${vehicleCode}: ${status}`);
-        status = "Desconocido";
+        status = "En tránsito";
     }
 
     // Puedes extraer más propiedades si lo deseas
@@ -403,20 +404,25 @@ const handleWebSocketMessage = useCallback((data) => {
 
     const popupContent = document.createElement("div");
 
-    ReactDOM.render(
+    const root = createRoot(popupContent);
+    root.render(
       <VehiculoPopUp
         title={vehicleCode}
         capacidadMaxima={capacidadMaxima}
-        capacidadUsada={capacidadUsada}
-        status={status}
+        capacidadUtilizada={capacidadUsada}
+        estado={status}
         ubicacionActual={ubicacionActual}
         velocidad={velocidad}
-        // Puedes pasar más props si es necesario
-      />,
-      popupContent
+      />
     );
 
-    const popup = new maplibregl.Popup(POPUP_CONFIG)
+    const popup = new maplibregl.Popup({
+        maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
+        closeButton: true,
+        closeOnClick: true,
+        anchor: 'top', // Ajustar el ancla para mejorar la alineación
+        offset: 25, // Asegura que haya suficiente espacio para el pop-up
+      })
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);

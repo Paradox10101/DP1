@@ -41,7 +41,36 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, icon
   );
 };
 
-const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoHtmlString, estado = "En Tránsito" }) => {
+const renderStatus = (status) => {
+    switch (status) {
+        case "EN_ALMACEN":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                    En Almacén
+                </div>
+            );
+        case "AVERIADO":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                    Averiado
+                </div>
+            );
+        case "EN_MANTENIMIENTO":
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                    En Mantenimiento
+                </div>
+            );
+        default:
+            return (
+                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+                    En Tránsito
+                </div>
+            );
+    }
+};
+
+const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoHtmlString, estado}) => {
   // Mover la generación de alertaIconHtmlString fuera del render para evitar problemas de renderización
   const alertaIconHtmlString = `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`;
   
@@ -55,7 +84,7 @@ const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoHtmlSt
         <span className={"pequenno border " +
           (
             estado === "En Tránsito" ? "bg-[#284BCC] text-[#BECCFF] rounded-xl w-[100px] text-center" :
-            estado === "En Preparación" ? "bg-[#DEA71A] text-[#F9DF9B] rounded-xl w-[100px] text-center" :
+            estado === "En Almacén" ? "bg-[#DEA71A] text-[#F9DF9B] rounded-xl w-[100px] text-center" :
             estado === "Averiado" ? "bg-[#BE0627] text-[#FFB9C1] rounded-xl w-[100px] text-center" :
             estado === "En Mantenimiento" ? "bg-[#7B15FA] text-[#D0B0F8] rounded-xl w-[100px] text-center" :
             ""
