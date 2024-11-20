@@ -150,11 +150,17 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
 
   
   const normalizeVehicleProperties = (properties) => {
+    const capacidadMaxima = properties.capacidadMaxima || 0;
+    const capacidadUsada = properties.capacidadUsada || 0;
+
+    const porcentajeUsado =
+      capacidadMaxima > 0 ? (capacidadUsada / capacidadMaxima) * 100 : 0;
     return {
       ...properties, // Spread original properties first
       vehicleCode: String(properties.vehicleCode || properties.id || '').trim().toUpperCase(),
       capacidadMaxima: properties.capacidadMaxima || "No especificada",
       capacidadUsada: properties.capacidadUsada ?? "No especificada",
+      porcentajeUsado, // Agrega el porcentaje calculado
       status: properties.status || 'Desconocido',
       ubicacionActual: properties.ubicacionActual || "No especificada",
       velocidad: properties.velocidad ?? "No especificada",
@@ -164,11 +170,15 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   
   // Agrega la función de actualización con throttle
   const updateVehiclePositions = throttle((data) => {
+    if(!mapRef.current) return;
     try {
       if (mapRef.current) {
         const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
         if (vehiclesSource) {
-          vehiclesSource.setData(data);
+          const currentData = vehiclesSource._data;
+          if (JSON.stringify(currentData) !== JSON.stringify(newData)) {
+            vehiclesSource.setData(newData); // Actualiza solo si los datos cambian
+          }
         }
       }
     } catch (error) {
@@ -381,6 +391,18 @@ const handleWebSocketMessage = useCallback((data) => {
               'text-anchor': 'top'
             },
             paint: {
+              // Asigna colores basados en capacidadUsada
+              'icon-color': [
+                'case',
+                ['has', 'porcentajeUsado'], // Verificar si existe la propiedad
+                [
+                  'case',
+                  ['<', ['get', 'porcentajeUsado'], 50], '#08CA57', // Verde (< 50%)
+                  ['<', ['get', 'porcentajeUsado'], 75], '#FFC107', // Amarillo (50% <= x < 75%)
+                  '#FF5252' // Rojo (>= 75%)
+                ],
+                '#CCCCCC' // Color por defecto si falta la propiedad
+              ],
               'text-color': '#FFFFFF',
               'text-halo-color': '#000000',
               'text-halo-width': 1
@@ -942,6 +964,9 @@ const getVehicleIconHtml = (vehicleType) => {
       if (vehiclesSource) {
         // Actualiza directamente los datos en la fuente GeoJSON existente
         vehiclesSource.setData(positions);
+        if (vehiclesSource) {
+          console.log("Datos actuales en la fuente de vehículos:", vehiclesSource._data); // Verifica el contenido de los datos
+        }
         addVehicleLayerEvents();
       }
     } catch (error) {
