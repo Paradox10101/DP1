@@ -15,6 +15,8 @@ export default function ModalVehiculo({vehicle}){
     const [warehouseCities, setWarehouseCities] = useState(null);
     const [statusesShipment, setStatusesShipment] = useState(null);
     const [filteredShipments, setFilteredShipments] = useState([]);
+    const [tiposAveria, setTiposAveria] = useState([])
+    const [tipoAveriaSeleccionado, setTipoAveriaSeleccionado] = useState(null)
     const initialStateRef = useRef(
         {
         originCity: "",
@@ -31,6 +33,10 @@ export default function ModalVehiculo({vehicle}){
     const API_BASE_URL = process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
     : process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
+
+
 
     useEffect(() => {
         if(!isFilterModalVisible)return;
@@ -53,6 +59,7 @@ export default function ModalVehiculo({vehicle}){
                 setOfficeCities(officeCities);
                 setWarehouseCities(warehouseCities);
                 setStatusesShipment(["EN TRÁNSITO", "ENTREGADO", "REGISTRADO"]);
+                
             }
             catch(err){
                 return;
@@ -125,15 +132,45 @@ export default function ModalVehiculo({vehicle}){
     }, [vehicle, shipmentsFilter]);
 
 
+    const reportarAveria = async () => {
+        if (!tipoAveriaSeleccionado) 
+            return;
+        
+        if (vehicle.status.startsWith("AVERIADO"))
+            return;
+
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/vehicles/breakdown?vehicleCode=${vehicle.vehicleCode}&breakdownType=${tipoAveriaSeleccionado}`, 
+                { method: "POST" }
+            );
+
+            if (response.ok) {
+                console.log("Avería reportada con éxito de tipo para el vehiculo " + vehicle.vehicleCode);
+                
+                
+                // Actualiza el estado del vehículo si es necesario
+            } else {
+                console.error("Error al reportar la avería:", response.statusText);
+                
+            }
+        } catch (error) {
+            console.error("Error al realizar la solicitud:", error);
+        }
+    };
 
     // Cierra el modal si se hace clic fuera de él
     useEffect(() => {
+        setTiposAveria(["1","2","3"]);
+
+
+
         function handleClickOutside(event) {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
                 setFilterModalVisible(false);
             }
         }
-
+        
         // Añade el listener al montar
         document.addEventListener("mousedown", handleClickOutside);
         
@@ -195,13 +232,47 @@ export default function ModalVehiculo({vehicle}){
             </div>
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-row justify-between w-full">
-                    <div className="text-black regular_bold">Ruta del Camión</div>
-                    <Button
-                    disableRipple={true}
-                    className="focus:outline-none border stroke-black px-2 py-1 pequenno text-black bg-[#FFA500] rounded-2xl items-center"
-                    >
-                    Reportar Avería
-                    </Button>
+                    <div className="text-black regular_bold block w-[120px]">Ruta del Camión</div>
+                    <div className="flex flex-row justify-between w-[300px]">
+                        <Dropdown className="my-dropdown ">
+                            <DropdownTrigger>
+                                <Button
+                                variant="bordered"
+                                className="capitalize w-full relative"
+                                disableRipple={true}
+                                >
+                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    {tipoAveriaSeleccionado || "Selecciona un tipo"}
+                                </span>
+                                <ChevronDown size={18} className="absolute right-2" />
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                closeOnSelect={true}
+                                selectionMode="single"
+                                onSelectionChange={(keys) => {
+                                const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                setTipoAveriaSeleccionado(value);
+                                }}
+                                disableRipple={true}
+                                className="max-h-[500px] overflow-y-auto w-full"
+                            >
+                                {tiposAveria && tiposAveria.length > 0 && tiposAveria.map((tipoAveria) => (
+                                <DropdownItem key={tipoAveria}>{tipoAveria}</DropdownItem>
+                                ))}
+                            </DropdownMenu>
+                        </Dropdown>
+                        <div>
+                        <Button
+                        disableRipple={true}
+                        className={"focus:outline-none border stroke-black w-[120px] pequenno text-black  rounded-2xl items-center block " + (tipoAveriaSeleccionado && !vehicle.status.startsWith("AVERIADO")?"bg-[#FFA500]" : "bg-gray-400")}
+                        isDisabled={!tipoAveriaSeleccionado || vehicle.status.startsWith("AVERIADO")}
+                        onClick={()=>{reportarAveria()}}
+                        >
+                        Reportar Avería
+                        </Button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full ">
