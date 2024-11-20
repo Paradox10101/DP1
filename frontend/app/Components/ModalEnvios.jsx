@@ -5,11 +5,62 @@ import { Calendar, ChevronDown, Clock, Eye, Filter, Globe, MapPin, Package, X } 
 export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex, sendMessage, shipment }) {
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
     const modalRef = useRef(null); // Referencia para el modal de filtros
-    const [selectedKeys, setSelectedKeys] = useState(new Set());
-    const selectedValue = selectedKeys.size > 0 
-          ? Array.from(selectedKeys).join(", ") 
-          : "Seleccione un estado";
-    // Cierra el modal si se hace clic fuera de él
+    const [filteredVehicles, setFilteredVehicles] = useState([]);
+    const initialFilterStateRef = useRef(
+        {
+        status: "",
+        minQuantity: 0,
+        maxQuantity: null
+        }
+    )
+    const [vehiclesFilter, setVehiclesFilter] = useState(initialFilterStateRef.current);
+    
+    useEffect(() => {
+        
+        if(!shipmentVehicles){
+            setFilteredVehicles([]);
+            return
+        }
+        
+        if(vehiclesFilter === initialFilterStateRef.current){
+            setFilteredVehicles(shipmentVehicles)
+            return
+        }
+            
+        const filtered = shipmentVehicles.filter((vehicle) => {
+            
+          
+
+            
+            // Filtrar por status
+            const matchesStatus = vehiclesFilter.status
+            ?
+            (vehiclesFilter.status === "ATENDIDO" && vehicle.status === "ATTENDED" ) ||
+            (vehiclesFilter.status === "PENDIENTE" && vehicle.status !== "ATTENDED")
+            : true;
+            
+
+
+            // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
+            const matchesMinQuantity = vehiclesFilter.minQuantity
+            ? vehicle.packageQuantity >= vehiclesFilter.minQuantity
+            : true;
+
+            // Filtrar por maxQuantity (si se tiene un valor en shipmentsFilter.maxQuantity)
+            const matchesMaxQuantity = vehiclesFilter.maxQuantity
+                ? vehicle.packageQuantity <= vehiclesFilter.maxQuantity
+                : true;
+
+
+          // Retornar true solo si todos los filtros coinciden
+          return  matchesMinQuantity && matchesMaxQuantity && matchesStatus
+        });
+      
+        // Establecer la lista filtrada en filteredShipments
+        setFilteredVehicles(filtered);
+    }, [vehiclesFilter, shipmentVehicles]);
+    
+    
     useEffect(() => {
         function handleClickOutside(event) {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -81,18 +132,50 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
             </div>
 
             {/* Tabla con filtros */}
-            <div className="flex flex-col gap-4">
-                <div className="flex flex-row justify-between relative">
+            <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-row justify-between relative w-full">
                     <div className="text-black regular_bold">Paquetes en envío</div>
-                    <div>
+                        {vehiclesFilter === initialFilterStateRef.current?
+                        (
                         <Button
                             disableRipple={true}
-                            startContent={<Filter className="size-4" />}
-                            className="focus:outline-none border stroke-black rounded h-8 pequenno w-full bg-[#F4F4F4]"
-                            onClick={() => setFilterModalVisible(!isFilterModalVisible)}
+                            startContent={<Filter size="18" />}
+                            className="bg-[#F4F4F4] text-black"
+                            onClick={
+                                ()=>{
+                                    setFilterModalVisible(!isFilterModalVisible)
+                                }
+                            }
                         >
                             Filtros
                         </Button>
+                        )
+                        :
+                        (
+                        
+                        <div className="w-full flex flex-row justify-end items-center">
+                        <Button
+                            disableRipple={true}
+                            startContent={<Filter size="18" />}
+                            className="bg-principal text-white"
+                            onClick={
+                                ()=>{
+                                    setFilterModalVisible(!isFilterModalVisible)
+                                }
+                            }
+                        >
+                            Filtros
+                        </Button>
+                        <div 
+                            className="hover:bg-gray-100 hover:rounded-full cursor-pointer transition-all duration-200 flex items-center"
+                            onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
+                        >
+                        <X size="18" />
+                        </div>
+                        </div>
+                        
+                    )
+                    }
 
                         {/* Modal de Filtros */}
                         {isFilterModalVisible && (
@@ -125,7 +208,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                                     disableRipple={true}
                                                 >
                                                     <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                        {selectedValue}
+                                                        {vehiclesFilter.status || "Selecciona un estado"}
                                                     </span>
                                                     <ChevronDown size={18} className="absolute right-4" />
                                                 </Button>
@@ -133,13 +216,18 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                             <DropdownMenu
                                                 closeOnSelect={true}
                                                 selectionMode="single"
-                                                selectedKeys={selectedKeys}
-                                                onSelectionChange={setSelectedKeys}
+                                                onSelectionChange={(keys) => {
+                                                const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                                setVehiclesFilter((prev) => ({
+                                                    ...prev,
+                                                    status: value,
+                                                }));
+                                                }}
                                                 disableRipple={true}
-                                                className="w-full"
+                                                className="max-h-[500px] overflow-y-auto w-full"
                                             >
-                                                <DropdownItem key="text">Oficina</DropdownItem>
-                                                <DropdownItem key="number">Almacén Principal</DropdownItem>
+                                                <DropdownItem key="PENDIENTE">PENDIENTE</DropdownItem>
+                                                <DropdownItem key="ATENDIDO">ATENDIDO</DropdownItem>
                                             </DropdownMenu>
                                     </Dropdown>
                                     </div>
@@ -153,34 +241,47 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                         <div className="w-full flex flex-row justify-between gap-2">
                                             <Input
                                                 type="number"
-                                                defaultValue={0}
+                                                value={vehiclesFilter.minQuantity || 0}
                                                 min={0}
                                                 step="1"
                                                 className="w-full text-right"
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                                    
+                                                    setVehiclesFilter((prev) => ({
+                                                        ...prev,
+                                                        minQuantity: value,
+                                                    }));
+                                                    
+                                                }}
                                             />
                                             <div className="flex items-center">hasta</div>
                                             <Input
                                                 type="number"
-                                                defaultValue={0}
+                                                value={vehiclesFilter.maxQuantity || 0}
                                                 min={0}
                                                 step="1"
                                                 className="w-full text-right"
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                                    
+                                                    setVehiclesFilter((prev) => ({
+                                                        ...prev,
+                                                        maxQuantity: value,
+                                                    }));
+                                                    
+                                                    
+                                                }}
                                             />
 
                                         </div>
                                     </div>
                             </div>
-                            <div className="w-full flex flex-row justify-between gap-4">
+                            <div className="w-full flex flex-row justify-end gap-4">
                             <Button
-                                onClick={() => setFilterModalVisible(false)}
+                                onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
                             >
                                 Eliminar Filtros
-                            </Button>
-                            <Button
-                                onClick={() => setFilterModalVisible(false)}
-                                className="bg-principal text-white"
-                            >
-                                Aplicar Filtros
                             </Button>
                         </div>
                         </div>
@@ -203,8 +304,8 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                             </tr>
                         </thead>
                         <tbody className="text-gray-700 text-sm font-light">
-                            {shipmentVehicles &&
-                                shipmentVehicles.map((vehicle, index) => (
+                            {filteredVehicles &&
+                                filteredVehicles.map((vehicle, index) => (
                                     <tr className="border border-gray-200" key={vehicle.vehicleCode}>
                                         <td className="py-3 px-6 text-center">{vehicle.vehicleCode}</td>
                                         <td className="py-3 px-6 text-center">{vehicle.packageQuantity}</td>
@@ -239,11 +340,11 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                         </tbody>
                     </table>
                 </div>
-            </div>
+            
 
             {/* Cantidad de vehículos */}
             <div className="text-right text-[#939393] regular">
-                Cantidad de vehículos: {shipment.vehicles.length || 0}
+                Cantidad de vehículos: {filteredVehicles.length || 0}
             </div>
         </div>
     );
