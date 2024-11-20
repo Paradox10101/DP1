@@ -17,6 +17,9 @@ import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps'
 import ReactDOM from 'react-dom';
+import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
+import IconoEstado from './IconoEstado';
+
 
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
@@ -318,6 +321,41 @@ const handleWebSocketMessage = useCallback((data) => {
     positionsRef.current = positions;
   }, [positions]);
 
+/* // Función para obtener el ícono HTML según el tipo de vehículo
+const getVehicleIconHtml = (vehicleType) => {
+  switch (vehicleType) {
+    case "A":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de camión (Truck) aquí -->
+                  <rect x="4" y="4" width="16" height="16" fill="white"/>
+                </svg>
+              </div>`;
+    case "B":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de auto frontal (CarFront) aquí -->
+                  <circle cx="12" cy="12" r="6" fill="white"/>
+                </svg>
+              </div>`;
+    case "C":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de auto (Car) aquí -->
+                  <polygon points="5,5 19,5 12,19" fill="white"/>
+                </svg>
+              </div>`;
+    default:
+      return `<div class="bg-gray-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono por defecto -->
+                  <line x1="2" y1="2" x2="22" y2="22" stroke="white"/>
+                </svg>
+              </div>`;
+  }
+};*/
+
+
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
     console.log('handleVehicleClick triggered');
@@ -374,6 +412,7 @@ const handleWebSocketMessage = useCallback((data) => {
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
     let status = vehiculo.properties.status || "Desconocido";
+    const vehicleType = vehiculo.properties.tipo || "Desconocido";
 
     // Validar y ajustar el status del vehículo
     switch (status) {
@@ -390,6 +429,25 @@ const handleWebSocketMessage = useCallback((data) => {
         console.warn(`Status desconocido para vehículo ${vehicleCode}: ${status}`);
         status = "En tránsito";
     }
+
+    // Determinar el ícono según el tipo de vehículo
+    let Icono;
+    switch (vehicleType) {
+      case "A":
+        Icono = Truck;
+        break;
+      case "B":
+        Icono = CarFront;
+        break;
+      case "C":
+        Icono = Car;
+        break;
+      default:
+        Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
+    }
+
+    // Obtener el ícono según el tipo de vehículo
+    //const iconoHtmlString = getVehicleIconHtml(vehicleType);
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
@@ -413,6 +471,13 @@ const handleWebSocketMessage = useCallback((data) => {
         estado={status}
         ubicacionActual={ubicacionActual}
         velocidad={velocidad}
+        iconoComponent={
+          <IconoEstado
+            Icono={Icono}
+            classNameContenedor="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"
+            classNameContenido="w-[15px] h-[15px] stroke-white z-10"
+          />
+        }
       />
     );
 

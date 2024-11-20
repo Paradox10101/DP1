@@ -70,7 +70,7 @@ const renderStatus = (status) => {
     }
 };
 
-const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoHtmlString, estado}) => {
+const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoComponent, estado}) => {
   // Mover la generación de alertaIconHtmlString fuera del render para evitar problemas de renderización
   const alertaIconHtmlString = `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`;
   
@@ -78,7 +78,7 @@ const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoHtmlSt
     <div className="bg-white rounded p-4 w-80 flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />
+          {iconoComponent}
           <h3 className="font-semibold text-base text-gray-800">Vehículo: {title}</h3>
         </div>
         <span className={"pequenno border " +
