@@ -1,3 +1,5 @@
+// VehicleMap.jsx
+
 'use client';
 import { useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -15,30 +17,29 @@ import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
-import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps'
+import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
 import ReactDOM from 'react-dom';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
 import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 
-// Función para generar el SVG con fondo azul y borde blanco para los vehículos
-/*const getSvgString = (IconComponent) => {
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
+  : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
+
+// Función para generar el SVG con fondo de color personalizado
+const getSvgString = (IconComponent, bgColor) => {
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-      <circle cx="20" cy="20" r="20" fill="#1E90FF" />
+      <circle cx="20" cy="20" r="20" fill={bgColor} />
       <g transform="translate(8, 8)">
         <IconComponent color="#FFFFFF" size={24} />
       </g>
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
-};*/
-
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
-  : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
-
+};
 
 const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
@@ -50,35 +51,25 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [locations, setLocations] = useAtom(locationsAtom);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
-  const [locationError, setLocationError] = useState(null);
   const locationRetryTimeoutRef = useRef(null);
-  
   const positionsRef = useRef();
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
-  
-  console.log('vehiculosArray PRIMER LISTADO DE TODOS LOS VEHICULOS:', vehiculosArray);
 
-
-  // Ensure vehiculos is an array to avoid TypeError
-  //const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
-
-
-   // Función auxiliar para crear mensajes de error
-   const createError = (type, customMessage = null) => ({
+  // Función auxiliar para crear mensajes de error
+  const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
     message: customMessage || ERROR_MESSAGES[type].message
   });
-  
-   // Obtener y actualizar ubicaciones con reintentos
-   const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
+
+  // Obtener y actualizar ubicaciones con reintentos
+  const fetchLocations = useCallback(async (retryCount = 0, maxRetries = 3) => {
     try {
       const response = await fetch(`${API_BASE_URL}/locations`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("ubicaciones: ", data);
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
         setLocations(data); // Actualizar el átomo compartido
         setError(null);
@@ -127,9 +118,9 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     });
   };
 
-  const { 
-    animateTransition, 
-    performanceManager 
+  const {
+    animateTransition,
+    performanceManager
   } = useVehicleAnimation(mapRef, updatePopups);
 
   // Actualizar las métricas de rendimiento
@@ -148,58 +139,59 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [performanceManager, setPerformanceMetrics]);
 
-  
-  const normalizeVehicleProperties = (properties) => {
-    const capacidadMaxima = properties.capacidadMaxima || 0;
-    const capacidadUsada = properties.capacidadUsada || 0;
-
-    const porcentajeUsado =
-      capacidadMaxima > 0 ? (capacidadUsada / capacidadMaxima) * 100 : 0;
-    return {
-      ...properties, // Spread original properties first
-      vehicleCode: String(properties.vehicleCode || properties.id || '').trim().toUpperCase(),
-      capacidadMaxima: properties.capacidadMaxima || "No especificada",
-      capacidadUsada: properties.capacidadUsada ?? "No especificada",
-      porcentajeUsado, // Agrega el porcentaje calculado
-      status: properties.status || 'Desconocido',
-      ubicacionActual: properties.ubicacionActual || "No especificada",
-      velocidad: properties.velocidad ?? "No especificada",
-      // Add more properties here if needed
-    };
-  };
-  
   // Agrega la función de actualización con throttle
   const updateVehiclePositions = throttle((data) => {
-    if(!mapRef.current) return;
+    if (!mapRef.current) return;
     try {
-      if (mapRef.current) {
-        const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
-        if (vehiclesSource) {
-          const currentData = vehiclesSource._data;
-          if (JSON.stringify(currentData) !== JSON.stringify(newData)) {
-            vehiclesSource.setData(newData); // Actualiza solo si los datos cambian
-          }
-        }
+      const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+      if (vehiclesSource) {
+        vehiclesSource.setData(data); // Actualiza los datos
       }
     } catch (error) {
       console.error('Error al actualizar posiciones:', error);
       setError('Error al actualizar posiciones de vehículos');
     }
-  }, 1000); // Cada 500 ms, ajustar según sea necesario
+  }, 1000); // Cada 1000 ms, ajustar según sea necesario
 
-// En handleWebSocketMessage // Manejador de mensajes WebSocket
-const handleWebSocketMessage = useCallback((data) => {
-  const updatedData = {
-    ...data,
-    features: data.features.map((feature) => ({
-      ...feature,
-      properties: normalizeVehicleProperties(feature.properties),
-    })),
-  };
-  console.log('Datos del WebSocket procesados:', updatedData);
-  setPositions(updatedData);
-  updateVehiclePositions(updatedData); // Utiliza la versión con throttle
-}, [setPositions]);
+  // Manejador de mensajes WebSocket
+  const handleWebSocketMessage = useCallback((data) => {
+    const updatedData = {
+      ...data,
+      features: data.features.map((feature) => {
+        const capacidadUsada = feature.properties.capacidadUsada || 0;
+        const capacidadMaxima = feature.properties.capacidadMaxima || 1; // Evitar divisiones por 0
+        const capacidadPorcentaje = (capacidadUsada / capacidadMaxima) * 100;
+
+        // Asignar iconBaseName basado en el tipo de vehículo
+        let iconBaseName;
+        switch (feature.properties.tipo) {
+          case 'A':
+            iconBaseName = 'truck-icon';
+            break;
+          case 'B':
+            iconBaseName = 'car-front-icon';
+            break;
+          case 'C':
+            iconBaseName = 'car-icon';
+            break;
+          default:
+            iconBaseName = 'alert-triangle-icon'; // Ícono por defecto
+        }
+
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            capacidadPorcentaje,
+            iconBaseName,
+          },
+        };
+      }),
+    };
+    console.log('Datos del WebSocket procesados:', updatedData);
+    setPositions(updatedData);
+    updateVehiclePositions(updatedData); // Utiliza la versión con throttle
+  }, [setPositions]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
@@ -210,7 +202,7 @@ const handleWebSocketMessage = useCallback((data) => {
   }, [setLoading, setError]);
 
   // Usar el nuevo hook de WebSocket
-  const { 
+  const {
     connect,
     disconnect,
     checkStatus,
@@ -276,9 +268,9 @@ const handleWebSocketMessage = useCallback((data) => {
           this.container.style.cursor = 'pointer';
 
           this.container.onclick = () => {
-            map.flyTo({ 
-              center: MAP_CONFIG.DEFAULT_CENTER, 
-              zoom: MAP_CONFIG.DEFAULT_ZOOM 
+            map.flyTo({
+              center: MAP_CONFIG.DEFAULT_CENTER,
+              zoom: MAP_CONFIG.DEFAULT_ZOOM
             });
           };
 
@@ -296,42 +288,35 @@ const handleWebSocketMessage = useCallback((data) => {
       mapRef.current.on('load', async () => {
         console.log('Mapa completamente cargado');
 
-        // Añadir los íconos de Lucide al mapa con el fondo azul y borde blanco
-        /*if (!mapRef.current.hasImage('truck-icon')) {
-          const svgString = getSvgString(Truck);
-          const image = new Image();
-          image.src = svgString;
-          image.onload = () => {
-            mapRef.current.addImage('truck-icon', image);
-          };
-        }
+        // Añadir los íconos de vehículos con colores dinámicos
+        const vehicleIcons = [
+          { type: 'truck-icon', component: Truck },
+          { type: 'car-front-icon', component: CarFront },
+          { type: 'car-icon', component: Car },
+          { type: 'alert-triangle-icon', component: AlertTriangle },
+        ];
 
-        if (!mapRef.current.hasImage('car-front-icon')) {
-          const svgString = getSvgString(CarFront);
-          const image = new Image();
-          image.src = svgString;
-          image.onload = () => {
-            mapRef.current.addImage('car-front-icon', image);
-          };
-        }
+        const colors = {
+          green: '#08CA57',
+          yellow: '#FFC107',
+          red: '#FF5252',
+        };
 
-        if (!mapRef.current.hasImage('car-icon')) {
-          const svgString = getSvgString(Car);
-          const image = new Image();
-          image.src = svgString;
-          image.onload = () => {
-            mapRef.current.addImage('car-icon', image);
-          };
-        }
-
-        if (!mapRef.current.hasImage('alert-triangle-icon')) {
-          const svgString = getSvgString(AlertTriangle);
-          const image = new Image();
-          image.src = svgString;
-          image.onload = () => {
-            mapRef.current.addImage('alert-triangle-icon', image);
-          };
-        }*/
+        vehicleIcons.forEach(({ type, component }) => {
+          for (const [colorName, colorValue] of Object.entries(colors)) {
+            const iconName = `${type}-${colorName}`;
+            if (!mapRef.current.hasImage(iconName)) {
+              const svgString = getSvgString(component, colorValue);
+              const image = new Image();
+              image.src = svgString;
+              image.onload = () => {
+                if (!mapRef.current.hasImage(iconName)) {
+                  mapRef.current.addImage(iconName, image);
+                }
+              };
+            }
+          }
+        });
 
         // Añadir imágenes de oficina y almacén del archivo de configuración
         for (const [key, imageConfig] of Object.entries(MAP_CONFIG.IMAGES)) {
@@ -340,26 +325,7 @@ const handleWebSocketMessage = useCallback((data) => {
           }
         }
 
-        /*// Capa de agrupación (clusters)
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTERS)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
-        }
-
-        // Capa para mostrar el conteo de puntos en los clusters
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTER_COUNT)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusterCount);
-        }
-
-        // Capas de almacenes y oficinas no agrupadas
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.WAREHOUSES)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.warehouses);
-        }
-
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.OFFICES)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.offices);
-        }*/
-
-        // Configurar la fuente de vehículos - 1. Primero agregar la fuente de vehículos y su capa (para que esté debajo)
+        // Configurar la fuente de vehículos
         if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
           mapRef.current.addSource(MAP_CONFIG.SOURCES.VEHICLES.id, {
             type: 'geojson',
@@ -375,12 +341,17 @@ const handleWebSocketMessage = useCallback((data) => {
             source: MAP_CONFIG.SOURCES.VEHICLES.id,
             layout: {
               'icon-image': [
-                'match',
-                ['get', 'tipo'],
-                'A', MAP_CONFIG.IMAGES.TRUCK.id,
-                'B', MAP_CONFIG.IMAGES.CAR_FRONT.id,
-                'C', MAP_CONFIG.IMAGES.CAR2.id,
-                MAP_CONFIG.IMAGES.CAR_BREAK.id // default icon
+                'concat',
+                ['get', 'iconBaseName'],
+                '-',
+                [
+                  'case',
+                  ['<', ['get', 'capacidadPorcentaje'], 50],
+                  'green',
+                  ['<', ['get', 'capacidadPorcentaje'], 75],
+                  'yellow',
+                  'red',
+                ],
               ],
               'icon-size': 0.5,
               'icon-allow-overlap': true,
@@ -388,25 +359,13 @@ const handleWebSocketMessage = useCallback((data) => {
               'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
               'text-size': 12,
               'text-offset': [0, 2],
-              'text-anchor': 'top'
+              'text-anchor': 'top',
             },
             paint: {
-              // Asigna colores basados en capacidadUsada
-              'icon-color': [
-                'case',
-                ['has', 'porcentajeUsado'], // Verificar si existe la propiedad
-                [
-                  'case',
-                  ['<', ['get', 'porcentajeUsado'], 50], '#08CA57', // Verde (< 50%)
-                  ['<', ['get', 'porcentajeUsado'], 75], '#FFC107', // Amarillo (50% <= x < 75%)
-                  '#FF5252' // Rojo (>= 75%)
-                ],
-                '#CCCCCC' // Color por defecto si falta la propiedad
-              ],
               'text-color': '#FFFFFF',
               'text-halo-color': '#000000',
-              'text-halo-width': 1
-            }
+              'text-halo-width': 1,
+            },
           });
         }
 
@@ -452,7 +411,6 @@ const handleWebSocketMessage = useCallback((data) => {
             }
           });
         }
-        
 
         addVehicleLayerEvents();
 
@@ -495,45 +453,9 @@ const handleWebSocketMessage = useCallback((data) => {
     };
   }, []);
 
-  
   useEffect(() => {
     positionsRef.current = positions;
   }, [positions]);
-
-/* // Función para obtener el ícono HTML según el tipo de vehículo
-const getVehicleIconHtml = (vehicleType) => {
-  switch (vehicleType) {
-    case "A":
-      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                  <!-- Icono de camión (Truck) aquí -->
-                  <rect x="4" y="4" width="16" height="16" fill="white"/>
-                </svg>
-              </div>`;
-    case "B":
-      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                  <!-- Icono de auto frontal (CarFront) aquí -->
-                  <circle cx="12" cy="12" r="6" fill="white"/>
-                </svg>
-              </div>`;
-    case "C":
-      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                  <!-- Icono de auto (Car) aquí -->
-                  <polygon points="5,5 19,5 12,19" fill="white"/>
-                </svg>
-              </div>`;
-    default:
-      return `<div class="bg-gray-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                  <!-- Icono por defecto -->
-                  <line x1="2" y1="2" x2="22" y2="22" stroke="white"/>
-                </svg>
-              </div>`;
-  }
-};*/
-
 
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
@@ -558,7 +480,6 @@ const getVehicleIconHtml = (vehicleType) => {
     // Obtener el array de vehículos desde la referencia
     const currentPositions = positionsRef.current;
     const vehiculosArray = currentPositions && currentPositions.features && Array.isArray(currentPositions.features) ? currentPositions.features : [];
-    console.log('vehiculosArray dentro de handleVehicleClick:', vehiculosArray);
 
     if (!Array.isArray(vehiculosArray) || vehiculosArray.length === 0) {
       console.error('vehiculosArray está vacío dentro de handleVehicleClick.');
@@ -585,7 +506,6 @@ const getVehicleIconHtml = (vehicleType) => {
       popupsRef.current[vehicleCode] = popup;
       return;
     }
-    console.log('vehiculo encontradooooooooooooooooo: ', vehiculo);
 
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
@@ -625,9 +545,6 @@ const getVehicleIconHtml = (vehicleType) => {
       default:
         Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
     }
-
-    // Obtener el ícono según el tipo de vehículo
-    //const iconoHtmlString = getVehicleIconHtml(vehicleType);
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
@@ -669,19 +586,18 @@ const getVehicleIconHtml = (vehicleType) => {
     );
 
     const popup = new maplibregl.Popup({
-        maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
-        closeButton: true,
-        closeOnClick: true,
-        anchor: 'top', // Ajustar el ancla para mejorar la alineación
-        offset: 25, // Asegura que haya suficiente espacio para el pop-up
-      })
+      maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
+      closeButton: true,
+      closeOnClick: true,
+      anchor: 'top', // Ajustar el ancla para mejorar la alineación
+      offset: 25, // Asegura que haya suficiente espacio para el pop-up
+    })
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
 
     popupsRef.current[vehicleCode] = popup;
   };
-
 
   // Manejar click en almacén u oficina
   const handleLocationClick = (e) => {
@@ -778,11 +694,6 @@ const getVehicleIconHtml = (vehicleType) => {
   useEffect(() => {
     const updateMap = async () => {
       if (!mapRef.current || !mapLoaded || !locations) {
-        console.log('Condición no cumplida para actualizar ubicaciones:', {
-          mapExists: !!mapRef.current,
-          mapLoaded,
-          locationsExist: !!locations
-        });
         return;
       }
       try {
@@ -794,12 +705,10 @@ const getVehicleIconHtml = (vehicleType) => {
             clusterMaxZoom: 14,
             clusterRadius: 50,
           });
-          console.log('Fuente de datos de ubicaciones añadida con clustering');
           await addLocationLayers(); // Asegurarse de esperar a que las capas se añadan
         } else {
           if (locations.type === 'FeatureCollection' && Array.isArray(locations.features)) {
             mapRef.current.getSource('locations').setData(locations);
-            console.log('Datos de ubicaciones actualizados:', locations);
           } else {
             throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
           }
@@ -812,7 +721,6 @@ const getVehicleIconHtml = (vehicleType) => {
 
     updateMap();
   }, [locations, mapLoaded]);
-  
 
   // Modificar la función addLocationLayers para configurar los eventos después de añadir las capas
   const addLocationLayers = async () => {
@@ -838,7 +746,6 @@ const getVehicleIconHtml = (vehicleType) => {
           },
         });
 
-        // **Configurar eventos para clusters después de añadir la capa**
         // Evento de clic en clusters para hacer zoom
         mapRef.current.on('click', 'clusters', (e) => {
           const features = mapRef.current.queryRenderedFeatures(e.point, {
@@ -908,7 +815,7 @@ const getVehicleIconHtml = (vehicleType) => {
           },
         });
 
-        // Asegúrate de añadir eventos de clic y cursor para almacenes después de agregar la capa
+        // Añadir eventos de clic y cursor para almacenes
         mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
         mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
@@ -941,7 +848,7 @@ const getVehicleIconHtml = (vehicleType) => {
           },
         });
 
-        // Asegúrate de añadir eventos de clic y cursor para oficinas después de agregar la capa
+        // Añadir eventos de clic y cursor para oficinas
         mapRef.current.on('click', 'unclustered-offices', handleLocationClick);
         mapRef.current.on('mouseenter', 'unclustered-offices', () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
@@ -955,18 +862,15 @@ const getVehicleIconHtml = (vehicleType) => {
       setError('Error al agregar capas de ubicaciones');
     }
   };
-  
+
   useEffect(() => {
     if (!mapRef.current || !positions?.features) return;
-  
+
     try {
       const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
       if (vehiclesSource) {
         // Actualiza directamente los datos en la fuente GeoJSON existente
         vehiclesSource.setData(positions);
-        if (vehiclesSource) {
-          console.log("Datos actuales en la fuente de vehículos:", vehiclesSource._data); // Verifica el contenido de los datos
-        }
         addVehicleLayerEvents();
       }
     } catch (error) {
@@ -974,7 +878,6 @@ const getVehicleIconHtml = (vehicleType) => {
       setError('Error al actualizar posiciones de vehículos');
     }
   }, [positions]);
-   
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {
@@ -988,7 +891,6 @@ const getVehicleIconHtml = (vehicleType) => {
       });
     }
   };
-
 
   const handleRetry = useCallback(() => {
     const currentError = error;
@@ -1009,12 +911,6 @@ const getVehicleIconHtml = (vehicleType) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
-
-  // Función para generar el SVG
-  /*const getSvgString = (IconComponent) => {
-    return renderToStaticMarkup(<IconComponent size={30} stroke="currentColor" />);
-  };*/
-
   return (
     <div className="relative w-full h-full">
       {loading === 'loading' && (
@@ -1023,7 +919,7 @@ const getVehicleIconHtml = (vehicleType) => {
         </div>
       )}
 
-      <ErrorDisplay 
+      <ErrorDisplay
         error={error}
         onRetry={handleRetry}
         isRetrying={isRetrying}
@@ -1034,7 +930,7 @@ const getVehicleIconHtml = (vehicleType) => {
           FPS: {Math.round(performanceManager.metrics.fps)}
         </div>
       )}
-      
+
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );
