@@ -330,7 +330,26 @@ const handleWebSocketMessage = useCallback((data) => {
           }
         }
 
-        // Configurar la fuente de vehículos
+        /*// Capa de agrupación (clusters)
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTERS)) {
+          mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
+        }
+
+        // Capa para mostrar el conteo de puntos en los clusters
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTER_COUNT)) {
+          mapRef.current.addLayer(LAYER_STYLES.locations.clusterCount);
+        }
+
+        // Capas de almacenes y oficinas no agrupadas
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.WAREHOUSES)) {
+          mapRef.current.addLayer(LAYER_STYLES.locations.warehouses);
+        }
+
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.OFFICES)) {
+          mapRef.current.addLayer(LAYER_STYLES.locations.offices);
+        }*/
+
+        // Configurar la fuente de vehículos - 1. Primero agregar la fuente de vehículos y su capa (para que esté debajo)
         if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
           mapRef.current.addSource(MAP_CONFIG.SOURCES.VEHICLES.id, {
             type: 'geojson',
@@ -369,9 +388,7 @@ const handleWebSocketMessage = useCallback((data) => {
           });
         }
 
-        addVehicleLayerEvents();
-
-        // Restaurar las capas de agrupación, oficinas y almacenes
+        // Primero agregar la fuente de ubicaciones
         if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
@@ -382,26 +399,56 @@ const handleWebSocketMessage = useCallback((data) => {
           });
         }
 
-        // Capa de agrupación (clusters)
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTERS)) {
+        // Luego agregar las capas en orden específico (de abajo hacia arriba)
+        // 1. Clusters y conteo
+        if (!mapRef.current.getLayer('clusters')) {
           mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
         }
-
-        // Capa para mostrar el conteo de puntos en los clusters
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.CLUSTER_COUNT)) {
+        if (!mapRef.current.getLayer('cluster-count')) {
           mapRef.current.addLayer(LAYER_STYLES.locations.clusterCount);
         }
 
-        // Capas de almacenes y oficinas no agrupadas
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.WAREHOUSES)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.warehouses);
+        // 2. Almacenes y oficinas
+        if (!mapRef.current.getLayer('unclustered-warehouses')) {
+          mapRef.current.addLayer({
+            ...LAYER_STYLES.locations.warehouses,
+            layout: {
+              ...LAYER_STYLES.locations.warehouses.layout,
+              'icon-allow-overlap': false, // Cambiar a false
+              'icon-ignore-placement': false, // Agregar esta propiedad
+            }
+          });
         }
 
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.LOCATIONS.OFFICES)) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.offices);
+        if (!mapRef.current.getLayer('unclustered-offices')) {
+          mapRef.current.addLayer({
+            ...LAYER_STYLES.locations.offices,
+            layout: {
+              ...LAYER_STYLES.locations.offices.layout,
+              'icon-allow-overlap': false, // Cambiar a false
+              'icon-ignore-placement': false, // Agregar esta propiedad
+            }
+          });
         }
+        
 
-        // Configurar eventos
+        addVehicleLayerEvents();
+
+        // Agregar eventos para almacenes y oficinas
+        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.on('click', 'unclustered-offices', handleLocationClick);
+
+        // Eventos de cursor
+        ['unclustered-warehouses', 'unclustered-offices'].forEach(layer => {
+          mapRef.current.on('mouseenter', layer, () => {
+            mapRef.current.getCanvas().style.cursor = 'pointer';
+          });
+          mapRef.current.on('mouseleave', layer, () => {
+            mapRef.current.getCanvas().style.cursor = '';
+          });
+        });
+
+        // Configurar eventos del vehiculo
         mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, handleVehicleClick);
         mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
@@ -613,6 +660,84 @@ const getVehicleIconHtml = (vehicleType) => {
     popupsRef.current[vehicleCode] = popup;
   };
 
+
+  // Manejar click en almacén u oficina
+  const handleLocationClick = (e) => {
+    console.log('handleLocationClick triggered');
+
+    // Obtener los features del punto clickeado
+    const features = mapRef.current.queryRenderedFeatures(e.point, {
+      layers: ['unclustered-warehouses', 'unclustered-offices'], // Asegúrate de usar los nombres correctos de las capas
+    });
+
+    if (!features.length) {
+      console.error('No se encontraron ubicaciones en el punto clickeado.');
+      return;
+    }
+
+    const feature = features[0];
+    const { name, type, ubigeo, capacidadMaxima, capacidadUsada } = feature.properties;
+
+    // Crear el contenido del popup según el tipo de ubicación
+    const popupContent = document.createElement("div");
+    const root = createRoot(popupContent);
+
+    if (type === 'warehouse') {
+      // Renderizar el popup para almacén
+      root.render(
+        <AlmacenPopUp
+          title={name}
+          ubigeo={ubigeo || 'No especificado'}
+          iconoHtmlString={`
+            <div class="bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                <rect x="4" y="4" width="16" height="16" fill="white"/>
+              </svg>
+            </div>
+          `}
+        />
+      );
+    } else if (type === 'office') {
+      // Renderizar el popup para oficina
+      root.render(
+        <OficinaPopUp
+          title={name}
+          ubigeo={ubigeo || 'No especificado'}
+          capacidadMaxima={capacidadMaxima || 'No especificada'}
+          capacidadUtilizada={capacidadUsada || 'No especificada'}
+          iconoHtmlString={`
+            <div class="bg-green-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                <circle cx="12" cy="12" r="6" fill="white"/>
+              </svg>
+            </div>
+          `}
+        />
+      );
+    }
+
+    // Si ya hay un popup abierto para esta ubicación, eliminarlo
+    if (popupsRef.current[name]) {
+      popupsRef.current[name].remove();
+      delete popupsRef.current[name];
+    }
+
+    // Crear el popup de MapLibre
+    const popup = new maplibregl.Popup({
+      maxWidth: "none",
+      closeButton: true,
+      closeOnClick: true,
+      anchor: 'top',
+      offset: 25,
+    })
+      .setLngLat(feature.geometry.coordinates)
+      .setDOMContent(popupContent)
+      .addTo(mapRef.current);
+
+    // Guardar referencia al popup para gestión futura
+    popupsRef.current[name] = popup;
+  };
+
   // Efecto para cargar ubicaciones cuando el mapa está listo
   useEffect(() => {
     if (mapLoaded && !locations) {
@@ -747,7 +872,7 @@ const getVehicleIconHtml = (vehicleType) => {
           layout: {
             'icon-image': 'warehouse-icon',
             'icon-size': 0.8,
-            'icon-allow-overlap': false, // Evita solapamiento
+            'icon-allow-overlap': true, // Permitir solapamiento para asegurar que se puedan hacer clic
             'text-field': ['get', 'name'],
             'text-font': ['Open Sans Bold'],
             'text-size': 12,
@@ -760,6 +885,15 @@ const getVehicleIconHtml = (vehicleType) => {
             'text-halo-width': 1,
           },
         });
+
+        // Asegúrate de añadir eventos de clic y cursor para almacenes después de agregar la capa
+        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = 'pointer';
+        });
+        mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = '';
+        });
       }
 
       if (!mapRef.current.getLayer('unclustered-offices')) {
@@ -771,7 +905,7 @@ const getVehicleIconHtml = (vehicleType) => {
           layout: {
             'icon-image': 'office-icon',
             'icon-size': 0.6,
-            'icon-allow-overlap': false, // Evita solapamiento
+            'icon-allow-overlap': true, // Permitir solapamiento para asegurar que se puedan hacer clic
             'text-field': ['get', 'name'],
             'text-font': ['Open Sans Regular'],
             'text-size': 10,
@@ -783,6 +917,15 @@ const getVehicleIconHtml = (vehicleType) => {
             'text-halo-color': '#FFFFFF',
             'text-halo-width': 1,
           },
+        });
+
+        // Asegúrate de añadir eventos de clic y cursor para oficinas después de agregar la capa
+        mapRef.current.on('click', 'unclustered-offices', handleLocationClick);
+        mapRef.current.on('mouseenter', 'unclustered-offices', () => {
+          mapRef.current.getCanvas().style.cursor = 'pointer';
+        });
+        mapRef.current.on('mouseleave', 'unclustered-offices', () => {
+          mapRef.current.getCanvas().style.cursor = '';
         });
       }
     } catch (error) {

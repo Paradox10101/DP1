@@ -1,7 +1,7 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { ChevronDown, Filter, Map, SearchX } from "lucide-react";
+import { ChevronDown, Filter, Map, SearchX, X } from "lucide-react";
 import { useAtom } from "jotai";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { vehiclePositionsAtom, loadingAtom } from "../atoms";
 import BarraProgreso from "./BarraProgreso";
 import CardVehiculo from "@/app/Components/CardVehiculo";
@@ -18,14 +18,22 @@ export default function OpcionVehiculos() {
   const [searchInput, setSearchInput] = useState("");
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null);
   const [isFilterModalOpen, setFilterModalOpen] = useState(false); // Estado para el modal de filtros
-  const [selectedKeys, setSelectedKeys] = useState(new Set());
-  const selectedValue = selectedKeys.size > 0 
-        ? Array.from(selectedKeys).join(", ") 
-        : "Seleccione una ubicación";
-  
-
+  const [filteredVehicles, setFilteredVehicles] = useState([]);
+  const [loadingFilters, setLoadingFilters] = useState(true);
+  const [vehicleTypes, setVehicleTypes] = useState([]);
+  const initialFilterStateRef = useRef(
+      {
+      vehicleType: "",
+      minQuantity: 0,
+      maxQuantity: null,
+      
+      }
+  )
+  const [vehiclesFilter, setVehiclesFilter] = useState(initialFilterStateRef.current);
   // Ensure vehiculos is an array to avoid TypeError
   const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
+
+
 
   // Filter vehiculosArray based on search input
   const filteredVehiculosArray = vehiculosArray.filter((vehiculo) =>
@@ -33,10 +41,10 @@ export default function OpcionVehiculos() {
   );
 
   // Calculate total used and max capacity
-  const capacidadUsadaTotal = filteredVehiculosArray.reduce(
+  const capacidadUsadaTotal = filteredVehicles.reduce(
     (total, vehiculo) => total + (vehiculo.properties.capacidadUsada || 0), 0
   );
-  const capacidadTotalMaxima = filteredVehiculosArray.reduce(
+  const capacidadTotalMaxima = filteredVehicles.reduce(
     (total, vehiculo) => total + (vehiculo.properties.capacidadMaxima || 0), 0
   );
   
@@ -56,7 +64,51 @@ export default function OpcionVehiculos() {
     </div>
   );
 
+  useEffect(() => {
+    if(!isFilterModalOpen)return;
+    setLoadingFilters(true)
+    setVehicleTypes(["A", "B","C"]);
+    setLoadingFilters(false)
+}, [isFilterModalOpen]);
+
+useEffect(() => {
   
+  if(!vehiculos){
+      setFilteredVehicles([]);
+      return
+  }
+  
+  if(vehiclesFilter === initialFilterStateRef.current){
+    setFilteredVehicles(filteredVehiculosArray)
+      return
+  }
+      
+  const filtered = filteredVehiculosArray.filter((vehiculo) => {
+      // Filtrar por tipo de vehiculo
+      const matchesType = vehiclesFilter.vehicleType
+      ? (vehiculo.properties.tipo === vehiclesFilter.vehicleType)
+      : true;
+  
+      // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
+      const matchesMinQuantity = vehiclesFilter.minQuantity
+      ? vehiculo.properties.capacidadMaxima >= vehiclesFilter.minQuantity
+      : true;
+
+      // Filtrar por maxQuantity (si se tiene un valor en shipmentsFilter.maxQuantity)
+      const matchesMaxQuantity = vehiclesFilter.maxQuantity
+          ? vehiculo.properties.capacidadMaxima <= vehiclesFilter.maxQuantity
+          : true;
+
+
+    // Retornar true solo si todos los filtros coinciden
+    return matchesType && matchesMinQuantity && matchesMaxQuantity
+  });
+  
+  // Establecer la lista filtrada en filteredShipments
+  setFilteredVehicles(filtered);
+}, [vehiculos, vehiclesFilter]);
+  
+
   const renderStatus = (status) => {
     switch (status) {
         case "EN_ALMACEN":
@@ -91,8 +143,7 @@ export default function OpcionVehiculos() {
   const isSearching = searchInput.length > 0;
 
   const Row = ({ index, style}) => {
-    const vehicle = filteredVehiculosArray[index];
-    console.log(vehicle)
+    const vehicle = filteredVehicles[index];
     return (
       (vehicle&&vehicle?.properties)&&
       <div
@@ -101,7 +152,6 @@ export default function OpcionVehiculos() {
         //className={`p-2 border-2 rounded-xl stroke-black ${filteredVehiculosArray[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
         onMouseDown={() => {
             setSelectedVehicleIndex(index);
-            console.log("==============================================")
             console.log(vehicle)
             //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
             onOpen(); // Abrir modal
@@ -131,22 +181,49 @@ export default function OpcionVehiculos() {
               onClear={() => setSearchInput('')}
               isClearable
             />
-            <Button
-              disableRipple={true}
-              startContent={<Filter size="18" />}
-              className="bg-[#F4F4F4]"
-              onClick={
-                  ()=>{
-                      setFilterModalOpen(true)
-                  }
+                          {vehiclesFilter === initialFilterStateRef.current?
+                        (
+                        <Button
+                            disableRipple={true}
+                            startContent={<Filter size="18" />}
+                            className="bg-[#F4F4F4] text-black"
+                            onClick={
+                                ()=>{
+                                    setFilterModalOpen(true)
+                                }
+                            }
+                        >
+                            Filtros
+                        </Button>
+                        )
+                        :
+                        (
+                            <>
+                            <Button
+                                disableRipple={true}
+                                startContent={<Filter size="18" />}
+                                className="bg-principal text-white"
+                                onClick={
+                                    ()=>{
+                                        setFilterModalOpen(true)
+                                    }
+                                }
+                            >
+                                Filtros
+                            </Button>
+                            <div 
+                                className="hover:bg-gray-100 hover:rounded-full cursor-pointer transition-all duration-200"
+                                onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
+                            >
+                            <X size="18" />
+                            </div>
+                            </>
+                        )
               }
-            >
-            Filtros
-            </Button>
           </div>
 
           <div className="text-right pequenno text-[#939393]">
-            Cantidad de vehículos: {filteredVehiculosArray.length}
+            Cantidad de vehículos: {filteredVehicles.length}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -170,7 +247,7 @@ export default function OpcionVehiculos() {
                     {({ height, width }) => (
                       <List
                         height={height}
-                        itemCount={filteredVehiculosArray.length}
+                        itemCount={filteredVehicles.length}
                         itemSize={180}
                         width={width}
                       >
@@ -240,7 +317,7 @@ export default function OpcionVehiculos() {
                                                 disableRipple={true}
                                             >
                                                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    {selectedValue}
+                                                    {vehiclesFilter.vehicleType || "Selecciona un tipo"}
                                                 </span>
                                                 <ChevronDown size={18} className="absolute right-4" />
                                             </Button>
@@ -248,13 +325,19 @@ export default function OpcionVehiculos() {
                                         <DropdownMenu
                                             closeOnSelect={true}
                                             selectionMode="single"
-                                            selectedKeys={selectedKeys}
-                                            onSelectionChange={setSelectedKeys}
+                                            onSelectionChange={(keys) => {
+                                              const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                              setVehiclesFilter((prev) => ({
+                                                  ...prev,
+                                                  vehicleType: value,
+                                              }));
+                                              }}
                                             disableRipple={true}
                                             className="w-full"
                                         >
-                                            <DropdownItem key="text">Oficina</DropdownItem>
-                                            <DropdownItem key="number">Almacén Principal</DropdownItem>
+                                          {vehicleTypes && vehicleTypes.length > 0 && vehicleTypes.map((vehicleType) => (
+                                                <DropdownItem key={vehicleType}>{vehicleType}</DropdownItem>
+                                          ))}
                                         </DropdownMenu>
                                 </Dropdown>
                                 </div>
@@ -262,64 +345,44 @@ export default function OpcionVehiculos() {
                             </div>
 
                             <div className="w-1/2 flex flex-row gap-4">
-                                <div className="flex flex-col gap-1 w-full">
-                                    <div className="regular_bold">
-                                        Estado:
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between gap-2">
-                                    <Dropdown
-                                                className>
-                                                <DropdownTrigger>
-                                                    <Button
-                                                        variant="bordered"
-                                                        className="capitalize w-full relative"
-                                                        disableRipple={true}
-                                                    >
-                                                        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                            {selectedValue}
-                                                        </span>
-                                                        <ChevronDown size={18} className="absolute right-4" />
-                                                    </Button>
-                                                </DropdownTrigger>
-                                                <DropdownMenu
-                                                    closeOnSelect={true}
-                                                    selectionMode="single"
-                                                    selectedKeys={selectedKeys}
-                                                    onSelectionChange={setSelectedKeys}
-                                                    disableRipple={true}
-                                                    className="w-full"
-                                                    
-                                                >
-                                                    <DropdownItem key=">">{">"}</DropdownItem>
-                                                    <DropdownItem key="<">{"<"}</DropdownItem>
-                                                    <DropdownItem key="=">{"="}</DropdownItem>
-                                                </DropdownMenu>
-                                            </Dropdown>
-
-                                </div>
-                                </div>
-                                  
-                            </div>
-                            <div className="w-1/2 flex flex-row gap-4">
                               <div className="flex flex-col gap-1 w-full">
                                   <div className="regular_bold">
-                                      Cantidad de paquetes:
+                                      Capacidad de paquetes:
                                   </div>
                                   <div className="w-full flex flex-row justify-between gap-2">
-                                      <Input
+                                  <Input
                                           type="number"
-                                          defaultValue={0}
+                                          value={vehiclesFilter.minQuantity || 0}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
+                                          onChange={(e) => {
+                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            
+                                            setVehiclesFilter((prev) => ({
+                                                ...prev,
+                                                minQuantity: value,
+                                            }));
+                                            
+                                        }}
                                       />
                                       <div className="flex items-center">hasta</div>
                                       <Input
                                           type="number"
-                                          defaultValue={0}
+                                          value={vehiclesFilter.maxQuantity || 0}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
+                                          onChange={(e) => {
+                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            
+                                            setVehiclesFilter((prev) => ({
+                                                ...prev,
+                                                maxQuantity: value,
+                                            }));
+                                            
+                                            
+                                        }}
                                       />
 
                                   </div>
@@ -329,17 +392,11 @@ export default function OpcionVehiculos() {
                         
                     </ModalBody>
                     <ModalFooter>
-                        <div className="w-full flex flex-row justify-between">
+                        <div className="w-full flex flex-row justify-end">
                             <Button
-                                onClick={() => setFilterModalOpen(false)}
+                                onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
                             >
                                 Eliminar Filtros
-                            </Button>
-                            <Button
-                                onClick={() => setFilterModalOpen(false)}
-                                className="bg-principal text-white"
-                            >
-                                Aplicar Filtros
                             </Button>
                         </div>
                         
@@ -350,26 +407,3 @@ export default function OpcionVehiculos() {
         </div>  
   );
 }
-
-/*
-
-{isLoading ? (
-        <div className="text-center text-gray-500">Cargando vehículos...</div>
-      ) : (
-        <div className="flex flex-col gap-3 overflow-y-scroll max-h-[65vh] scroll-area">
-          {filteredVehiculosArray.map((vehiculo) => (
-            <CardVehiculo key={vehiculo.properties.vehicleCode} vehiculo={vehiculo.properties} />
-          ))}
-        </div>
-      )}
-
-      {error && (
-        <div className="text-center text-red-500 mt-4">
-          {error} <Button onClick={handleRetry}>Reintentar</Button>
-        </div>
-      )}
-
-*/
-
-
-//<CardVehiculo key={vehicle.properties.vehicleCode} vehiculo={vehicle.properties} />
