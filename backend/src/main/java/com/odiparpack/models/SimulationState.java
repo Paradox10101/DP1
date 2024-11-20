@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.Main.createSearchParameters;
 import static com.odiparpack.SimulationRunner.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
@@ -169,7 +170,7 @@ public class SimulationState {
             this.locations = dataLoader.loadLocations("src/main/resources/locations.txt");
             List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", this.locations);
             List<Vehicle> vehiclesList = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
-            this.orders = dataLoader.loadOrders("src/main/resources/orders.txt", this.locations);
+            this.orders = dataLoader.loadOrders("src/main/resources/orders10_2.txt", this.locations);
             this.allBlockages = dataLoader.loadBlockages("src/main/resources/blockages.txt");
             this.maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
 
@@ -2101,7 +2102,7 @@ public class SimulationState {
                 .append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
                         ? locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getProvince() : " ").append("\",")
                 .append("\"tipo\":\"").append(vehicle.getType()).append("\",")
-                .append("\"capacidadUsada\":").append(vehicle.getCurrentOrder()==null?0:vehicle.getCurrentCapacity()).append(",")
+                .append("\"capacidadUsada\":").append(vehicle.getCurrentCapacity()).append(",")
                 .append("\"capacidadMaxima\":").append(vehicle.getCapacity()).append(",")
                 .append("\"cantidadRutas\":").append(vehicle.getRoute()!=null?vehicle.getRoute().size():0).append(",")
                 .append("\"status\":\"").append(vehicle.getEstado().toString()).append("\",")
