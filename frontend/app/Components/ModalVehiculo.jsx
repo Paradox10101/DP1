@@ -1,13 +1,35 @@
-import { Button } from "@nextui-org/react"
-import { AlertTriangle, ArrowRight, Building, Calendar, Car, CarFront, Check, Circle, CircleAlert, CircleAlertIcon, Clock, Eye, Filter, Flag, Gauge, Globe, MapPin, Package, Truck, Warehouse } from "lucide-react"
+import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@nextui-org/react"
+import { AlertTriangle, ArrowRight, Building, Calendar, Car, CarFront, Check, ChevronDown, Circle, CircleAlert, CircleAlertIcon, Clock, Eye, Filter, Flag, Gauge, Globe, MapPin, Package, Truck, Warehouse, X } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 
 export default function ModalVehiculo({vehicle}){
-    
+    const [isFilterModalVisible, setFilterModalVisible] = useState(false);
+    const modalRef = useRef(null); // Referencia para el modal de filtros
+    const [selectedKeys, setSelectedKeys] = useState(new Set());
+    const selectedValue = selectedKeys.size > 0 
+          ? Array.from(selectedKeys).join(", ") 
+          : "Seleccione un estado";
+    // Cierra el modal si se hace clic fuera de él
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                setFilterModalVisible(false);
+            }
+        }
+
+        // Añade el listener al montar
+        document.addEventListener("mousedown", handleClickOutside);
+        
+        // Limpia el listener al desmontar
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const Row = ({ index, style }) => {
         const shipment = vehicle.shipmentsVehicle[index];
         return (
@@ -95,20 +117,20 @@ export default function ModalVehiculo({vehicle}){
                                     <></>
                                     }
                                 </div>
-                                <div className="flex flex-col">
-                                    <div className="text-center regular_bold">{(location.type==="office"?"Oficina ":"Almacén ") + location.city}</div>
+                                <div className="w-full flex flex-col justify-between">
+                                    <div className="text-center pequenno_bold">{(location.type==="office"?"Oficina ":"Almacén ") + location.city}</div>
                                     <div className="text-center text-black pequenno">{location.status}</div>
                                 </div>
                             </div>
                             :
-                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[300px]">
                                 {location.type==="office"?
                                 <>
                                     <div className="text-center mx-auto">
                                         <IconoEstado Icono={Building} classNameContenedor={"bg-[#2ACF58] w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                                     </div>
                                     <div className="flex flex-col">
-                                        <div className="text-center regular_bold">{("Oficina ") + location.city}</div>
+                                        <div className="text-center pequenno_bold">{("Oficina ") + location.city}</div>
                                         <div className="text-center text-black pequenno">Inicio</div>
                                     </div>
                                 </>
@@ -118,7 +140,7 @@ export default function ModalVehiculo({vehicle}){
                                         <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                                     </div>
                                     <div className="flex flex-col">
-                                        <div className="text-center regular_bold">{("Almacén ") + location.city}</div>
+                                        <div className="text-center pequenno_bold">{("Almacén ") + location.city}</div>
                                         <div className="text-center text-black pequenno">Inicio</div>
                                     </div>
                                 </>
@@ -131,7 +153,7 @@ export default function ModalVehiculo({vehicle}){
                     )
                     :
                     vehicle.currentRoute.length==1?
-                    <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                    <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[200px]">
                         {vehicle.currentRoute[0].type==="office"?
                         <>
                             <div className="text-center mx-auto">
@@ -162,17 +184,215 @@ export default function ModalVehiculo({vehicle}){
                 </div>
                 
             </div>
-            <div className="flex flex-col gap-4">
-                <div className="flex flex-row justify-between">
+            <div className="flex flex-col gap-4 relative">
+                <div className="flex flex-row justify-between ">
                     <div className="text-black regular_bold">Lista de Envíos</div>
                     <Button
                     disableRipple={true}
                     startContent={<Filter className="size-2"/>}
                     className="focus:outline-none border stroke-black rounded h-8 pequenno w-[22%] bg-[#F4F4F4]"
+                    onClick={() => setFilterModalVisible(!isFilterModalVisible)}
                     >
                     Filtros
                     </Button>
+                    {/* Modal de Filtros */}
+                                    
+                {isFilterModalVisible && (
+                    <div
+                        ref={modalRef} // Asigna la referencia al contenedor del modal
+                        className="absolute top-10 right-1 bg-white shadow-lg rounded border p-4 w-[475px] z-50"
+                    >
+                        <div className="w-full flex flex-row justify-between items-center">
+                            <div className="text-black subEncabezado_bold">Opciones de Filtro</div>
+                            <button
+                                onClick={() => setFilterModalVisible(false)}
+                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-300 transition duration-200"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex flex-col gap-4">
+                            {/* Contenido de filtros */}
+                            <div className="h-[190px] overflow-y-auto scroll-area">
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Estado:
+                                    </div>
+                                    <Dropdown className="w-full">
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="REGISTERED">Registrado</DropdownItem>
+                                            <DropdownItem key="DELIVERED">Entregado</DropdownItem>
+                                            <DropdownItem key="IN_TRANSIT">En tránsito</DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                            </div>
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Almacén origen:
+                                    </div>
+                                    <Dropdown className="w-full">
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="REGISTERED">Registrado</DropdownItem>
+                                            <DropdownItem key="DELIVERED">Entregado</DropdownItem>
+                                            <DropdownItem key="IN_TRANSIT">En tránsito</DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Oficina destino:
+                                    </div>
+                                    <Dropdown className="w-full">
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {selectedValue}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            selectedKeys={selectedKeys}
+                                            onSelectionChange={setSelectedKeys}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                            <DropdownItem key="REGISTERED">Registrado</DropdownItem>
+                                            <DropdownItem key="DELIVERED">Entregado</DropdownItem>
+                                            <DropdownItem key="IN_TRANSIT">En tránsito</DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                            </div>
+
+
+
+                            <div className="w-full flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Cantidad de paquetes:
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between gap-2">
+                                        <Input
+                                            type="number"
+                                            defaultValue={0}
+                                            min={0}
+                                            step="1"
+                                            className="w-full text-right"
+                                        />
+                                        <div className="flex items-center">hasta</div>
+                                        <Input
+                                            type="number"
+                                            defaultValue={0}
+                                            min={0}
+                                            step="1"
+                                            className="w-full text-right"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="w-full flex flex-row gap-4">
+                                    <div className="flex flex-col gap-1 w-full">
+                                        <div className="regular_bold">
+                                            Fecha desde:
+                                        </div>
+                                        <div className="w-full flex flex-row justify-between gap-2">
+                                            <DatePicker className="" />
+                                            <Input
+                                                type="time"
+                                                defaultValue="12:00"
+                                                className="w-full"
+                                                aria-label="Time Input"
+                                            />
+                                        </div>
+                                    </div>
+                            </div>
+                            <div className="w-full flex flex-row gap-4">
+                                    <div className="flex flex-col gap-1 w-full">
+                                        <div className="regular_bold">
+                                            Fecha hasta:
+                                        </div>
+                                        <div className="w-full flex flex-row justify-between gap-2">
+                                            <DatePicker className="" />
+                                            <Input
+                                                type="time"
+                                                defaultValue="12:00"
+                                                className="w-full"
+                                                aria-label="Time Input"
+                                            />
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+                            
+
+                            <div className="w-full flex flex-row justify-between gap-4">
+                                <Button
+                                    onClick={() => setFilterModalVisible(false)}
+                                >
+                                    Eliminar Filtros
+                                </Button>
+                                <Button
+                                    onClick={() => setFilterModalVisible(false)}
+                                    className="bg-principal text-white"
+                                >
+                                    Aplicar Filtros
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 </div>
+
                 
                 <div className="flex flex-col gap-0">
                     <div className="bg-gray-50 text-gray-500 uppercase text-sm leading-normal w-full grid grid-cols-10 items-center">
@@ -184,7 +404,7 @@ export default function ModalVehiculo({vehicle}){
                         <div className="py-3 px-2 text-center col-span-2">DESTINO</div>
                     </div>
 
-                <div className="overflow-y-auto h-[250px] border stroke-black rounded w-full scroll-area overflow-x-hidden">
+                <div className="overflow-y-auto h-[175px] border stroke-black rounded w-full scroll-area overflow-x-hidden">
                     <AutoSizer>
                         {({ height, width }) => (
                             <List

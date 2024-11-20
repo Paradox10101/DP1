@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.Main.createSearchParameters;
 import static com.odiparpack.SimulationRunner.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
@@ -1929,7 +1930,7 @@ public class SimulationState {
                 .append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
                         ? locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getProvince() : " ").append("\",")
                 .append("\"tipo\":\"").append(vehicle.getType()).append("\",")
-                .append("\"capacidadUsada\":").append(vehicle.getCurrentOrder()==null?0:vehicle.getCurrentCapacity()).append(",")
+                .append("\"capacidadUsada\":").append(vehicle.getCurrentCapacity()).append(",")
                 .append("\"capacidadMaxima\":").append(vehicle.getCapacity()).append(",")
                 .append("\"cantidadRutas\":").append(vehicle.getRoute()!=null?vehicle.getRoute().size():0).append(",")
                 .append("\"status\":\"").append(vehicle.getEstado().toString()).append("\",")

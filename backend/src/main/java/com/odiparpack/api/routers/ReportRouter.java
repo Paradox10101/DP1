@@ -70,12 +70,18 @@ public class ReportRouter extends BaseRouter {
             
             String codigoPedido = request.params("codigoPedido");
 
-            // Crear el reporte de colapso para un pedido específico
-            CollapseReport collapseReport = new CollapseReport(simulationState, codigoPedido);
-            String collapseReportJson = collapseReport.toJson();
-
-            response.status(200);
-            return collapseReportJson;
+            try {
+                CollapseReport collapseReport = new CollapseReport(simulationState, codigoPedido);
+                String collapseReportJson = collapseReport.toJson();
+                response.status(200);
+                return collapseReportJson;
+            } catch (IllegalArgumentException e) {
+                response.status(400); // Bad Request
+                return gson.toJson(Collections.singletonMap("error", "Pedido no encontrado: " + e.getMessage()));
+            } catch (Exception e) {
+                response.status(500); // Internal Server Error
+                return gson.toJson(Collections.singletonMap("error", "Error al generar el reporte: " + e.getMessage()));
+            }
         });
     }
 }
