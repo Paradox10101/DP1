@@ -96,7 +96,7 @@ useEffect(() => {
       const matchesStatus = vehiclesFilter.status
       ? (vehiculo.properties.status === "EN_ALMACEN" && vehiclesFilter.status==="EN ALMACÉN")
       ||
-      (vehiculo.properties.status === "AVERIADO" && vehiclesFilter.status==="AVERIADO")
+      (vehiculo.properties.status.startsWith("AVERIADO") && vehiclesFilter.status==="AVERIADO")
       ||
       (vehiculo.properties.status === "EN_MANTENIMIENTO" && vehiclesFilter.status==="EN MANTENIMIENTO")
       ||
@@ -131,12 +131,24 @@ useEffect(() => {
                     En Almacén
                 </div>
             );
-        case "AVERIADO":
+        case "AVERIADO_1":
             return (
                 <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                    Averiado
+                    Averiado T1
                 </div>
             );
+        case "AVERIADO_2":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                  Averiado T2
+              </div>
+          );
+        case "AVERIADO_3":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                  Averiado T3
+              </div>
+          );
         case "EN_MANTENIMIENTO":
             return (
                 <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
