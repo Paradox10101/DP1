@@ -26,7 +26,7 @@ public class SimulationInitializer {
         Map<String, Location> locations = dataService.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataService.loadEdges("src/main/resources/edges.txt", locations);
         List<Vehicle> vehiclesList = dataService.loadVehicles("src/main/resources/vehicles.txt");
-        List<Order> orders = dataService.loadOrders("src/main/resources/orders10_2.txt", locations);
+        List<Order> orders = dataService.loadOrders("src/main/resources/orders.txt", locations);
         List<Blockage> blockages = dataService.loadBlockages("src/main/resources/blockages.txt");
         List<Maintenance> maintenanceSchedule = dataService.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
 

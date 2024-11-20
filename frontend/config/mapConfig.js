@@ -26,7 +26,7 @@ export const MAP_CONFIG = {
     // Configuración de capas
     LAYERS: {
       VEHICLES: {
-        CIRCLE: 'vehicles-circle-layer',
+        SYMBOL: 'vehicles-symbol-layer',
         TEXT: 'vehicles-text-layer'
       },
       LOCATIONS: {
@@ -52,22 +52,31 @@ export const MAP_CONFIG = {
   
   export const LAYER_STYLES = {
     vehicles: {
-      circle: {
-        id: MAP_CONFIG.LAYERS.VEHICLES.CIRCLE,
-        type: 'circle',
+      symbol: {
+        id: MAP_CONFIG.LAYERS.VEHICLES.SYMBOL,
+        type: 'symbol',
         source: MAP_CONFIG.SOURCES.VEHICLES.id,
-        paint: {
-          'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            5, 10,
-            10, 12,
-            15, 14,
+        layout: {
+          'icon-image': [
+            'match',
+            ['get', 'tipo'],
+            'A', 'truck-icon',
+            'B', 'car-front-icon',
+            'C', 'car-icon',
+            'alert-triangle-icon' // default icon
           ],
-          'circle-color': '#FF0000',
-          'circle-stroke-color': '#FFFFFF',
-          'circle-stroke-width': 2,
+          'icon-size': 0.8,
+          'icon-allow-overlap': true,
+          'text-field': ['get', 'vehicleCode'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-size': 12,
+          'text-offset': [0, 2],
+          'text-anchor': 'top'
+        },
+        paint: {
+          'text-color': '#FFFFFF',
+          'text-halo-color': '#000000',
+          'text-halo-width': 1
         }
       },
       text: {
@@ -77,21 +86,14 @@ export const MAP_CONFIG = {
         layout: {
           'text-field': ['get', 'vehicleCode'],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-size': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            5, 12,
-            10, 14,
-            15, 16,
-          ],
-          'text-offset': [0, 0],
-          'text-anchor': 'center',
+          'text-size': 12,
+          'text-offset': [0, 2],
+          'text-anchor': 'center'
         },
         paint: {
           'text-color': '#FFFFFF',
           'text-halo-color': '#000000',
-          'text-halo-width': 1,
+          'text-halo-width': 1
         }
       }
     },
