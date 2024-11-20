@@ -14,13 +14,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class ReportRouter extends BaseRouter {
-    private final SimulationState simulationState;
     private static final Logger logger = Logger.getLogger(ReportRouter.class.getName());
     private static final Gson gson = new Gson();
 
     // Constructor
-    public ReportRouter(SimulationState simulationState) {
-        this.simulationState = simulationState;
+    public ReportRouter() {
     }
 
     @Override

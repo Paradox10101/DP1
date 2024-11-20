@@ -60,17 +60,19 @@ export const useSimulationMetrics = () => {
             const data = JSON.parse(event.data);
             if (data.startTime && data.endTime &&
                 data.simulatedTime && data.realElapsedTime) {
-
-                // Utilizamos los datos tal cual vienen del backend
+    
+                // Incluimos las nuevas métricas de duración
                 const formattedData = {
                     startTime: data.startTime,
                     endTime: data.endTime,
                     simulatedTime: data.simulatedTime,
+                    simulatedDuration: data.simulatedDuration,
                     realElapsedTime: data.realElapsedTime,
+                    realDuration: data.realDuration,
                     isPaused: data.isPaused,
                     isStopped: data.isStopped
                 };
-
+    
                 setMetrics(prevMetrics => {
                     if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
                         return formattedData;

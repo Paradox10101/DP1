@@ -3,6 +3,7 @@ package com.odiparpack;
 import com.google.ortools.Loader;
 import com.google.ortools.constraintsolver.*;
 import com.odiparpack.api.controllers.SimulationController;
+import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
 
 import java.io.BufferedWriter;
@@ -97,16 +98,43 @@ public class Main {
         // El método main termina aquí
     }*/
 
-    public static com.odiparpack.models.SimulationState initializeSimulationState() throws IOException {
+    public static com.odiparpack.models.SimulationState initializeSimulationState(LocalDateTime startDateTime,
+                                                                                  LocalDateTime endDateTime,
+                                                                                  SimulationRouter.SimulationType type)
+            throws IOException {
         DataLoader dataLoader = new DataLoader();
 
-        // Cargar datos
+        // Cargar datos base
         locations = dataLoader.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);
         List<Vehicle> vehicles = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
-        List<Order> orders = dataLoader.loadOrders("src/main/resources/orders.txt", locations);
         List<Blockage> blockages = dataLoader.loadBlockages("src/main/resources/blockages.txt");
         List<Maintenance> maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
+
+        // Obtener órdenes según el tipo de simulación
+        List<Order> orders;
+        if (type == SimulationRouter.SimulationType.DAILY) {
+            // Para simulación diaria, usar órdenes del registro
+            orders = OrderRegistry.getAllOrders().stream()
+                    .filter(order -> order.getStatus() == Order.OrderStatus.REGISTERED)
+                    .collect(Collectors.toList());
+
+            // Si no hay órdenes registradas, lanzar excepción
+            if (orders.isEmpty()) {
+                throw new IllegalStateException("No hay órdenes registradas para simular");
+            }
+
+            // Actualizar startDateTime basado en las órdenes existentes
+            LocalDateTime earliestOrder = orders.stream()
+                    .map(Order::getOrderTime)
+                    .min(LocalDateTime::compareTo)
+                    .orElseThrow();
+
+            startDateTime = earliestOrder;
+        } else {
+            // Para otros tipos de simulación, cargar desde archivo
+            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations);
+        }
 
         routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);
 
@@ -131,17 +159,10 @@ public class Main {
         Map<String, Vehicle> vehicleMap = vehicles.stream()
                 .collect(Collectors.toMap(Vehicle::getCode, v -> v));
 
-        // Calcular el tiempo inicial de simulación
-        LocalDateTime initialSimulationTime = orders.stream()
-                .map(Order::getOrderTime)
-                .min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now())
-                .withHour(0).withMinute(0).withSecond(0).withNano(0);
-
         // Crear una nueva instancia de SimulationState
         return new com.odiparpack.models.SimulationState(
                 vehicleMap,
-                initialSimulationTime,
+                startDateTime,
                 orders,
                 locations,
                 routeCache,
@@ -150,7 +171,8 @@ public class Main {
                 maintenanceSchedule,
                 locationIndices,
                 locationNames,
-                locationUbigeos
+                locationUbigeos,
+                type
         );
     }
 
@@ -158,10 +180,10 @@ public class Main {
         Loader.loadNativeLibraries();
 
         // Inicializar SimulationState
-        com.odiparpack.models.SimulationState simulationState = initializeSimulationState();
+        //com.odiparpack.models.SimulationState simulationState = initializeSimulationState();
 
         // Iniciar el servidor SimulationController
-        SimulationController simulationController = new SimulationController(simulationState);
+        SimulationController simulationController = new SimulationController();
         simulationController.start();
 
         // El método main termina aquí

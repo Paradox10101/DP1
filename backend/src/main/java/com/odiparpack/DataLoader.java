@@ -2,17 +2,16 @@ package com.odiparpack;
 
 import com.odiparpack.models.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.io.*;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.logger;
 
@@ -77,112 +76,174 @@ public class DataLoader {
         return vehicles;
     }
 
-    public List<Order> loadOrders(String filePath, Map<String, Location> locations) {
+    public List<Order> loadOrders(LocalDateTime startDateTime, LocalDateTime endDateTime, Map<String, Location> locations) {
         List<Order> orders = new ArrayList<>();
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm"); // Solo para la hora
-        LocalDate baseDate = LocalDate.now().withDayOfMonth(1);
+        AtomicInteger orderId = new AtomicInteger(1);
+        Pattern timePattern = Pattern.compile("(\\d{2})\\s(\\d{2}:\\d{2}),\\s*(\\d+)\\s*=>\\s*(\\d+),\\s*(\\d+),\\s*(\\d+)");
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            int orderId = 1;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty() || line.startsWith("#")) continue; // Ignorar líneas vacías o comentarios
+        // Obtener los archivos relevantes
+        List<String> files = endDateTime == null ?
+                getAllOrderFiles() :
+                getMonthFileNamesBetween(startDateTime, endDateTime);
 
-                System.out.println("Procesando línea: " + line);
+        for (String filePath : files) {
+            // Extraer año y mes del nombre del archivo
+            String fileName = new File(filePath).getName();
+            Matcher yearMonthMatcher = Pattern.compile("ventas(\\d{4})(\\d{2})").matcher(fileName);
 
-                String[] parts = line.split(",");
-                if (parts.length < 4) {  // Asegurarse de que haya al menos 4 partes
-                    System.out.println("Error: línea malformada, no tiene suficientes partes: " + Arrays.toString(parts));
-                    continue;
+            if (!yearMonthMatcher.find()) continue;
+
+            int year = Integer.parseInt(yearMonthMatcher.group(1));
+            int month = Integer.parseInt(yearMonthMatcher.group(2));
+
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    Matcher m = timePattern.matcher(line);
+                    if (!m.find()) continue;
+
+                    try {
+                        // Extraer componentes de la línea usando los grupos del patrón
+                        int day = Integer.parseInt(m.group(1));
+                        LocalTime time = LocalTime.parse(m.group(2));
+                        String originUbigeo = m.group(3);
+                        String destinationUbigeo = m.group(4);
+                        int quantity = Integer.parseInt(m.group(5));
+                        String clientId = String.format("%06d", Integer.parseInt(m.group(6)));
+
+                        // Construir fecha
+                        LocalDateTime orderDateTime = LocalDateTime.of(year, month, day, time.getHour(), time.getMinute());
+
+                        // Verificar rango de fechas
+                        if (orderDateTime.isBefore(startDateTime)) continue;
+                        if (endDateTime != null && orderDateTime.isAfter(endDateTime)) continue;
+
+                        // Crear orden
+                        Order order = new Order(
+                                orderId.getAndIncrement(),
+                                originUbigeo,
+                                destinationUbigeo,
+                                quantity,
+                                orderDateTime,
+                                calculateDueDate(orderDateTime, destinationUbigeo, locations),
+                                clientId
+                        );
+
+                        order.setOrderCode(String.format("P%d%06d", order.getId() / 1000000, order.getId() % 1000000));
+                        orders.add(order);
+
+                    } catch (NumberFormatException | DateTimeException e) {
+                        logger.warning("Error parsing line: " + line);
+                    }
                 }
-
-                System.out.println("Partes separadas: " + Arrays.toString(parts));
-
-                // Parsear el día y la hora manualmente
-                String dayAndTimeStr = parts[0].trim();
-                String[] dayAndTimeParts = dayAndTimeStr.split(" ");
-                if (dayAndTimeParts.length != 2) {
-                    System.out.println("Error: formato de fecha/hora incorrecto: " + dayAndTimeStr);
-                    continue;
-                }
-
-                int day;
-                LocalTime time;
-                try {
-                    day = Integer.parseInt(dayAndTimeParts[0].trim());
-                    time = LocalTime.parse(dayAndTimeParts[1].trim(), timeFormatter);
-                } catch (Exception e) {
-                    System.out.println("Error al parsear el día o la hora: " + e.getMessage());
-                    continue;
-                }
-
-                // Crear la fecha completa usando baseDateTime y los valores de día y hora
-                LocalDateTime orderDateTime = LocalDateTime.of(baseDate, time).withDayOfMonth(day);
-
-                String[] locationParts = parts[1].split("=>");
-                if (locationParts.length != 2) {
-                    System.out.println("Error en la ruta, no tiene dos ubicaciones: " + Arrays.toString(locationParts));
-                    continue;
-                }
-
-                String originUbigeo = locationParts[0].trim();
-                String destinationUbigeo = locationParts[1].trim();
-                int quantity;
-                try {
-                    quantity = Integer.parseInt(parts[2].trim());
-                } catch (NumberFormatException e) {
-                    System.out.println("Error en la cantidad, no es un número: " + parts[2].trim());
-                    continue;
-                }
-                String clientId = parts[3].trim();
-
-                // Verificar que las ubicaciones existan en el mapa
-                Location destination = locations.get(destinationUbigeo);
-                if (destination == null) {
-                    System.out.println("Ubigeo destino no encontrado: " + destinationUbigeo);
-                    continue;
-                }
-
-                String naturalRegion = destination.getNaturalRegion();
-                LocalDateTime dueDateTime = orderDateTime;
-
-                // Ajustar el tiempo de entrega basado en la región
-                switch (naturalRegion.toUpperCase()) {
-                    case "COSTA":
-                        dueDateTime = dueDateTime.plusDays(1);
-                        break;
-                    case "SIERRA":
-                        dueDateTime = dueDateTime.plusDays(2);
-                        break;
-                    case "SELVA":
-                        dueDateTime = dueDateTime.plusDays(3);
-                        break;
-                    default:
-                        dueDateTime = dueDateTime.plusDays(1);
-                        break;
-                }
-
-                Order order = new Order(orderId++, originUbigeo, destinationUbigeo, quantity,
-                        orderDateTime, dueDateTime, clientId);
-                order.setOrderCode(String.format("P%d%06d", order.getId()/1000000, order.getId()%1000000));
-                orders.add(order);
-
-                // Debugging: print details of each order
-                System.out.println("Cargado Pedido: ID: " + order.getId() +
-                        ", Codigo: " + order.getOrderCode() +
-                        ", Origen: " + order.getOriginUbigeo() +
-                        ", Destino: " + order.getDestinationUbigeo() +
-                        ", Cantidad: " + order.getQuantity() +
-                        ", Hora del Pedido: " + order.getOrderTime() +
-                        ", Tiempo de Entrega: " + order.getDueTime() +
-                        ", ID del Cliente: " + order.getClientId());
+            } catch (IOException e) {
+                logger.severe("Error reading file " + filePath + ": " + e.getMessage());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        System.out.println("Total de pedidos cargados: " + orders.size());
         return orders;
+    }
+
+    private List<String> getAllOrderFiles() {
+        // Ya que los archivos están ordenados, podemos leerlos directamente
+        File resourceDir = new File("src/main/resources");
+        return Arrays.stream(resourceDir.listFiles())
+                .filter(file -> file.getName().matches("c\\.1inf54\\.ventas\\d{6}\\.txt"))
+                .map(File::getAbsolutePath)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getMonthFileNamesBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<String> fileNames = new ArrayList<>();
+
+        YearMonth startMonth = YearMonth.from(startDateTime);
+        YearMonth endMonth = YearMonth.from(endDateTime);
+
+        while (!startMonth.isAfter(endMonth)) {
+            String fileName = String.format("src/main/resources/c.1inf54.ventas%04d%02d.txt", startMonth.getYear(), startMonth.getMonthValue());
+            fileNames.add(fileName);
+            startMonth = startMonth.plusMonths(1);
+        }
+        return fileNames;
+    }
+
+    private String extractDateFromFileName(String fileName) {
+        Pattern pattern = Pattern.compile("ventas(\\d{6})");
+        Matcher matcher = pattern.matcher(fileName);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
+    }
+
+    private LocalDateTime parseOrderDateTime(String dayAndTimeStr, String filePath) {
+        try {
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            String fileName = new File(filePath).getName();
+            Pattern pattern = Pattern.compile("ventas(\\d{6})");
+            Matcher matcher = pattern.matcher(fileName);
+
+            if (matcher.find()) {
+                String yearMonthStr = matcher.group(1);
+                YearMonth fileYearMonth = YearMonth.parse(yearMonthStr, DateTimeFormatter.ofPattern("yyyyMM"));
+
+                String[] dayTimeParts = dayAndTimeStr.split(" ");
+                int day = Integer.parseInt(dayTimeParts[0]);
+                LocalTime time = LocalTime.parse(dayTimeParts[1], timeFormatter);
+
+                return LocalDateTime.of(fileYearMonth.atDay(day), time);
+            }
+        } catch (Exception e) {
+            logger.warning("Error parsing date time from " + dayAndTimeStr + " in file " + filePath);
+        }
+        return null;
+    }
+
+    private Order parseOrderData(String[] parts, LocalDateTime orderDateTime, int orderId, Map<String, Location> locations) {
+        try {
+            String[] locationParts = parts[1].split("=>");
+            if (locationParts.length != 2) return null;
+
+            String originUbigeo = locationParts[0].trim();
+            String destinationUbigeo = locationParts[1].trim();
+            int quantity = Integer.parseInt(parts[2].trim());
+            String clientId = parts[3].trim();
+
+            Order order = new Order(
+                    orderId,
+                    originUbigeo,
+                    destinationUbigeo,
+                    quantity,
+                    orderDateTime,
+                    calculateDueDate(orderDateTime, destinationUbigeo, locations),
+                    clientId
+            );
+
+            order.setOrderCode(String.format("P%d%06d", order.getId() / 1000000, order.getId() % 1000000));
+            return order;
+        } catch (Exception e) {
+            logger.warning("Error parsing order data: " + Arrays.toString(parts));
+            return null;
+        }
+    }
+
+    public LocalDateTime calculateDueDate(LocalDateTime orderDateTime, String destinationUbigeo, Map<String, Location> locations) {
+        Location destination = locations.get(destinationUbigeo);
+        if (destination == null) {
+            return orderDateTime.plusDays(1); // Default due date
+        }
+
+        String naturalRegion = destination.getNaturalRegion();
+        switch (naturalRegion.toUpperCase()) {
+            case "COSTA":
+                return orderDateTime.plusDays(1);
+            case "SIERRA":
+                return orderDateTime.plusDays(2);
+            case "SELVA":
+                return orderDateTime.plusDays(3);
+            default:
+                return orderDateTime.plusDays(1);
+        }
     }
 
     public List<Edge> loadEdges(String filePath, Map<String, Location> locations) {

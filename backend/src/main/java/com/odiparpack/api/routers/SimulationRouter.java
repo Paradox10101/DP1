@@ -3,19 +3,27 @@ package com.odiparpack.api.routers;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.odiparpack.api.controllers.SimulationController;
+import com.odiparpack.models.Order;
+import com.odiparpack.models.OrderRegistry;
 import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 import spark.Spark;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SimulationRouter extends BaseRouter {
-    private SimulationState simulationState;
     private SimulationController simulationController;
 
     private static final Logger logger = Logger.getLogger(SimulationRouter.class.getName());
@@ -25,14 +33,39 @@ public class SimulationRouter extends BaseRouter {
     private volatile boolean isSimulationRunning = false;
     private volatile boolean isShutdown = false;
 
-    public SimulationRouter(SimulationState simulationState, SimulationController simulationController) {
-        this.simulationState = simulationState;
+    public enum SimulationType {
+        DAILY("diaria", 1),
+        WEEKLY("semanal", 7),
+        COLLAPSE("colapso", -1);
+
+        private final String value;
+        private final int days;
+
+        SimulationType(String value, int days) {
+            this.value = value;
+            this.days = days;
+        }
+
+        public int getDays() {
+            return days;
+        }
+
+        public static SimulationType fromString(String type) {
+            for (SimulationType st : values()) {
+                if (st.value.equalsIgnoreCase(type)) {
+                    return st;
+                }
+            }
+            throw new IllegalArgumentException("Tipo de simulación inválido: " + type);
+        }
+    }
+
+    public SimulationRouter(SimulationController simulationController) {
         this.simulationController = simulationController;
     }
 
     @Override
     public void setupRoutes() {
-        // Iniciar simulación
         Spark.post("/api/v1/simulation/start", (request, response) -> {
             response.type("application/json");
 
@@ -41,14 +74,89 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("La simulación ya está en ejecución.");
             }
 
-            // Reiniciar el estado si estaba apagado
-            if (simulationState.isStopped()) {
-                simulationController.resetSimulationState();
-            }
+            try {
+                JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+                String typeStr = body.get("type").getAsString(); // 'semanal', 'colapso', 'diaria'
 
-            startSimulation();
-            response.status(200);
-            return createSuccessResponse("Simulación iniciada.");
+                // Usar el enum para manejar el tipo de simulación
+                SimulationType simulationType = SimulationType.fromString(typeStr);
+
+                LocalDateTime startDateTime;
+                LocalDateTime endDateTime = null;
+
+                if (simulationType == SimulationType.DAILY) {
+                    // Obtener las órdenes registradas
+                    List<Order> registeredOrders = OrderRegistry.getAllOrders().stream()
+                            .filter(order -> order.getStatus() == Order.OrderStatus.REGISTERED)
+                            .collect(Collectors.toList());
+
+                    if (registeredOrders.isEmpty()) {
+                        throw new IllegalStateException("No hay órdenes registradas para simular");
+                    }
+
+                    // Encontrar la orden más antigua para usar su tiempo como inicio
+                    startDateTime = registeredOrders.stream()
+                            .map(Order::getOrderTime)
+                            .min(LocalDateTime::compareTo)
+                            .orElseThrow(() -> new IllegalStateException("No se pudo determinar la hora de inicio"));
+
+                    // La fecha de fin se calculará en initializeSimulationState
+                    logger.info("Iniciando simulación diaria desde: " + startDateTime);
+                } else {
+                    // Para otros tipos, usar fechas del request
+                    String startDateStr = body.get("startDate").getAsString();
+                    String startTimeStr = body.get("startTime").getAsString();
+
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
+
+                    LocalDate startDate = LocalDate.parse(startDateStr, dateFormatter);
+                    LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
+                    startDateTime = LocalDateTime.of(startDate, startTime);
+
+                    // Calcular endDateTime solo si no es tipo colapso
+                    if (simulationType != SimulationType.COLLAPSE) {
+                        endDateTime = startDateTime.plusDays(simulationType.getDays());
+                    }
+                }
+
+                // Configurar la velocidad de simulación según el tipo
+                if (simulationType == SimulationType.DAILY) {
+                    // Para simulación diaria: 1 segundo real = 1 segundo simulación
+                    SimulationRunner.setSimulationParameters(1);
+                } else if (simulationType == SimulationType.WEEKLY || simulationType == SimulationType.COLLAPSE) {
+                    // Para semanal y colapso: 1 segundo real = 5 minutos simulación (default)
+                    SimulationRunner.setSimulationParameters(5);
+                } else {
+                    throw new IllegalArgumentException("Tipo de simulación no soportado: " + typeStr);
+                }
+
+                // Revisar si la simulacion fue iniciada anteriormente
+                if (simulationState != null) {
+                    // Reiniciar el estado si estaba apagado
+                    if (simulationState.isStopped()) {
+                        simulationController.resetSimulationState(startDateTime, endDateTime, simulationType);
+                    }
+                } else {
+                    logger.info("Intentando inicializar simulacion.");
+                    simulationController.initializeSimulation(startDateTime, endDateTime, simulationType);
+                }
+
+                startSimulation();
+
+                // Preparar respuesta con información adicional
+                JsonObject jsonResponse = new JsonObject();
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("message", "Simulación iniciada exitosamente");
+                jsonResponse.addProperty("startTime", startDateTime.toString());
+                jsonResponse.addProperty("simulationType", simulationType.toString());
+
+                response.status(200);
+                return jsonResponse;
+            } catch (Exception e) {
+                response.status(400);
+                return createErrorResponse("Error al iniciar la simulación: " + e.getMessage());
+            }
         });
 
         // Pausar simulación
@@ -106,18 +214,63 @@ public class SimulationRouter extends BaseRouter {
             return createSuccessResponse("Simulación detenida.");
         });
 
+        Spark.get("/api/v1/simulation/first-available-date", (request, response) -> {
+            response.type("application/json");
+            try {
+                String monthYear = request.queryParams("monthYear"); // e.g., "2024-08"
+                if (monthYear == null || !monthYear.matches("\\d{4}-\\d{2}")) {
+                    response.status(400);
+                    return createErrorResponse("Parámetro 'monthYear' inválido.");
+                }
+
+                // Parsear año y mes
+                int year = Integer.parseInt(monthYear.substring(0, 4));
+                int month = Integer.parseInt(monthYear.substring(5, 7));
+
+                // Obtener la primera fecha y hora disponible
+                LocalDateTime firstAvailable = simulationController.getFirstAvailableDateTime(year, month);
+
+                if (firstAvailable == null) {
+                    response.status(404);
+                    return createErrorResponse("No hay pedidos disponibles para el mes seleccionado.");
+                }
+
+                // Formatear la fecha y hora para el JSON
+                String date = firstAvailable.toLocalDate().toString(); // "YYYY-MM-DD"
+                String time = firstAvailable.toLocalTime().format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH)); // "HH:MM AM/PM"
+
+                JsonObject jsonResponse = new JsonObject();
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("date", date);
+                jsonResponse.addProperty("time", time);
+
+                return jsonResponse;
+            } catch (Exception e) {
+                logger.severe("Error en /first-available-date: " + e.getMessage());
+                response.status(500);
+                return createErrorResponse("Error al obtener la fecha disponible: " + e.getMessage());
+            }
+        });
+
         // Obtener estado actual de la simulación
         Spark.get("/api/v1/simulation/status", (request, response) -> {
             response.type("application/json");
             JsonObject status = new JsonObject();
-            status.addProperty("currentTime", simulationState.getCurrentTime().toString());
+
+            if (simulationState != null) {
+                status.addProperty("currentTime", simulationState.getCurrentTime().toString());
+            } else {
+                status.addProperty("currentTime", "Simulation state is null");
+            }
+
             status.addProperty("isRunning", isSimulationRunning);
             status.addProperty("isShutdown", isShutdown);
+
             return status;
         });
 
         // Reiniciar simulación
-        Spark.post("/api/v1/simulation/reset", (request, response) -> {
+        /*Spark.post("/api/v1/simulation/reset", (request, response) -> {
             response.type("application/json");
 
             try {
@@ -128,7 +281,7 @@ public class SimulationRouter extends BaseRouter {
                 response.status(500);
                 return createErrorResponse("Error al reiniciar la simulación: " + e.getMessage());
             }
-        });
+        });*/
 
         // Nueva ruta para cambiar velocidad
         Spark.post("/api/v1/simulation/speed", (request, response) -> {
@@ -150,34 +303,6 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("Error al actualizar la velocidad: " + e.getMessage());
             }
         });
-        /*// Agregar el endpoint para el reporte de capacidades
-        Spark.get("/api/v1/simulation/report", (request, response) -> {
-            response.type("application/json");
-
-            JsonObject report = simulationReport.generateCapacityReport();
-
-            response.status(200);
-            return gson.toJson(report);
-        });*/
-    }
-
-    private void resetSimulationState() {
-        isShutdown = false;
-        isSimulationRunning = false;
-        if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
-            simulationExecutor.shutdownNow();
-            try {
-                if (!simulationExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    simulationExecutor.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                simulationExecutor.shutdownNow();
-            }
-        }
-        simulationExecutor = null;
-        simulationFuture = null;
-
-        simulationState.reset();
     }
 
     private void startSimulation() {

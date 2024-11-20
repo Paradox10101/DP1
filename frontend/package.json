@@ -15,6 +15,7 @@
     "@radix-ui/react-scroll-area": "^1.2.0",
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.6",
+    "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.11.10",
     "frontend_odiparpack": "file:",

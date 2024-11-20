@@ -5,6 +5,7 @@ import com.google.ortools.constraintsolver.*;
 import com.odiparpack.DataLoader;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
+import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 import org.springframework.cglib.core.Local;
 
@@ -29,8 +30,6 @@ public class SimulationState {
     private List<Order> orders;
     private Map<String, Location> locations;
     private ReentrantLock lock = new ReentrantLock();
-    private static final int SIMULATION_SPEED = 10; // 1 minuto de simulación = 1 segundo de tiempo real
-    private static final int PLANNING_INTERVAL_MINUTES = 15;
     private WarehouseManager warehouseManager;
     private Map<Integer, List<VehicleAssignment>> vehicleAssignmentsPerOrder = new HashMap<>();
     private List<Vehicle> vehiclesNeedingNewRoutes;
@@ -57,6 +56,7 @@ public class SimulationState {
     private static final Gson gson = new Gson();
     private final ReentrantLock stateLock = new ReentrantLock();
     private final Object pauseLock = new Object();
+    private SimulationRouter.SimulationType simulationType;
 
     private LocalDateTime simulationStartTime; // Tiempo inicial de simulación
     private LocalDateTime simulationEndTime;   // Tiempo final de simulación
@@ -90,159 +90,6 @@ public class SimulationState {
         // Usar núcleos * 2 para balance entre threads I/O y CPU
         int poolSize = Runtime.getRuntime().availableProcessors() * 2;
         stringBuilderPool = new StringBuilderPool(poolSize, 16384); // 16KB initial capacity
-    }
-
-    public void reset() {
-        lock.lock();
-        try {
-            System.out.println("Starting simulation reset at: " + LocalDateTime.now());
-
-            // Detener la simulación primero
-            this.stopSimulation();
-
-            // Inicializar estructuras si son null antes de limpiar
-            if (this.routeCache == null) {
-                this.routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);
-            } else {
-                this.routeCache.clear();
-            }
-
-            // Limpiar el contenido del mapa existente en lugar de reasignarlo
-            if (breakdownLogs != null) {
-                breakdownLogs.clear();
-            }
-
-            if (this.vehiclesNeedingNewRoutes == null) {
-                this.vehiclesNeedingNewRoutes = new ArrayList<>();
-            } else {
-                this.vehiclesNeedingNewRoutes.clear();
-            }
-
-            if (this.activeBlockages == null) {
-                this.activeBlockages = new ArrayList<>();
-            } else {
-                this.activeBlockages.clear();
-            }
-
-            // Recargar todos los datos
-            loadInitialData();
-
-            // Verificar estado después de la carga
-            validateState();
-
-            updateBlockages(currentTime, allBlockages);
-
-            System.out.println("Simulation reset completed successfully");
-        } catch (Exception e) {
-            System.err.println("Error during simulation reset: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to reset simulation", e);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void validateState() {
-        if (locations == null || locations.isEmpty()) {
-            throw new IllegalStateException("Invalid state: locations not initialized");
-        }
-        if (vehicles == null || vehicles.isEmpty()) {
-            throw new IllegalStateException("Invalid state: vehicles not initialized");
-        }
-        if (orders == null) {
-            throw new IllegalStateException("Invalid state: orders not initialized");
-        }
-        if (timeMatrix == null) {
-            throw new IllegalStateException("Invalid state: timeMatrix not initialized");
-        }
-        // Validar otras estructuras críticas
-    }
-
-    private void loadInitialData() {
-        try {
-            System.out.println("Starting initial data reload...");
-
-            // Inicializar DataLoader
-            DataLoader dataLoader = new DataLoader();
-
-            // Cargar datos desde archivos
-            this.locations = dataLoader.loadLocations("src/main/resources/locations.txt");
-            List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", this.locations);
-            List<Vehicle> vehiclesList = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
-            this.orders = dataLoader.loadOrders("src/main/resources/orders.txt", this.locations);
-            this.allBlockages = dataLoader.loadBlockages("src/main/resources/blockages.txt");
-            this.maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
-
-            // Reinicializar el cache de rutas
-            this.routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);
-
-            // Construir índices y matrices
-            List<Location> locationList = new ArrayList<>(this.locations.values());
-
-            // Reinicializar índices de ubicación
-            this.locationIndices = new HashMap<>();
-            for (int i = 0; i < locationList.size(); i++) {
-                locationIndices.put(locationList.get(i).getUbigeo(), i);
-            }
-
-            // Crear matriz de tiempos
-            this.timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
-            this.currentTimeMatrix = Arrays.stream(this.timeMatrix)
-                    .map(long[]::clone)
-                    .toArray(long[][]::new);
-
-            // Reinicializar listas de nombres y ubigeos
-            this.locationNames = new ArrayList<>();
-            this.locationUbigeos = new ArrayList<>();
-            for (Location loc : locationList) {
-                this.locationNames.add(loc.getProvince());
-                this.locationUbigeos.add(loc.getUbigeo());
-            }
-
-            // Convertir lista de vehículos a mapa
-            this.vehicles = vehiclesList.stream()
-                    .collect(Collectors.toMap(Vehicle::getCode, v -> v));
-
-            // Establecer tiempo inicial de simulación
-            this.currentTime = this.orders.stream()
-                    .map(Order::getOrderTime)
-                    .min(LocalDateTime::compareTo)
-                    .orElse(LocalDateTime.now())
-                    .withHour(0).withMinute(0).withSecond(0).withNano(0);
-
-            // Reinicializar otras estructuras de datos
-            this.vehiclesNeedingNewRoutes = new ArrayList<>();
-            this.activeBlockages = new ArrayList<>();
-
-            // Reinicializar el warehouse manager con las nuevas ubicaciones
-            this.warehouseManager = new WarehouseManager(this.locations);
-
-            // Reinicializar los almacenes principales
-            this.almacenesPrincipales = Arrays.asList("150101", "040201", "130101");
-
-            // Restablecer flags de control
-            this.isPaused = false;
-            this.isStopped = false;
-            this.lastModified = 0;
-
-            // Inicializar el contador de pedidos por ciudad
-            cityOrderCount = new HashMap<>();
-
-            System.out.println("Initial data reload completed successfully");
-            System.out.println("Loaded: " +
-                    String.format("%d locations, %d vehicles, %d orders, %d blockages, %d maintenance schedules",
-                            locations.size(),
-                            vehicles.size(),
-                            orders.size(),
-                            allBlockages.size(),
-                            maintenanceSchedule.size())
-            );
-
-        } catch (Exception e) {
-            System.err.println("Error during initial data reload: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to reload initial data", e);
-        }
     }
 
     public List<Blockage> getActiveBlockages() {
@@ -323,12 +170,13 @@ public class SimulationState {
                 ", Last Update: " + lastUpdateTime);
     }
 
-    public void updateSimulationTime() {
+    public void updateSimulationTime(Duration timeToAdvance) {
         stateLock.lock();
         try {
             if (!isPaused && !isStopped) {
-                // Actualizar tiempo de simulación
-                currentTime = currentTime.plusMinutes(SimulationRunner.TIME_ADVANCEMENT_INTERVAL_MINUTES);
+                // Actualizar tiempo de simulación con el Duration proporcionado
+                currentTime = currentTime.plus(timeToAdvance);
+                logger.info("Tiempo actualizado - Current Time: " + currentTime);
 
                 // Actualizar tiempo efectivo de ejecución
                 long now = System.currentTimeMillis();
@@ -385,57 +233,69 @@ public class SimulationState {
         String simulatedTimeOfDay = simulatedDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
         String simulatedTime = String.format("%d días, %s", simulatedDays, simulatedTimeOfDay);
 
-        // Formatear tiempo real con días y AM/PM
+        // Formatear duración simulada
+        String simulatedDurationStr = formatDuration(simulatedDuration);
+
+        // Formatear tiempo real basado en la hora inicial
         long realDays = realDuration.toDays();
-        long realHours = realDuration.toHoursPart();
-        long realMinutes = realDuration.toMinutesPart();
-        long realSeconds = realDuration.toSecondsPart();
+        LocalDateTime realDateTime = simulationStartTime.plus(realDuration);
+        String realTimeOfDay = realDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String realTime = String.format("%d días, %s", realDays, realTimeOfDay);
 
-        // Construir LocalTime para el tiempo real
-        LocalTime realTimeOfDay = LocalTime.of(
-                (int)realHours,
-                (int)realMinutes,
-                (int)realSeconds);
-
-        String realTimeFormatted = realTimeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
-        String realTime = String.format("%d días, %s", realDays, realTimeFormatted);
+        // Formatear duración real
+        String realDurationStr = formatDuration(realDuration);
 
         summary.addProperty("simulatedTime", simulatedTime);
+        summary.addProperty("simulatedDuration", simulatedDurationStr);
         summary.addProperty("realElapsedTime", realTime);
-
-        // Log del resumen
-        logger.info("Resumen de simulación - Tiempo simulado: " + simulatedTime +
-                ", Tiempo real: " + realTime);
+        summary.addProperty("realDuration", realDurationStr);
 
         // Estado actual
         summary.addProperty("isPaused", isPaused);
         summary.addProperty("isStopped", isStopped);
 
-        // Log detallado de JSON enviado al frontend
-        logger.info("JSON enviado al frontend: " + summary.toString());
+        // Log del resumen
+        logger.info("Resumen de simulación - Tiempo simulado: " + simulatedTime +
+                ", Duración simulada: " + simulatedDurationStr +
+                ", Tiempo real: " + realTime +
+                ", Duración real: " + realDurationStr);
 
         // Enviar vía WebSocket
         SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(summary);
     }
 
-    // Método auxiliar por si necesitas formatear otras duraciones
-    private String formatDurationWithDays(Duration duration) {
-        long days = duration.toDays();
-        LocalTime timeOfDay = LocalTime.of(
-                duration.toHoursPart(),
-                duration.toMinutesPart(),
-                duration.toSecondsPart()
-        );
-        String formattedTime = timeOfDay.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
-        return String.format("%d días, %s", days, formattedTime);
-    }
-
+    /**
+     * Formatea una duración en un formato legible
+     * Ejemplos: "5 minutos", "1 hora 5 minutos", "1 día 2 horas 15 minutos"
+     */
     private String formatDuration(Duration duration) {
-        long seconds = duration.getSeconds();
-        long hours = seconds / 3600;
-        long minutes = (seconds % 3600) / 60;
-        long secs = seconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, secs);
+        long days = duration.toDays();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        StringBuilder sb = new StringBuilder();
+
+        if (days > 0) {
+            sb.append(days).append(days == 1 ? " día" : " días");
+            if (hours > 0 || minutes > 0 || seconds > 0) sb.append(" ");
+        }
+
+        if (hours > 0) {
+            sb.append(hours).append(hours == 1 ? " hora" : " horas");
+            if (minutes > 0 || seconds > 0) sb.append(" ");
+        }
+
+        if (minutes > 0) {
+            sb.append(minutes).append(minutes == 1 ? " minuto" : " minutos");
+            if (seconds > 0) sb.append(" ");
+        }
+
+        if (seconds > 0 || (days == 0 && hours == 0 && minutes == 0)) {
+            sb.append(seconds).append(seconds == 1 ? " segundo" : " segundos");
+        }
+
+        return sb.toString();
     }
 
     public void waitWhilePaused() {
@@ -506,7 +366,9 @@ public class SimulationState {
                            List<Order> orders, Map<String, Location> locations, RouteCache routeCache,
                            long[][] originalTimeMatrix, List<Blockage> blockages,
                            List<Maintenance> maintenanceSchedule,
-                           Map<String, Integer> locationIndices, List<String> locationNames, List<String> locationUbigeos) {
+                           Map<String, Integer> locationIndices,
+                           List<String> locationNames, List<String> locationUbigeos,
+                           SimulationRouter.SimulationType type) {
         this.vehicles = vehicleMap;
         this.currentTime = initialSimulationTime;
         this.orders = orders;
@@ -524,6 +386,8 @@ public class SimulationState {
                 .map(long[]::clone)
                 .toArray(long[][]::new);
         this.orderbyDays = new ArrayList<>();
+        this.simulationType = type;
+
         // Inicializa otras variables
         paradasAlmacenesOrderCount.put("150101", 0);//Lima
         paradasAlmacenesOrderCount.put("040201", 0);//Arequipa
@@ -536,6 +400,10 @@ public class SimulationState {
         // Inicializar tiempos de simulación
         initializeSimulation();
         updateBlockages(initialSimulationTime, allBlockages);
+    }
+
+    public SimulationRouter.SimulationType getSimulationType() {
+        return simulationType;
     }
 
     public RouteCache getRouteCache() {
@@ -618,36 +486,6 @@ public class SimulationState {
 
         logger.info("Matriz de tiempo actualizada con " + activeBlockages.size() + " bloqueos aplicados");
     }
-
-    public JsonObject getCurrentPositionsGeoJSON() {
-        StringBuilder builder = stringBuilderPool.borrow();
-        try {
-            builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
-
-            boolean first = true;
-
-            for (Vehicle vehicle : vehicles.values()) {
-                Position position = vehicle.getCurrentPosition(getCurrentTime());
-                if (position != null) {
-                    if (!first) {
-                        builder.append(',');
-                    }
-                    first = false;
-                    appendVehicleFeature(builder, vehicle, position);
-                }
-            }
-
-            builder.append("],\"timestamp\":")
-                    .append(System.currentTimeMillis())
-                    .append("}");
-
-            return JsonParser.parseString(builder.toString()).getAsJsonObject();
-        } finally {
-            stringBuilderPool.release(builder);
-        }
-    }
-
-
 
 
     public JsonObject getShipmentListJsonInPeriod(LocalDateTime initialDate, LocalDateTime endDate, String lastClientMessage) {
@@ -1102,7 +940,7 @@ public class SimulationState {
     }
 
     private void handleVehicleStatusUpdate(Vehicle vehicle, LocalDateTime currentTime) {
-        vehicle.updateStatus(currentTime, warehouseManager);
+        vehicle.updateStatus(currentTime, warehouseManager, simulationType);
         /*String currentUbigeo = vehicle.getCurrentLocationUbigeo();
         if (almacenesPrincipales.contains(currentUbigeo)) {
             String vehicleCode = vehicle.getCode();  // Supongo que cada vehículo tiene un identificador único
@@ -2023,10 +1861,6 @@ public class SimulationState {
         }
     }
 
-    public void advanceTime() {
-        currentTime = currentTime.plusMinutes(PLANNING_INTERVAL_MINUTES);
-    }
-
     public LocalDateTime getCurrentTime() {
         stateLock.lock();
         try {
@@ -2057,12 +1891,6 @@ public class SimulationState {
         return vehicleAssignmentsPerOrder.get(id_OrderFound);
     }
 
-
-
-    // Funcion para obtener todos los detalles de vehiculos
-    // en un JSON
-    // Brando
-
     public JsonObject getCurrentVehiclesDataGeoJSON() {
         StringBuilder builder = stringBuilderPool.borrow();
         try {
@@ -2070,7 +1898,7 @@ public class SimulationState {
     
             boolean first = true;
             for (Vehicle vehicle : vehicles.values()) {
-                Position position = vehicle.getCurrentPosition(getCurrentTime());
+                Position position = vehicle.getCurrentPosition(getCurrentTime(), simulationType);
                 if (position != null) {
                     if (!first) {
                         builder.append(',');

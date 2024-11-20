@@ -14,10 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ShipmentRouter extends BaseRouter {
-    private final SimulationState simulationState;
 
-    public ShipmentRouter(SimulationState simulationState) {
-        this.simulationState = simulationState;
+    public ShipmentRouter() {
     }
 
     @Override

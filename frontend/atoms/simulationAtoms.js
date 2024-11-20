@@ -11,3 +11,7 @@ export const performanceMetricsAtom = atom({
   vehicleCount: 0,
   performanceLevel: 'MEDIUM'
 });
+
+export const simulationTypeAtom = atom('');
+export const showSimulationModalAtom = atom(true);
+

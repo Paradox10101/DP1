@@ -1,3 +1,4 @@
+/*
 package com.odiparpack.simulation.state;
 
 
@@ -11,9 +12,11 @@ import com.odiparpack.models.SimulationState;
 
 import java.time.LocalDateTime;
 
+*/
 /**
  * La clase SimulationComponents encapsula todos los componentes necesarios para el estado de la simulación.
- */
+ *//*
+
 public class SimulationComponents {
     private final LocalDateTime initialTime;
     private final VehicleManager vehicleManager;
@@ -69,3 +72,4 @@ public class SimulationComponents {
         return warehouseManager;
     }
 }
+*/
