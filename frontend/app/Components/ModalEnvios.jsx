@@ -132,7 +132,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
             </div>
 
             {/* Tabla con filtros */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-row justify-between relative w-full">
                     <div className="text-black regular_bold">Paquetes en envío</div>
                         {vehiclesFilter === initialFilterStateRef.current?
@@ -277,20 +277,11 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                         </div>
                                     </div>
                             </div>
-                            <div className="w-full flex flex-row justify-between gap-4">
+                            <div className="w-full flex flex-row justify-end gap-4">
                             <Button
                                 onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
                             >
                                 Eliminar Filtros
-                            </Button>
-                            <Button
-                                onClick={() =>{
-                                    alert(JSON.stringify(vehiclesFilter, null, 2))
-                                    alert(JSON.stringify(shipmentVehicles, null, 2))
-                            }}
-                                className="bg-principal text-white"
-                            >
-                                Aplicar Filtros
                             </Button>
                         </div>
                         </div>
