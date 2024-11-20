@@ -1,6 +1,7 @@
 'use client';
 import { useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
@@ -16,6 +17,9 @@ import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps'
 import ReactDOM from 'react-dom';
+import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
+import IconoEstado from './IconoEstado';
+
 
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
@@ -35,6 +39,17 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const [locationError, setLocationError] = useState(null);
   const locationRetryTimeoutRef = useRef(null);
+  
+  const positionsRef = useRef();
+
+  const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
+  
+  console.log('vehiculosArray PRIMER LISTADO DE TODOS LOS VEHICULOS:', vehiculosArray);
+
+
+  // Ensure vehiculos is an array to avoid TypeError
+  //const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
+
 
    // Función auxiliar para crear mensajes de error
    const createError = (type, customMessage = null) => ({
@@ -120,10 +135,32 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [performanceManager, setPerformanceMetrics]);
 
-  // Manejador de mensajes WebSocket
-  const handleWebSocketMessage = useCallback((data) => {
-    setPositions(data);
-  }, [setPositions]);
+  
+  const normalizeVehicleProperties = (properties) => {
+    return {
+      ...properties, // Spread original properties first
+      vehicleCode: String(properties.vehicleCode || properties.id || '').trim().toUpperCase(),
+      capacidadMaxima: properties.capacidadMaxima || "No especificada",
+      capacidadUsada: properties.capacidadUsada ?? "No especificada",
+      status: properties.status || 'Desconocido',
+      ubicacionActual: properties.ubicacionActual || "No especificada",
+      velocidad: properties.velocidad ?? "No especificada",
+      // Add more properties here if needed
+    };
+  };
+
+// En handleWebSocketMessage // Manejador de mensajes WebSocket
+const handleWebSocketMessage = useCallback((data) => {
+  const updatedData = {
+    ...data,
+    features: data.features.map((feature) => ({
+      ...feature,
+      properties: normalizeVehicleProperties(feature.properties),
+    })),
+  };
+  console.log('Datos del WebSocket procesados:', updatedData);
+  setPositions(updatedData);
+}, [setPositions]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
@@ -279,57 +316,181 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     };
   }, []);
 
+  
+  useEffect(() => {
+    positionsRef.current = positions;
+  }, [positions]);
+
+/* // Función para obtener el ícono HTML según el tipo de vehículo
+const getVehicleIconHtml = (vehicleType) => {
+  switch (vehicleType) {
+    case "A":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de camión (Truck) aquí -->
+                  <rect x="4" y="4" width="16" height="16" fill="white"/>
+                </svg>
+              </div>`;
+    case "B":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de auto frontal (CarFront) aquí -->
+                  <circle cx="12" cy="12" r="6" fill="white"/>
+                </svg>
+              </div>`;
+    case "C":
+      return `<div class="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono de auto (Car) aquí -->
+                  <polygon points="5,5 19,5 12,19" fill="white"/>
+                </svg>
+              </div>`;
+    default:
+      return `<div class="bg-gray-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
+                  <!-- Icono por defecto -->
+                  <line x1="2" y1="2" x2="22" y2="22" stroke="white"/>
+                </svg>
+              </div>`;
+  }
+};*/
+
+
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
+    console.log('handleVehicleClick triggered');
+
+    // Obtener los features del punto clickeado
     const features = mapRef.current.queryRenderedFeatures(e.point, {
       layers: [MAP_CONFIG.LAYERS.VEHICLES.CIRCLE],
     });
-    if (!features.length) return;
+
+    if (!features.length) {
+      console.error('No se encontraron vehículos en el punto clickeado.');
+      return;
+    }
 
     const feature = features[0];
-    const vehicleCode = feature.properties.vehicleCode;
 
+    // Normalizar y obtener vehicleCode
+    const vehicleCode = String(feature.properties.vehicleCode || feature.properties.id || "No especificado").trim().toUpperCase();
+    console.log(`Vehicle clicked: ${vehicleCode}`);
+
+    // Obtener el array de vehículos desde la referencia
+    const currentPositions = positionsRef.current;
+    const vehiculosArray = currentPositions && currentPositions.features && Array.isArray(currentPositions.features) ? currentPositions.features : [];
+    console.log('vehiculosArray dentro de handleVehicleClick:', vehiculosArray);
+
+    if (!Array.isArray(vehiculosArray) || vehiculosArray.length === 0) {
+      console.error('vehiculosArray está vacío dentro de handleVehicleClick.');
+      return;
+    }
+
+    // Buscar el vehículo correspondiente en 'vehiculosArray'
+    const vehiculo = vehiculosArray.find((v) => {
+      const vCode = String(v.properties.vehicleCode || v.properties.id || '').trim().toUpperCase();
+      return vCode === vehicleCode;
+    });
+
+    if (!vehiculo) {
+      console.error(`Vehículo con código ${vehicleCode} no encontrado en vehiculosArray.`);
+      // Crear popup con datos limitados ya que no se encontró en vehiculosArray
+      const popupContent = document.createElement("div");
+      popupContent.textContent = `Información limitada: Código del vehículo - ${vehicleCode}`;
+
+      const popup = new maplibregl.Popup(POPUP_CONFIG)
+        .setLngLat(feature.geometry.coordinates)
+        .setDOMContent(popupContent)
+        .addTo(mapRef.current);
+
+      popupsRef.current[vehicleCode] = popup;
+      return;
+    }
+    console.log('vehiculo encontradooooooooooooooooo: ', vehiculo);
+
+    // Extraer las propiedades importantes del vehículo encontrado
+    const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
+    const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
+    let status = vehiculo.properties.status || "Desconocido";
+    const vehicleType = vehiculo.properties.tipo || "Desconocido";
+
+    // Validar y ajustar el status del vehículo
+    switch (status) {
+      case "EN_ALMACEN":
+        status = "En Almacén";
+        break;
+      case "AVERIADO":
+        status = "Averiado";
+        break;
+      case "EN_MANTENIMIENTO":
+        status = "En mantenimiento";
+        break;
+      default:
+        console.warn(`Status desconocido para vehículo ${vehicleCode}: ${status}`);
+        status = "En tránsito";
+    }
+
+    // Determinar el ícono según el tipo de vehículo
+    let Icono;
+    switch (vehicleType) {
+      case "A":
+        Icono = Truck;
+        break;
+      case "B":
+        Icono = CarFront;
+        break;
+      case "C":
+        Icono = Car;
+        break;
+      default:
+        Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
+    }
+
+    // Obtener el ícono según el tipo de vehículo
+    //const iconoHtmlString = getVehicleIconHtml(vehicleType);
+
+    // Puedes extraer más propiedades si lo deseas
+    const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
+    const velocidad = vehiculo.properties.velocidad ?? "No especificada";
+
+    // Mostrar el popup con la información completa
     if (popupsRef.current[vehicleCode]) {
       popupsRef.current[vehicleCode].remove();
       delete popupsRef.current[vehicleCode];
       return;
     }
 
-    const popupContent = document.createElement('div');
-    
-    popupContent.style.display = 'flex';
-    popupContent.style.flexDirection = 'column';
-    popupContent.style.alignItems = 'flex-start';
-    popupContent.style.width = 'auto';
-    popupContent.style.height = 'auto';
-    /*
-    const vehicleInfo = document.createElement('div');
-    vehicleInfo.innerHTML = `<strong>Vehículo:</strong> ${vehicleCode}`;
+    const popupContent = document.createElement("div");
 
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Cerrar';
-    closeButton.style.marginTop = '5px';
-    closeButton.style.padding = '2px 5px';
-    closeButton.style.fontSize = '12px';
-    closeButton.style.cursor = 'pointer';
-
-    closeButton.addEventListener('click', () => {
-      popupsRef.current[vehicleCode].remove();
-      delete popupsRef.current[vehicleCode];
-    });
-
-    popupContent.appendChild(vehicleInfo);
-    popupContent.appendChild(closeButton);
-    */
-    ReactDOM.render(
-      <VehiculoPopUp title={vehicleCode}/>,
-      popupContent
+    const root = createRoot(popupContent);
+    root.render(
+      <VehiculoPopUp
+        title={vehicleCode}
+        capacidadMaxima={capacidadMaxima}
+        capacidadUtilizada={capacidadUsada}
+        estado={status}
+        ubicacionActual={ubicacionActual}
+        velocidad={velocidad}
+        iconoComponent={
+          <IconoEstado
+            Icono={Icono}
+            classNameContenedor="bg-blue-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center"
+            classNameContenido="w-[15px] h-[15px] stroke-white z-10"
+          />
+        }
+      />
     );
 
-    const popup = new maplibregl.Popup(POPUP_CONFIG)
+    const popup = new maplibregl.Popup({
+        maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
+        closeButton: true,
+        closeOnClick: true,
+        anchor: 'top', // Ajustar el ancla para mejorar la alineación
+        offset: 25, // Asegura que haya suficiente espacio para el pop-up
+      })
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
-      .addTo(mapRef.current)
+      .addTo(mapRef.current);
 
     popupsRef.current[vehicleCode] = popup;
   };
