@@ -170,7 +170,7 @@ public class SimulationState {
             this.locations = dataLoader.loadLocations("src/main/resources/locations.txt");
             List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", this.locations);
             List<Vehicle> vehiclesList = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
-            this.orders = dataLoader.loadOrders("src/main/resources/orders10_2.txt", this.locations);
+            this.orders = dataLoader.loadOrders("src/main/resources/orders.txt", this.locations);
             this.allBlockages = dataLoader.loadBlockages("src/main/resources/blockages.txt");
             this.maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
 
