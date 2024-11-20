@@ -414,7 +414,7 @@ export default function OpcionAlmacenes() {
                         <>Cargando filtros...</>}
                     </ModalBody>
                     <ModalFooter>
-                      <div className="w-full flex flex-row justify-end">
+                      <div className="w-full flex flex-row justify-start">
                             <Button
                                 onClick={() => setLocationsFilter(initialFilterStateRef.current)}
                             >

@@ -165,7 +165,7 @@ const VehiculoPopUp = ({
         <InfoItem
           icon={Gauge}
           label="Velocidad"
-          value={`${velocidad} km/h`}
+          value={`${Math.round(velocidad)} km/h`}
         />
       </div>
 

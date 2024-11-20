@@ -629,7 +629,7 @@ export default function ModalVehiculo({vehicle}){
                             </div>
                             
 
-                            <div className="w-full flex flex-row justify-between gap-4">
+                            <div className="w-full flex flex-row justify-start gap-4">
                                 <Button
                                     onClick={() => setShipmentsFilter(initialStateRef.current)}
                                 >

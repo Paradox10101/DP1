@@ -446,7 +446,7 @@ useEffect(() => {
                         
                     </ModalBody>
                     <ModalFooter>
-                        <div className="w-full flex flex-row justify-end">
+                        <div className="w-full flex flex-row justify-start">
                             <Button
                                 onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
                             >
