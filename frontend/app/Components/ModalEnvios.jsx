@@ -154,24 +154,24 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                         (
                         
                         <div className="w-full flex flex-row justify-end items-center">
-                        <Button
-                            disableRipple={true}
-                            startContent={<Filter size="18" />}
-                            className="bg-principal text-white"
-                            onClick={
-                                ()=>{
-                                    setFilterModalVisible(!isFilterModalVisible)
+                            <Button
+                                disableRipple={true}
+                                startContent={<Filter size="18" />}
+                                className="bg-principal text-white"
+                                onClick={
+                                    ()=>{
+                                        setFilterModalVisible(!isFilterModalVisible)
+                                    }
                                 }
-                            }
-                        >
-                            Filtros
-                        </Button>
-                        <div 
-                            className="hover:bg-gray-100 hover:rounded-full cursor-pointer transition-all duration-200 flex items-center"
-                            onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
-                        >
-                        <X size="18" />
-                        </div>
+                            >
+                                Filtros
+                            </Button>
+                            <div 
+                                className="hover:bg-gray-100 hover:rounded-full cursor-pointer transition-all duration-200 flex items-center"
+                                onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
+                            >
+                            <X size="18" />
+                            </div>
                         </div>
                         
                     )
@@ -277,7 +277,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                         </div>
                                     </div>
                             </div>
-                            <div className="w-full flex flex-row justify-end gap-4">
+                            <div className="w-full flex flex-row justify-start gap-4">
                             <Button
                                 onClick={() => setVehiclesFilter(initialFilterStateRef.current)}
                             >
