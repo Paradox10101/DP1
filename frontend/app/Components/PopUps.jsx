@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AlertTriangle } from "lucide-react";
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
 import ModalVehiculo from "./ModalVehiculo"; // Importa el modal de detalle del vehículo
+import { AlertCircle, Activity, MapPin, Gauge } from 'lucide-react';
 
 const AlmacenPopUp = ({ title, ubigeo, iconoHtmlString }) => {
   return (
@@ -73,89 +74,127 @@ const renderStatus = (status) => {
     }
 };
 
-const VehiculoPopUp = ({ title, capacidadMaxima, capacidadUtilizada, iconoComponent, estado, vehicleData }) => {
-    // Mover la generación de alertaIconHtmlString fuera del render para evitar problemas de renderización
-    const alertaIconHtmlString = `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`;
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
+const StatusBadge = ({ status }) => {
+  const getStatusStyles = () => {
+    switch (status) {
+      case "EN_TRANSITO_ORDEN":
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white";
+      case "EN_ALMACEN":
+        return "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white";
+      case "AVERIADO":
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white";
+      case "EN_MANTENIMIENTO":
+        return "bg-gradient-to-r from-purple-500 to-purple-600 text-white";
+      default:
+        return "bg-gradient-to-r from-gray-400 to-gray-500 text-white";
+    }
+  };
 
-    // Función para manejar el clic en "Ver Detalle"
-    const handleViewDetail = () => {
-      setSelectedVehicle(vehicleData); // Establece el vehículo seleccionado
-      onOpen(); // Abre el modal
-    };
+  return (
+    <span className={`
+      ${getStatusStyles()}
+      text-xs font-medium
+      px-3 py-1
+      rounded-full
+      shadow-sm
+    `}>
+      {status}
+    </span>
+  );
+};
 
-    return (
-      <>
-        <div className="bg-white rounded p-4 w-80 flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              {iconoComponent}
-              <h3 className="font-semibold text-base text-gray-800">Vehículo: {title}</h3>
-            </div>
-            <span
-              className={
-                "pequenno border " +
-                (estado === "En Tránsito"
-                  ? "bg-[#284BCC] text-[#BECCFF] rounded-xl w-[100px] text-center"
-                  : estado === "En Almacén"
-                  ? "bg-[#DEA71A] text-[#F9DF9B] rounded-xl w-[100px] text-center"
-                  : estado === "Averiado"
-                  ? "bg-[#BE0627] text-[#FFB9C1] rounded-xl w-[100px] text-center"
-                  : estado === "En Mantenimiento"
-                  ? "bg-[#7B15FA] text-[#D0B0F8] rounded-xl w-[100px] text-center"
-                  : "")
-              }
-            >
-              {estado}
-            </span>
+const InfoItem = ({ icon: Icon, label, value }) => (
+  <div className="flex items-center space-x-2 py-2">
+    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+      <Icon className="w-4 h-4 text-gray-500" />
+    </div>
+    <div className="flex-1">
+      <div className="text-xs text-gray-500">{label}</div>
+      <div className="text-sm font-medium text-gray-900">{value}</div>
+    </div>
+  </div>
+);
+
+const VehiculoPopUp = ({
+  title,
+  capacidadMaxima,
+  capacidadUtilizada,
+  estado,
+  ubicacionActual,
+  velocidad,
+  iconoComponent,
+  vehicleData,
+  onViewDetail,
+  onReportIssue
+}) => {
+  const handleViewDetail = (e) => {
+    e.stopPropagation();
+    onViewDetail?.(vehicleData);
+  };
+
+  const handleReportIssue = (e) => {
+    e.stopPropagation();
+    onReportIssue?.(vehicleData);
+  };
+
+  return (
+    <div className="min-w-[300px] bg-white rounded-xl shadow-xl overflow-hidden">
+      {/* Encabezado */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            {iconoComponent}
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           </div>
-          <div className="text-gray-700 mb-2">
-            <span className="font-medium mr-1">Capacidad:</span> {capacidadUtilizada}/{capacidadMaxima} paquetes
-          </div>
-          <div className="flex justify-between items-center mt-2">
-            <button className="bg-red-500 text-white py-1 px-3 rounded flex items-center transition duration-300 hover:bg-red-700">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: `<div class='text-white w-[20px] h-[20px] flex items-center justify-center'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' class='w-[16px] h-[16px]'><polygon points='12 2 22 20 2 20'></polygon><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12' y2='16'></line></svg></div>`
-                }}
-                className="mr-2"
-              />
-              Reportar Avería
-            </button>
-            <button
-              className="bg-principal text-blanco py-1 px-3 rounded transition duration-300 hover:bg-principal/90"
-              onClick={handleViewDetail} // Abrir modal al hacer clic
-            >
-              Ver Detalle
-            </button>
-          </div>
+          <StatusBadge status={estado} />
         </div>
+      </div>
 
-        {/* Modal para ver detalles */}
-        <Modal
-          closeButton
-          isOpen={isOpen}
-          onOpenChange={onClose}
-          blur
-          aria-labelledby="modal-vehiculo"
+      {/* Contenido */}
+      <div className="p-4 space-y-1">
+        <InfoItem
+          icon={Activity}
+          label="Capacidad"
+          value={`${capacidadUtilizada}/${capacidadMaxima} paquetes`}
+        />
+        <InfoItem
+          icon={MapPin}
+          label="Ubicación"
+          value={ubicacionActual}
+        />
+        <InfoItem
+          icon={Gauge}
+          label="Velocidad"
+          value={`${velocidad} km/h`}
+        />
+      </div>
+
+      {/* Acciones */}
+      <div className="p-4 bg-gray-50 flex items-center justify-between gap-3">
+        <button
+          onClick={handleReportIssue}
+          className="flex items-center justify-center gap-2 px-4 py-2 
+                   bg-white hover:bg-red-50 border border-red-200 
+                   text-red-600 text-sm font-medium rounded-lg
+                   transition-colors duration-200"
         >
-          <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
-            <ModalHeader>
-              <div className="flex flex-row gap-2">
-                <div className="subEncabezado">Información del vehículo {selectedVehicle?.vehicleCode}</div>
-                {/* Agrega un indicador del estado, si es necesario */}
-              </div>
-            </ModalHeader>
-            <ModalBody>
-              {selectedVehicle && (
-                <ModalVehiculo vehicle={selectedVehicle} />
-              )}
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </>
-    );
+          <AlertCircle className="w-4 h-4" />
+          Reportar
+        </button>
+        <button
+          onClick={handleViewDetail}
+          className="flex-1 px-4 py-2 
+                   bg-gradient-to-r from-blue-500 to-blue-600 
+                   hover:from-blue-600 hover:to-blue-700
+                   text-white text-sm font-medium rounded-lg
+                   transition-all duration-200 shadow-sm
+                   hover:shadow-md"
+        >
+          Ver Detalle
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export { AlmacenPopUp, OficinaPopUp, VehiculoPopUp };

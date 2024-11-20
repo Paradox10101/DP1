@@ -31,7 +31,7 @@ const page = () => {
             <SimulationPanel
               tipoSimulacion={tipoSimulacion}
             />
-            <MapLegend cornerPosition={"left-[50vw]"} />
+            <MapLegend cornerPosition={"top-20 right-5"} />
         </div>
     </>
   )

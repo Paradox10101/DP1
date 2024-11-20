@@ -1,7 +1,10 @@
 import { atom } from 'jotai';
 
 // Átomo para la posición de los vehículos
-export const vehiclePositionsAtom = atom(null);
+export const vehiclePositionsAtom = atom({
+    type: 'FeatureCollection',
+    features: [],
+  });
 
 // Átomo para el estado de carga
 export const loadingAtom = atom('idle');
