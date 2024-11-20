@@ -279,6 +279,7 @@ export default function OpcionAlmacenes() {
                         <span className="subEncabezado">Opciones de Filtro para Almacenes</span>
                     </ModalHeader>
                     <ModalBody>
+                    {!loadingFilters?
                         <div className="flex flex-col gap-4">
                             {/* Contenido de filtros */}
                             <div className="w-1/2 flex flex-row gap-4">
@@ -409,7 +410,8 @@ export default function OpcionAlmacenes() {
                               </div>
                             </div>
                         </div>
-                        
+                        :
+                        <>Cargando filtros...</>}
                     </ModalBody>
                     <ModalFooter>
                       <div className="w-full flex flex-row justify-end">

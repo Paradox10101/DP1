@@ -178,7 +178,11 @@ export default function OpcionEnvios() {
             <div style={style}
                 className={`p-2 border-2 rounded-xl stroke-black ${filteredShipments[selectedShipmentIndex] && filteredShipments[selectedShipmentIndex]?.id && filteredShipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
                 onMouseDown={() => {
-                    setSelectedShipmentIndex(index);
+                    const indexS =  shipments.findIndex(shipmentL => shipmentL.id === shipment.id);
+                    if(indexS!==-1)
+                        setSelectedShipmentIndex(indexS);
+                    else
+                        setSelectedShipmentIndex(index);
                     sendMessage({ orderId: shipment.id, vehicleCode: "" }); // Enviar mensaje al WebSocket
                     onOpen(); // Abrir modal
                 }}
@@ -283,16 +287,16 @@ export default function OpcionEnvios() {
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
-                        {filteredShipments[selectedShipmentIndex]&&
+                        {shipments[selectedShipmentIndex]&&
                             <div className="flex flex-row gap-2">
                                 
-                                <div className="subEncabezado">Información del envío {filteredShipments[selectedShipmentIndex].orderCode}</div>
+                                <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    filteredShipments[selectedShipmentIndex].status === "REGISTERED" || filteredShipments[selectedShipmentIndex].quantityVehicles===0 ? (
+                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].quantityVehicles===0 ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
-                                    ) : filteredShipments[selectedShipmentIndex].status === "DELIVERED" || filteredShipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
+                                    ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                                    ) : filteredShipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" || filteredShipments[selectedShipmentIndex].status === "IN_TRANSIT" || filteredShipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || filteredShipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" ? (
+                                    ) : shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                                     ) : (
                                         <></>
@@ -302,8 +306,8 @@ export default function OpcionEnvios() {
                             }
                         </ModalHeader>
                         <ModalBody>
-                            {filteredShipments&&filteredShipments[selectedShipmentIndex]&&
-                            <ModalEnvios shipmentVehicles={filteredShipments[selectedShipmentIndex].vehicles} shipment={filteredShipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
+                            {shipments&&shipments[selectedShipmentIndex]&&
+                            <ModalEnvios shipmentVehicles={shipments[selectedShipmentIndex].vehicles} shipment={shipments[selectedShipmentIndex]} setSelectedVehicleIndex={setSelectedVehicleIndex} sendMessage={sendMessage}/>
                             }
                         </ModalBody>
                     </ModalContent>
@@ -321,12 +325,12 @@ export default function OpcionEnvios() {
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
-                            {filteredShipments[selectedShipmentIndex]&&filteredShipments[selectedShipmentIndex].vehicles&&filteredShipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]&&
+                            {shipments[selectedShipmentIndex]&&shipments[selectedShipmentIndex].vehicles&&shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex]&&
                             <div className="flex flex-row gap-3">
                                 <button onClick={()=>{setSelectedVehicleIndex(null)}}>
                                 <MoveLeft className="inline"/>
                                 </button>    
-                                <span className="subEncabezado">Información del vehiculo {filteredShipments[selectedShipmentIndex].vehicles[selectedVehicleIndex].vehicleCode}</span>
+                                <span className="subEncabezado">Información del vehiculo {shipments[selectedShipmentIndex].vehicles[selectedVehicleIndex].vehicleCode}</span>
                             </div>
                             }
                       
@@ -631,7 +635,7 @@ export default function OpcionEnvios() {
                             <>Cargando filtros...</>}
                         </ModalBody>
                         <ModalFooter>
-                            <div className="w-full flex flex-row justify-end">
+                            <div className="w-full flex flex-row justify-start">
                                 <Button
                                     onClick={() => {
                                         setShipmentsFilter(initialStateRef.current)

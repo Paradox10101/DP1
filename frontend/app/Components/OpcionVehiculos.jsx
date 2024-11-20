@@ -20,13 +20,14 @@ export default function OpcionVehiculos() {
   const [isFilterModalOpen, setFilterModalOpen] = useState(false); // Estado para el modal de filtros
   const [filteredVehicles, setFilteredVehicles] = useState([]);
   const [loadingFilters, setLoadingFilters] = useState(true);
+  const [statusesVehicle, setStatusesVehicle] = useState(null);
   const [vehicleTypes, setVehicleTypes] = useState([]);
   const initialFilterStateRef = useRef(
       {
       vehicleType: "",
       minQuantity: 0,
       maxQuantity: null,
-      
+      status: null
       }
   )
   const [vehiclesFilter, setVehiclesFilter] = useState(initialFilterStateRef.current);
@@ -68,6 +69,7 @@ export default function OpcionVehiculos() {
     if(!isFilterModalOpen)return;
     setLoadingFilters(true)
     setVehicleTypes(["A", "B","C"]);
+    setStatusesVehicle(["EN TRÁNSITO", "EN ALMACÉN", "EN MANTENIMIENTO", "AVERIADO"]);
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
@@ -88,20 +90,32 @@ useEffect(() => {
       const matchesType = vehiclesFilter.vehicleType
       ? (vehiculo.properties.tipo === vehiclesFilter.vehicleType)
       : true;
+
+
+      // Filtrar por estado de vehiculo
+      const matchesStatus = vehiclesFilter.status
+      ? (vehiculo.properties.status === "EN_ALMACEN" && vehiclesFilter.status==="EN ALMACÉN")
+      ||
+      (vehiculo.properties.status === "AVERIADO" && vehiclesFilter.status==="AVERIADO")
+      ||
+      (vehiculo.properties.status === "EN_MANTENIMIENTO" && vehiclesFilter.status==="EN MANTENIMIENTO")
+      ||
+      (vehiclesFilter.status==="EN TRÁNSITO")
+      : true;
   
       // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
       const matchesMinQuantity = vehiclesFilter.minQuantity
-      ? vehiculo.properties.capacidadMaxima >= vehiclesFilter.minQuantity
+      ? vehiculo.properties.capacidadUsada >= vehiclesFilter.minQuantity
       : true;
 
       // Filtrar por maxQuantity (si se tiene un valor en shipmentsFilter.maxQuantity)
       const matchesMaxQuantity = vehiclesFilter.maxQuantity
-          ? vehiculo.properties.capacidadMaxima <= vehiclesFilter.maxQuantity
+          ? vehiculo.properties.capacidadUsada <= vehiclesFilter.maxQuantity
           : true;
 
 
     // Retornar true solo si todos los filtros coinciden
-    return matchesType && matchesMinQuantity && matchesMaxQuantity
+    return matchesType && matchesMinQuantity && matchesMaxQuantity && matchesStatus
   });
   
   // Establecer la lista filtrada en filteredShipments
@@ -148,17 +162,18 @@ useEffect(() => {
       (vehicle&&vehicle?.properties)&&
       <div
         style={style}
-        key={vehicle.properties.vehicleCode}
         //className={`p-2 border-2 rounded-xl stroke-black ${filteredVehiculosArray[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
         onMouseDown={() => {
-            setSelectedVehicleIndex(index);
-            console.log(vehicle)
-            //sendMessage({ vehicleCode: "", orderId: "" }); // Enviar mensaje al WebSocket
+            const indexS = vehiculosArray.findIndex(vehiculoL => vehiculoL.vehicleCode === vehicle.properties.vehicleCode);  
+            if(indexS!==-1)
+              setSelectedVehicleIndex(indexS);
+            else
+              setSelectedVehicleIndex(index);
             onOpen(); // Abrir modal
         }}
       >
 
-        <CardVehiculo vehiculo={vehicle.properties} renderStatus={renderStatus(vehicle.properties.status)} />
+        <CardVehiculo vehiculo={vehicle.properties} renderStatus={renderStatus(vehicle.properties.status)} key={vehicle.properties.vehicleCode}/>
       </div>
     )
   }
@@ -271,18 +286,18 @@ useEffect(() => {
               <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
                   <ModalHeader>
 
-                  {filteredVehiculosArray&&filteredVehiculosArray[selectedVehicleIndex]&&filteredVehiculosArray[selectedVehicleIndex]?.properties&&
+                  {vehiculosArray&&vehiculosArray[selectedVehicleIndex]&&vehiculosArray[selectedVehicleIndex]?.properties&&
                     
                     <div className="flex flex-row gap-2">
                         
-                        <div className="subEncabezado">Información del vehiculo {filteredVehiculosArray[selectedVehicleIndex].properties.vehicleCode}</div>
-                        {renderStatus(filteredVehiculosArray[selectedVehicleIndex].properties.status)}
+                        <div className="subEncabezado">Información del vehiculo {vehiculosArray[selectedVehicleIndex].properties.vehicleCode}</div>
+                        {renderStatus(vehiculosArray[selectedVehicleIndex].properties.status)}
                     </div>
                     }
                   </ModalHeader>
                   <ModalBody>
-                  {filteredVehiculosArray&&filteredVehiculosArray[selectedVehicleIndex]&&filteredVehiculosArray[selectedVehicleIndex]?.properties&&
-                      <ModalVehiculo vehicle={filteredVehiculosArray[selectedVehicleIndex].properties}/>
+                  {vehiculosArray&&vehiculosArray[selectedVehicleIndex]&&vehiculosArray[selectedVehicleIndex]?.properties&&
+                      <ModalVehiculo vehicle={vehiculosArray[selectedVehicleIndex].properties}/>
                   }
                   </ModalBody>
               </ModalContent>
@@ -341,13 +356,52 @@ useEffect(() => {
                                         </DropdownMenu>
                                 </Dropdown>
                                 </div>
+                            </div>
 
+                            <div className="w-1/2 flex flex-row gap-4">
+                                <div className="flex flex-col gap-1 w-full">
+                                    <div className="regular_bold">
+                                        Estado:
+                                    </div>
+                                    <Dropdown
+                                        className>
+                                        <DropdownTrigger>
+                                            <Button
+                                                variant="bordered"
+                                                className="capitalize w-full relative"
+                                                disableRipple={true}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    {vehiclesFilter.status || "Selecciona un estado"}
+                                                </span>
+                                                <ChevronDown size={18} className="absolute right-4" />
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            closeOnSelect={true}
+                                            selectionMode="single"
+                                            onSelectionChange={(keys) => {
+                                              const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
+                                              setVehiclesFilter((prev) => ({
+                                                  ...prev,
+                                                  status: value,
+                                              }));
+                                              }}
+                                            disableRipple={true}
+                                            className="w-full"
+                                        >
+                                          {statusesVehicle && statusesVehicle.length > 0 && statusesVehicle.map((vehicleStatus) => (
+                                                <DropdownItem key={vehicleStatus}>{vehicleStatus}</DropdownItem>
+                                          ))}
+                                        </DropdownMenu>
+                                </Dropdown>
+                                </div>
                             </div>
 
                             <div className="w-1/2 flex flex-row gap-4">
                               <div className="flex flex-col gap-1 w-full">
                                   <div className="regular_bold">
-                                      Capacidad de paquetes:
+                                      Cantidad de paquetes:
                                   </div>
                                   <div className="w-full flex flex-row justify-between gap-2">
                                   <Input
