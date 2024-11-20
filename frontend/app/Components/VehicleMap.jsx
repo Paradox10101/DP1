@@ -20,9 +20,10 @@ import ReactDOM from 'react-dom';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
 import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
+import throttle from 'lodash/throttle';
 
 // Función para generar el SVG con fondo azul y borde blanco para los vehículos
-const getSvgString = (IconComponent) => {
+/*const getSvgString = (IconComponent) => {
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
       <circle cx="20" cy="20" r="20" fill="#1E90FF" />
@@ -32,7 +33,7 @@ const getSvgString = (IconComponent) => {
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
-};
+};*/
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -160,6 +161,21 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       // Add more properties here if needed
     };
   };
+  
+  // Agrega la función de actualización con throttle
+  const updateVehiclePositions = throttle((data) => {
+    try {
+      if (mapRef.current) {
+        const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+        if (vehiclesSource) {
+          vehiclesSource.setData(data);
+        }
+      }
+    } catch (error) {
+      console.error('Error al actualizar posiciones:', error);
+      setError('Error al actualizar posiciones de vehículos');
+    }
+  }, 1000); // Cada 500 ms, ajustar según sea necesario
 
 // En handleWebSocketMessage // Manejador de mensajes WebSocket
 const handleWebSocketMessage = useCallback((data) => {
@@ -172,6 +188,7 @@ const handleWebSocketMessage = useCallback((data) => {
   };
   console.log('Datos del WebSocket procesados:', updatedData);
   setPositions(updatedData);
+  updateVehiclePositions(updatedData); // Utiliza la versión con throttle
 }, [setPositions]);
 
   // Manejador de cambios de conexión
@@ -270,7 +287,7 @@ const handleWebSocketMessage = useCallback((data) => {
         console.log('Mapa completamente cargado');
 
         // Añadir los íconos de Lucide al mapa con el fondo azul y borde blanco
-        if (!mapRef.current.hasImage('truck-icon')) {
+        /*if (!mapRef.current.hasImage('truck-icon')) {
           const svgString = getSvgString(Truck);
           const image = new Image();
           image.src = svgString;
@@ -304,7 +321,7 @@ const handleWebSocketMessage = useCallback((data) => {
           image.onload = () => {
             mapRef.current.addImage('alert-triangle-icon', image);
           };
-        }
+        }*/
 
         // Añadir imágenes de oficina y almacén del archivo de configuración
         for (const [key, imageConfig] of Object.entries(MAP_CONFIG.IMAGES)) {
@@ -331,12 +348,12 @@ const handleWebSocketMessage = useCallback((data) => {
               'icon-image': [
                 'match',
                 ['get', 'tipo'],
-                'A', 'truck-icon',
-                'B', 'car-front-icon',
-                'C', 'car-icon',
-                'alert-triangle-icon' // default icon
+                'A', MAP_CONFIG.IMAGES.TRUCK.id,
+                'B', MAP_CONFIG.IMAGES.CAR_FRONT.id,
+                'C', MAP_CONFIG.IMAGES.CAR2.id,
+                MAP_CONFIG.IMAGES.CAR_BREAK.id // default icon
               ],
-              'icon-size': 0.8,
+              'icon-size': 0.5,
               'icon-allow-overlap': true,
               'text-field': ['get', 'vehicleCode'],
               'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
@@ -506,6 +523,7 @@ const getVehicleIconHtml = (vehicleType) => {
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
     let status = vehiculo.properties.status || "Desconocido";
     const vehicleType = vehiculo.properties.tipo || "Desconocido";
+    const vehicleData = vehiculo.properties;
 
     // Validar y ajustar el status del vehículo
     switch (status) {
@@ -571,6 +589,7 @@ const getVehicleIconHtml = (vehicleType) => {
             classNameContenido="w-[15px] h-[15px] stroke-white z-10"
           />
         }
+        vehicleData={vehicleData}
       />
     );
 
@@ -766,38 +785,49 @@ const getVehicleIconHtml = (vehicleType) => {
     }
   };
 
-  // Actualizar posiciones de vehículos
-  // Actualizar posiciones de vehículos sin parpadeo y reasegurar los eventos
-  useEffect(() => {
-    let animationFrameId;
+  // Actualizar posiciones de vehículos <- asi estaba antes y nada.
+  /*useEffect(() => {
+    if (!mapRef.current || !positions?.features) return;
 
-    const animate = () => {
-      if (!mapRef.current || !positions?.features) return;
+    try {
+      animateTransition(positions);
+    } catch (error) {
+      console.error('Error al actualizar posiciones:', error);
+      setError('Error al actualizar posiciones de vehículos');
+    }
+  }, [positions, animateTransition]);*/
+  
+    useEffect(() => {
+      let animationFrameId;
 
-      try {
-        const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
-        if (vehiclesSource) {
-          vehiclesSource.setData(positions);
+      const animate = () => {
+        if (!mapRef.current || !positions?.features) return;
+
+        try {
+          const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+          if (vehiclesSource) {
+            vehiclesSource.setData(positions);
+          }
+        } catch (error) {
+          console.error('Error al actualizar posiciones:', error);
+          setError('Error al actualizar posiciones de vehículos');
         }
-      } catch (error) {
-        console.error('Error al actualizar posiciones:', error);
-        setError('Error al actualizar posiciones de vehículos');
+
+        animationFrameId = requestAnimationFrame(animate);
+      };
+
+      if (positions) {
+        animationFrameId = requestAnimationFrame(() => {
+          animate();
+          addVehicleLayerEvents(); // Vincular eventos inmediatamente después de actualizar
+        });
       }
 
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    if (positions) {
-      animationFrameId = requestAnimationFrame(() => {
-        animate();
-        addVehicleLayerEvents(); // Vincular eventos inmediatamente después de actualizar
-      });
-    }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [positions]);
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+      };
+    }, [positions]);
+   
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {

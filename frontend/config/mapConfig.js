@@ -46,7 +46,23 @@ export const MAP_CONFIG = {
       OFFICE: {
         id: 'office-icon',
         url: '/office-icon.png'
-      }
+      },
+      CAR_FRONT: {
+        id: 'car-front-icon',
+        url: '/car-front.png'
+      },
+      CAR2: {
+        id: 'car2-icon',
+        url: '/car2.png'
+      },
+      CAR_BREAK: {
+        id: 'carBreak-icon',
+        url: '/carBreak.png'
+      },
+      TRUCK: {
+        id: 'truck-icon',
+        url: '/truck.png'
+      }      
     }
   };
   
