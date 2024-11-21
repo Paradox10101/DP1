@@ -1,7 +1,7 @@
 // VehicleMap.jsx
 
 'use client';
-import { useAtom } from 'jotai';
+import { useAtomValue, useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
@@ -22,6 +22,9 @@ import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrat
 import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
+
+// 1. Primero, importa el átomo de ubicaciones filtradas
+import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -52,9 +55,13 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const locationRetryTimeoutRef = useRef(null);
   const positionsRef = useRef();
+  const locoRef = useRef();
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
+  // 2. Usa el átomo para obtener las ubicaciones filtradas
+  const locationsUltimo = useAtomValue(filteredLocationsAtom);
 
+  console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
   // Función auxiliar para crear mensajes de error
   const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
@@ -90,6 +97,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [setLocations, setError]);
 
+  console.log("LISTADO DE LOCACIONES AAAAAAAAAAAAAAAAAAAAAA ENCONTRADOS:",locations)
   // Limpiar timeout de reintento si existe
   const clearLocationRetryTimeout = useCallback(() => {
     if (locationRetryTimeoutRef.current) {
@@ -456,6 +464,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     positionsRef.current = positions;
   }, [positions]);
 
+  useEffect(() => {
+    locoRef.current = locationsUltimo;
+  }, [locationsUltimo]);
+
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
     console.log('handleVehicleClick triggered');
@@ -505,7 +517,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       popupsRef.current[vehicleCode] = popup;
       return;
     }
-
+    console.log("LISTADO DE VEHICULOS ENCONTRADOS:",vehiculosArray)
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
@@ -611,6 +623,15 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       console.error('No se encontraron ubicaciones en el punto clickeado.');
       return;
     }
+    //"Locations"
+    //const locococococos = locations;
+    const locococococos = locoRef.current;
+    //const officesArray = locococococos && locococococos.features && Array.isArray(locococococos.features) ? locococococos.features : [];
+    //alert("LISTADO DE LOCACIONES ENCONTRADAS:"+ JSON.stringify(locococococos, null, 2));
+    //alert("LISTADO DE LOCACIONES ENCONTRADAS:"+ JSON.stringify(features, null, 2));//
+
+    
+    
 
     const feature = features[0];
     const { name, type, ubigeo, capacidadMaxima, capacidadUsada } = feature.properties;
@@ -628,13 +649,24 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         />
       );
     } else if (type === 'office') {
+      // Buscar el vehículo correspondiente en 'vehiculosArray'
+      // 4. Buscar la ubicación actualizada en el átomo de locations
+      const locationActualizada = locococococos?.find(loc => 
+        loc.ubigeo === ubigeo && loc.type === type
+      );
+
+      if (!locationActualizada) {
+        console.error(`No se encontró la ubicación actualizada para ubigeo: ${ubigeo}`);
+        return;
+      }
+      //alert("OFICINA ENCONTRADA:"+ JSON.stringify(locationActualizada, null, 2));//
       // Renderizar el popup para oficina
       root.render(
         <OficinaPopUp
           title={name}
           ubigeo={ubigeo || 'No especificado'}
-          capacidadMaxima={capacidadMaxima || 'No especificada'}
-          capacidadUtilizada={capacidadUsada || 'No especificada'}
+          capacidadMaxima={locationActualizada.capacity || '0'}
+          capacidadUtilizada={Math.ceil(locationActualizada.capacity*locationActualizada.occupiedPercentage/100) || '0'}
         />
       );
     }

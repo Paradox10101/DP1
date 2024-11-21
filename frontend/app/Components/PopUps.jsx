@@ -31,7 +31,7 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, icon
         <div className="flex items-center">
           {/*<div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />*/}
           <img src={MAP_CONFIG.IMAGES.OFFICE.url} alt="Office Icon" className="w-6 h-6" />          
-          
+
           <h3 className="font-semibold text-base text-gray-800">{title}</h3>
         </div>
         <span className="bg-[#03AF00] text-[#BAFFB9] py-1 px-2 rounded-xl text-xs inline-block w-[100px] text-center">{tipo}</span>
@@ -40,7 +40,7 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, icon
         <span className="font-medium mr-1">Ubigeo:</span> {ubigeo}
       </div>
       <div className="text-gray-700 mb-2">
-        <span className="font-medium mr-1">Capacidad:</span> {capacidadUtilizada}/{capacidadMaxima} paquetes
+        <span className="font-medium mr-1">Capacidad:</span> {capacidadUtilizada} / {capacidadMaxima} paquetes
       </div>
       <button className="bg-principal text-blanco py-1 px-3 rounded mt-2 self-end transition duration-300 hover:bg-principal/90">
         Ver Detalle
