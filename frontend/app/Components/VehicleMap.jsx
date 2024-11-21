@@ -22,6 +22,8 @@ import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrat
 import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
+import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
+import ModalVehiculo from './ModalVehiculo';
 
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
@@ -54,6 +56,8 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const locationRetryTimeoutRef = useRef(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const positionsRef = useRef();
   const locoRef = useRef();
 
@@ -521,25 +525,9 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
-    let status = vehiculo.properties.status || "Desconocido";
+    const status = vehiculo.properties.status || "Desconocido";
     const vehicleType = vehiculo.properties.tipo || "Desconocido";
     const vehicleData = vehiculo.properties;
-
-    // Validar y ajustar el status del vehículo
-    switch (status) {
-      case "EN_ALMACEN":
-        status = "En Almacén";
-        break;
-      case "AVERIADO":
-        status = "Averiado";
-        break;
-      case "EN_MANTENIMIENTO":
-        status = "En mantenimiento";
-        break;
-      default:
-        console.warn(`Status desconocido para vehículo ${vehicleCode}: ${status}`);
-        status = "En tránsito";
-    }
 
     // Determinar el ícono según el tipo de vehículo
     let Icono;
@@ -588,7 +576,8 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         }
         vehicleData={vehicleData}
         onViewDetail={() => {
-          // Manejar la vista detallada
+          setSelectedVehicle(vehicleData); // Establece el vehículo seleccionado
+          onOpen(); // Abre el modal
         }}
         onReportIssue={() => {
           // Manejar el reporte de avería
@@ -947,6 +936,29 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           FPS: {Math.round(performanceManager.metrics.fps)}
         </div>
       )}
+      
+      {/* Modal para ver detalles */}
+      <Modal
+          closeButton
+          isOpen={isOpen}
+          onOpenChange={onClose}
+          blur
+          aria-labelledby="modal-vehiculo"
+        >
+          <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
+            <ModalHeader>
+              <div className="flex flex-row gap-2">
+                <div className="subEncabezado">Información del vehículo {selectedVehicle?.vehicleCode}</div>
+                {/* Agrega un indicador del estado, si es necesario */}
+              </div>
+            </ModalHeader>
+            <ModalBody>
+              {selectedVehicle && (
+                <ModalVehiculo vehicle={selectedVehicle} />
+              )}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>

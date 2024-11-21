@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from "lucide-react";
-import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { MAP_CONFIG } from '../../config/mapConfig';
+import { Card, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
 import ModalVehiculo from "./ModalVehiculo"; // Importa el modal de detalle del vehículo
 import { AlertCircle, Activity, MapPin, Gauge } from 'lucide-react';
+import VehicleHeader from "../Components/VehiclePopUp/VehicleHeader";
+import VehicleActions from "../Components/VehiclePopUp/VehicleActions";
+import VehicleInfo from "../Components/VehiclePopUp/VehicleInfo";
+import BreakdownModal from "../Components/VehiclePopUp/BreakdownModal";
+import { MAP_CONFIG } from '@/config/mapConfig';
 
 const AlmacenPopUp = ({ title, ubigeo, iconComponent }) => {
   return (
@@ -78,16 +82,40 @@ const renderStatus = (status) => {
     }
 };
 
+// Función para determinar el estado del vehículo
+const determineVehicleStatus = (status, capacidadUsada) => {
+  // Primero normalizamos el status actual
+  let normalizedStatus = status || "Desconocido";
+  
+  switch (normalizedStatus) {
+    case "EN_ALMACEN":
+      return "En Almacén";
+    case "AVERIADO":
+      return "Averiado";
+    case "EN_MANTENIMIENTO":
+      return "En mantenimiento";
+    case "EN_TRANSITO":
+      return "En tránsito";
+    case "HACIA_ALMACEN":
+        return "Hacia almacén"
+    default:
+      return "En tránsito"; // Estado por defecto
+  }
+};
+
+// Componente StatusBadge actualizado
 const StatusBadge = ({ status }) => {
   const getStatusStyles = () => {
     switch (status) {
-      case "EN_TRANSITO_ORDEN":
+      case "En tránsito":
         return "bg-gradient-to-r from-blue-500 to-blue-600 text-white";
-      case "EN_ALMACEN":
+      case "Hacia almacén":
+        return "bg-gradient-to-r from-emerald-400 to-emerald-500 text-white";
+      case "En Almacén":
         return "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white";
-      case "AVERIADO":
+      case "Averiado":
         return "bg-gradient-to-r from-red-500 to-red-600 text-white";
-      case "EN_MANTENIMIENTO":
+      case "En mantenimiento":
         return "bg-gradient-to-r from-purple-500 to-purple-600 text-white";
       default:
         return "bg-gradient-to-r from-gray-400 to-gray-500 text-white";
@@ -101,6 +129,8 @@ const StatusBadge = ({ status }) => {
       px-3 py-1
       rounded-full
       shadow-sm
+      flex items-center justify-center
+      min-w-[100px]
     `}>
       {status}
     </span>
@@ -131,97 +161,54 @@ const VehiculoPopUp = ({
   onViewDetail,
   onReportIssue
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isBreakdownModalOpen, setIsBreakdownModalOpen] = React.useState(false);
+
   const handleViewDetail = (e) => {
     e.stopPropagation();
     //onViewDetail?.(vehicleData);
     onOpen();
   };
 
-  const handleReportIssue = (e) => {
+  const handleBreakdownClick = (e) => {
     e.stopPropagation();
+    setIsBreakdownModalOpen(true);
+  };
+
+  const handleBreakdownSuccess = () => {
+    // Aquí puedes actualizar el estado del vehículo o recargar los datos
     onReportIssue?.(vehicleData);
   };
 
   return (
-    <div className="min-w-[300px] bg-white rounded-xl shadow-xl overflow-hidden">
-      {/* Encabezado */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            {iconoComponent}
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          </div>
-          <StatusBadge status={estado} />
-        </div>
-      </div>
+    <>
+      <Card className="min-w-[300px]">
+        <VehicleHeader
+          iconoComponent={iconoComponent}
+          title={title}
+          status={estado}
+        />
+        
+        <VehicleInfo 
+          capacidadUtilizada={capacidadUtilizada}
+          capacidadMaxima={capacidadMaxima}
+          ubicacionActual={ubicacionActual}
+          velocidad={velocidad}
+        />
+        
+        <VehicleActions 
+          onProvoke={handleBreakdownClick}
+          onViewDetail={handleViewDetail}
+          isInTransit={estado === 'EN_TRANSITO_ORDEN'}
+        />
+      </Card>
 
-      {/* Contenido */}
-      <div className="p-4 space-y-1">
-        <InfoItem
-          icon={Activity}
-          label="Capacidad"
-          value={`${capacidadUtilizada}/${capacidadMaxima} paquetes`}
-        />
-        <InfoItem
-          icon={MapPin}
-          label="Ubicación"
-          value={ubicacionActual}
-        />
-        <InfoItem
-          icon={Gauge}
-          label="Velocidad"
-          value={`${Math.round(velocidad)} km/h`}
-        />
-      </div>
-
-      {/* Acciones */}
-      <div className="p-4 bg-gray-50 flex items-center justify-between gap-3">
-        <button
-          onClick={handleReportIssue}
-          className="flex items-center justify-center gap-2 px-4 py-2 
-                   bg-white hover:bg-red-50 border border-red-200 
-                   text-red-600 text-sm font-medium rounded-lg
-                   transition-colors duration-200"
-        >
-          <AlertCircle className="w-4 h-4" />
-          Reportar
-        </button>
-        <button
-          onClick={handleViewDetail}
-          className="flex-1 px-4 py-2 
-                   bg-gradient-to-r from-blue-500 to-blue-600 
-                   hover:from-blue-600 hover:to-blue-700
-                   text-white text-sm font-medium rounded-lg
-                   transition-all duration-200 shadow-sm
-                   hover:shadow-md"
-        >
-          Ver Detalle
-        </button>
-      </div>
-      {/* Modal de Detalle del Vehículo */}
-      {isOpen && (
-        <Modal
-          closeButton
-          isOpen={isOpen}
-          onClose={onClose}
-          isDismissable={true}
-          blur
-        >
-          <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
-            <ModalHeader>
-              <div className="flex flex-row gap-2">
-                <div className="subEncabezado">Información del vehículo {title}</div>
-                <StatusBadge status={estado} />
-              </div>
-            </ModalHeader>
-            <ModalBody>
-              <ModalVehiculo vehicle={vehicleData} />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
-    </div>
+      <BreakdownModal 
+        isOpen={isBreakdownModalOpen}
+        onClose={() => setIsBreakdownModalOpen(false)}
+        vehicleCode={title}
+        onSuccess={handleBreakdownSuccess}
+      />
+    </>
   );
 };
 

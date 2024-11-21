@@ -43,7 +43,7 @@ public class SimulationRunner {
     private static final int PLANNING_INTERVAL_MINUTES = 15;
 
     public static ScheduledExecutorService simulationExecutorService;
-    private static final int BROADCAST_INTERVAL = 500; // 100ms = 10 updates/segundo
+    private static final int BROADCAST_INTERVAL = 1500; // ms
 
 
     public static void setSimulationParameters(int timeAdvancementValue) {

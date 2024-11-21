@@ -283,38 +283,138 @@ public class DataLoader {
         return edges;
     }
 
-    public List<Blockage> loadBlockages(String filePath) {
+    public List<Blockage> loadBlockages(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Blockage> blockages = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty() || line.startsWith("#")) continue;
-                try {
-                    // Formato: UG-Ori => UG-Des;mmdd-inicio,hh:mm-inicio==mmdd-fin,hh:mm-fin
-                    String[] parts = line.split(";");
-                    if (parts.length < 2) continue;
-                    String[] nodes = parts[0].split("=>");
-                    String originUbigeo = nodes[0].trim();
-                    String destinationUbigeo = nodes[1].trim();
 
-                    String[] times = parts[1].split("==");
-                    String startStr = times[0].trim();
-                    String endStr = times[1].trim();
+        // Obtener los archivos relevantes
+        List<String> files = endDateTime == null ?
+                getAllBlockageFiles() :
+                getBlockageMonthFileNamesBetween(startDateTime, endDateTime);
 
-                    LocalDateTime startTime = Utils.parseBlockageDateTime(startStr);
-                    LocalDateTime endTime = Utils.parseBlockageDateTime(endStr);
+        for (String filePath : files) {
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                    try {
+                        // Formato: UG-Ori => UG-Des;mmdd-inicio,hh:mm-inicio==mmdd-fin,hh:mm-fin
+                        String[] parts = line.split(";");
+                        if (parts.length < 2) continue;
+                        String[] nodes = parts[0].split("=>");
+                        String originUbigeo = nodes[0].trim();
+                        String destinationUbigeo = nodes[1].trim();
 
-                    Blockage blockage = new Blockage(originUbigeo, destinationUbigeo, startTime, endTime);
-                    blockages.add(blockage);
-                } catch (Exception e) {
-                    logger.warning("Error al procesar la línea de bloqueo: " + line + ". Error: " + e.getMessage());
+                        String[] times = parts[1].split("==");
+                        String startStr = times[0].trim();
+                        String endStr = times[1].trim();
+
+                        // Extraer el mes del archivo
+                        String fileName = new File(filePath).getName();
+                        Matcher monthMatcher = Pattern.compile("c\\.1inf54\\.24-2\\.bloqueo\\.(\\d{2})").matcher(fileName);
+
+                        if (!monthMatcher.find()) continue;
+
+                        int fileMonth = Integer.parseInt(monthMatcher.group(1));
+
+                        // Obtener el año base de la fecha de inicio de la simulación
+                        int baseYear = startDateTime.getYear();
+
+                        // Parseamos las fechas considerando el mes del archivo y el año base
+                        LocalDateTime blockageStartTime = parseBlockageDateTime(startStr, baseYear, fileMonth);
+                        LocalDateTime blockageEndTime = parseBlockageDateTime(endStr, baseYear, fileMonth);
+
+                        // Ajustar el año si el mes del bloqueo es menor que el mes del archivo
+                        // Esto significa que el bloqueo se extiende al siguiente año
+                        if (blockageStartTime.getMonthValue() < fileMonth) {
+                            blockageStartTime = blockageStartTime.plusYears(1);
+                        }
+                        if (blockageEndTime.getMonthValue() < fileMonth) {
+                            blockageEndTime = blockageEndTime.plusYears(1);
+                        }
+
+                        // Nueva lógica de verificación de fechas:
+                        // Un bloqueo es válido si:
+                        // 1. Termina después de la fecha de inicio (intersecta con el período)
+                        // 2. Si hay fecha final especificada, debe empezar antes de la fecha final
+                        if (blockageEndTime.isAfter(startDateTime) &&
+                                (endDateTime == null || blockageStartTime.isBefore(endDateTime))) {
+                            Blockage blockage = new Blockage(originUbigeo, destinationUbigeo, blockageStartTime, blockageEndTime);
+                            blockages.add(blockage);
+                        }
+
+                    } catch (Exception e) {
+                        logger.warning("Error al procesar la línea de bloqueo: " + line + ". Error: " + e.getMessage());
+                    }
                 }
+            } catch (IOException e) {
+                logger.severe("Error al leer el archivo de bloqueos: " + e.getMessage());
             }
-        } catch (IOException e) {
-            logger.severe("Error al leer el archivo de bloqueos: " + e.getMessage());
         }
+
+        logger.info(String.format("Se cargaron %d bloqueos:", blockages.size()));
+        for (Blockage blockage : blockages) {
+            logger.info(String.format("Bloqueo: %s => %s, Inicio: %s, Fin: %s",
+                    blockage.getOriginUbigeo(),
+                    blockage.getDestinationUbigeo(),
+                    blockage.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                    blockage.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+        }
+
         return blockages;
     }
+
+    private LocalDateTime parseBlockageDateTime(String dateTimeStr, int year, int fileMonth) {
+        // Formato esperado: mmdd,hh:mm
+        String[] parts = dateTimeStr.split(",");
+        String mmdd = parts[0].trim();
+        String time = parts[1].trim();
+
+        int month = Integer.parseInt(mmdd.substring(0, 2));
+        int day = Integer.parseInt(mmdd.substring(2, 4));
+        int hour = Integer.parseInt(time.split(":")[0]);
+        int minute = Integer.parseInt(time.split(":")[1]);
+
+        // Verificar que el mes del bloqueo sea válido respecto al mes del archivo
+        if (month != fileMonth && month != (fileMonth % 12) + 1) {
+            throw new IllegalArgumentException(
+                    String.format("El mes del bloqueo (%d) debe coincidir con el mes del archivo (%d) o ser el siguiente mes",
+                            month, fileMonth));
+        }
+
+        // Ajustar el año si el bloqueo está en el mes siguiente y ese mes es enero
+        int adjustedYear = year;
+        if (month == 1 && fileMonth == 12) {
+            adjustedYear++;
+        }
+
+        return LocalDateTime.of(adjustedYear, month, day, hour, minute);
+    }
+
+    private List<String> getAllBlockageFiles() {
+        File resourceDir = new File("src/main/resources");
+        return Arrays.stream(resourceDir.listFiles())
+                .filter(file -> file.getName().matches("c\\.1inf54\\.24-2\\.bloqueo\\.\\d{2}\\.txt"))
+                .map(File::getAbsolutePath)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getBlockageMonthFileNamesBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<String> fileNames = new ArrayList<>();
+
+        YearMonth startMonth = YearMonth.from(startDateTime);
+        YearMonth endMonth = endDateTime == null ?
+                startMonth.plusMonths(11) : // Si es -1, tomamos todo el año
+                YearMonth.from(endDateTime);
+
+        while (!startMonth.isAfter(endMonth)) {
+            String fileName = String.format("src/main/resources/c.1inf54.24-2.bloqueo.%02d.txt",
+                    startMonth.getMonthValue());
+            fileNames.add(fileName);
+            startMonth = startMonth.plusMonths(1);
+        }
+        return fileNames;
+    }
+
 
     /*public long[][] createTimeMatrix(List<Location> locations, List<Edge> edges) {
         int n = locations.size();
