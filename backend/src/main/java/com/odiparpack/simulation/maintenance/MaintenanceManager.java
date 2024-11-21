@@ -95,10 +95,10 @@ public class MaintenanceManager {
      * @param vehicle      El vehículo a actualizar.
      * @param currentTime  El tiempo actual de la simulación.
      */
-    public void updateBreakdownTime(Vehicle vehicle, LocalDateTime currentTime) {
+    /*public void updateBreakdownTime(Vehicle vehicle, LocalDateTime currentTime) {
         vehicle.updateBreakdownTime(currentTime);
         logger.info("Tiempo de avería actualizado para el vehículo " + vehicle.getCode() + " a " + currentTime);
-    }
+    }*/
 
     /**
      * Obtiene todas las programaciones de mantenimiento para un vehículo.

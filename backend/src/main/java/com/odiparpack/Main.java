@@ -108,7 +108,7 @@ public class Main {
         locations = dataLoader.loadLocations("src/main/resources/locations.txt");
         List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);
         List<Vehicle> vehicles = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
-        List<Blockage> blockages = dataLoader.loadBlockages("src/main/resources/blockages.txt");
+        List<Blockage> blockages = dataLoader.loadBlockages(startDateTime, endDateTime);
         List<Maintenance> maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
 
         // Obtener órdenes según el tipo de simulación

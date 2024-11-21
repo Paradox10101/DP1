@@ -12,6 +12,7 @@ import org.springframework.cglib.core.Local;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -427,37 +428,54 @@ public class SimulationState {
     }
 
     public void updateBlockages(LocalDateTime currentTime, List<Blockage> allBlockages) {
-        logger.info("Actualizando bloqueos en tiempo: " + currentTime);
+        logger.info("Verificando cambios en bloqueos para tiempo: " + currentTime);
 
-        // Remover bloqueos que han expirado
+        boolean hasChanges = false;
+
+        // Verificar bloqueos expirados
         List<Blockage> expiredBlockages = activeBlockages.stream()
                 .filter(blockage -> currentTime.isAfter(blockage.getEndTime()))
                 .collect(Collectors.toList());
 
+        // Verificar nuevos bloqueos que deberían activarse
+        List<Blockage> newBlockages = allBlockages.stream()
+                .filter(blockage ->
+                        !currentTime.isBefore(blockage.getStartTime()) &&
+                                currentTime.isBefore(blockage.getEndTime()) &&
+                                !activeBlockages.contains(blockage))
+                .collect(Collectors.toList());
+
+        // Si no hay bloqueos expirados ni nuevos, no es necesario actualizar
+        if (expiredBlockages.isEmpty() && newBlockages.isEmpty()) {
+            logger.info("No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios");
+            return;
+        }
+
+        // Proceder con las actualizaciones ya que hay cambios
+        // Remover bloqueos expirados
         for (Blockage expiredBlockage : expiredBlockages) {
             activeBlockages.remove(expiredBlockage);
+            hasChanges = true;
             logger.info("Bloqueo expirado y removido: " + blockageToString(expiredBlockage));
         }
 
         // Añadir nuevos bloqueos activos
-        int newBlockagesCount = 0;
-        for (Blockage blockage : allBlockages) {
-            if (!currentTime.isBefore(blockage.getStartTime()) &&
-                    currentTime.isBefore(blockage.getEndTime()) &&
-                    !activeBlockages.contains(blockage)) {
-                activeBlockages.add(blockage);
-                newBlockagesCount++;
-                logger.info("Nuevo bloqueo activado: " + blockageToString(blockage));
-            }
+        for (Blockage newBlockage : newBlockages) {
+            activeBlockages.add(newBlockage);
+            hasChanges = true;
+            logger.info("Nuevo bloqueo activado: " + blockageToString(newBlockage));
         }
 
-        logger.info("Resumen de actualización de bloqueos:");
-        logger.info("- Bloqueos expirados: " + expiredBlockages.size());
-        logger.info("- Nuevos bloqueos activados: " + newBlockagesCount);
-        logger.info("- Total de bloqueos activos: " + activeBlockages.size());
+        // Log del resumen de cambios
+        if (hasChanges) {
+            logger.info("Resumen de actualización de bloqueos:");
+            logger.info("- Bloqueos expirados: " + expiredBlockages.size());
+            logger.info("- Nuevos bloqueos activados: " + newBlockages.size());
+            logger.info("- Total de bloqueos activos: " + activeBlockages.size());
 
-        // Actualizar la matriz de tiempo
-        updateTimeMatrix();
+            // Actualizar la matriz de tiempo solo si hubo cambios
+            updateTimeMatrix();
+        }
     }
 
     private String blockageToString(Blockage blockage) {
@@ -772,7 +790,7 @@ public class SimulationState {
 
                 if (vehicle.isUnderRepair()) {
                     handleRepairCompletion(vehicle, currentTime);
-                    vehicle.updateAveriaTime(currentTime);  // Actualizar el tiempo en estado de avería
+                    vehicle.updateAveriaTime(currentTime, simulationType);  // Actualizar el tiempo en estado de avería
                     continue;
                 }
 
@@ -971,6 +989,15 @@ public class SimulationState {
                 logger.info(String.format("Vehículo %s ha sido reparado y está nuevamente disponible en el almacén.", vehicle.getCode()));
             }
             vehicle.clearRepairTime();
+
+            // Calculate and accumulate the breakdown duration
+            if (vehicle.getAveriaStartTime() != null) {
+                long breakdownDuration = (simulationType == SimulationRouter.SimulationType.DAILY)
+                        ? ChronoUnit.SECONDS.between(vehicle.getAveriaStartTime(), currentTime)
+                        : ChronoUnit.MINUTES.between(vehicle.getAveriaStartTime(), currentTime);
+                vehicle.addToTotalBreakdownTime(breakdownDuration);
+                vehicle.setAveriaStartTime(null);
+            }
         }
     }
 
@@ -1043,7 +1070,8 @@ public class SimulationState {
                         logger.warning("Tipo de avería no reconocido: " + breakdownType);
                         return;
                 }
-                vehicle.handleBreakdown(currentTime, estadoAveria);
+
+                vehicle.handleBreakdown(currentTime, estadoAveria, simulationType);
                 logger.info(String.format("Avería tipo %s provocada en el vehículo %s", breakdownType, vehicleCode));
 
                 // Agregar un mensaje de avería
@@ -1051,7 +1079,7 @@ public class SimulationState {
                         breakdownType, vehicleCode, currentTime);
                 addBreakdownLog(vehicleCode, logMessage);
             } else {
-                logger.warning(String.format("No se puede provocar avería en el vehículo %s porque no está en tránsito", vehicleCode));
+                logger.warning(String.format("No se puede provocar avería en el vehículo %s porque no está en tránsito: estado %s", vehicleCode, vehicle.getEstado()));
             }
         } else {
             logger.warning(String.format("No se encontró el vehículo con código %s", vehicleCode));
