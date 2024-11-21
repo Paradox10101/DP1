@@ -256,8 +256,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       }),
     };
     console.log('Datos del WebSocket procesados:', updatedData);
+    // Actualizar los popups usando la función existente
+    updatePopups(updatedData);
     setPositions(updatedData);
-    updateVehiclePositions(updatedData); // Utiliza la versión con throttle
+    updateVehiclePositions(updatedData); // Utiliza la versión con throttle    
   }, [setPositions]);
 
   // Manejador de cambios de conexión
@@ -420,7 +422,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
                   'red',
                 ],
               ],
-              'icon-size': 0.5,
+              'icon-size': 0.6,
               'icon-allow-overlap': true,
               'text-field': ['get', 'vehicleCode'],
               'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
