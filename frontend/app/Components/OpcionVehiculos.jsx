@@ -176,7 +176,9 @@ useEffect(() => {
         style={style}
         //className={`p-2 border-2 rounded-xl stroke-black ${filteredVehiculosArray[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
         onMouseDown={() => {
-            const indexS = vehiculosArray.findIndex(vehiculoL => vehiculoL.vehicleCode === vehicle.properties.vehicleCode);  
+          //alert(JSON.stringify(vehiculosArray, null, 2))
+          //alert(JSON.stringify(vehicle, null, 2))
+          const indexS = vehiculosArray.findIndex(vehiculoL => vehiculoL.properties.vehicleCode === vehicle.properties.vehicleCode);  
             if(indexS!==-1)
               setSelectedVehicleIndex(indexS);
             else
