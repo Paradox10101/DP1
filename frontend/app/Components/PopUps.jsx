@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { AlertTriangle } from "lucide-react";
 import { Card, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
-import ModalVehiculo from "./ModalVehiculo"; // Importa el modal de detalle del vehículo
-import { AlertCircle, Activity, MapPin, Gauge } from 'lucide-react';
+//import ModalVehiculo from "./ModalVehiculo"; // Importa el modal de detalle del vehículo
+//import { AlertCircle, Activity, MapPin, Gauge } from 'lucide-react';
 import VehicleHeader from "../Components/VehiclePopUp/VehicleHeader";
 import VehicleActions from "../Components/VehiclePopUp/VehicleActions";
 import VehicleInfo from "../Components/VehiclePopUp/VehicleInfo";
 import BreakdownModal from "../Components/VehiclePopUp/BreakdownModal";
 import { MAP_CONFIG } from '@/config/mapConfig';
+import ModalAlmacen from './ModalAlmacen';
+import ModalOficina from './ModalOficina';
 
-const AlmacenPopUp = ({ title, ubigeo, iconComponent }) => {
+const AlmacenPopUp = ({ title, ubigeo, warehouseData }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  
   return (
       <div className="bg-white rounded p-4 w-80 flex flex-col">
         <div className="flex items-center justify-between mb-2">
@@ -21,14 +24,31 @@ const AlmacenPopUp = ({ title, ubigeo, iconComponent }) => {
         <div className="text-gray-700 mb-2">
           <span className="font-medium mr-1">Ubigeo:</span> {ubigeo}
         </div>
-        <button className="bg-principal text-blanco py-1 px-3 rounded mt-2 self-end transition duration-300 hover:bg-principal/90">
+        <button className="bg-principal text-blanco py-1 px-3 rounded mt-2 self-end transition duration-300 hover:bg-principal/90" onClick={onOpen}>
           Ver Detalle
         </button>
+        <Modal
+          closeButton
+          isOpen={isOpen}
+          onClose={onClose}
+          isDismissable={true}
+          blur
+        >
+          <ModalContent className="h-[800px] min-w-[850px]">
+            <ModalHeader>
+              Información del almacén {title}
+            </ModalHeader>
+            <ModalBody>
+              <ModalAlmacen warehouse={warehouseData} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </div>
     );
 };
 
-const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, iconoHtmlString, tipo = "Oficina" }) => {
+const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, officeData, tipo = "Oficina" }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div className="bg-white rounded p-4 w-80 flex flex-col">
       <div className="flex items-center justify-between mb-2">
@@ -46,40 +66,27 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, icon
       <div className="text-gray-700 mb-2">
         <span className="font-medium mr-1">Capacidad:</span> {capacidadUtilizada} / {capacidadMaxima} paquetes
       </div>
-      <button className="bg-principal text-blanco py-1 px-3 rounded mt-2 self-end transition duration-300 hover:bg-principal/90">
+      <button className="bg-principal text-blanco py-1 px-3 rounded mt-2 self-end transition duration-300 hover:bg-principal/90" onClick={onOpen}>
         Ver Detalle
       </button>
+      <Modal
+          closeButton
+          isOpen={isOpen}
+          onClose={onClose}
+          isDismissable={true}
+          blur
+        >
+          <ModalContent className="h-[800px] min-w-[850px]">
+            <ModalHeader>
+              Información de la oficina {title}
+            </ModalHeader>
+            <ModalBody>
+              <ModalOficina office={officeData} />
+            </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
-};
-
-const renderStatus = (status) => {
-    switch (status) {
-        case "EN_ALMACEN":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                    En Almacén
-                </div>
-            );
-        case "AVERIADO":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                    Averiado
-                </div>
-            );
-        case "EN_MANTENIMIENTO":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                    En Mantenimiento
-                </div>
-            );
-        default:
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-                    En Tránsito
-                </div>
-            );
-    }
 };
 
 // Función para determinar el estado del vehículo
@@ -134,7 +141,7 @@ const VehiculoPopUp = ({
   const handleViewDetail = (e) => {
     e.stopPropagation();
     onViewDetail?.(vehicleData);
-    alert("VEHICULO ENCONTRADO:"+ JSON.stringify(vehicleData, null, 2));
+    //alert("VEHICULO ENCONTRADO:"+ JSON.stringify(vehicleData, null, 2));
     //onOpen();
   };
 

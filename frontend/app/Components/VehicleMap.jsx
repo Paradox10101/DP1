@@ -685,20 +685,22 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     const popupContent = document.createElement("div");
     const root = createRoot(popupContent);
 
+    const locationActualizada = locococococos?.find(loc => 
+      loc.ubigeo === ubigeo && loc.type === type
+    );
+    //alert("UBICACION ENCONTRADA:"+ JSON.stringify(locationActualizada, null, 2));
     if (type === 'warehouse') {
       // Renderizar el popup para almacén
       root.render(
         <AlmacenPopUp
           title={name}
           ubigeo={ubigeo || 'No especificado'}
+          warehouseData={locationActualizada}
         />
       );
     } else if (type === 'office') {
       // Buscar el vehículo correspondiente en 'vehiculosArray'
-      // 4. Buscar la ubicación actualizada en el átomo de locations
-      const locationActualizada = locococococos?.find(loc => 
-        loc.ubigeo === ubigeo && loc.type === type
-      );
+      // 4. Buscar la ubicación actualizada en el átomo de locations      
 
       if (!locationActualizada) {
         console.error(`No se encontró la ubicación actualizada para ubigeo: ${ubigeo}`);
@@ -712,6 +714,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           ubigeo={ubigeo || 'No especificado'}
           capacidadMaxima={locationActualizada.capacity || '0'}
           capacidadUtilizada={Math.ceil(locationActualizada.capacity*locationActualizada.occupiedPercentage/100) || '0'}
+          officeData={locationActualizada}
         />
       );
     }
