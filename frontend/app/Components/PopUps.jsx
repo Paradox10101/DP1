@@ -7,7 +7,7 @@ import VehicleHeader from "../Components/VehiclePopUp/VehicleHeader";
 import VehicleActions from "../Components/VehiclePopUp/VehicleActions";
 import VehicleInfo from "../Components/VehiclePopUp/VehicleInfo";
 import BreakdownModal from "../Components/VehiclePopUp/BreakdownModal";
-
+import { MAP_CONFIG } from '@/config/mapConfig';
 
 const AlmacenPopUp = ({ title, ubigeo, iconComponent }) => {
   return (
