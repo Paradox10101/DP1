@@ -45,6 +45,62 @@ const getSvgString = (IconComponent, bgColor) => {
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
+
+// Componente StatusBadge actualizado
+// Componente StatusBadge actualizado
+const StatusBadge = ({ status }) => {
+  switch (status) {
+      case "EN_ALMACEN":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                  En Almacén
+              </div>
+          );
+      case "AVERIADO_1":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                  Averiado T1
+              </div>
+          );
+      case "AVERIADO_2":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T2
+            </div>
+        );
+      case "AVERIADO_3":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T3
+            </div>
+        );
+      case "EN_MANTENIMIENTO":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                  En Mantenimiento
+              </div>
+          );
+      case "EN_ESPERA_EN_OFICINA":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                En Espera
+            </div>
+        );
+      case "LISTO_PARA_RETORNO":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                En Espera
+            </div>
+        );
+      default:
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+                En Tránsito
+            </div>
+        );
+  }
+};
+
 const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -917,6 +973,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
+  
   return (
     <div className="relative w-full h-full">
       {loading === 'loading' && (
@@ -949,6 +1006,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
             <ModalHeader>
               <div className="flex flex-row gap-2">
                 <div className="subEncabezado">Información del vehículo {selectedVehicle?.vehicleCode}</div>
+                <StatusBadge status={selectedVehicle?.status} />
                 {/* Agrega un indicador del estado, si es necesario */}
               </div>
             </ModalHeader>
