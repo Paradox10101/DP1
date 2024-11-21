@@ -655,10 +655,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       .addTo(mapRef.current);
 
     // Crear una línea horizontal en la ubicación del vehículo
-    const lineCoordinates = [
-      [feature.geometry.coordinates[0] - 0.01, feature.geometry.coordinates[1]], // Desplazar ligeramente en X
-      [feature.geometry.coordinates[0] + 0.01, feature.geometry.coordinates[1]], // Desplazar ligeramente en X
-    ];
+    const lineCoordinates = vehicleData.currentRoute.map(route => route.coordinates);  
 
     if (!mapRef.current.getSource(`linea-${vehicleCode}`)) {
       mapRef.current.addSource(`linea-${vehicleCode}`, {
