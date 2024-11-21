@@ -90,6 +90,18 @@ export const MAP_CONFIG = {
           'text-anchor': 'top'
         },
         paint: {
+          // Asigna colores basados en capacidadUsada
+          'icon-color': [
+            'case',
+            ['all', ['has', 'capacidadUsada'], ['has', 'capacidadMaxima']], // Verificar si ambas propiedades existen
+            [
+              'case',
+              ['<', ['*', ['/', ['get', 'capacidadUsada'], ['get', 'capacidadMaxima']], 100], 50], '#08CA57', // Verde (< 50%)
+              ['<', ['*', ['/', ['get', 'capacidadUsada'], ['get', 'capacidadMaxima']], 100], 75], '#FFC107', // Amarillo (50% <= x < 75%)
+              '#FF5252' // Rojo (>= 75%)
+            ],
+            '#CCCCCC' // Color por defecto si falta alguna propiedad
+          ],
           'text-color': '#FFFFFF',
           'text-halo-color': '#000000',
           'text-halo-width': 1
