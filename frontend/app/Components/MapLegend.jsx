@@ -56,22 +56,22 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
         {
           icon: Truck,
           containerClass: "bg-blue-500 w-8 h-8",
-          label: "Vehículo Tipo 1"
+          label: "Vehículo Tipo A"
         },
         {
           icon: CarFront,
           containerClass: "bg-blue-500 w-8 h-8",
-          label: "Vehículo Tipo 2"
+          label: "Vehículo Tipo B"
         },
         {
           icon: Car,
           containerClass: "bg-blue-500 w-8 h-8",
-          label: "Vehículo Tipo 3"
+          label: "Vehículo Tipo C"
         },
         {
           icon: AlertTriangle,
           containerClass: "bg-yellow-500 w-8 h-8",
-          label: "Camión averiado"
+          label: "Vehículo averiado"
         }
       ]
     },

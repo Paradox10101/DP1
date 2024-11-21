@@ -35,25 +35,6 @@ public class Vehicle {
             this.clearRepairTime();
         }
     }
-    public void updateBreakdownTime(LocalDateTime currentTime) {
-        // Verificar si el vehículo está en estado de avería y si hay un tiempo de inicio de la avería registrado
-        if (this.averiaStartTime != null) {
-            // Calcular el tiempo transcurrido desde el inicio de la avería hasta el currentTime
-            long minutesSinceAveriaStart = ChronoUnit.MINUTES.between(this.averiaStartTime, currentTime);
-
-            // Actualizar el tiempo total de avería
-            this.totalAveriaTime += minutesSinceAveriaStart;
-
-            // Reiniciar el tiempo de inicio de avería para evitar acumulación incorrecta en futuras llamadas
-            this.averiaStartTime = currentTime;
-
-            // Log de la actualización del tiempo de avería
-            logger.info(String.format("Vehículo %s ha acumulado %d minutos en estado de avería. Tiempo total acumulado: %d minutos.",
-                    this.getCode(), minutesSinceAveriaStart, this.totalAveriaTime));
-        } else {
-            logger.warning(String.format("Vehículo %s no tiene un tiempo de inicio de avería registrado.", this.getCode()));
-        }
-    }
 
     public int getCurrentCapacity() {
         return currentCapacity;
@@ -99,6 +80,7 @@ public class Vehicle {
     private LocalDateTime journeyStartTime;
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
     private LocalDateTime maintenanceStartTime;
+    private long totalBreakdownTime = 0; // Should be in minutes or seconds based on simulation type
 
     // Métodos getter y setter para maintenanceStartTime
     public LocalDateTime getMaintenanceStartTime() {
@@ -156,7 +138,21 @@ public class Vehicle {
         return positionHistory;
     }*/
 
+
+
     public Position getCurrentPosition(LocalDateTime simulationTime, SimulationRouter.SimulationType simulationType) {
+        // Si el vehículo está averiado, retornar la posición guardada
+        if (estado == EstadoVehiculo.AVERIADO_1 ||
+                estado == EstadoVehiculo.AVERIADO_2 ||
+                estado == EstadoVehiculo.AVERIADO_3) {
+            return breakdownPosition;
+        }
+
+        // Si no está averiado, calcular la posición actual
+        return calculateCurrentPosition(simulationTime, simulationType);
+    }
+
+    /*public Position calculateCurrentPosition(LocalDateTime simulationTime, SimulationRouter.SimulationType simulationType) {
         LocationService locationService = LocationService.getInstance();
 
         if (route == null || route.isEmpty() || journeyStartTime == null) {
@@ -211,7 +207,7 @@ public class Vehicle {
             return null;
         }
         return new Position(loc.getLatitude(), loc.getLongitude());
-    }
+    }*/
 
     private String getUbigeoByName(String name, Map<String, Location> locations) {
         return locations.values().stream()
@@ -237,6 +233,10 @@ public class Vehicle {
         this.averiaStartTime = averiaStartTime;
     }
 
+    public void addToTotalBreakdownTime(long breakdownDuration) {
+        this.totalBreakdownTime += breakdownDuration;
+    }
+
     public boolean isInMaintenance() {
         return this.estado == EstadoVehiculo.EN_MANTENIMIENTO;
     }
@@ -260,19 +260,21 @@ public class Vehicle {
     }
 
     /**
-     * Actualiza el tiempo total de avería basado en el tiempo actual.
+     * Actualiza el tiempo total de avería basado en el tiempo actual y el tipo de simulación.
      */
-    public void updateAveriaTime(LocalDateTime currentTime) {
+    public void updateAveriaTime(LocalDateTime currentTime, SimulationRouter.SimulationType simulationType) {
         if (this.averiaStartTime != null) {
-            // Calcular el tiempo transcurrido desde el inicio de la avería hasta el currentTime
-            long minutesSinceAveriaStart = ChronoUnit.MINUTES.between(this.averiaStartTime, currentTime);
-
-            // Actualizar el tiempo total de avería
-            this.totalAveriaTime += minutesSinceAveriaStart;
-
-            // Registrar el tiempo transcurrido desde que comenzó la avería
-            logger.info(String.format("Vehículo %s ha estado averiado durante %d minutos desde que ocurrió la avería inicialmente.",
-                    this.getCode(), minutesSinceAveriaStart));
+            // Calcular el tiempo transcurrido según el tipo de simulación
+            long timeSinceAveriaStart;
+            if (simulationType == SimulationRouter.SimulationType.DAILY) {
+                timeSinceAveriaStart = ChronoUnit.SECONDS.between(this.averiaStartTime, currentTime);
+                logger.info(String.format("Vehículo %s ha estado averiado durante %d segundos desde que ocurrió la avería inicialmente.",
+                        this.getCode(), timeSinceAveriaStart));
+            } else {
+                timeSinceAveriaStart = ChronoUnit.MINUTES.between(this.averiaStartTime, currentTime);
+                logger.info(String.format("Vehículo %s ha estado averiado durante %d minutos desde que ocurrió la avería inicialmente.",
+                        this.getCode(), timeSinceAveriaStart));
+            }
         }
     }
 
@@ -284,6 +286,11 @@ public class Vehicle {
     }
 
     public void continueCurrentRoute(LocalDateTime currentTime) {
+        if (this.averiaStartTime != null) {
+            long breakdownDuration = ChronoUnit.MINUTES.between(this.averiaStartTime, currentTime);
+            this.totalAveriaTime = breakdownDuration;
+            this.averiaStartTime = null;
+        }
         this.estado = EstadoVehiculo.EN_TRANSITO_ORDEN;
         this.setAvailable(true);
 
@@ -375,6 +382,8 @@ public class Vehicle {
     private boolean listoParaRegresarAlmacen;
     private LocalDateTime waitStartTime;
     public static final long WAIT_TIME_MINUTES = 120; // 2 horas
+    private Position breakdownPosition; // Nueva variable para guardar la posición de la avería
+    private LocalDateTime tiempoFinAveria;
 
     public LocalDateTime getWaitStartTime() {
         return waitStartTime;
@@ -384,9 +393,83 @@ public class Vehicle {
         this.waitStartTime = waitStartTime;
     }
 
-    public void handleBreakdown(LocalDateTime currentTime, EstadoVehiculo tipoAveria) {
+    private Position calculateCurrentPosition(LocalDateTime currentTime, SimulationRouter.SimulationType simulationType) {
+        LocationService locationService = LocationService.getInstance();
+
+        if (route == null || route.isEmpty() || journeyStartTime == null) {
+            Location loc = locationService.getLocation(currentLocationUbigeo);
+            if (loc == null) {
+                logger.warning("No se encontró ubicación para el ubigeo: " + currentLocationUbigeo);
+                return null;
+            }
+            return new Position(loc.getLatitude(), loc.getLongitude());
+        }
+
+        // Calcula el tiempo total transcurrido desde el inicio del viaje
+        long totalElapsedTime = (simulationType == SimulationRouter.SimulationType.DAILY)
+                ? ChronoUnit.SECONDS.between(journeyStartTime, currentTime)
+                : ChronoUnit.MINUTES.between(journeyStartTime, currentTime);
+
+        // Resta el tiempo total de avería
+        long elapsedTime;
+        if (simulationType == SimulationRouter.SimulationType.DAILY) {
+            elapsedTime = totalElapsedTime - (totalAveriaTime * 60); // Convierte minutos a segundos
+        } else {
+            elapsedTime = totalElapsedTime - totalAveriaTime;
+        }
+
+        // Asegúrate de que adjustedElapsedTime no sea negativo
+        if (elapsedTime < 0) {
+            elapsedTime = 0;
+        }
+
+        long accumulatedTime = 0;
+        for (RouteSegment segment : route) {
+            accumulatedTime += segment.getDurationMinutes();
+            if (elapsedTime <= accumulatedTime * (simulationType == SimulationRouter.SimulationType.DAILY ? 60 : 1)) {
+                long timeInSegment;
+                double progress;
+                if (simulationType == SimulationRouter.SimulationType.DAILY) {
+                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes()) * 60;
+                    progress = (double) timeInSegment / (segment.getDurationMinutes() * 60);
+                } else {
+                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes());
+                    progress = (double) timeInSegment / segment.getDurationMinutes();
+                }
+
+                Location fromLocation = locationService.getLocation(segment.getFromUbigeo());
+                Location toLocation = locationService.getLocation(segment.getToUbigeo());
+
+                if (fromLocation == null || toLocation == null) {
+                    logger.warning("No se encontró ubicación para los ubigeos: " +
+                            segment.getFromUbigeo() + ", " + segment.getToUbigeo());
+                    return null;
+                }
+
+                double lat = fromLocation.getLatitude() +
+                        (toLocation.getLatitude() - fromLocation.getLatitude()) * progress;
+                double lon = fromLocation.getLongitude() +
+                        (toLocation.getLongitude() - fromLocation.getLongitude()) * progress;
+
+                return new Position(lat, lon);
+            }
+        }
+
+        Location loc = locationService.getLocation(getCurrentLocationUbigeo());
+        if (loc == null) {
+            logger.warning("No se encontró ubicación para el ubigeo: " + currentLocationUbigeo);
+            return null;
+        }
+        return new Position(loc.getLatitude(), loc.getLongitude());
+    }
+
+
+    public void handleBreakdown(LocalDateTime currentTime, EstadoVehiculo tipoAveria, SimulationRouter.SimulationType simulationType) {
         this.estado = tipoAveria;
         this.setAvailable(false);
+
+        // Calcular y guardar la posición exacta donde ocurrió la avería
+        this.breakdownPosition = calculateCurrentPosition(currentTime, simulationType);
 
         long repairHours;
         switch (tipoAveria) {
@@ -407,6 +490,9 @@ public class Vehicle {
         // Calcular el tiempo de finalización de la reparación basado en el tiempo de simulación
         LocalDateTime repairEndTime = currentTime.plusHours(repairHours);
         this.setRepairEndTime(repairEndTime);
+
+        // Guardar tiempo fin averia
+        tiempoFinAveria = repairEndTime;
 
         // Registrar el tramo actual y el tiempo transcurrido hasta la avería
             if (this.route != null && this.currentSegmentIndex < this.route.size()) {

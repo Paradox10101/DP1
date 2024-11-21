@@ -15,7 +15,7 @@ public class Utils {
         return dateTime.toEpochSecond(ZoneOffset.UTC);
     }
 
-    public static LocalDateTime parseBlockageDateTime(String dateTimeStr) {
+    /*public static LocalDateTime parseBlockageDateTime(String dateTimeStr) {
         // Asumiendo que el formato es "mmdd,HH:mm"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd,HH:mm");
 
@@ -33,6 +33,20 @@ public class Utils {
 
         // Crear LocalDateTime
         return LocalDateTime.of(currentYear, month, dayOfMonth, hour, minute);
+    }*/
+
+    private LocalDateTime parseBlockageDateTime(String dateTimeStr, int year, int fileMonth) {
+        // Formato esperado: mmdd,hh:mm
+        String[] parts = dateTimeStr.split(",");
+        String mmdd = parts[0].trim();
+        String time = parts[1].trim();
+
+        int month = Integer.parseInt(mmdd.substring(0, 2));
+        int day = Integer.parseInt(mmdd.substring(2, 4));
+        int hour = Integer.parseInt(time.split(":")[0]);
+        int minute = Integer.parseInt(time.split(":")[1]);
+
+        return LocalDateTime.of(year, month, day, hour, minute);
     }
 
     public static long parseOrderDateTimeToTimestamp(String dateTimeStr) {
