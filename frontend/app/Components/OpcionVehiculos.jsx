@@ -268,7 +268,7 @@ useEffect(() => {
               </div>
             </div>
           </div>
-          <div className="h-3/4 w-full overflow-y-auto scroll-area">
+          <div className="h-3/4 w-full ">
                 {!hasSearchResults && isSearching ? (
                   <NoResultsMessage />
                 ) : (
@@ -279,6 +279,7 @@ useEffect(() => {
                         itemCount={filteredVehicles.length}
                         itemSize={180}
                         width={width}
+                        className="scroll-area"
                       >
                         {Row}
                       </List>

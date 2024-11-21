@@ -596,6 +596,36 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
 
+    // Crear una línea horizontal en la ubicación del vehículo
+    const lineCoordinates = [
+      [feature.geometry.coordinates[0] - 0.01, feature.geometry.coordinates[1]], // Desplazar ligeramente en X
+      [feature.geometry.coordinates[0] + 0.01, feature.geometry.coordinates[1]], // Desplazar ligeramente en X
+    ];
+
+    if (!mapRef.current.getSource(`linea-${vehicleCode}`)) {
+      mapRef.current.addSource(`linea-${vehicleCode}`, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: lineCoordinates,
+          },
+        },
+      });
+
+      mapRef.current.addLayer({
+        id: `linea-${vehicleCode}`,
+        type: 'line',
+        source: `linea-${vehicleCode}`,
+        paint: {
+          'line-color': '#FF0000', // Color de la línea
+          'line-width': 2,         // Grosor de la línea
+        },
+      });
+    }
+    
+
     popupsRef.current[vehicleCode] = popup;
   };
 
