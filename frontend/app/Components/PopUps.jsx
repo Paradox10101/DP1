@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from "lucide-react";
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { MAP_CONFIG } from '../../config/mapConfig';
 import ModalVehiculo from "./ModalVehiculo"; // Importa el modal de detalle del vehículo
 import { AlertCircle, Activity, MapPin, Gauge } from 'lucide-react';
 
-const AlmacenPopUp = ({ title, ubigeo, iconoHtmlString }) => {
+const AlmacenPopUp = ({ title, ubigeo, iconComponent }) => {
   return (
       <div className="bg-white rounded p-4 w-80 flex flex-col">
         <div className="flex items-center justify-between mb-2">
-          <div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />
+          {/*<div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />*/}
+          <img src={MAP_CONFIG.IMAGES.WAREHOUSE.url} alt="Warehouse Icon" className="w-6 h-6" />
           <h3 className="font-semibold text-base text-gray-800">{title}</h3>
           <span className="bg-[#284BCC] text-[#BECCFF] py-1 px-2 rounded-xl text-xs inline-block w-[100px] text-center">Almacén</span>
         </div>
@@ -27,7 +29,9 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, icon
     <div className="bg-white rounded p-4 w-80 flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />
+          {/*<div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />*/}
+          <img src={MAP_CONFIG.IMAGES.OFFICE.url} alt="Office Icon" className="w-6 h-6" />          
+          
           <h3 className="font-semibold text-base text-gray-800">{title}</h3>
         </div>
         <span className="bg-[#03AF00] text-[#BAFFB9] py-1 px-2 rounded-xl text-xs inline-block w-[100px] text-center">{tipo}</span>

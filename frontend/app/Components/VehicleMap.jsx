@@ -18,7 +18,6 @@ import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
-import ReactDOM from 'react-dom';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
 import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -626,13 +625,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         <AlmacenPopUp
           title={name}
           ubigeo={ubigeo || 'No especificado'}
-          iconoHtmlString={`
-            <div class="bg-black w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                <rect x="4" y="4" width="16" height="16" fill="white"/>
-              </svg>
-            </div>
-          `}
         />
       );
     } else if (type === 'office') {
@@ -643,13 +635,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           ubigeo={ubigeo || 'No especificado'}
           capacidadMaxima={capacidadMaxima || 'No especificada'}
           capacidadUtilizada={capacidadUsada || 'No especificada'}
-          iconoHtmlString={`
-            <div class="bg-green-500 w-[25px] h-[25px] relative rounded-full flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-[15px] h-[15px] stroke-white z-10">
-                <circle cx="12" cy="12" r="6" fill="white"/>
-              </svg>
-            </div>
-          `}
         />
       );
     }
