@@ -2024,13 +2024,15 @@ public class SimulationState {
                         routeContentBuilder.append("{")
                                 .append("\"city\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
                                 .append("\"status\":\"").append("Actual").append("\",")
-                                .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getFromUbigeo())?"wareouse":"office").append("\"")
+                                .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getFromUbigeo())?"wareouse":"office").append("\",")
+                                .append("\"coordinates\":[").append(locations.get(routeSegment.getFromUbigeo()).getLongitude()).append(", ").append(locations.get(routeSegment.getFromUbigeo()).getLatitude()).append("]")
                                 .append("},");
                     }
                     routeContentBuilder.append("{")
                             .append("\"city\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
                             .append("\"status\":\"").append(traveled ? "Recorrido" : inTravel ? "Actual" : "Por Recorrer").append("\",")
-                            .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getToUbigeo())?"wareouse":"office").append("\"")
+                            .append("\"type\":\"").append(almacenesPrincipales.contains(routeSegment.getToUbigeo())?"wareouse":"office").append("\",")
+                            .append("\"coordinates\":[").append(locations.get(routeSegment.getToUbigeo()).getLongitude()).append(", ").append(locations.get(routeSegment.getToUbigeo()).getLatitude()).append("]")
                             .append("}");
 
                     isFirst = false;
@@ -2041,7 +2043,8 @@ public class SimulationState {
                 routeContentBuilder.append("{")
                         .append("\"city\":\"").append(locations.get(vehicle.getCurrentLocationUbigeo()).getProvince()).append("\",")
                         .append("\"status\":\"").append("Actual").append("\",")
-                        .append("\"type\":\"").append(almacenesPrincipales.contains(vehicle.getCurrentLocationUbigeo())?"wareouse":"office").append("\"")
+                        .append("\"type\":\"").append(almacenesPrincipales.contains(vehicle.getCurrentLocationUbigeo())?"wareouse":"office").append("\",")
+                        .append("\"coordinates\":[").append(locations.get(vehicle.getCurrentLocationUbigeo()).getLongitude()).append(", ").append(locations.get(vehicle.getCurrentLocationUbigeo()).getLatitude()).append("]")
                         .append("}");
             }
             builder.append(routeContentBuilder);

@@ -176,7 +176,7 @@ export default function OpcionEnvios() {
         const shipment = filteredShipments[index];
         return (
             <div style={style}
-                className={`p-2 border-2 rounded-xl stroke-black ${filteredShipments[selectedShipmentIndex] && filteredShipments[selectedShipmentIndex]?.id && filteredShipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
+                className={`p-2 border-2 rounded-xl stroke-black `}
                 onMouseDown={() => {
                     const indexS =  shipments.findIndex(shipmentL => shipmentL.id === shipment.id);
                     if(indexS!==-1)

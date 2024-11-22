@@ -116,6 +116,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const positionsRef = useRef();
   const locoRef = useRef();
+  const lineCurrentRouteRef = useRef()
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -506,6 +507,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           mapRef.current.getCanvas().style.cursor = '';
         });
 
+
         setMapLoaded(true);
       });
     } catch (error) {
@@ -611,6 +613,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     if (popupsRef.current[vehicleCode]) {
       popupsRef.current[vehicleCode].remove();
       delete popupsRef.current[vehicleCode];
+      
       return;
     }
 
@@ -643,6 +646,15 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       />
     );
 
+
+    if(lineCurrentRouteRef.current){
+      mapRef.current.removeLayer(lineCurrentRouteRef.current.layerId);
+      mapRef.current.removeSource(lineCurrentRouteRef.current.sourceId);
+      // Limpiar la referencia
+      lineCurrentRouteRef.current = null;
+
+    }
+
     const popup = new maplibregl.Popup({
       maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
       closeButton: true,
@@ -653,6 +665,48 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
+
+    // Crear una línea horizontal en la ubicación del vehículo
+    const lineCoordinates = vehicleData.currentRoute.map(route => route.coordinates);  
+
+    lineCurrentRouteRef.current = {
+      sourceId: `linea-${vehicleCode}`,
+      layerId: `linea-${vehicleCode}`,
+    };
+
+    if (!mapRef.current.getSource(`linea-${vehicleCode}`)) {
+      mapRef.current.addSource(`linea-${vehicleCode}`, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: lineCoordinates,
+          },
+        },
+      });
+
+      mapRef.current.addLayer({
+        id: `linea-${vehicleCode}`,
+        type: 'line',
+        source: `linea-${vehicleCode}`,
+        paint: {
+          'line-color': '#1A37A1', // Color de la línea
+          'line-width': 4,         // Grosor de la línea
+        },
+      });
+    }
+    
+    popup.on('close', () => {
+      // Eliminacion de la visualizacion de ruta si se deselecciona el popup
+      if(lineCurrentRouteRef.current){
+        mapRef.current.removeLayer(lineCurrentRouteRef.current.layerId);
+        mapRef.current.removeSource(lineCurrentRouteRef.current.sourceId);
+        // Limpiar la referencia
+        lineCurrentRouteRef.current = null;
+
+      }
+    });
 
     popupsRef.current[vehicleCode] = popup;
   };
@@ -725,6 +779,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     if (popupsRef.current[name]) {
       popupsRef.current[name].remove();
       delete popupsRef.current[name];
+      
     }
 
     // Crear el popup de MapLibre
