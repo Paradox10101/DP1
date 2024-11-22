@@ -212,6 +212,6 @@ export const MAP_CONFIG = {
   export const POPUP_CONFIG = {
     OFFSET: 15,
     ANCHOR: 'top',
-    CLOSE_BUTTON: false,
-    CLOSE_ON_CLICK: false
+    CLOSE_BUTTON: true,
+    CLOSE_ON_CLICK: true
   };
