@@ -1,7 +1,7 @@
 // VehicleMap.jsx
 
 'use client';
-import { useAtom } from 'jotai';
+import { useAtomValue, useAtom } from 'jotai';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
@@ -25,6 +25,9 @@ import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
 import ModalVehiculo from './ModalVehiculo';
 
+// 1. Primero, importa el átomo de ubicaciones filtradas
+import { filteredLocationsAtom } from '../../atoms/locationAtoms';
+
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
@@ -42,6 +45,62 @@ const getSvgString = (IconComponent, bgColor) => {
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
+
+// Componente StatusBadge actualizado
+// Componente StatusBadge actualizado
+const StatusBadge = ({ status }) => {
+  switch (status) {
+      case "EN_ALMACEN":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                  En Almacén
+              </div>
+          );
+      case "AVERIADO_1":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                  Averiado T1
+              </div>
+          );
+      case "AVERIADO_2":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T2
+            </div>
+        );
+      case "AVERIADO_3":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T3
+            </div>
+        );
+      case "EN_MANTENIMIENTO":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                  En Mantenimiento
+              </div>
+          );
+      case "EN_ESPERA_EN_OFICINA":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                En Espera
+            </div>
+        );
+      case "LISTO_PARA_RETORNO":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                En Espera
+            </div>
+        );
+      default:
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+                En Tránsito
+            </div>
+        );
+  }
+};
+
 const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -56,16 +115,14 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const positionsRef = useRef();
+  const locoRef = useRef();
+  const lineCurrentRouteRef = useRef()
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
-  
-  //console.log('vehiculosArray PRIMER LISTADO DE TODOS LOS VEHICULOS:', vehiculosArray); tas cagao
+  // 2. Usa el átomo para obtener las ubicaciones filtradas
+  const locationsUltimo = useAtomValue(filteredLocationsAtom);
 
-
-  // Ensure vehiculos is an array to avoid TypeError
-  //const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
-
-
+  console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
   // Función auxiliar para crear mensajes de error
   const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
@@ -101,6 +158,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [setLocations, setError]);
 
+  console.log("LISTADO DE LOCACIONES AAAAAAAAAAAAAAAAAAAAAA ENCONTRADOS:",locations)
   // Limpiar timeout de reintento si existe
   const clearLocationRetryTimeout = useCallback(() => {
     if (locationRetryTimeoutRef.current) {
@@ -199,8 +257,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       }),
     };
     console.log('Datos del WebSocket procesados:', updatedData);
+    // Actualizar los popups usando la función existente
+    updatePopups(updatedData);
     setPositions(updatedData);
-    updateVehiclePositions(updatedData); // Utiliza la versión con throttle
+    updateVehiclePositions(updatedData); // Utiliza la versión con throttle    
   }, [setPositions]);
 
   // Manejador de cambios de conexión
@@ -363,7 +423,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
                   'red',
                 ],
               ],
-              'icon-size': 0.5,
+              'icon-size': 0.6,
               'icon-allow-overlap': true,
               'text-field': ['get', 'vehicleCode'],
               'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
@@ -447,6 +507,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           mapRef.current.getCanvas().style.cursor = '';
         });
 
+
         setMapLoaded(true);
       });
     } catch (error) {
@@ -466,6 +527,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   useEffect(() => {
     positionsRef.current = positions;
   }, [positions]);
+
+  useEffect(() => {
+    locoRef.current = locationsUltimo;
+  }, [locationsUltimo]);
 
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
@@ -516,7 +581,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       popupsRef.current[vehicleCode] = popup;
       return;
     }
-
+    console.log("LISTADO DE VEHICULOS ENCONTRADOS:",vehiculosArray)
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
@@ -548,6 +613,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     if (popupsRef.current[vehicleCode]) {
       popupsRef.current[vehicleCode].remove();
       delete popupsRef.current[vehicleCode];
+      
       return;
     }
 
@@ -580,6 +646,15 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       />
     );
 
+
+    if(lineCurrentRouteRef.current){
+      mapRef.current.removeLayer(lineCurrentRouteRef.current.layerId);
+      mapRef.current.removeSource(lineCurrentRouteRef.current.sourceId);
+      // Limpiar la referencia
+      lineCurrentRouteRef.current = null;
+
+    }
+
     const popup = new maplibregl.Popup({
       maxWidth: "none", // Permite que el contenido controle el ancho del pop-up
       closeButton: true,
@@ -590,6 +665,48 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       .setLngLat(feature.geometry.coordinates)
       .setDOMContent(popupContent)
       .addTo(mapRef.current);
+
+    // Crear una línea horizontal en la ubicación del vehículo
+    const lineCoordinates = vehicleData.currentRoute.map(route => route.coordinates);  
+
+    lineCurrentRouteRef.current = {
+      sourceId: `linea-${vehicleCode}`,
+      layerId: `linea-${vehicleCode}`,
+    };
+
+    if (!mapRef.current.getSource(`linea-${vehicleCode}`)) {
+      mapRef.current.addSource(`linea-${vehicleCode}`, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: lineCoordinates,
+          },
+        },
+      });
+
+      mapRef.current.addLayer({
+        id: `linea-${vehicleCode}`,
+        type: 'line',
+        source: `linea-${vehicleCode}`,
+        paint: {
+          'line-color': '#1A37A1', // Color de la línea
+          'line-width': 4,         // Grosor de la línea
+        },
+      });
+    }
+    
+    popup.on('close', () => {
+      // Eliminacion de la visualizacion de ruta si se deselecciona el popup
+      if(lineCurrentRouteRef.current){
+        mapRef.current.removeLayer(lineCurrentRouteRef.current.layerId);
+        mapRef.current.removeSource(lineCurrentRouteRef.current.sourceId);
+        // Limpiar la referencia
+        lineCurrentRouteRef.current = null;
+
+      }
+    });
 
     popupsRef.current[vehicleCode] = popup;
   };
@@ -607,6 +724,15 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       console.error('No se encontraron ubicaciones en el punto clickeado.');
       return;
     }
+    //"Locations"
+    //const locococococos = locations;
+    const locococococos = locoRef.current;
+    //const officesArray = locococococos && locococococos.features && Array.isArray(locococococos.features) ? locococococos.features : [];
+    //alert("LISTADO DE LOCACIONES ENCONTRADAS:"+ JSON.stringify(locococococos, null, 2));
+    //alert("LISTADO DE LOCACIONES ENCONTRADAS:"+ JSON.stringify(features, null, 2));//
+
+    
+    
 
     const feature = features[0];
     const { name, type, ubigeo, capacidadMaxima, capacidadUsada } = feature.properties;
@@ -615,22 +741,36 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     const popupContent = document.createElement("div");
     const root = createRoot(popupContent);
 
+    const locationActualizada = locococococos?.find(loc => 
+      loc.ubigeo === ubigeo && loc.type === type
+    );
+    //alert("UBICACION ENCONTRADA:"+ JSON.stringify(locationActualizada, null, 2));
     if (type === 'warehouse') {
       // Renderizar el popup para almacén
       root.render(
         <AlmacenPopUp
           title={name}
           ubigeo={ubigeo || 'No especificado'}
+          warehouseData={locationActualizada}
         />
       );
     } else if (type === 'office') {
+      // Buscar el vehículo correspondiente en 'vehiculosArray'
+      // 4. Buscar la ubicación actualizada en el átomo de locations      
+
+      if (!locationActualizada) {
+        console.error(`No se encontró la ubicación actualizada para ubigeo: ${ubigeo}`);
+        return;
+      }
+      //alert("OFICINA ENCONTRADA:"+ JSON.stringify(locationActualizada, null, 2));//
       // Renderizar el popup para oficina
       root.render(
         <OficinaPopUp
           title={name}
           ubigeo={ubigeo || 'No especificado'}
-          capacidadMaxima={capacidadMaxima || 'No especificada'}
-          capacidadUtilizada={capacidadUsada || 'No especificada'}
+          capacidadMaxima={locationActualizada.capacity || '0'}
+          capacidadUtilizada={Math.ceil(locationActualizada.capacity*locationActualizada.occupiedPercentage/100) || '0'}
+          officeData={locationActualizada}
         />
       );
     }
@@ -639,6 +779,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     if (popupsRef.current[name]) {
       popupsRef.current[name].remove();
       delete popupsRef.current[name];
+      
     }
 
     // Crear el popup de MapLibre
@@ -892,6 +1033,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
+  
   return (
     <div className="relative w-full h-full">
       {loading === 'loading' && (
@@ -924,6 +1066,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
             <ModalHeader>
               <div className="flex flex-row gap-2">
                 <div className="subEncabezado">Información del vehículo {selectedVehicle?.vehicleCode}</div>
+                <StatusBadge status={selectedVehicle?.status} />
                 {/* Agrega un indicador del estado, si es necesario */}
               </div>
             </ModalHeader>
