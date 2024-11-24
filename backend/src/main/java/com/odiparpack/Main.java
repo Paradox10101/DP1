@@ -1582,31 +1582,25 @@ public class Main {
         return searchParameters;
     }
 
-    public static RoutingSearchParameters createSearchParameters(FirstSolutionStrategy.Value firstSolutionStrategy) {
+    public static RoutingSearchParameters createSearchParameters(
+            FirstSolutionStrategy.Value firstSolutionStrategy) {
+        // Llamar al método sobrecargado con el valor predeterminado de 10 segundos
+        return createSearchParameters(firstSolutionStrategy, 10);
+    }
+
+    public static RoutingSearchParameters createSearchParameters(
+            FirstSolutionStrategy.Value firstSolutionStrategy, int timeLimitInSeconds) {
         RoutingSearchParameters searchParameters = main.defaultRoutingSearchParameters()
                 .toBuilder()
                 .setFirstSolutionStrategy(firstSolutionStrategy)
                 .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                .setTimeLimit(Duration.newBuilder().setSeconds(10).build())
+                .setTimeLimit(Duration.newBuilder().setSeconds(timeLimitInSeconds).build())
                 //.setLogSearch(true)  // Habilitar "verbose logging"
                 .build();
-        logger.info("Parámetros de búsqueda configurados con estrategia: " + firstSolutionStrategy);
+        logger.info("Parámetros de búsqueda configurados con estrategia: " + firstSolutionStrategy +
+                ", límite de tiempo: " + timeLimitInSeconds + " segundos.");
         return searchParameters;
     }
-
-    /*private static void updateRouteCache(DataModel data, int[] start, int[] end, Map<String, List<RouteSegment>> calculatedRoutes) {
-        for (int i = 0; i < data.vehicleNumber; i++) {
-            String vehicleCode = data.assignments.get(i).getVehicle().getCode();
-            if (calculatedRoutes.containsKey(vehicleCode)) {
-                String fromUbigeo = data.locationUbigeos.get(start[i]);
-                String toUbigeo = data.locationUbigeos.get(end[i]);
-                List<RouteSegment> route = calculatedRoutes.get(vehicleCode);
-                routeCache.putRoute(fromUbigeo, toUbigeo, route);
-                logger.info("Ruta calculada y almacenada en caché para " + fromUbigeo + " -> " + toUbigeo);
-                logCachedRoute(data, vehicleCode, fromUbigeo, toUbigeo, route);
-            }
-        }
-    }*/
 
     private static void logCachedRoute(DataModel data, String vehicleCode, String fromUbigeo, String toUbigeo, List<RouteSegment> route) {
         StringBuilder logBuilder = new StringBuilder();

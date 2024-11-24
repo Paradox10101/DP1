@@ -27,12 +27,6 @@ export default function ControlPanel() {
       description: "Supervise y gestione las operaciones diarias",
       items: [
         {
-          icon: <Box className="text-emerald-600" size={24} />,
-          label: "Recepción de envíos",
-          description: "Gestionar entrada de paquetes",
-          href: "/shipments-reception"
-        },
-        {
           icon: <Plane className="text-emerald-600" size={24} />,
           label: "Ver operaciones día a día",
           description: "Monitoreo de actividades diarias",

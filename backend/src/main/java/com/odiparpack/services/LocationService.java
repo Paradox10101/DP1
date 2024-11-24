@@ -2,6 +2,7 @@ package com.odiparpack.services;
 
 import com.odiparpack.models.Location;
 import com.odiparpack.DataLoader;
+import com.odiparpack.models.SimulationState;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,4 +41,26 @@ public class LocationService {
     public Map<String, Location> getAllLocations() {
         return locations;
     }
+
+    public void addTemporaryLocation(String ubigeo, double latitude, double longitude) {
+        Location location = new Location();
+        location.setUbigeo(ubigeo);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setDepartment("Temporal");
+        location.setProvince("Punto de Avería");
+        locations.put(ubigeo, location);
+        SimulationState.locations.put(ubigeo, location);
+    }
+
+    public void removeTemporaryLocation(String ubigeo) {
+        if (locations.containsKey(ubigeo)) {
+            locations.remove(ubigeo);
+            SimulationState.locations.remove(ubigeo);
+            logger.info("Ubicación temporal eliminada: " + ubigeo);
+        } else {
+            logger.warning("Intento de eliminar ubigeo temporal que no existe: " + ubigeo);
+        }
+    }
+
 }

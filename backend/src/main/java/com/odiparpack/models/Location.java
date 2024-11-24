@@ -9,6 +9,7 @@ public class Location {
     private String naturalRegion;
     private int warehouseCapacity;
 
+    public Location() {};
     // Constructor
     public Location(String ubigeo, String department, String province, double latitude, double longitude, String naturalRegion, int warehouseCapacity) {
         this.ubigeo = ubigeo;
