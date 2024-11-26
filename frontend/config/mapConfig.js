@@ -132,7 +132,7 @@ export const MAP_CONFIG = {
         source: MAP_CONFIG.SOURCES.LOCATIONS.id,
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': '#08CA57',
+          'circle-color': '#FFA500',
           'circle-radius': [
             'step',
             ['get', 'point_count'],
@@ -201,7 +201,8 @@ export const MAP_CONFIG = {
           'text-anchor': 'top',
         },
         paint: {
-          'text-color': '#000000',
+          'icon-color': '#FFA500',
+          'text-color': '#FFA500',
           'text-halo-color': '#FFFFFF',
           'text-halo-width': 1,
         }

@@ -909,7 +909,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
             'text-anchor': 'top',
           },
           paint: {
-            'text-color': '#000000',
+            'text-color': '#FFA500',
             'text-halo-color': '#FFFFFF',
             'text-halo-width': 1,
           },
