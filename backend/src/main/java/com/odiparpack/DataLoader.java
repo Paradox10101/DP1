@@ -68,6 +68,7 @@ public class DataLoader {
 
                 Vehicle vehicle = new Vehicle(code, type, capacity, currentUbigeo);
                 vehicle.setAvailable(true);
+                vehicle.setEstado(Vehicle.EstadoVehiculo.EN_ALMACEN);
                 vehicles.add(vehicle);
             }
         } catch (IOException e) {

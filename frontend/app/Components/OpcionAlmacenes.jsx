@@ -208,7 +208,7 @@ export default function OpcionAlmacenes() {
 
           <CapacidadTotalAlmacenes />
 
-          <div className="h-3/4 w-full overflow-y-auto scroll-area">
+          <div className="h-3/4 w-full">
             {!hasSearchResults && isSearching ? (
               <NoResultsMessage />
             ) : (
@@ -219,6 +219,7 @@ export default function OpcionAlmacenes() {
                     itemCount={filteredLocations.length}
                     itemSize={200}
                     width={width}
+                    className="scroll-area"
                   >
                     {Row}
                   </List>

@@ -45,6 +45,9 @@ public class SimulationRunner {
     public static ScheduledExecutorService simulationExecutorService;
     private static final int BROADCAST_INTERVAL = 1500; // ms
 
+    public static ForkJoinPool getComputeIntensiveExecutor() {
+        return computeIntensiveExecutor;
+    }
 
     public static void setSimulationParameters(int timeAdvancementValue) {
         if (timeAdvancementValue <= 0) {
@@ -471,7 +474,7 @@ public class SimulationRunner {
                 .collect(Collectors.toList());
     }
 
-    public static void calculateAndApplyRoutes(long[][] currentTimeMatrix,
+    /*public static void calculateAndApplyRoutes(long[][] currentTimeMatrix,
                                                List<VehicleAssignment> assignments,
                                                Map<String, Integer> locationIndices,
                                                List<String> locationNames,
@@ -516,6 +519,80 @@ public class SimulationRunner {
             logger.log(Level.SEVERE, "Error en cálculo de rutas", e);
         } finally {
             timeoutFuture.cancel(false); // Cancelar la tarea de timeout si ya no es necesaria
+        }
+    }*/
+
+    public static void calculateAndApplyRoutes(
+            long[][] currentTimeMatrix,
+            List<VehicleAssignment> assignments,
+            Map<String, Integer> locationIndices,
+            List<String> locationNames,
+            List<String> locationUbigeos,
+            Map<String, List<RouteSegment>> vehicleRoutes,
+            SimulationState state) {
+
+        if (assignments == null || assignments.isEmpty()) {
+            logger.warning("No hay asignaciones para procesar.");
+            return;
+        }
+
+        // Agrupar asignaciones por origen-destino
+        Map<String, List<VehicleAssignment>> assignmentGroups = groupAssignmentsByOriginDestination(assignments);
+        List<VehicleAssignment> filteredAssignments = new ArrayList<>();
+        for (List<VehicleAssignment> group : assignmentGroups.values()) {
+            filteredAssignments.add(group.get(0));
+        }
+
+        // Crear el DataModel para todas las asignaciones
+        DataModel data = new DataModel(currentTimeMatrix, state.getActiveBlockages(),
+                filteredAssignments, locationIndices,
+                locationNames, locationUbigeos);
+
+        // Intentar resolver todas las rutas juntas
+        Map<String, List<RouteSegment>> routes = trySolvingWithStrategies(data, Arrays.asList(
+                FirstSolutionStrategy.Value.CHRISTOFIDES,
+                FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC,
+                FirstSolutionStrategy.Value.GLOBAL_CHEAPEST_ARC
+        ));
+
+        if (routes != null && !routes.isEmpty()) {
+            // Asignar las rutas a los vehículos
+            applyRoutesToVehiclesWithGroups(routes, assignmentGroups, state);
+            vehicleRoutes.putAll(routes);
+        } else {
+            // Si no se pudo resolver, proceder a agrupar y calcular en paralelo
+
+            // Obtener las rutas únicas a calcular
+            List<SimulationState.RouteRequest> uniqueRoutes = new ArrayList<>();
+            Set<String> processedRoutes = new HashSet<>();
+
+            for (String key : assignmentGroups.keySet()) {
+                String[] parts = key.split("-");
+                String origin = parts[0];
+                String destination = parts[1];
+                if (!processedRoutes.contains(key)) {
+                    uniqueRoutes.add(new SimulationState.RouteRequest(origin, destination));
+                    processedRoutes.add(key);
+                }
+            }
+
+            // Agrupar rutas sin repeticiones de origen y destino
+            List<List<SimulationState.RouteRequest>> routeGroups = SimulationState.groupRoutesWithoutRepetitions(uniqueRoutes);
+
+            // Extraer vehículos de las asignaciones
+            List<Vehicle> vehicles = assignments.stream()
+                    .map(VehicleAssignment::getVehicle)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            // Calcular rutas en paralelo
+            Map<String, List<RouteSegment>> allCalculatedRoutes = state.calculateRoutesInParallel(
+                    routeGroups, vehicles, 5, true);
+
+            // Asignar las rutas a los vehículos
+            applyRoutesToVehiclesWithGroups(allCalculatedRoutes, assignmentGroups, state);
+
+            vehicleRoutes.putAll(allCalculatedRoutes);
         }
     }
 
@@ -614,7 +691,7 @@ public class SimulationRunner {
             try {
                 RoutingIndexManager manager = createRoutingIndexManager(data, data.starts, data.ends);
                 RoutingModel routing = createRoutingModel(manager, data);
-                RoutingSearchParameters searchParameters = Main.createSearchParameters(strategy);
+                RoutingSearchParameters searchParameters = Main.createSearchParameters(strategy, 7);
 
                 logger.info("Intentando resolver con estrategia: " + strategy);
                 Assignment solution = routing.solveWithParameters(searchParameters);
@@ -762,6 +839,7 @@ public class SimulationRunner {
             VehicleAssignment representativeAssignment = group.get(0);
             Vehicle representativeVehicle = representativeAssignment.getVehicle();
             List<RouteSegment> route = allRoutes.get(representativeVehicle.getCode());
+
             if (route != null) {
                 for (VehicleAssignment assignment : group) {
                     Vehicle vehicle = assignment.getVehicle();
@@ -769,9 +847,9 @@ public class SimulationRunner {
                     if (state != null) {
                         vehicle.startJourney(state.getCurrentTime(), assignment.getOrder(),state);
                     }
+                    vehicle.setEstado(Vehicle.EstadoVehiculo.EN_TRANSITO_ORDEN); // otra vez
                     System.out.println(vehicle.getRoute());
-
-                    logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo());
+                    logger.info("Vehículo " + vehicle.getCode() + " iniciando viaje a " + assignment.getOrder().getDestinationUbigeo() + " estado: " + vehicle.getEstado());
                 }
             } else {
                 logger.warning("No se encontró ruta para el grupo con origen-destino " + key);

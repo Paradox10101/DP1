@@ -1,19 +1,23 @@
 package com.odiparpack.models;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.logger;
 
 public class RouteCache {
     private final int capacity;
-    private final Map<String, List<VersionedRoute>> cache;
+    private final ConcurrentMap<String, List<VersionedRoute>> cache;
     private final Queue<String> lruQueue;
 
     public RouteCache(int capacity) {
         this.capacity = capacity;
-        this.cache = new HashMap<>();
-        this.lruQueue = new LinkedList<>();
+        this.cache = new ConcurrentHashMap<>();
+        this.lruQueue = new ConcurrentLinkedQueue<>();
     }
 
     public List<RouteSegment> getRoute(String from, String to, List<Blockage> activeBlockages) {
@@ -85,6 +89,7 @@ public class RouteCache {
     }
 
     private List<RouteSegment> getBestCompatibleRoute(List<VersionedRoute> versionedRoutes, List<Blockage> activeBlockages) {
+        // No es necesario sincronizar aquí ya que CopyOnWriteArrayList es segura para hilos
         return versionedRoutes.stream()
                 .filter(vr -> isRouteValid(vr.getRoute(), activeBlockages))
                 .min(Comparator.comparingLong(VersionedRoute::getTotalDuration))
@@ -138,22 +143,24 @@ public class RouteCache {
 
     public void putRoute(String from, String to, List<RouteSegment> route, List<Blockage> activeBlockages) {
         String key = from + "-" + to;
-        if (!cache.containsKey(key)) {
+
+        // Usar computeIfAbsent para asegurar atomicidad
+        List<VersionedRoute> routes = cache.computeIfAbsent(key, k -> {
             if (cache.size() >= capacity) {
                 String lruKey = lruQueue.poll();
                 cache.remove(lruKey);
             }
-            cache.put(key, new ArrayList<>());
-            lruQueue.offer(key);
-        }
+            lruQueue.offer(k);
+            return new CopyOnWriteArrayList<>();
+        });
 
         long totalDuration = route.stream().mapToLong(RouteSegment::getDurationMinutes).sum();
         VersionedRoute versionedRoute = new VersionedRoute(route, new HashSet<>(activeBlockages), totalDuration);
-        List<VersionedRoute> routes = cache.get(key);
+
         routes.add(versionedRoute);
 
-        // Opcional: limitar el número de versiones por ruta
-        if (routes.size() > 5) {  // Por ejemplo, mantener solo las 5 versiones más recientes
+        // Limitar el número de versiones por ruta
+        if (routes.size() > 5) {
             routes.remove(0);
         }
     }

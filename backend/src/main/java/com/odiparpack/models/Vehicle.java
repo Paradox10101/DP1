@@ -10,12 +10,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
 import static com.odiparpack.DataLoader.getUbigeoFromName;
 import static com.odiparpack.Main.locations;
 import static com.odiparpack.Main.logger;
@@ -55,8 +55,25 @@ public class Vehicle {
         AVERIADO_1,
         AVERIADO_2,
         AVERIADO_3,
-        EN_MANTENIMIENTO
+        EN_MANTENIMIENTO,
+        EN_REPARACION,
+        EN_REEMPLAZO;
+
+        public static EstadoVehiculo fromBreakdownType(String breakdownType) {
+            switch (breakdownType) {
+                case "1":
+                    return EstadoVehiculo.AVERIADO_1;
+                case "2":
+                    return EstadoVehiculo.AVERIADO_2;
+                case "3":
+                    return EstadoVehiculo.AVERIADO_3;
+                default:
+                    throw new IllegalArgumentException("Tipo de avería no reconocido: " + breakdownType);
+            }
+        }
     }
+
+
 
     private String code;
     private String type; // A, B, C
@@ -81,6 +98,36 @@ public class Vehicle {
     private List<PositionTimestamp> positionHistory = new ArrayList<>();
     private LocalDateTime maintenanceStartTime;
     private long totalBreakdownTime = 0; // Should be in minutes or seconds based on simulation type
+    private boolean isReplacementProcessInitiated = false;
+    private Vehicle brokenVehicleBeingReplaced;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Vehicle)) return false;
+        Vehicle other = (Vehicle) obj;
+        return Objects.equals(this.code, other.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
+    public Vehicle getBrokenVehicleBeingReplaced() {
+        return brokenVehicleBeingReplaced;
+    }
+
+    public void setBrokenVehicleBeingReplaced(Vehicle brokenVehicleBeingReplaced) {
+        this.brokenVehicleBeingReplaced = brokenVehicleBeingReplaced;
+    }
+
+    public boolean isReplacementProcessInitiated() {
+        return isReplacementProcessInitiated;
+    }
+
+    public void setReplacementProcessInitiated(boolean initiated) {
+        this.isReplacementProcessInitiated = initiated;
+    }
 
     // Métodos getter y setter para maintenanceStartTime
     public LocalDateTime getMaintenanceStartTime() {
@@ -152,63 +199,6 @@ public class Vehicle {
         return calculateCurrentPosition(simulationTime, simulationType);
     }
 
-    /*public Position calculateCurrentPosition(LocalDateTime simulationTime, SimulationRouter.SimulationType simulationType) {
-        LocationService locationService = LocationService.getInstance();
-
-        if (route == null || route.isEmpty() || journeyStartTime == null) {
-            Location loc = locationService.getLocation(currentLocationUbigeo);
-            if (loc == null) {
-                logger.warning("No se encontró ubicación para el ubigeo: " + currentLocationUbigeo);
-                return null;
-            }
-            return new Position(loc.getLatitude(), loc.getLongitude());
-        }
-
-        long elapsedTime;
-        if (simulationType == SimulationRouter.SimulationType.DAILY) {
-            elapsedTime = ChronoUnit.SECONDS.between(journeyStartTime, simulationTime);
-        } else {
-            elapsedTime = ChronoUnit.MINUTES.between(journeyStartTime, simulationTime);
-        }
-
-        long accumulatedTime = 0;
-
-        for (RouteSegment segment : route) {
-            accumulatedTime += segment.getDurationMinutes();
-            if (elapsedTime <= accumulatedTime * (simulationType == SimulationRouter.SimulationType.DAILY ? 60 : 1)) {
-                long timeInSegment;
-                double progress;
-                if (simulationType == SimulationRouter.SimulationType.DAILY) {
-                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes()) * 60;
-                    progress = (double) timeInSegment / (segment.getDurationMinutes() * 60);
-                } else {
-                    timeInSegment = elapsedTime - (accumulatedTime - segment.getDurationMinutes());
-                    progress = (double) timeInSegment / segment.getDurationMinutes();
-                }
-
-                Location fromLocation = locationService.getLocation(segment.getFromUbigeo());
-                Location toLocation = locationService.getLocation(segment.getToUbigeo());
-
-                if (fromLocation == null || toLocation == null) {
-                    logger.warning("No se encontró ubicación para los ubigeos: " + segment.getFromUbigeo() + ", " + segment.getToUbigeo());
-                    return null;
-                }
-
-                double lat = fromLocation.getLatitude() + (toLocation.getLatitude() - fromLocation.getLatitude()) * progress;
-                double lon = fromLocation.getLongitude() + (toLocation.getLongitude() - fromLocation.getLongitude()) * progress;
-
-                return new Position(lat, lon);
-            }
-        }
-
-        Location loc = locationService.getLocation(getCurrentLocationUbigeo());
-        if (loc == null) {
-            logger.warning("No se encontró ubicación para el ubigeo: " + currentLocationUbigeo);
-            return null;
-        }
-        return new Position(loc.getLatitude(), loc.getLongitude());
-    }*/
-
     private String getUbigeoByName(String name, Map<String, Location> locations) {
         return locations.values().stream()
                 .filter(loc -> loc.getProvince().equals(name))
@@ -244,7 +234,8 @@ public class Vehicle {
     public boolean isUnderRepair() {
         return this.estado == EstadoVehiculo.AVERIADO_1 ||
                 this.estado == EstadoVehiculo.AVERIADO_2 ||
-                this.estado == EstadoVehiculo.AVERIADO_3;
+                this.estado == EstadoVehiculo.AVERIADO_3 ||
+                this.estado == EstadoVehiculo.EN_REPARACION;
     }
 
     public boolean hasCompletedRepair(LocalDateTime currentTime) {
@@ -335,7 +326,8 @@ public class Vehicle {
     public boolean shouldUpdateStatus() {
         return this.estado == EstadoVehiculo.EN_TRANSITO_ORDEN ||
                 this.estado == EstadoVehiculo.HACIA_ALMACEN ||
-                this.estado == EstadoVehiculo.EN_ESPERA_EN_OFICINA;
+                this.estado == EstadoVehiculo.EN_ESPERA_EN_OFICINA ||
+                this.estado == EstadoVehiculo.EN_REEMPLAZO;
     }
 
     public boolean shouldCalculateNewRoute(LocalDateTime currentTime) {
@@ -397,6 +389,9 @@ public class Vehicle {
         LocationService locationService = LocationService.getInstance();
 
         if (route == null || route.isEmpty() || journeyStartTime == null) {
+            if (this.code == "A006") {
+                logger.info("Current location ubigeo: " + currentLocationUbigeo);
+            }
             Location loc = locationService.getLocation(currentLocationUbigeo);
             if (loc == null) {
                 logger.warning("No se encontró ubicación para el ubigeo: " + currentLocationUbigeo);
@@ -464,7 +459,7 @@ public class Vehicle {
     }
 
 
-    public void handleBreakdown(LocalDateTime currentTime, EstadoVehiculo tipoAveria, SimulationRouter.SimulationType simulationType) {
+    public String handleBreakdown(LocalDateTime currentTime, EstadoVehiculo tipoAveria, SimulationRouter.SimulationType simulationType) {
         this.estado = tipoAveria;
         this.setAvailable(false);
 
@@ -484,7 +479,7 @@ public class Vehicle {
                 break;
             default:
                 logger.warning("Tipo de avería no reconocido");
-                return;
+                return null;
         }
 
         // Calcular el tiempo de finalización de la reparación basado en el tiempo de simulación
@@ -495,7 +490,7 @@ public class Vehicle {
         tiempoFinAveria = repairEndTime;
 
         // Registrar el tramo actual y el tiempo transcurrido hasta la avería
-            if (this.route != null && this.currentSegmentIndex < this.route.size()) {
+        if (this.route != null && this.currentSegmentIndex < this.route.size()) {
             RouteSegment currentSegment = this.route.get(this.currentSegmentIndex);
             long elapsedMinutes = ChronoUnit.MINUTES.between(this.status.getSegmentStartTime(), currentTime);
             this.setElapsedTimeInSegment(elapsedMinutes);
@@ -513,7 +508,59 @@ public class Vehicle {
                 this.getCode(), tipoAveria, this.getCurrentLocationUbigeo(), repairEndTime);
         addBreakdownLog(this.getCode(), breakdownLog);
         logger.info(breakdownLog);
+
+        String temporaryUbigeo = "TEMP_" + this.getCode(); // Crear un ubigeo único para el punto de avería
+        LocationService.getInstance().addTemporaryLocation(temporaryUbigeo, breakdownPosition.getLatitude(), breakdownPosition.getLongitude());
+        this.currentLocationUbigeo = temporaryUbigeo;
+        return temporaryUbigeo;
     }
+
+    public List<RouteSegment> getAdjustedRemainingRouteSegments() {
+        List<RouteSegment> adjustedRoute = new ArrayList<>();
+
+        if (this.route == null || this.route.isEmpty()) {
+            return adjustedRoute;
+        }
+
+        RouteSegment currentSegment = this.route.get(this.currentSegmentIndex);
+
+        long elapsedMinutes = this.getElapsedTimeInSegment();
+        long segmentDurationMinutes = currentSegment.getDurationMinutes();
+        double segmentDistance = currentSegment.getDistance();
+
+        double progress = (double) elapsedMinutes / segmentDurationMinutes;
+        if (progress > 1.0) {
+            progress = 1.0; // Asegurar que no sobrepase el 100%
+        }
+
+        double distanceCovered = segmentDistance * progress;
+        double distanceRemaining = segmentDistance - distanceCovered;
+        long timeRemaining = segmentDurationMinutes - elapsedMinutes;
+
+        if (timeRemaining > 0 && distanceRemaining > 0) {
+            // Crear un nuevo segmento ajustado desde el punto de avería
+            RouteSegment adjustedSegment = new RouteSegment(
+                    currentSegment.getName() + " (Averiado)",
+                    this.getCurrentLocationUbigeo(),
+                    currentSegment.getToUbigeo(),
+                    distanceRemaining,
+                    timeRemaining
+            );
+            //adjustedSegment.setAdjusted(true); // Opcional: para depuración o lógica adicional
+            adjustedRoute.add(adjustedSegment);
+        } else {
+            // Si el tiempo transcurrido supera el segmento, avanzar al siguiente segmento
+            this.currentSegmentIndex++;
+        }
+
+        // Agregar los segmentos restantes de la ruta
+        for (int i = this.currentSegmentIndex + 1; i < this.route.size(); i++) {
+            adjustedRoute.add(this.route.get(i));
+        }
+
+        return adjustedRoute;
+    }
+
 
     public Order getCurrentOrder() {
         return currentOrder;
@@ -554,16 +601,18 @@ public class Vehicle {
             return;
         }
 
-        // Calcular la posición actual
-        //Position currentPosition = getCurrentPosition(currentTime, type);
-        // Agregar la posición al historial
-        //addPositionToHistory(currentTime, currentPosition);
-
         if (status == null) { // || currentOrder == null
             return;
         }
 
-        if (hasArrivedAtDestination(currentTime)) {
+        if (route.isEmpty() && this.estado == EstadoVehiculo.EN_REEMPLAZO) {
+            // Si la ruta es vacía, asumimos que el vehículo de reemplazo ya ha llegado a su destino en caso se haya averiado el vehiculo en el tramo de almacen al inicio
+            // y no ha transcurrido más tiempo.
+            completeDelivery(currentTime, warehouseManager);
+            return;
+        }
+
+        if (hasArrivedAtDestination(currentTime)) { // para cada segmento
             handleArrivalAtDestination(currentTime, warehouseManager);
         } else {
             updateCurrentSegmentStatus(currentTime, type);
@@ -594,6 +643,17 @@ public class Vehicle {
     } // estimatedDeliveryTime
 
     private void handleArrivalAtDestination(LocalDateTime currentTime, WarehouseManager warehouseManager) {
+        if (currentSegmentIndex >= route.size()) {
+            // Ya se ha procesado todos los segmentos, completar la entrega
+            completeDelivery(currentTime, warehouseManager);
+            return;
+        }
+
+        // Obtener el segmento actual
+        RouteSegment currentSegment = route.get(currentSegmentIndex);
+
+        currentLocationUbigeo = currentSegment.getToUbigeo();
+
         currentSegmentIndex++;
         if (currentSegmentIndex >= route.size()) {
             completeDelivery(currentTime, warehouseManager);
@@ -603,14 +663,11 @@ public class Vehicle {
     }
 
     // Lo usamos tanto cuanto entrega paquetes como cuando se dirige hacia almacen.
+    // y ahora tambien cuando el vehiculo de reemplazo llega a donde el vehiculo se encuentra averiado.
     private void completeDelivery(LocalDateTime currentTime, WarehouseManager warehouseManager) {
         logArrivalAtDestination(currentTime);
-        if (estado != EstadoVehiculo.HACIA_ALMACEN) {
-            int deliverablePackages = calculateDeliverablePackages();
-            updateWarehouseCapacity(warehouseManager, deliverablePackages);
-            updateOrderStatus(currentTime, deliverablePackages);
-            startWaitingPeriod(currentTime);
-        } else {
+
+        if (estado == EstadoVehiculo.HACIA_ALMACEN) {
             String[] segment = status.getCurrentSegment().split(" to ");
             String toName = segment[1];
 
@@ -623,30 +680,180 @@ public class Vehicle {
             } else {
                 logger.warning(String.format("No se encontró el ubigeo para la ubicación: %s", toName));
             }
+        } else if (estado == EstadoVehiculo.EN_TRANSITO_ORDEN) {
+            int deliverablePackages = calculateDeliverablePackages();
+            updateWarehouseCapacity(warehouseManager, deliverablePackages);
+            updateOrderStatus(currentTime, deliverablePackages);
+            startWaitingPeriod(currentTime);
         }
-        resetVehicleStatus();
+
+        if (estado != EstadoVehiculo.EN_REEMPLAZO) {
+            resetVehicleStatus();
+        }
+
+        if (estado == EstadoVehiculo.EN_REEMPLAZO) {
+            handleReplacementArrival(currentTime);
+        }
     }
+
+    /**
+     * Obtiene los segmentos restantes de la ruta del vehículo averiado a partir del ubigeo actual.
+     *
+     * @param brokenVehicle El vehículo averiado.
+     * @param currentUbigeo El ubigeo actual donde ocurrió la avería.
+     * @return Lista de segmentos restantes.
+     */
+    private List<RouteSegment> getRemainingRouteSegments(Vehicle brokenVehicle, String currentUbigeo) {
+        List<RouteSegment> originalRoute = brokenVehicle.getRoute();
+        List<RouteSegment> remainingRoute = new ArrayList<>();
+
+        boolean startAdding = false;
+        for (RouteSegment segment : originalRoute) {
+            if (segment.getFromUbigeo().equals(currentUbigeo)) {
+                startAdding = true;
+            }
+            if (startAdding) {
+                remainingRoute.add(segment);
+            }
+        }
+
+        return remainingRoute;
+    }
+
+    private void handleReplacementArrival(LocalDateTime currentTime) {
+        logger.info("Entering handleReplacementArrival for vehicle " + this.code);
+
+        // Obtener el vehículo averiado que está siendo reemplazado
+        Vehicle brokenVehicle = this.getBrokenVehicleBeingReplaced();
+
+        if (brokenVehicle != null) {
+            // Asignar el pedido y el estado de ruta al vehículo de reemplazo
+            this.setCurrentOrder(brokenVehicle.getCurrentOrder());
+            this.setCurrentCapacity(brokenVehicle.getCurrentCapacity());
+            this.setEstimatedDeliveryTime(brokenVehicle.getEstimatedDeliveryTime());
+            this.setStatus(brokenVehicle.getStatus());
+            this.setCurrentLocationUbigeo(brokenVehicle.getCurrentLocationUbigeo());
+
+            // Obtener los segmentos restantes de la ruta del vehículo averiado, ajustados
+            List<RouteSegment> remainingRoute = brokenVehicle.getAdjustedRemainingRouteSegments();
+
+            if (remainingRoute != null && !remainingRoute.isEmpty()) {
+                this.setRoute(remainingRoute); // Asignar la ruta ajustada al vehículo de reemplazo
+                this.currentSegmentIndex = 0;
+                this.journeyStartTime = currentTime;
+                this.estado = EstadoVehiculo.EN_TRANSITO_ORDEN;
+
+                updateCurrentSegment(currentTime);
+
+                String estimatedArrivalStr = calculateEstimatedArrivalTime(currentTime, remainingRoute)
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                StringBuilder logBuilder = new StringBuilder();
+                logBuilder.append("\n--- Continuación de Viaje después de Reemplazo ---\n");
+                logBuilder.append("Código del Vehículo: ").append(this.getCode()).append("\n");
+                logBuilder.append("Estado del vehiculo: ").append(this.getEstado()).append("\n");
+                logBuilder.append("Capacidad actual del vehiculo: ").append(this.getCurrentCapacity()).append("\n");
+                logBuilder.append("Ubicacion actual: ").append(this.getCurrentLocationUbigeo()).append("\n");
+                logBuilder.append("Pedido Asignado: ").append(this.getCurrentOrder().getId()).append("\n");
+                logBuilder.append("Estado Asignado: ").append(this.getStatus()).append("\n");
+
+                logBuilder.append("Segmentos Restantes:\n");
+                if (remainingRoute != null && !remainingRoute.isEmpty()) {
+                    for (RouteSegment segment : remainingRoute) {
+                        logBuilder.append(" - Segmento: ").append(segment.getName())
+                                .append(", Desde: ").append(segment.getFromUbigeo())
+                                .append(", Hacia: ").append(segment.getToUbigeo())
+                                .append(", Distancia: ").append(segment.getDistance())
+                                .append(" km, Duración: ").append(segment.getDurationMinutes())
+                                .append(" min\n");
+                    }
+                } else {
+                    logBuilder.append("No hay segmentos restantes.\n");
+                }
+
+                logBuilder.append("Tiempo de Inicio de Viaje: ").append(currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).append("\n");
+                logBuilder.append("Tiempo Estimado de Llegada: ").append(estimatedArrivalStr).append("\n");
+                logBuilder.append("-------------------------");
+
+                logger.info(logBuilder.toString());
+            } else {
+                logger.warning(String.format("No se encontraron segmentos restantes de ruta para el vehículo averiado %s.", brokenVehicle.getCode()));
+            }
+
+            /*String tempUbigeo = "TEMP_" + brokenVehicle.getCode();
+            SimulationState.removeTemporaryLocation(tempUbigeo);*/
+
+            // Actualizar el estado del vehículo averiado
+            brokenVehicle.setEstado(EstadoVehiculo.EN_REPARACION);
+            brokenVehicle.setCurrentOrder(null);
+            brokenVehicle.setCurrentCapacity(0);
+
+            // Obtener el primer punto de la ruta original del vehículo averiado
+            if (brokenVehicle.getRoute() != null && !brokenVehicle.getRoute().isEmpty()) {
+                String origenUbigeo = brokenVehicle.getRoute().get(0).getFromUbigeo();
+                brokenVehicle.setCurrentLocationUbigeo(origenUbigeo);
+
+                Location location = LocationService.getInstance().getLocation(origenUbigeo);
+                if (location != null) {
+                    String locationName = location.getDepartment() + " - " + location.getProvince();
+                    logger.warning(String.format("El vehículo averiado %s se encuentra en el almacén %s siendo reparado.",
+                            brokenVehicle.getCode(), locationName));
+                } else {
+                    logger.warning(String.format("No se encontró información para el ubigeo %s.", origenUbigeo));
+                    brokenVehicle.setCurrentLocationUbigeo("Ubicación desconocida");
+                }
+
+            } else {
+                logger.warning(String.format("El vehículo averiado %s no tiene ruta asignada para determinar su ubicación inicial.", brokenVehicle.getCode()));
+                brokenVehicle.setCurrentLocationUbigeo("Ubicación desconocida");
+            }
+
+            brokenVehicle.setRoute(Collections.emptyList());
+            brokenVehicle.setAvailable(false);
+            // Limpiar la referencia al vehículo averiado
+            this.setBrokenVehicleBeingReplaced(null);
+        } else {
+            logger.warning(String.format("Vehículo %s llegó al punto de avería, pero no se encontró el vehículo averiado a reemplazar.", this.getCode()));
+        }
+    }
+
 
     private void logArrivalAtDestination(LocalDateTime currentTime) {
         String arrivalTimeStr = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String departureTimeStr = departureTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         StringBuilder logBuilder = new StringBuilder();
 
-        logBuilder.append("\n--- Vehículo Llegada A Destino Final ---\n");
+        logBuilder.append("\n--- Vehículo Llegada A Destino ---\n");
         logBuilder.append("Código del Vehículo: ").append(this.getCode()).append("\n");
         logBuilder.append("Capacidad del Vehículo: ").append(this.getCapacity()).append(" paquetes\n");
 
         if (estado == EstadoVehiculo.HACIA_ALMACEN) {
             logBuilder.append("Tipo de Viaje: Hacia Almacén\n");
-            logBuilder.append("Origen (Oficina de Entrega): ").append(locations.get(getCurrentLocationUbigeo()).getProvince()).append("\n");
+            logBuilder.append("Origen: ").append(locations.get(getCurrentLocationUbigeo()).getProvince()).append("\n");
 
             // Extraer los nombres de las ubicaciones del nombre del segmento
             String[] segment = status.getCurrentSegment().split(" to ");
             String fromName = segment[0];
             String toName = segment[1];
             logBuilder.append("Destino (Almacén): ").append(toName).append("\n");
-            //logBuilder.append("  - Ubigeo: ").append(locations.get(toName).getUbigeo()).append("\n");
 
+        } else if (estado == EstadoVehiculo.EN_REEMPLAZO) {
+            logBuilder.append("Tipo de Viaje: Reemplazo\n");
+
+            // Obtener información del vehículo averiado que está siendo reemplazado
+            Vehicle brokenVehicle = this.getBrokenVehicleBeingReplaced();
+            if (brokenVehicle != null) {
+                logBuilder.append("Vehículo Reemplazado:\n");
+                logBuilder.append("  - Código del Vehículo: ").append(brokenVehicle.getCode()).append("\n");
+
+                if (brokenVehicle.getCurrentOrder() != null) {
+                    logBuilder.append("  - Código de la Orden: ").append(brokenVehicle.getCurrentOrder().getId()).append("\n");
+                    logBuilder.append("  - Cantidad Total de la Orden: ").append(brokenVehicle.getCurrentOrder().getQuantity()).append(" paquetes\n");
+                    logBuilder.append("  - Cantidad Restante a Entregar: ").append(brokenVehicle.getCurrentOrder().getRemainingPackagesToDeliver()).append(" paquetes\n");
+                }
+            } else {
+                logBuilder.append("No se encontró información del vehículo averiado que está siendo reemplazado.\n");
+            }
         } else {
             String dueTimeStr = currentOrder.getDueTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             logBuilder.append("Tipo de Viaje: Entrega de Orden\n");
@@ -773,12 +980,13 @@ public class Vehicle {
         }
 
         // Registro actualizado con la unidad de tiempo correcta
-        logger.info(String.format("Vehículo %s - Velocidad: %.2f km/h, Tramo: %s (%s), Tiempo en tramo: %d %s",
+        logger.info(String.format("Vehículo %s - Velocidad: %.2f km/h, Tramo: %s (%s)," +
+                        "Ubicación actual: %s, Tiempo en tramo: %d %s",
                 this.getCode(), status.getCurrentSpeed(), status.getCurrentSegment(),
-                status.getCurrentSegmentUbigeo(), elapsedTime, timeUnit));
+                status.getCurrentSegmentUbigeo(), currentLocationUbigeo, elapsedTime, timeUnit));
     }
 
-    private LocalDateTime calculateEstimatedArrivalTime(LocalDateTime startTime, List<RouteSegment> route) {
+    public LocalDateTime calculateEstimatedArrivalTime(LocalDateTime startTime, List<RouteSegment> route) {
         long totalDurationMinutes = route.stream()
                 .mapToLong(RouteSegment::getDurationMinutes)
                 .sum();
@@ -825,6 +1033,11 @@ public class Vehicle {
         logBuilder.append("Tiempo Estimado de Llegada: ").append(estimatedArrivalStr).append("\n");
         logBuilder.append("Tiempo Límite de Entrega: ").append(dueTimeStr).append("\n");
         logBuilder.append("-------------------------");
+
+        // Agregar segmentos restantes al log
+        logBuilder.append("Segmentos Restantes:\n");
+        logBuilder.append(getRemainingSegmentsLog());
+
         this.tiempoLimitedeLlegada = order.getDueTime();
         // Llamar a la función calcularEficienciaPedido aquí
         state.calcularEficienciaPedido(this.getCode(),estimatedDeliveryTime, tiempoLimitedeLlegada);
@@ -832,6 +1045,20 @@ public class Vehicle {
 
         logger.info(logBuilder.toString());
     }
+
+    private String getRemainingSegmentsLog() {
+        StringBuilder segmentsLog = new StringBuilder();
+        for (int i = currentSegmentIndex; i < route.size(); i++) {
+            RouteSegment segment = route.get(i);
+            segmentsLog.append(" - Segmento: ").append(segment.getName());
+            segmentsLog.append(", Desde: ").append(segment.getFromUbigeo())
+                    .append(", Hacia: ").append(segment.getToUbigeo())
+                    .append(", Distancia: ").append(segment.getDistance()).append(" km")
+                    .append(", Duración: ").append(segment.getDurationMinutes()).append(" min\n");
+        }
+        return segmentsLog.toString();
+    }
+
 
     public LocalDateTime getEstimatedArrivalTime() {
         return estimatedDeliveryTime;
@@ -873,6 +1100,65 @@ public class Vehicle {
         logger.info(logBuilder.toString());
     }
 
+    public void startJourneyToBreakdown(LocalDateTime startTime, String breakdownUbigeo) {
+        if (this.route == null) {
+            logger.warning(String.format("Intento de iniciar un viaje al punto de avería para el vehículo %s con una ruta nula.", this.getCode()));
+            return;
+        }
+
+        if (this.route.isEmpty()) {
+            logger.info(String.format("El vehículo %s ya se encuentra en la ubicación del vehículo averiado.", this.getCode()));
+            // Actualizar el estado del vehículo directamente
+            this.journeyStartTime = startTime;
+            this.currentSegmentIndex = -1; // No hay segmentos
+            this.status = new VehicleStatus();
+            this.currentOrder = null;
+            this.setAvailable(false);
+            this.estado = EstadoVehiculo.EN_REEMPLAZO;
+            this.departureTime = startTime;
+
+            // Registrar que el vehículo ya está en el punto de avería
+            StringBuilder logBuilder = new StringBuilder();
+            logBuilder.append("\n--- Vehículo de Reemplazo Ya en el Punto de Avería ---\n");
+            logBuilder.append("Código del Vehículo de Reemplazo: ").append(this.getCode()).append("\n");
+            logBuilder.append("Ubicación Actual: ").append(this.getCurrentLocationUbigeo()).append(" (").append(DataLoader.ubigeoToNameMap.getOrDefault(this.getCurrentLocationUbigeo(), "Desconocido")).append(")\n");
+            logBuilder.append("Tiempo de Inicio de Reemplazo: ").append(startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).append("\n");
+            logBuilder.append("-------------------------");
+
+            logger.info(logBuilder.toString());
+            return;
+        }
+
+        // Si hay una ruta, proceder normalmente
+        this.journeyStartTime = startTime;
+        this.currentSegmentIndex = 0;
+        this.status = new VehicleStatus();
+        this.currentOrder = null; // No hay orden activa en este viaje
+        this.setAvailable(false);
+        this.estado = EstadoVehiculo.EN_REEMPLAZO;
+        this.departureTime = startTime;
+
+        String tempUbigeo = currentLocationUbigeo;
+        updateCurrentSegment(startTime);
+        currentLocationUbigeo = tempUbigeo;
+
+        String startTimeStr = startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String estimatedArrivalStr = calculateEstimatedArrivalTime(startTime, this.route).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        StringBuilder logBuilder = new StringBuilder();
+        logBuilder.append("\n--- Inicio de Viaje al Punto de Avería ---\n");
+        logBuilder.append("Código del Vehículo: ").append(this.getCode()).append("\n");
+        logBuilder.append("Capacidad del Vehículo: ").append(this.getCapacity()).append(" paquetes\n");
+        logBuilder.append("Origen: ").append(this.getCurrentLocationUbigeo()).append(" (").append(DataLoader.ubigeoToNameMap.getOrDefault(this.getCurrentLocationUbigeo(), "Desconocido")).append(")\n");
+        logBuilder.append("Destino (Punto de Avería): ").append(breakdownUbigeo).append(" (").append(DataLoader.ubigeoToNameMap.getOrDefault(breakdownUbigeo, "Desconocido")).append(")\n");
+        logBuilder.append("Tiempo de Inicio de Viaje: ").append(startTimeStr).append("\n");
+        logBuilder.append("Tiempo Estimado de Llegada: ").append(estimatedArrivalStr).append("\n");
+        logBuilder.append("-------------------------");
+
+        logger.info(logBuilder.toString());
+    }
+
+
     private void updateCurrentSegment(LocalDateTime currentTime) {
         RouteSegment segment = route.get(currentSegmentIndex);
         status.setCurrentSegment(segment.getName());
@@ -880,6 +1166,7 @@ public class Vehicle {
         status.setSegmentStartTime(currentTime);
         status.setEstimatedArrivalTime(currentTime.plusMinutes(segment.getDurationMinutes()));
         status.setCurrentSpeed(segment.getDistance() / (segment.getDurationMinutes() / 60.0));
+        currentLocationUbigeo = segment.getFromUbigeo();
     }
 
     public List<RouteSegment> getRoute() {
