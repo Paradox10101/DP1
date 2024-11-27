@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
   : process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export default function Dashboard({ shipment }) {
+export default function Dashboard({ shipment, onClose}) {
   // Estado para manejar los datos del dashboard
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,11 +23,13 @@ export default function Dashboard({ shipment }) {
           setData(result);
         } else {
           console.error('Error al obtener los datos: ', response.statusText);
+          onClose()
         }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
+        onClose()
       }
     };
     fetchData();
