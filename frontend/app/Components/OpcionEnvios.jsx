@@ -64,7 +64,7 @@ export default function OpcionEnvios() {
                     .sort((a, b) => a.localeCompare(b));
                 setOfficeCities(officeCities);
                 setWarehouseCities(warehouseCities);
-                setStatusesShipment(["EN TRÁNSITO", "ENTREGADO", "REGISTRADO"]);
+                setStatusesShipment(["EN TRANSITO", "ENTREGADO", "REGISTRADO"]);
             }
             catch(err){
                 return;
@@ -106,8 +106,8 @@ export default function OpcionEnvios() {
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRÁNSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "PARTIALLY_ARRIVED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.quantityVehicles === 0)))
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED" || shipment.status === "PARTIALLY_ASSIGNED")) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" )))
             : true;
 
 
@@ -292,11 +292,11 @@ export default function OpcionEnvios() {
                                 
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].quantityVehicles===0 ? (
+                                    shipments[selectedShipmentIndex].status === "REGISTERED"? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                                     ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                                    ) : shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" ? (
+                                    ) : shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED"? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                                     ) : (
                                         <></>
@@ -499,19 +499,24 @@ export default function OpcionEnvios() {
                                         <div className="flex items-center">hasta</div>
                                         <Input
                                             type="number"
-                                            value={shipmentsFilter.maxQuantity || 0}
+                                            value={shipmentsFilter.maxQuantity === null ? "" : shipmentsFilter.maxQuantity}
                                             min={0}
                                             step="1"
                                             className="w-full text-right"
                                             onChange={(e) => {
-                                                const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
-                                                
+                                                const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0;
                                                 setShipmentsFilter((prev) => ({
                                                     ...prev,
                                                     maxQuantity: value,
                                                 }));
-                                                
-                                                
+                                            }}
+                                            onBlur={(e) => {
+                                                if (e.target.value === "") {
+                                                    setShipmentsFilter((prev) => ({
+                                                        ...prev,
+                                                        maxQuantity: 0,
+                                                    }));
+                                                }
                                             }}
                                         />
 

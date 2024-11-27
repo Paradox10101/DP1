@@ -258,12 +258,12 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                             <div className="flex items-center">hasta</div>
                                             <Input
                                                 type="number"
-                                                value={vehiclesFilter.maxQuantity || 0}
+                                                value={vehiclesFilter.maxQuantity === null ? "" : vehiclesFilter.maxQuantity}
                                                 min={0}
                                                 step="1"
                                                 className="w-full text-right"
                                                 onChange={(e) => {
-                                                    const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                                    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
                                                     
                                                     setVehiclesFilter((prev) => ({
                                                         ...prev,

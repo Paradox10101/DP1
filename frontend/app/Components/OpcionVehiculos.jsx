@@ -34,8 +34,6 @@ export default function OpcionVehiculos() {
   // Ensure vehiculos is an array to avoid TypeError
   const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
 
-
-
   // Filter vehiculosArray based on search input
   const filteredVehiculosArray = vehiculosArray.filter((vehiculo) =>
     vehiculo.properties.vehicleCode.toLowerCase().includes(searchInput.toLowerCase())
@@ -69,7 +67,7 @@ export default function OpcionVehiculos() {
     if(!isFilterModalOpen)return;
     setLoadingFilters(true)
     setVehicleTypes(["A", "B","C"]);
-    setStatusesVehicle(["EN TRÁNSITO", "EN ALMACÉN", "EN MANTENIMIENTO", "AVERIADO"]);
+    setStatusesVehicle(["AVERIADO T1", "AVERIADO T2", "AVERIADO T3", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN TRANSITO"]);
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
@@ -94,13 +92,19 @@ useEffect(() => {
 
       // Filtrar por estado de vehiculo
       const matchesStatus = vehiclesFilter.status
-      ? (vehiculo.properties.status === "EN_ALMACEN" && vehiclesFilter.status==="EN ALMACÉN")
+      ? ((vehiculo.properties.status === "EN_ALMACEN" || vehiculo.properties.status === "ORDENES_CARGADAS") && vehiclesFilter.status==="EN ALMACEN")
       ||
-      (vehiculo.properties.status.startsWith("AVERIADO") && vehiclesFilter.status==="AVERIADO")
+      (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status==="AVERIADO T1")
       ||
-      (vehiculo.properties.status === "EN_MANTENIMIENTO" && vehiclesFilter.status==="EN MANTENIMIENTO")
+      (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status==="AVERIADO T2")
       ||
-      (vehiclesFilter.status==="EN TRÁNSITO")
+      (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status==="AVERIADO T3")
+      ||
+      ((vehiculo.properties.status === "EN_MANTENIMIENTO" || vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status==="EN MANTENIMIENTO")
+      ||
+      ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status==="LISTO_PARA_RETORNO" || vehiculo.properties.status==="EN_REEMPLAZO") && vehiclesFilter.status==="EN ESPERA")
+      ||
+      ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status==="EN TRANSITO")
       : true;
   
       // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
@@ -121,47 +125,61 @@ useEffect(() => {
   // Establecer la lista filtrada en filteredShipments
   setFilteredVehicles(filtered);
 }, [vehiculos, vehiclesFilter]);
-  
 
-  const renderStatus = (status) => {
-    switch (status) {
-        case "EN_ALMACEN":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                    En Almacén
-                </div>
-            );
-        case "AVERIADO_1":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                    Averiado T1
-                </div>
-            );
-        case "AVERIADO_2":
+const StatusBadge = ({ status }) => {
+  switch (status) {
+      case "EN_ALMACEN":
+      case "ORDENES_CARGADAS":
           return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado T2
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                  En Almacén
               </div>
           );
-        case "AVERIADO_3":
+      case "AVERIADO_1":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado T3
+                  Averiado T1
               </div>
           );
-        case "EN_MANTENIMIENTO":
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                    En Mantenimiento
-                </div>
-            );
-        default:
-            return (
-                <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-                    En Tránsito
-                </div>
-            );
-    }
+      case "AVERIADO_2":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T2
+            </div>
+        );
+      case "AVERIADO_3":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
+                Averiado T3
+            </div>
+        );
+      case "EN_MANTENIMIENTO":
+      case "EN_REPARACION":
+          return (
+              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                  En Mantenimiento
+              </div>
+          );
+      case "EN_ESPERA_EN_OFICINA":
+      case "LISTO_PARA_RETORNO":
+      case "EN_REEMPLAZO":
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
+                En Espera
+            </div>
+        );
+      case "EN_TRANSITO_ORDEN":
+      case "HACIA_ALMACEN":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+            En Tránsito
+          </div>
+        );
+      default:
+        return (
+            <></>
+        );
+  }
 };
   
   const hasInitialData = Array.isArray(vehiculos);
@@ -174,10 +192,7 @@ useEffect(() => {
       (vehicle&&vehicle?.properties)&&
       <div
         style={style}
-        //className={`p-2 border-2 rounded-xl stroke-black ${filteredVehiculosArray[selectedShipmentIndex]?.id && shipments[selectedShipmentIndex].id === shipment.id && isOpen ? 'border-3 border-principal' : ''}`}
-        onMouseDown={() => {
-          //alert(JSON.stringify(vehiculosArray, null, 2))
-          //alert(JSON.stringify(vehicle, null, 2))
+        onMouseDown={() => {          
           const indexS = vehiculosArray.findIndex(vehiculoL => vehiculoL.properties.vehicleCode === vehicle.properties.vehicleCode);  
             if(indexS!==-1)
               setSelectedVehicleIndex(indexS);
@@ -187,7 +202,7 @@ useEffect(() => {
         }}
       >
 
-        <CardVehiculo vehiculo={vehicle.properties} renderStatus={renderStatus(vehicle.properties.status)} key={vehicle.properties.vehicleCode}/>
+        <CardVehiculo vehiculo={vehicle.properties} RenderStatus={StatusBadge} key={vehicle.properties.vehicleCode}/>
       </div>
     )
   }
@@ -306,7 +321,7 @@ useEffect(() => {
                     <div className="flex flex-row gap-2">
                         
                         <div className="subEncabezado">Información del vehiculo {vehiculosArray[selectedVehicleIndex].properties.vehicleCode}</div>
-                        {renderStatus(vehiculosArray[selectedVehicleIndex].properties.status)}
+                        <StatusBadge status = {vehiculosArray[selectedVehicleIndex].properties.status} />
                     </div>
                     }
                   </ModalHeader>
@@ -438,12 +453,12 @@ useEffect(() => {
                                       <div className="flex items-center">hasta</div>
                                       <Input
                                           type="number"
-                                          value={vehiclesFilter.maxQuantity || 0}
+                                          value={vehiclesFilter.maxQuantity === null ? "" : vehiclesFilter.maxQuantity}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
                                           onChange={(e) => {
-                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            const value =  e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
                                             
                                             setVehiclesFilter((prev) => ({
                                                 ...prev,

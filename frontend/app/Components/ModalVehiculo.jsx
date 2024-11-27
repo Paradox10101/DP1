@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import { parseDate } from "@internationalized/date"
+import BreakdownModal from "./VehiclePopUp/BreakdownModal"
 
 export default function ModalVehiculo({vehicle}){
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
@@ -17,6 +18,7 @@ export default function ModalVehiculo({vehicle}){
     const [filteredShipments, setFilteredShipments] = useState([]);
     const [tiposAveria, setTiposAveria] = useState([])
     const [tipoAveriaSeleccionado, setTipoAveriaSeleccionado] = useState(null)
+    const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
     const initialStateRef = useRef(
         {
         originCity: "",
@@ -35,7 +37,17 @@ export default function ModalVehiculo({vehicle}){
     : process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
-
+    const handleBreakdownClick = (e) => {
+        e.stopPropagation();
+        setIsBreakdownModalOpen(true);
+      };
+    
+      const handleBreakdownSuccess = () => {
+        // Aquí puedes actualizar el estado del vehículo o recargar los datos
+        
+        // Manejar el reporte de avería
+        //onReportIssue?.(vehicleData);
+      };
 
 
     useEffect(() => {
@@ -58,7 +70,7 @@ export default function ModalVehiculo({vehicle}){
                     .sort((a, b) => a.localeCompare(b));
                 setOfficeCities(officeCities);
                 setWarehouseCities(warehouseCities);
-                setStatusesShipment(["EN TRÁNSITO", "ENTREGADO", "REGISTRADO"]);
+                setStatusesShipment(["EN TRANSITO", "ENTREGADO", "REGISTRADO"]);
                 
             }
             catch(err){
@@ -100,8 +112,9 @@ export default function ModalVehiculo({vehicle}){
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRÁNSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "PARTIALLY_ARRIVED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.quantityVehicles === 0)))
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "PARTIALLY_ARRIVED")) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"))
+            )
             : true;
 
 
@@ -132,32 +145,6 @@ export default function ModalVehiculo({vehicle}){
     }, [vehicle, shipmentsFilter]);
 
 
-    const reportarAveria = async () => {
-        if (!tipoAveriaSeleccionado) 
-            return;
-        
-        if (vehicle.status.startsWith("AVERIADO"))
-            return;
-
-        try {
-            const response = await fetch(
-                `${API_BASE_URL}/vehicles/breakdown?vehicleCode=${vehicle.vehicleCode}&breakdownType=${tipoAveriaSeleccionado}`, 
-                { method: "POST" }
-            );
-
-            if (response.ok) {
-                console.log("Avería reportada con éxito de tipo para el vehiculo " + vehicle.vehicleCode);
-                
-                
-                // Actualiza el estado del vehículo si es necesario
-            } else {
-                console.error("Error al reportar la avería:", response.statusText);
-                
-            }
-        } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-        }
-    };
 
     // Cierra el modal si se hace clic fuera de él
     useEffect(() => {
@@ -193,7 +180,10 @@ export default function ModalVehiculo({vehicle}){
                     shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
                     :
+                    shipment.status==="FULLY_ASSIGNED" || shipment.status==="IN_TRANSIT" || shipment.status==="PARTIALLY_ARRIVED" || shipment.status==="PARTIALLY_ASSIGNED"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                    :
+                    <></>
                 }
                 <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
                 <div className="text-center col-span-2 pequenno">{shipment.originCity}</div>
@@ -233,46 +223,14 @@ export default function ModalVehiculo({vehicle}){
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-row justify-between w-full">
                     <div className="text-black regular_bold block w-[120px]">Ruta del Camión</div>
-                    <div className="flex flex-row justify-between w-[300px]">
-                        <Dropdown className="my-dropdown ">
-                            <DropdownTrigger>
-                                <Button
-                                variant="bordered"
-                                className="capitalize w-full relative"
-                                disableRipple={true}
-                                >
-                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    {tipoAveriaSeleccionado || "Selecciona un tipo"}
-                                </span>
-                                <ChevronDown size={18} className="absolute right-2" />
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                closeOnSelect={true}
-                                selectionMode="single"
-                                onSelectionChange={(keys) => {
-                                const value = Array.from(keys).join(', '); // Obtén el valor seleccionado
-                                setTipoAveriaSeleccionado(value);
-                                }}
-                                disableRipple={true}
-                                className="max-h-[500px] overflow-y-auto w-full"
-                            >
-                                {tiposAveria && tiposAveria.length > 0 && tiposAveria.map((tipoAveria) => (
-                                <DropdownItem key={tipoAveria}>{tipoAveria}</DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                        <div>
-                        <Button
+                    <Button
                         disableRipple={true}
-                        className={"focus:outline-none border stroke-black w-[120px] pequenno text-black  rounded-2xl items-center block " + (tipoAveriaSeleccionado && !vehicle.status.startsWith("AVERIADO")?"bg-[#FFA500]" : "bg-gray-400")}
-                        isDisabled={!tipoAveriaSeleccionado || vehicle.status.startsWith("AVERIADO")}
-                        onClick={()=>{reportarAveria()}}
+                        className={"focus:outline-none border stroke-black w-[120px] pequenno text-black  rounded-2xl items-center block bg-[#FFA500]"}
+                        isDisabled={vehicle.status !== "EN_TRANSITO_ORDEN"}
+                        onClick={handleBreakdownClick}
                         >
                         Reportar Avería
                         </Button>
-                        </div>
-                    </div>
                 </div>
                 
                 <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full ">
@@ -570,12 +528,12 @@ export default function ModalVehiculo({vehicle}){
                                         <div className="flex items-center">hasta</div>
                                         <Input
                                             type="number"
-                                            value={shipmentsFilter.maxQuantity || 0}
+                                            value={shipmentsFilter.maxQuantity === null ? "" : shipmentsFilter.maxQuantity}
                                             min={0}
                                             step="1"
                                             className="w-full text-right"
                                             onChange={(e) => {
-                                                const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                                const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
                                                 
                                                 setShipmentsFilter((prev) => ({
                                                     ...prev,
@@ -747,6 +705,13 @@ export default function ModalVehiculo({vehicle}){
                 
             </div>
             <div className="text-right text-[#939393] regular">Cantidad de envíos atendidos: {vehicle.shipmentsVehicle.length}</div>
+            <BreakdownModal 
+                isOpen={isBreakdownModalOpen}
+                onClose={() => setIsBreakdownModalOpen(false)}
+                vehicleCode={vehicle.vehicleCode}
+                onSuccess={handleBreakdownSuccess}
+            />
         </div>
+        
     )
 }
