@@ -49,7 +49,7 @@ export default function ModalOficina({office}){
                     .map((feature) => feature.properties.name) // Extrae los nombres
                     .sort((a, b) => a.localeCompare(b));
                 setWarehouseCities(warehouseCities);
-                setStatusesShipment(["EN TRÁNSITO", "ENTREGADO", "REGISTRADO"]);
+                setStatusesShipment(["EN TRANSITO", "ENTREGADO", "POR RECOGER", "REGISTRADO"]);
             }
             catch(err){
                 return;
@@ -86,9 +86,11 @@ export default function ModalOficina({office}){
             // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
             const matchesStatus = shipmentsFilter.statusShipment
             ?
-            ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"))) ||
-            (shipmentsFilter.statusShipment === "EN TRÁNSITO")
+            (shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED")) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO") && (shipment.status === "REGISTERED") ||
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "PARTIALLY_ASSIGNED")||
+            (shipmentsFilter.statusShipment === "POR RECOGER") && (shipment.status === "PENDING_PICKUP")
+            )
             : true;
 
 
@@ -153,15 +155,23 @@ export default function ModalOficina({office}){
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
                 <div className="text-center col-span-2 pequenno break-all">{shipment.originCity}</div>
                 <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
+                <div className="text-center col-span-2 pequenno flex justify-center items-center">
                 {
-                    shipment.status==="REGISTERED"?
-                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                    shipment.status === "REGISTERED" ? (
+                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
+                    ) : shipment.status === "DELIVERED"? (
+                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
+                    ) : shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "PARTIALLY_ASSIGNED" ? (
+                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
+                    ) : shipment.status === "PENDING_PICKUP" ? (
+                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#FF4D4D] text-white rounded-xl"}>POR RECOGER</div>
+                    )
                     :
-                    shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
-                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                    :
-                    <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
+                    (
+                        <></>
+                    )
                 }
+                </div>
             </div>
             
         );
@@ -380,12 +390,12 @@ export default function ModalOficina({office}){
                                         <div className="flex items-center">hasta</div>
                                         <Input
                                             type="number"
-                                            value={shipmentsFilter.maxQuantity || 0}
+                                            value={shipmentsFilter.maxQuantity === null ? "" : shipmentsFilter.maxQuantity}
                                             min={0}
                                             step="1"
                                             className="w-full text-right"
                                             onChange={(e) => {
-                                                const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                                const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
                                                 
                                                 setShipmentsFilter((prev) => ({
                                                     ...prev,
