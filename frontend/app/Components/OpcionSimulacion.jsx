@@ -7,7 +7,7 @@ import SimulationControls from '../Components/SimulationControls';
 import { useAtom } from "jotai";
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '../../atoms/errorAtoms';
 import { simulationStatusAtom, simulationTypeAtom, showSimulationModalAtom } from "@/atoms/simulationAtoms";
-import { useCallback, useState, useEffect, useMemo } from "react";
+import { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import { serverAvailableAtom } from '@/atoms/simulationAtoms';
 import { useWebSocket } from "@/hooks/useWebSocket";
 import SimulationSpeedControl from '../Components/SimulationSpeedControl';
@@ -122,6 +122,14 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
     }, [serverAvailable])
 
 
+    useEffect(()=>{
+      
+      if(simulationStatus==='stopped'){
+          onOpen();
+      }
+    }, [simulationStatus])
+
+
 return (
 
         <div className="h-full flex flex-col justify-between gap-2">
@@ -154,13 +162,7 @@ return (
               <SimulationSummary/>
 
             </div>
-            <Button disableRipple={true} 
-                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
-                    startContent={<ChartColumnIncreasing />}
-                    onClick={onOpen}
-            >
-              Visualizar Reporte
-            </Button>
+            
             <ModalContainer
                 isOpen={isOpen}
                 onOpen={onOpen}
@@ -170,7 +172,7 @@ return (
                     <div className="text-xl font-bold">Reporte de Simulación</div>
                 </div>
                 }
-                body={<Dashboard />}
+                body={<Dashboard onClose={onOpenChange}/>}
             />
         </div>
         
@@ -178,3 +180,13 @@ return (
     )
 
 }
+
+/*
+<Button disableRipple={true} 
+                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
+                    startContent={<ChartColumnIncreasing />}
+                    onClick={onOpen}
+            >
+              Visualizar Reporte
+</Button>
+*/
