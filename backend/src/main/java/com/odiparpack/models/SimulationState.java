@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
-import static com.odiparpack.Main.createSearchParameters;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
 public class SimulationState {
@@ -79,6 +78,22 @@ public class SimulationState {
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
     private Map<String, Integer> pedidosPorRegion = new HashMap<>();
     private Map<String, Double> eficienciaPedidos = new HashMap<>();
+    private int averiasTipo1 = 0;
+    private int averiasTipo2 = 0;
+    private int averiasTipo3 = 0;
+
+    // Agregar getters
+    public int getAveriasTipo1() {
+        return averiasTipo1;
+    }
+
+    public int getAveriasTipo2() {
+        return averiasTipo2;
+    }
+
+    public int getAveriasTipo3() {
+        return averiasTipo3;
+    }
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -1402,12 +1417,15 @@ public class SimulationState {
                 switch (breakdownType) {
                     case "1":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_1;
+                        averiasTipo1++;
                         break;
                     case "2":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_2;
+                        averiasTipo2++;
                         break;
                     case "3":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_3;
+                        averiasTipo3++;
                         break;
                     default:
                         logger.warning("Tipo de avería no reconocido: " + breakdownType);
@@ -1427,6 +1445,10 @@ public class SimulationState {
                 String logMessage = String.format("Avería tipo %s provocada en el vehículo %s en %s.",
                         breakdownType, vehicleCode, currentTime);
                 addBreakdownLog(vehicleCode, logMessage);
+
+                //AQUI TIENE QUE VERIFICARSE EL TIPO DE AVERIA, PARA LA METRICA Y EL REPORTE
+
+
             } else {
                 logger.warning(String.format("No se puede provocar avería en el vehículo %s porque no está en tránsito: estado %s", vehicleCode, vehicle.getEstado()));
             }

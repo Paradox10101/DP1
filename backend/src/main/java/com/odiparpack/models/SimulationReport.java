@@ -144,11 +144,10 @@ public class SimulationReport {
     }
 
     private Map<String, Integer> calculateAveriasPorTipo(SimulationState state) {
-        // Valores hardcodeados por ahora
         Map<String, Integer> averias = new HashMap<>();
-        averias.put("Tipo 1", 5);
-        averias.put("Tipo 2", 3);
-        averias.put("Tipo 3", 2);
+        averias.put("Tipo 1", state.getAveriasTipo1()); //Averia tipo 1
+        averias.put("Tipo 2", state.getAveriasTipo2()); //Averia tipo 2
+        averias.put("Tipo 3", state.getAveriasTipo3()); //Averia tipo 3
         return averias;
     }
 
