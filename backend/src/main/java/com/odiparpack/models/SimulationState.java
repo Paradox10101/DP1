@@ -127,6 +127,39 @@ public class SimulationState {
         this.activeBlockages = activeBlockages;
     }
 
+    public boolean checkLogisticCollapse() {
+        lock.lock();
+        try {
+            // Verificar todos los pedidos no entregados
+            for (Order order : orders) {
+                if (order.getStatus() != Order.OrderStatus.DELIVERED) {
+
+                    // Si el tiempo actual es posterior al tiempo límite de entrega
+                    if (currentTime.isAfter(order.getDueTime())) {
+                        logger.severe("¡Colapso logístico detectado!");
+                        logger.severe("Pedido " + order.getOrderCode() +
+                                " no entregado. Tiempo límite: " + order.getDueTime() +
+                                ", Tiempo actual: " + currentTime);
+
+                        // Notificar al frontend a través de WebSocket
+                        JsonObject collapseInfo = new JsonObject();
+                        collapseInfo.addProperty("type", "LOGISTIC_COLLAPSE");
+                        collapseInfo.addProperty("orderCode", order.getOrderCode());
+                        collapseInfo.addProperty("dueTime", order.getDueTime().toString());
+                        collapseInfo.addProperty("currentTime", currentTime.toString());
+
+                        SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(collapseInfo);
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public long[][] getCurrentTimeMatrix() {
         return currentTimeMatrix;
     }
@@ -197,13 +230,21 @@ public class SimulationState {
                 ", Last Update: " + lastUpdateTime);
     }
 
-    public void updateSimulationTime(Duration timeToAdvance) {
+    public void updateSimulationTime(java.time.Duration timeToAdvance) {
         stateLock.lock();
         try {
             if (!isPaused && !isStopped) {
                 // Actualizar tiempo de simulación con el Duration proporcionado
                 currentTime = currentTime.plus(timeToAdvance);
                 logger.info("Tiempo actualizado - Current Time: " + currentTime);
+
+
+                // Verificar colapso logístico
+                if (checkLogisticCollapse()) {
+                    if (simulationType == SimulationRouter.SimulationType.COLLAPSE) {
+                        stopSimulation();
+                    }
+                }
 
                 // Actualizar tiempo efectivo de ejecución
                 long now = System.currentTimeMillis();
