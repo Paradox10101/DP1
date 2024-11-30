@@ -276,7 +276,7 @@ public class SimulationRunner {
             AtomicBoolean isSimulationRunning,
             Map<String, List<RouteSegment>> vehicleRoutes) {
 
-        /*Runnable task;
+        Runnable task;
         long intervalMillis;
 
         // Determinar si es una simulación diaria o no
@@ -289,8 +289,8 @@ public class SimulationRunner {
                 0,
                 intervalMillis,
                 TimeUnit.MILLISECONDS
-        );*/
-          Runnable task = () -> {
+        );
+         /* Runnable task = () -> {
             try {
                 if (!state.isPaused() && !state.isStopped()) {
                     // Determinar el intervalo de tiempo según el tipo de simulación
@@ -305,7 +305,7 @@ public class SimulationRunner {
 
                     // Si es simulación de colapso y se detectó uno, detener
                     if (state.getSimulationType() == SimulationRouter.SimulationType.COLLAPSE &&
-                            state.checkLogisticCollapse()) {
+                            state.checkCapacityCollapse() || state.checkLogisticCollapse()) {
                         isSimulationRunning.set(false);
                         state.stopSimulation();
                     }
@@ -319,7 +319,7 @@ public class SimulationRunner {
                 task,
                 0,
                 1000L, // 1 segundo real
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS);*/
     }
 
     private static Future<?> schedulePlanning(

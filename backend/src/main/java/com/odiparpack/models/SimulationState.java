@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
+import static java.lang.Math.abs;
 
 public class SimulationState {
     private Map<String, Vehicle> vehicles;
@@ -125,6 +126,48 @@ public class SimulationState {
 
     public void setActiveBlockages(List<Blockage> activeBlockages) {
         this.activeBlockages = activeBlockages;
+    }
+
+    public boolean checkCapacityCollapse() {
+        lock.lock();
+        try {
+            // Usar WarehouseManager para obtener capacidades actuales
+            for (Map.Entry<String, Location> entry : locations.entrySet()) {
+                String ubigeo = entry.getKey();
+                Location location = entry.getValue();
+                int maxCapacity = location.getWarehouseCapacity();
+
+                if (maxCapacity <= 0) {
+                    logger.warning("Ubicación " + ubigeo + " tiene capacidad máxima invalida: " + maxCapacity);
+                    continue;
+                }
+
+                // Obtener capacidad actual del WarehouseManager
+                int currentCapacity = warehouseManager.getCurrentCapacity(ubigeo);
+                int capacidadUtilizada = abs(maxCapacity - currentCapacity);
+
+                // Verificar si la capacidad utilizada supera la máxima
+                if (capacidadUtilizada > maxCapacity) {
+                    logger.severe("¡Colapso logístico detectado por capacidad!");
+                    logger.severe(String.format("Oficina %s ha excedido su capacidad máxima. Utilizada: %d, Máxima: %d",
+                            location.getProvince(), currentCapacity, maxCapacity));
+
+                    JsonObject collapseInfo = new JsonObject();
+                    collapseInfo.addProperty("type", "LOGISTIC_COLLAPSE");
+                    collapseInfo.addProperty("location", location.getProvince());
+                    collapseInfo.addProperty("ubigeo", ubigeo);
+                    collapseInfo.addProperty("capacidadUtilizada", currentCapacity);
+                    collapseInfo.addProperty("maxCapacity", maxCapacity);
+                    collapseInfo.addProperty("currentTime", currentTime.toString());
+
+                    SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(collapseInfo);
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public boolean checkLogisticCollapse() {
