@@ -5,6 +5,7 @@ export const MAP_CONFIG = {
     STYLE_URL: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD',
     DEFAULT_CENTER: [-76.991, -12.046],
     DEFAULT_ZOOM: 6,
+    BOUNDS: [[-91.35, -20.35], [-60.65, 0.15]], // Limita a que solo aparezca el mapa del Peru
     
     // Configuración de fuentes
     SOURCES: {
