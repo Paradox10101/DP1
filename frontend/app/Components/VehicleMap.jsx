@@ -27,6 +27,7 @@ import ModalVehiculo from './ModalVehiculo';
 
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
+import Dashboard from './Dashboard';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -47,7 +48,6 @@ const getSvgString = (IconComponent, bgColor) => {
 
 
 // Componente StatusBadge actualizado
-// Componente StatusBadge actualizado
 const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
@@ -59,19 +59,19 @@ const StatusBadge = ({ status }) => {
       case "AVERIADO_1":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado T1
+                  Averiado Leve
               </div>
           );
       case "AVERIADO_2":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T2
+                Averiado Moderado
             </div>
         );
       case "AVERIADO_3":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T3
+                Averiado Grave
             </div>
         );
       case "EN_MANTENIMIENTO":
@@ -117,12 +117,12 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
+  const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
   const locationsUltimo = useAtomValue(filteredLocationsAtom);
 
-  console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
   // Función auxiliar para crear mensajes de error
   const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
@@ -158,7 +158,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [setLocations, setError]);
 
-  console.log("LISTADO DE LOCACIONES AAAAAAAAAAAAAAAAAAAAAA ENCONTRADOS:",locations)
+  
   // Limpiar timeout de reintento si existe
   const clearLocationRetryTimeout = useCallback(() => {
     if (locationRetryTimeoutRef.current) {
@@ -318,7 +318,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         attributionControl: false,
       });
 
-      mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+      //mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+      mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+      mapRef.current.dragRotate.disable();
+      mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
       class CenterControl {
@@ -353,7 +356,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         }
       }
 
-      mapRef.current.addControl(new CenterControl(), 'bottom-right');
+      //mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
       mapRef.current.on('load', async () => {
         console.log('Mapa completamente cargado');
@@ -1033,6 +1036,12 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
+  useEffect(()=>{
+      
+    if(simulationStatus==='stopped'){
+        onOpenReport();
+    }
+  }, [simulationStatus])
   
   return (
     <div className="relative w-full h-full">
@@ -1076,6 +1085,26 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
               )}
             </ModalBody>
           </ModalContent>
+      </Modal>
+
+      {/* Modal para ver reporte */}
+      <Modal
+                    closeButton
+                    isOpen={isOpenReport}
+                    onOpenChange={onOpenChangeReport}
+                    isDismissable={true}
+                    blur
+            >
+              <ModalContent className="h-[775px] min-w-[850px]">
+              <ModalHeader>
+                <div className="flex flex-row gap-2">
+                      <div className="text-xl font-bold">Reporte de Simulación</div>
+                  </div>
+              </ModalHeader>
+              <ModalBody>
+                <Dashboard onClose={onOpenChangeReport}/>
+              </ModalBody>
+              </ModalContent>
         </Modal>
 
       <div ref={mapContainerRef} className="w-full h-full" />

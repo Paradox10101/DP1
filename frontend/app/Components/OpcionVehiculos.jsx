@@ -67,7 +67,7 @@ export default function OpcionVehiculos() {
     if(!isFilterModalOpen)return;
     setLoadingFilters(true)
     setVehicleTypes(["A", "B","C"]);
-    setStatusesVehicle(["AVERIADO T1", "AVERIADO T2", "AVERIADO T3", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN TRANSITO"]);
+    setStatusesVehicle(["AVERIADO LEVE", "AVERIADO MODERADO", "AVERIADO GRAVE", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN TRANSITO"]);
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
@@ -94,11 +94,11 @@ useEffect(() => {
       const matchesStatus = vehiclesFilter.status
       ? ((vehiculo.properties.status === "EN_ALMACEN" || vehiculo.properties.status === "ORDENES_CARGADAS") && vehiclesFilter.status==="EN ALMACEN")
       ||
-      (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status==="AVERIADO T1")
+      (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status==="AVERIADO LEVE")
       ||
-      (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status==="AVERIADO T2")
+      (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status==="AVERIADO MODERADO")
       ||
-      (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status==="AVERIADO T3")
+      (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status==="AVERIADO GRAVE")
       ||
       ((vehiculo.properties.status === "EN_MANTENIMIENTO" || vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status==="EN MANTENIMIENTO")
       ||
@@ -138,19 +138,19 @@ const StatusBadge = ({ status }) => {
       case "AVERIADO_1":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado T1
+                  Avería Leve
               </div>
           );
       case "AVERIADO_2":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T2
+                Averia Moderada
             </div>
         );
       case "AVERIADO_3":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T3
+                Averiado Grave
             </div>
         );
       case "EN_MANTENIMIENTO":

@@ -1,4 +1,4 @@
-import { Button, Tab, Tabs, useDisclosure } from "@nextui-org/react"
+import { Button, Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs, useDisclosure } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 import Dashboard from "@/app/Components/Dashboard"
 import CollapseDashboard from "@/app/Components/CollapseDashboard"
@@ -121,14 +121,14 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
         console.log("servidor disponible: ", serverAvailable);
     }, [serverAvailable])
 
-
+/*
     useEffect(()=>{
       
       if(simulationStatus==='stopped'){
           onOpen();
       }
     }, [simulationStatus])
-
+*/
 
 return (
 
@@ -162,18 +162,32 @@ return (
               <SimulationSummary/>
 
             </div>
-            
-            <ModalContainer
-                isOpen={isOpen}
-                onOpen={onOpen}
-                onOpenChange={onOpenChange}
-                header={
+
+            <Button disableRipple={true} 
+                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
+                    startContent={<ChartColumnIncreasing />}
+                    onClick={onOpen}
+            >
+              Visualizar Reporte
+            </Button>
+            <Modal
+                    closeButton
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    isDismissable={true}
+                    blur
+            >
+              <ModalContent className="h-[775px] min-w-[850px]">
+              <ModalHeader>
                 <div className="flex flex-row gap-2">
-                    <div className="text-xl font-bold">Reporte de Simulación</div>
-                </div>
-                }
-                body={<Dashboard onClose={onOpenChange}/>}
-            />
+                      <div className="text-xl font-bold">Reporte de Simulación</div>
+                  </div>
+              </ModalHeader>
+              <ModalBody>
+                <Dashboard onClose={onOpenChange}/>
+              </ModalBody>
+              </ModalContent>
+            </Modal>
         </div>
         
         

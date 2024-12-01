@@ -58,11 +58,12 @@ const BreakdownModal = ({ isOpen, onClose, vehicleCode, onSuccess }) => {
       }
 
       onSuccess?.();
-      onClose();
+      
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+      onClose();
     }
   };
 
