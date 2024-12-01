@@ -81,6 +81,23 @@ public class TimeAdvancementTask implements Runnable {
                 state.stopSimulation();
             }
 
+            // Verificar colapsos
+            if (state.getSimulationType() == SimulationRouter.SimulationType.COLLAPSE) {
+                // Verificar colapso logístico por tiempo
+                if (state.checkLogisticCollapse()) {
+                    isSimulationRunning.set(false);
+                    state.stopSimulation();
+                    return;
+                }
+
+                // Verificar colapso por capacidad
+                if (state.checkCapacityCollapse()) {
+                    isSimulationRunning.set(false);
+                    state.stopSimulation();
+                    return;
+                }
+            }
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en actualización de tiempo", e);
         }
