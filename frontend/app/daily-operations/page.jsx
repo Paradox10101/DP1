@@ -12,7 +12,8 @@ import {
   showControlsAtom,
   simulationErrorAtom,
   performanceMetricsAtom,
-  showSimulationModalAtom
+  showSimulationModalAtom,
+  simulationTypeAtom
 } from '@/atoms/simulationAtoms'
 
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false })
@@ -27,7 +28,8 @@ const DailyOperationsPage = () => {
   const [error, setError] = useAtom(simulationErrorAtom)
   const [performanceMetrics] = useAtom(performanceMetricsAtom)
   const [, setShowModal] = useAtom(showSimulationModalAtom)
-  const [tipoSimulacion, setTipoSimulacion] = useState('diaria');
+  //const [tipoSimulacion, setTipoSimulacion] = useState('diaria');
+  const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
 
   const [ordersMetrics, setOrdersMetrics] = useState({
     totalOrders: 0,
@@ -58,6 +60,10 @@ const DailyOperationsPage = () => {
     fetchOrdersMetrics()
   }, [setError])
 
+  useEffect(()=>{
+    setSimulationType('diaria');
+  }, [])
+
   return (
     <>
       <DailyOperationsModal metrics={ordersMetrics} />
@@ -66,8 +72,9 @@ const DailyOperationsPage = () => {
         <VehicleMap
           simulationStatus={simulationStatus}
           setSimulationStatus={setSimulationStatus}
+          tipoSimulacion={simulationType}
         />
-        <SimulationPanel tipoSimulacion={tipoSimulacion}/>
+        <SimulationPanel tipoSimulacion={simulationType}/>
         <MapLegend cornerPosition={"top-20 right-5"} />
       </div>
     </>

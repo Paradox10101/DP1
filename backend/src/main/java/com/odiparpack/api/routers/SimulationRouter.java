@@ -32,6 +32,7 @@ public class SimulationRouter extends BaseRouter {
     private Future<?> simulationFuture;
     private volatile boolean isSimulationRunning = false;
     private volatile boolean isShutdown = false;
+    private SimulationType simulationType = null;
 
     public enum SimulationType {
         DAILY("diaria", 1),
@@ -80,6 +81,8 @@ public class SimulationRouter extends BaseRouter {
 
                 // Usar el enum para manejar el tipo de simulación
                 SimulationType simulationType = SimulationType.fromString(typeStr);
+
+                this.simulationType = simulationType;
 
                 LocalDateTime startDateTime;
                 LocalDateTime endDateTime = null;
@@ -211,6 +214,7 @@ public class SimulationRouter extends BaseRouter {
             isShutdown = true;
 
             response.status(200);
+            this.simulationType = null;
             return createSuccessResponse("Simulación detenida.");
         });
 
@@ -265,6 +269,22 @@ public class SimulationRouter extends BaseRouter {
 
             status.addProperty("isRunning", isSimulationRunning);
             status.addProperty("isShutdown", isShutdown);
+
+            return status;
+        });
+
+        // Obtener estado actual de la simulación
+        Spark.get("/api/v1/simulation/type", (request, response) -> {
+            response.type("application/json");
+            JsonObject status = new JsonObject();
+
+            if (simulationState != null) {
+                status.addProperty("currentTime", simulationState.getCurrentTime().toString());
+            } else {
+                status.addProperty("currentTime", "Simulation state is null");
+            }
+
+            status.addProperty("type", (this.simulationType!=null && !isShutdown?this.simulationType.toString():""));
 
             return status;
         });

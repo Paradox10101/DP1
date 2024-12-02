@@ -164,30 +164,41 @@ return (
             </div>
 
             <Button disableRipple={true} 
-                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
+                    className="bg-principal text-blanco w-full rounded regular py-[12px]" 
                     startContent={<ChartColumnIncreasing />}
                     onClick={onOpen}
             >
               Visualizar Reporte
             </Button>
-            <Modal
-                    closeButton
-                    isOpen={isOpen}
-                    onOpenChange={onOpenChange}
-                    isDismissable={true}
-                    blur
-            >
-              <ModalContent className="h-[775px] min-w-[850px]">
-              <ModalHeader>
-                <div className="flex flex-row gap-2">
-                      <div className="text-xl font-bold">Reporte de Simulación</div>
-                  </div>
-              </ModalHeader>
-              <ModalBody>
-                <Dashboard onClose={onOpenChange}/>
-              </ModalBody>
-              </ModalContent>
-            </Modal>
+
+
+            {simulationType&&isOpen&&(simulationType==='semanal'||simulationType==='colapso')&&
+              <Modal
+                closeButton
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                isDismissable={true}
+                blur
+              >
+                <ModalContent className="h-[775px] min-w-[850px]">
+                <ModalHeader>
+                  <div className="flex flex-row gap-2">
+                        <div className="text-xl font-bold">{"Reporte de Simulación " + simulationType}</div>
+                    </div>
+                </ModalHeader>
+                <ModalBody>
+                  {simulationType==='semanal'?
+                  <Dashboard onClose={onOpenChange}/>
+                  :
+                  simulationType==='colapso'?
+                  <CollapseDashboard />
+                  :
+                  <></>
+                  }
+                </ModalBody>
+                </ModalContent>
+              </Modal>
+            }
         </div>
         
         

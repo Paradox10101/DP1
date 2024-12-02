@@ -11,23 +11,26 @@ import OpcionSimulacion from "@/app/Components/OpcionSimulacion";
 import OpcionEnvios from "@/app/Components/OpcionEnvios";
 import OpcionAlmacenes from "@/app/Components/OpcionAlmacenes";
 import OpcionVehiculos from "@/app/Components/OpcionVehiculos";
+import { simulationTypeAtom } from "@/atoms/simulationAtoms";
+import { useAtom } from "jotai";
 
 const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), {
   ssr: false
 });
 
-export default function SimulationPanel({tipoSimulacion}) {
-    return (
+export default function SimulationPanel() {
+  const [simulationType] = useAtom(simulationTypeAtom);  
+  return (
       <Card className="fixed left-5 top-1/2 -translate-y-1/2 w-[22vw] min-w-[400px] h-[95%] z-50 shadow-lg bg-white overflow-y-auto">
         <div className="flex flex-col h-full">
           <Header ClockContainer={ClockContainer} />
           <div className="flex flex-col gap-4 p-4 flex-1">
-            <Navigation tipoSimulacion={tipoSimulacion}/>
+            <Navigation tipoSimulacion={simulationType}/>
             
             <Tabs variant="default" defaultTab="1">
               <Tab tabId="1" title="Simulación">
                 <OpcionSimulacion
-                  tipoSimulacion={tipoSimulacion}
+                  tipoSimulacion={simulationType}
                 />
               </Tab>
               
