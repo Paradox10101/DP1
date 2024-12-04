@@ -8,12 +8,17 @@ import { TopClientsCard } from './TopClientsCard'
 import { useDailyOperation } from '../../../hooks/useDailyOperation'
 import { useAtom } from 'jotai'
 import { simulationStatusAtom, showSimulationModalAtom } from '@/atoms/simulationAtoms'
+import { Router } from "next/router"
+import { useRouter } from "next/navigation"
 
-export const DailyOperationsModal = ({ metrics }) => {
+export const DailyOperationsModal = ({ metrics, isOpenReport, onCloseReport }) => {
   const { startSimulation } = useDailyOperation()
   const [simulationStatus] = useAtom(simulationStatusAtom)
   const [, setShowModal] = useAtom(showSimulationModalAtom)
   
+  // El modal solo se muestra cuando la simulación está detenida
+  const isOpen = simulationStatus === 'stopped'
+  const router = useRouter();
   const {
     totalOrders = 0,
     averageQuantity = 0,
@@ -26,8 +31,10 @@ export const DailyOperationsModal = ({ metrics }) => {
   } = metrics
 
   const handleClose = () => {
+    onCloseReport()
     setShowModal(false)
   }
+
 
   const handleStartSimulation = async () => {
     try {
@@ -39,25 +46,43 @@ export const DailyOperationsModal = ({ metrics }) => {
   }
 
   const renderFooter = () => (
+    <>
+    {
+    isOpenReport?
     <Button
-      color="primary"
-      variant="shadow"
-      onPress={handleStartSimulation}
-      isDisabled={totalOrders === 0}
-    >
-      Iniciar Operaciones
-    </Button>
+        color="primary"
+        variant="shadow"
+        onPress={handleClose}
+      >
+        Cerrar
+      </Button>
+    :
+    isOpen?
+      
+      <Button
+        color="primary"
+        variant="shadow"
+        onPress={handleStartSimulation}
+        isDisabled={totalOrders === 0 || simulationStatus!=='stopped'}
+      >
+        Iniciar Operaciones
+      </Button>
+      
+    :
+    <></>
+    }
+    </>
+    
   )
 
-  // El modal solo se muestra cuando la simulación está detenida
-  const isOpen = simulationStatus === 'stopped'
+  
 
   return (
     <BaseModal
       title="Resumen de Operaciones Diarias"
       subtitle="Resumen de órdenes y métricas para la simulación del día"
       footer={renderFooter()}
-      isOpen={isOpen}
+      isOpen={isOpen || isOpenReport}
       onClose={handleClose}
     >
       {/* Layout Grid Principal - 2 columnas */}

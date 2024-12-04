@@ -29,13 +29,13 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   
   export default function OpcionSimulacion({
     tipoSimulacion,
+    openReport
   }) {    
     const [error, setError] = useAtom(errorAtom);
     const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
     const [serverAvailable, setServerAvailable] = useAtom(serverAvailableAtom);
     const [simulationType] = useAtom(simulationTypeAtom);
     const [showModal, setShowModal] = useAtom(showSimulationModalAtom);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
   
     
     // Función para traducir el tipo de simulación
@@ -121,15 +121,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
         console.log("servidor disponible: ", serverAvailable);
     }, [serverAvailable])
 
-/*
-    useEffect(()=>{
-      
-      if(simulationStatus==='stopped'){
-          onOpen();
-      }
-    }, [simulationStatus])
-*/
-
 return (
 
         <div className="h-full flex flex-col justify-between gap-2">
@@ -162,42 +153,14 @@ return (
               <SimulationSummary/>
 
             </div>
-
+            {tipoSimulacion === 'diaria' &&
             <Button disableRipple={true} 
                     className="bg-principal text-blanco w-full rounded regular py-[12px]" 
                     startContent={<ChartColumnIncreasing />}
-                    onClick={onOpen}
+                    onClick={openReport}
             >
               Visualizar Reporte
             </Button>
-
-
-            {simulationType&&isOpen&&(simulationType==='semanal'||simulationType==='colapso')&&
-              <Modal
-                closeButton
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                isDismissable={true}
-                blur
-              >
-                <ModalContent className="h-[775px] min-w-[850px]">
-                <ModalHeader>
-                  <div className="flex flex-row gap-2">
-                        <div className="text-xl font-bold">{"Reporte de Simulación " + simulationType}</div>
-                    </div>
-                </ModalHeader>
-                <ModalBody>
-                  {simulationType==='semanal'?
-                  <Dashboard onClose={onOpenChange}/>
-                  :
-                  simulationType==='colapso'?
-                  <CollapseDashboard />
-                  :
-                  <></>
-                  }
-                </ModalBody>
-                </ModalContent>
-              </Modal>
             }
         </div>
         
@@ -206,12 +169,3 @@ return (
 
 }
 
-/*
-<Button disableRipple={true} 
-                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
-                    startContent={<ChartColumnIncreasing />}
-                    onClick={onOpen}
-            >
-              Visualizar Reporte
-</Button>
-*/

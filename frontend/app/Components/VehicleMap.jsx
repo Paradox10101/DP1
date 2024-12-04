@@ -118,8 +118,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
-  const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
-  const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
+  
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -1038,13 +1037,6 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
-  useEffect(()=>{
-      
-    if(simulationStatus==='stopped'){
-        onOpenReport();
-    }
-  }, [simulationStatus])
-
   
   return (
     <div className="relative w-full h-full">
@@ -1089,36 +1081,6 @@ const VehicleMap = ({ simulationStatus }) => {
             </ModalBody>
           </ModalContent>
       </Modal>
-
-      {/* Modal para ver reporte */}
-      {simulationType&&isOpenReport&&(simulationType==='semanal'||simulationType==='colapso')&&
-      <Modal
-        closeButton
-        isOpen={isOpenReport}
-        onOpenChange={onOpenChangeReport}
-        isDismissable={true}
-        blur
-      >
-        <ModalContent className="h-[775px] min-w-[850px]">
-        <ModalHeader>
-          <div className="flex flex-row gap-2">
-                <div className="text-xl font-bold">{"Reporte de Simulación " + simulationType}</div>
-            </div>
-        </ModalHeader>
-        <ModalBody>
-          {simulationType==='semanal'?
-          <Dashboard onClose={onOpenChangeReport}/>
-          :
-          simulationType==='colapso'?
-          <CollapseDashboard />
-          :
-          <></>
-          }
-        </ModalBody>
-        </ModalContent>
-      </Modal>
-      }
-
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );

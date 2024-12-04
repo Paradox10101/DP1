@@ -14,6 +14,8 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import SimulationModal from '@/app/Components/SimulationModal';
 import SimulationPanel from "../Components/SimulationPanel/SimulationPanel";
+import SimulationReport from "@/app/Components/SimulationReport"
+import { useDisclosure } from "@nextui-org/react";
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 
@@ -22,7 +24,10 @@ const page = () => {
   const [error, setError] = useAtom(simulationErrorAtom);
   const [performanceMetrics] = useAtom(performanceMetricsAtom);
   //const [tipoSimulacion, setTipoSimulacion] = useState('semanal');
-  const [,setSimulationType] = useAtom(simulationTypeAtom);
+  const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
+  const [loadedSimulationType, setLoadedSimulationType] = useState(false);
+  const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
+  
 
   const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -30,7 +35,7 @@ const page = () => {
 
   useEffect(() => {
     // Cargar las métricas de órdenes al iniciar
-    const fetchStatusSimulation = async () => {
+    const fetchSimulationType = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/simulation/type`)
         if (!response.ok) throw new Error('Error al cargar el estado actual de simulacion')
@@ -41,16 +46,32 @@ const page = () => {
         setError('Error al cargar el estado de la simulacion')
       }
     }
-    fetchStatusSimulation()
-  }, [])
+    if(simulationStatus!=='stopped')
+      fetchSimulationType()
+      
+    else{
+      if(!simulationType)
+        onOpenChangeReport()
+    }
+    setLoadedSimulationType(true);
+  }, [simulationStatus])
+
+  
 
   return (
     <>
-        <SimulationModal />
+        {
+          (loadedSimulationType && simulationStatus === 'stopped' && simulationType) &&
+          <SimulationReport simulationType={simulationType} isOpen={isOpenReport} onOpenChange={onOpenChangeReport}/>
+        }
+        {(loadedSimulationType && simulationStatus === 'stopped') &&
+          <SimulationModal />
+        }
+        
         <div className="relative w-screen h-screen">
             <PerformanceMetrics metrics={performanceMetrics} />
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
-            <SimulationPanel/>
+            <SimulationPanel openReport={onOpenReport}/>
             <MapLegend cornerPosition={"top-20 right-5"} />
         </div>
     </>

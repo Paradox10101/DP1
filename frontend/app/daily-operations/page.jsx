@@ -15,6 +15,7 @@ import {
   showSimulationModalAtom,
   simulationTypeAtom
 } from '@/atoms/simulationAtoms'
+import { useDisclosure } from '@nextui-org/react'
 
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false })
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false })
@@ -29,7 +30,9 @@ const DailyOperationsPage = () => {
   const [performanceMetrics] = useAtom(performanceMetricsAtom)
   const [, setShowModal] = useAtom(showSimulationModalAtom)
   //const [tipoSimulacion, setTipoSimulacion] = useState('diaria');
-  const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
+  const [,setSimulationType] = useAtom(simulationTypeAtom);
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [loadingModal, setLoadingModal] = useState(false)
 
   const [ordersMetrics, setOrdersMetrics] = useState({
     totalOrders: 0,
@@ -39,9 +42,12 @@ const DailyOperationsPage = () => {
 
   useEffect(() => {
     // Mostrar el modal cuando la simulación está detenida
+    
     if (simulationStatus === 'stopped') {
       setShowModal(true)
     }
+    
+    setLoadingModal(true);
   }, [simulationStatus, setShowModal])
 
   useEffect(() => {
@@ -66,15 +72,16 @@ const DailyOperationsPage = () => {
 
   return (
     <>
-      <DailyOperationsModal metrics={ordersMetrics} />
+      { loadingModal&&
+        <DailyOperationsModal metrics={ordersMetrics} isOpenReport={isOpen} onCloseReport={onClose}/>
+      }
       <div className="relative w-screen h-screen">
         <PerformanceMetrics metrics={performanceMetrics} />
         <VehicleMap
           simulationStatus={simulationStatus}
           setSimulationStatus={setSimulationStatus}
-          tipoSimulacion={simulationType}
         />
-        <SimulationPanel tipoSimulacion={simulationType}/>
+        <SimulationPanel openReport={onOpen} />
         <MapLegend cornerPosition={"top-20 right-5"} />
       </div>
     </>

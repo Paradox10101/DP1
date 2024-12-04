@@ -284,7 +284,7 @@ public class SimulationRouter extends BaseRouter {
                 status.addProperty("currentTime", "Simulation state is null");
             }
 
-            status.addProperty("type", (this.simulationType!=null && !isShutdown?this.simulationType.toString():""));
+            status.addProperty("type", (this.simulationType!=null ? this.simulationType.toString():""));
 
             return status;
         });

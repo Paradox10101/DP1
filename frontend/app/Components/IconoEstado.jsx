@@ -57,15 +57,21 @@ const IconoEstado = ({
         rounded-full 
         flex items-center justify-center 
         shadow-lg 
-        ring-2 ${ringColor} 
-        transform transition-all duration-200 
-        hover:scale-110 
-        hover:shadow-xl
+        ring-2 ${ringColor}
       `}>
-        <Icono className={`${classNameContenido} transition-transform group-hover:scale-110`} />
+        <Icono className={`${classNameContenido} `} />
       </div>
       
+
+    </div>
+  );
+};
+
+export default IconoEstado;
+
+
       {/* Tooltip moderno */}
+/*
       <div className="
         absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 
         px-3 py-2 
@@ -91,7 +97,8 @@ const IconoEstado = ({
             </div>
           )}
         </div>
-        {/* Flecha del tooltip */}
+        {/* Flecha del tooltip }*/
+        /*
         <div className="
           absolute -bottom-1 left-1/2 transform -translate-x-1/2 
           w-2 h-2 
@@ -100,8 +107,4 @@ const IconoEstado = ({
           rotate-45
         "/>
       </div>
-    </div>
-  );
-};
-
-export default IconoEstado;
+      */

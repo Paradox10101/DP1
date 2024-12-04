@@ -18,7 +18,7 @@ const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), 
   ssr: false
 });
 
-export default function SimulationPanel() {
+export default function SimulationPanel({openReport}) {
   const [simulationType] = useAtom(simulationTypeAtom);  
   return (
       <Card className="fixed left-5 top-1/2 -translate-y-1/2 w-[22vw] min-w-[400px] h-[95%] z-50 shadow-lg bg-white overflow-y-auto">
@@ -31,6 +31,8 @@ export default function SimulationPanel() {
               <Tab tabId="1" title="Simulación">
                 <OpcionSimulacion
                   tipoSimulacion={simulationType}
+                  openReport={openReport}
+                  
                 />
               </Tab>
               
