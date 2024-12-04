@@ -19,7 +19,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             </ModalHeader>
             <ModalBody>
             {simulationType==='semanal'?
-                <Dashboard onClose={onOpenChange}/>
+                <Dashboard />
             :
             simulationType==='colapso'?
                 <CollapseDashboard />

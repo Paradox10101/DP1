@@ -46,14 +46,15 @@ const page = () => {
         setError('Error al cargar el estado de la simulacion')
       }
     }
-    if(simulationStatus!=='stopped')
-      fetchSimulationType()
-      
-    else{
-      if(!simulationType)
-        onOpenChangeReport()
-    }
+    fetchSimulationType()
     setLoadedSimulationType(true);
+  }, [])
+
+  useEffect(()=>{
+    if(simulationStatus=='stopped'){
+      onOpenReport()
+      setLoadedSimulationType(true);
+    }
   }, [simulationStatus])
 
   
@@ -61,13 +62,13 @@ const page = () => {
   return (
     <>
         {
-          (loadedSimulationType && simulationStatus === 'stopped' && simulationType) &&
+          (loadedSimulationType && simulationStatus === 'stopped') &&
+            <SimulationModal />
+        }
+        {
+          (loadedSimulationType  && simulationType && simulationStatus === 'stopped') &&
           <SimulationReport simulationType={simulationType} isOpen={isOpenReport} onOpenChange={onOpenChangeReport}/>
         }
-        {(loadedSimulationType && simulationStatus === 'stopped') &&
-          <SimulationModal />
-        }
-        
         <div className="relative w-screen h-screen">
             <PerformanceMetrics metrics={performanceMetrics} />
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
