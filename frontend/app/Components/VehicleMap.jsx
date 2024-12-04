@@ -9,7 +9,7 @@ import {
   vehiclePositionsAtom,
   loadingAtom
 } from '../atoms';
-import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
+import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -28,6 +28,7 @@ import ModalVehiculo from './ModalVehiculo';
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 import Dashboard from './Dashboard';
+import CollapseDashboard from './CollapseDashboard';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -101,7 +102,7 @@ const StatusBadge = ({ status }) => {
   }
 };
 
-const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
+const VehicleMap = ({ simulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -117,7 +118,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
-  const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
+  
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -1036,12 +1037,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [error, connect, checkStatus, fetchLocations]);
 
-  useEffect(()=>{
-      
-    if(simulationStatus==='stopped'){
-        onOpenReport();
-    }
-  }, [simulationStatus])
   
   return (
     <div className="relative w-full h-full">
@@ -1086,27 +1081,6 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
             </ModalBody>
           </ModalContent>
       </Modal>
-
-      {/* Modal para ver reporte */}
-      <Modal
-                    closeButton
-                    isOpen={isOpenReport}
-                    onOpenChange={onOpenChangeReport}
-                    isDismissable={true}
-                    blur
-            >
-              <ModalContent className="h-[775px] min-w-[850px]">
-              <ModalHeader>
-                <div className="flex flex-row gap-2">
-                      <div className="text-xl font-bold">Reporte de Simulación</div>
-                  </div>
-              </ModalHeader>
-              <ModalBody>
-                <Dashboard onClose={onOpenChangeReport}/>
-              </ModalBody>
-              </ModalContent>
-        </Modal>
-
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );
