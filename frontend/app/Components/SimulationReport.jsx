@@ -8,7 +8,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             closeButton
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            isDismissable={true}
+            isDismissable={false}
             blur
         >
             <ModalContent className="h-[775px] min-w-[850px]">
@@ -19,7 +19,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             </ModalHeader>
             <ModalBody>
             {simulationType==='semanal'?
-                <Dashboard />
+                <Dashboard onClose={onOpenChange}/>
             :
             simulationType==='colapso'?
                 <CollapseDashboard />

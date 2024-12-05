@@ -105,8 +105,8 @@ public class Main {
         DataLoader dataLoader = new DataLoader();
 
         // Cargar datos base
-        locations = dataLoader.loadLocations("src/main/resources/locations.txt");
-        List<Edge> edges = dataLoader.loadEdges("src/main/resources/edges.txt", locations);
+        locations = dataLoader.loadLocations("src/main/resources/locations.txt", "160401"); //Se excluye el ubigeo 160401
+        List<Edge> edges = dataLoader.loadEdges("src/main/resources/edgesv2.txt", locations);
         List<Vehicle> vehicles = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
         List<Blockage> blockages = dataLoader.loadBlockages(startDateTime, endDateTime);
         List<Maintenance> maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
@@ -133,7 +133,7 @@ public class Main {
             startDateTime = earliestOrder;
         } else {
             // Para otros tipos de simulación, cargar desde archivo
-            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations);
+            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations, "160401");
         }
 
         routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);

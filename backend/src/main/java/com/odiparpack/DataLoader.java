@@ -53,6 +53,38 @@ public class DataLoader {
         return locations;
     }
 
+    //Carga de las ubicaciones que excluye un ubigeo seleccionado
+    public Map<String, Location> loadLocations(String filePath, String excludedUbigeoLocation) {
+        Map<String, Location> locations = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                String[] parts = line.split(",");
+                if (parts.length < 7) continue; // Asegurarse de que hay suficientes campos
+                String ubigeo = parts[0].trim();
+                String department = parts[1].trim();
+                String province = parts[2].trim();
+                double latitude = Double.parseDouble(parts[3].trim());
+                double longitude = Double.parseDouble(parts[4].trim());
+                String naturalRegion = parts[5].trim();
+                int warehouseCapacity = Integer.parseInt(parts[6].trim());
+                if(excludedUbigeoLocation.equals(ubigeo))continue;
+                Location location = new Location(ubigeo, department, province, latitude, longitude, naturalRegion, warehouseCapacity);
+                locations.put(ubigeo, location);
+
+                // Población automática de ubigeoToNameMap
+                ubigeoToNameMap.put(ubigeo, province);
+
+                // Población de nameToUbigeoMap
+                nameToUbigeoMap.put(province, ubigeo);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return locations;
+    }
+
     public List<Vehicle> loadVehicles(String filePath) {
         List<Vehicle> vehicles = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -144,6 +176,79 @@ public class DataLoader {
 
         return orders;
     }
+
+    //Cargag de ordenes excluyendo aquellas con un ubigeo destino especificado
+    public List<Order> loadOrders(LocalDateTime startDateTime, LocalDateTime endDateTime, Map<String, Location> locations, String destinationUbigeoExcluded) {
+        List<Order> orders = new ArrayList<>();
+        AtomicInteger orderId = new AtomicInteger(1);
+        Pattern timePattern = Pattern.compile("(\\d{2})\\s(\\d{2}:\\d{2}),\\s*(\\d+)\\s*=>\\s*(\\d+),\\s*(\\d+),\\s*(\\d+)");
+
+        // Obtener los archivos relevantes
+        List<String> files = endDateTime == null ?
+                getAllOrderFiles() :
+                getMonthFileNamesBetween(startDateTime, endDateTime);
+
+        for (String filePath : files) {
+            // Extraer año y mes del nombre del archivo
+            String fileName = new File(filePath).getName();
+            Matcher yearMonthMatcher = Pattern.compile("ventas(\\d{4})(\\d{2})").matcher(fileName);
+
+            if (!yearMonthMatcher.find()) continue;
+
+            int year = Integer.parseInt(yearMonthMatcher.group(1));
+            int month = Integer.parseInt(yearMonthMatcher.group(2));
+
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    Matcher m = timePattern.matcher(line);
+                    if (!m.find()) continue;
+
+                    try {
+                        // Extraer componentes de la línea usando los grupos del patrón
+                        int day = Integer.parseInt(m.group(1));
+                        LocalTime time = LocalTime.parse(m.group(2));
+                        String originUbigeo = m.group(3);
+                        String destinationUbigeo = m.group(4);
+                        int quantity = Integer.parseInt(m.group(5));
+                        String clientId = String.format("%06d", Integer.parseInt(m.group(6)));
+
+                        // Construir fecha
+                        LocalDateTime orderDateTime = LocalDateTime.of(year, month, day, time.getHour(), time.getMinute());
+
+                        //Verificacion de exclusion de ubigeo
+                        if(destinationUbigeoExcluded.equals(destinationUbigeo))continue;
+
+                        // Verificar rango de fechas
+                        if (orderDateTime.isBefore(startDateTime)) continue;
+                        if (endDateTime != null && orderDateTime.isAfter(endDateTime)) continue;
+
+                        // Crear orden
+                        Order order = new Order(
+                                orderId.getAndIncrement(),
+                                originUbigeo,
+                                destinationUbigeo,
+                                quantity,
+                                orderDateTime,
+                                calculateDueDate(orderDateTime, destinationUbigeo, locations),
+                                clientId
+                        );
+
+                        order.setOrderCode(String.format("P%d%06d", order.getId() / 1000000, order.getId() % 1000000));
+                        orders.add(order);
+
+                    } catch (NumberFormatException | DateTimeException e) {
+                        logger.warning("Error parsing line: " + line);
+                    }
+                }
+            } catch (IOException e) {
+                logger.severe("Error reading file " + filePath + ": " + e.getMessage());
+            }
+        }
+
+        return orders;
+    }
+
 
     private List<String> getAllOrderFiles() {
         // Ya que los archivos están ordenados, podemos leerlos directamente
