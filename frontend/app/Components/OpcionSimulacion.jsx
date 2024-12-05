@@ -1,4 +1,4 @@
-import { Button, Tab, Tabs, useDisclosure } from "@nextui-org/react"
+import { Button, Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs, useDisclosure } from "@nextui-org/react"
 import { Calendar, ChartColumnIncreasing, Clock, Pause, Play, Square } from "lucide-react"
 import Dashboard from "@/app/Components/Dashboard"
 import CollapseDashboard from "@/app/Components/CollapseDashboard"
@@ -7,7 +7,7 @@ import SimulationControls from '../Components/SimulationControls';
 import { useAtom } from "jotai";
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '../../atoms/errorAtoms';
 import { simulationStatusAtom, simulationTypeAtom, showSimulationModalAtom } from "@/atoms/simulationAtoms";
-import { useCallback, useState, useEffect, useMemo } from "react";
+import { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import { serverAvailableAtom } from '@/atoms/simulationAtoms';
 import { useWebSocket } from "@/hooks/useWebSocket";
 import SimulationSpeedControl from '../Components/SimulationSpeedControl';
@@ -29,13 +29,13 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   
   export default function OpcionSimulacion({
     tipoSimulacion,
+    openReport
   }) {    
     const [error, setError] = useAtom(errorAtom);
     const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
     const [serverAvailable, setServerAvailable] = useAtom(serverAvailableAtom);
     const [simulationType] = useAtom(simulationTypeAtom);
     const [showModal, setShowModal] = useAtom(showSimulationModalAtom);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
   
     
     // Función para traducir el tipo de simulación
@@ -121,7 +121,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
         console.log("servidor disponible: ", serverAvailable);
     }, [serverAvailable])
 
-
 return (
 
         <div className="h-full flex flex-col justify-between gap-2">
@@ -154,27 +153,19 @@ return (
               <SimulationSummary/>
 
             </div>
+            {tipoSimulacion === 'diaria' &&
             <Button disableRipple={true} 
-                    className="bg-placeholder text-blanco w-full rounded regular py-[12px]" 
+                    className="bg-principal text-blanco w-full rounded regular py-[12px]" 
                     startContent={<ChartColumnIncreasing />}
-                    onClick={onOpen}
+                    onClick={openReport}
             >
               Visualizar Reporte
             </Button>
-            <ModalContainer
-                isOpen={isOpen}
-                onOpen={onOpen}
-                onOpenChange={onOpenChange}
-                header={
-                <div className="flex flex-row gap-2">
-                    <div className="text-xl font-bold">Reporte de Simulación</div>
-                </div>
-                }
-                body={<Dashboard />}
-            />
+            }
         </div>
         
         
     )
 
 }
+

@@ -160,3 +160,90 @@ spark-submit --class com.odiparpack.Main --master local[4] target/OdiparPackGLS-
 Este proyecto está diseñado para simular el comportamiento de vehículos y oficinas/almacenes usando Apache Spark y Maven en un entorno de desarrollo en Visual Studio Code. Sigue los pasos anteriores para configurar y ejecutar el proyecto sin problemas.
 
 Si tienes alguna duda o necesitas asistencia, por favor, revisa los errores comunes y soluciones en este README, o consulta la documentación oficial de Maven y Spark.
+
+### Documentación del Proyecto: Instrucciones de Ejecución para Backend y Frontend
+
+#### 1. **Requisitos Previos**
+Antes de ejecutar el proyecto, asegúrese de tener instaladas las siguientes herramientas:
+- **Java**: JDK 11 o superior.
+- **Maven**: Para la gestión de dependencias y construcción del backend.
+- **Node.js**: Versión 14 o superior.
+- **npm**: Para la gestión de dependencias y ejecución del frontend.
+
+#### 2. **Ejecución del Backend**
+
+Para iniciar el backend, siga estos pasos:
+
+1. **Navegue al directorio del backend**.
+   - Abierto en la terminal, acceda a la carpeta que contiene el código fuente del backend.
+
+2. **Ejecute los siguientes comandos para construir y ejecutar la aplicación**:
+
+   - **Limpiar y construir el proyecto con Maven**:
+     ```bash
+     mvn clean install
+     ```
+     Este comando descargará las dependencias necesarias y compilará el proyecto.
+
+   - **Ejecutar la aplicación**:
+     ```bash
+     mvn exec:java
+     ```
+     Este comando iniciará el backend y lo pondrá en ejecución.
+
+   > Asegúrese de que el servidor backend esté corriendo antes de intentar iniciar el frontend.
+
+#### 3. **Ejecución del Frontend**
+
+Para iniciar el frontend, siga estos pasos:
+
+1. **Navegue al directorio del frontend**.
+   - En una nueva terminal, acceda a la carpeta que contiene el código fuente del frontend.
+
+2. **Instalar las dependencias del frontend**:
+
+   - Ejecute el siguiente comando para instalar todas las dependencias necesarias:
+     ```bash
+     npm install
+     ```
+
+3. **Ejecutar la aplicación en modo desarrollo**:
+
+   - Si desea ejecutar el frontend en **modo desarrollo** (con recarga automática de cambios):
+     ```bash
+     npm run dev
+     ```
+     Esto iniciará el servidor de desarrollo y podrá acceder al frontend en `http://localhost:3000` (o el puerto configurado).
+
+   > Si encuentra problemas al ejecutar el servidor en desarrollo o necesita construir la aplicación para producción, siga los siguientes pasos.
+
+4. **Construir y ejecutar la aplicación para producción**:
+
+   - **Construir la aplicación**:
+     ```bash
+     npm run build
+     ```
+     Este comando crea una versión optimizada del frontend.
+
+   - **Iniciar la aplicación en producción**:
+     ```bash
+     npm run start
+     ```
+     Esto iniciará el servidor de producción y podrá acceder al frontend a través de la URL configurada (por ejemplo, `http://localhost:3000` o el puerto configurado).
+
+---
+
+### Resumen de Comandos
+
+#### Backend
+
+1. `mvn clean install` - Construye el backend.
+2. `mvn exec:java` - Ejecuta el backend.
+
+#### Frontend
+
+1. `npm install` - Instala las dependencias del frontend.
+2. `npm run dev` - Inicia el frontend en modo desarrollo.
+3. `npm run build` - Construye la versión de producción del frontend.
+4. `npm run start` - Inicia el frontend en modo producción.
+

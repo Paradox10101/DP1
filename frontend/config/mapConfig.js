@@ -5,6 +5,7 @@ export const MAP_CONFIG = {
     STYLE_URL: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD',
     DEFAULT_CENTER: [-76.991, -12.046],
     DEFAULT_ZOOM: 6,
+    BOUNDS: [[-91.35, -20.35], [-60.65, 0.15]], // Limita a que solo aparezca el mapa del Peru
     
     // Configuración de fuentes
     SOURCES: {
@@ -144,7 +145,7 @@ export const MAP_CONFIG = {
         source: MAP_CONFIG.SOURCES.LOCATIONS.id,
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': '#08CA57',
+          'circle-color': '#FFA500',
           'circle-radius': [
             'step',
             ['get', 'point_count'],
@@ -213,7 +214,8 @@ export const MAP_CONFIG = {
           'text-anchor': 'top',
         },
         paint: {
-          'text-color': '#000000',
+          'icon-color': '#FFA500',
+          'text-color': '#FFA500',
           'text-halo-color': '#FFFFFF',
           'text-halo-width': 1,
         }

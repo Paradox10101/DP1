@@ -3,6 +3,8 @@ package com.odiparpack;
 import com.google.gson.JsonObject;
 import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
+import com.google.protobuf.*;
+import com.odiparpack.Main.SolutionData;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
 import com.odiparpack.tasks.*;
@@ -291,6 +293,36 @@ public class SimulationRunner {
                 intervalMillis,
                 TimeUnit.MILLISECONDS
         );
+         /* Runnable task = () -> {
+            try {
+                if (!state.isPaused() && !state.isStopped()) {
+                    // Determinar el intervalo de tiempo según el tipo de simulación
+                    java.time.Duration timeAdvance;
+                    if (state.getSimulationType() == SimulationRouter.SimulationType.DAILY) {
+                        timeAdvance = java.time.Duration.ofSeconds(TIME_ADVANCEMENT_INTERVAL_SECONDS);
+                    } else {
+                        timeAdvance = java.time.Duration.ofMinutes(TIME_ADVANCEMENT_INTERVAL_MINUTES);
+                    }
+
+                    state.updateSimulationTime(timeAdvance);
+
+                    // Si es simulación de colapso y se detectó uno, detener
+                    if (state.getSimulationType() == SimulationRouter.SimulationType.COLLAPSE &&
+                            state.checkCapacityCollapse() || state.checkLogisticCollapse()) {
+                        isSimulationRunning.set(false);
+                        state.stopSimulation();
+                    }
+                }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error en time advancement task", e);
+            }
+        };
+
+        return scheduledExecutorService.scheduleAtFixedRate(
+                task,
+                0,
+                1000L, // 1 segundo real
+                TimeUnit.MILLISECONDS);*/
     }
 
     private static Future<?> schedulePlanning(

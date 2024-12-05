@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
+import static java.lang.Math.abs;
 
 public class SimulationState {
     private Map<String, Vehicle> vehicles;
@@ -78,6 +79,22 @@ public class SimulationState {
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
     private Map<String, Integer> pedidosPorRegion = new HashMap<>();
     private Map<String, Double> eficienciaPedidos = new HashMap<>();
+    private int averiasTipo1 = 0;
+    private int averiasTipo2 = 0;
+    private int averiasTipo3 = 0;
+
+    // Agregar getters
+    public int getAveriasTipo1() {
+        return averiasTipo1;
+    }
+
+    public int getAveriasTipo2() {
+        return averiasTipo2;
+    }
+
+    public int getAveriasTipo3() {
+        return averiasTipo3;
+    }
 
     public List<String> getAlmacenesPrincipales() {
         return almacenesPrincipales;
@@ -113,6 +130,81 @@ public class SimulationState {
 
     public void setActiveBlockages(List<Blockage> activeBlockages) {
         this.activeBlockages = activeBlockages;
+    }
+
+    public boolean checkCapacityCollapse() {
+        lock.lock();
+        try {
+            // Usar WarehouseManager para obtener capacidades actuales
+            for (Map.Entry<String, Location> entry : locations.entrySet()) {
+                String ubigeo = entry.getKey();
+                Location location = entry.getValue();
+                int maxCapacity = location.getWarehouseCapacity();
+
+                if (maxCapacity <= 0) {
+                    logger.warning("Ubicación " + ubigeo + " tiene capacidad máxima invalida: " + maxCapacity);
+                    continue;
+                }
+
+                // Obtener capacidad actual del WarehouseManager
+                int currentCapacity = warehouseManager.getCurrentCapacity(ubigeo);
+                int capacidadUtilizada = abs(maxCapacity - currentCapacity);
+
+                // Verificar si la capacidad utilizada supera la máxima
+                if (capacidadUtilizada > maxCapacity) {
+                    logger.severe("¡Colapso logístico detectado por capacidad!");
+                    logger.severe(String.format("Oficina %s ha excedido su capacidad máxima. Utilizada: %d, Máxima: %d",
+                            location.getProvince(), currentCapacity, maxCapacity));
+
+                    JsonObject collapseInfo = new JsonObject();
+                    collapseInfo.addProperty("type", "LOGISTIC_COLLAPSE");
+                    collapseInfo.addProperty("location", location.getProvince());
+                    collapseInfo.addProperty("ubigeo", ubigeo);
+                    collapseInfo.addProperty("capacidadUtilizada", currentCapacity);
+                    collapseInfo.addProperty("maxCapacity", maxCapacity);
+                    collapseInfo.addProperty("currentTime", currentTime.toString());
+
+                    SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(collapseInfo);
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean checkLogisticCollapse() {
+        lock.lock();
+        try {
+            // Verificar todos los pedidos no entregados
+            for (Order order : orders) {
+                if (order.getStatus() != Order.OrderStatus.DELIVERED) {
+
+                    // Si el tiempo actual es posterior al tiempo límite de entrega
+                    if (currentTime.isAfter(order.getDueTime())) {
+                        logger.severe("¡Colapso logístico detectado!");
+                        logger.severe("Pedido " + order.getOrderCode() +
+                                " no entregado. Tiempo límite: " + order.getDueTime() +
+                                ", Tiempo actual: " + currentTime);
+
+                        // Notificar al frontend a través de WebSocket
+                        JsonObject collapseInfo = new JsonObject();
+                        collapseInfo.addProperty("type", "LOGISTIC_COLLAPSE");
+                        collapseInfo.addProperty("orderCode", order.getOrderCode());
+                        collapseInfo.addProperty("dueTime", order.getDueTime().toString());
+                        collapseInfo.addProperty("currentTime", currentTime.toString());
+
+                        SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(collapseInfo);
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public long[][] getCurrentTimeMatrix() {
@@ -185,13 +277,21 @@ public class SimulationState {
                 ", Last Update: " + lastUpdateTime);
     }
 
-    public void updateSimulationTime(Duration timeToAdvance) {
+    public void updateSimulationTime(java.time.Duration timeToAdvance) {
         stateLock.lock();
         try {
             if (!isPaused && !isStopped) {
                 // Actualizar tiempo de simulación con el Duration proporcionado
                 currentTime = currentTime.plus(timeToAdvance);
                 logger.info("Tiempo actualizado - Current Time: " + currentTime);
+
+
+                // Verificar colapso logístico
+                if (checkLogisticCollapse()) {
+                    if (simulationType == SimulationRouter.SimulationType.COLLAPSE) {
+                        stopSimulation();
+                    }
+                }
 
                 // Actualizar tiempo efectivo de ejecución
                 long now = System.currentTimeMillis();
@@ -1428,12 +1528,15 @@ public class SimulationState {
                 switch (breakdownType) {
                     case "1":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_1;
+                        averiasTipo1++;
                         break;
                     case "2":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_2;
+                        averiasTipo2++;
                         break;
                     case "3":
                         estadoAveria = Vehicle.EstadoVehiculo.AVERIADO_3;
+                        averiasTipo3++;
                         break;
                     default:
                         logger.warning("Tipo de avería no reconocido: " + breakdownType);
@@ -1453,6 +1556,10 @@ public class SimulationState {
                 String logMessage = String.format("Avería tipo %s provocada en el vehículo %s en %s.",
                         breakdownType, vehicleCode, currentTime);
                 addBreakdownLog(vehicleCode, logMessage);
+
+                //AQUI TIENE QUE VERIFICARSE EL TIPO DE AVERIA, PARA LA METRICA Y EL REPORTE
+
+
             } else {
                 logger.warning(String.format("No se puede provocar avería en el vehículo %s porque no está en tránsito: estado %s", vehicleCode, vehicle.getEstado()));
             }

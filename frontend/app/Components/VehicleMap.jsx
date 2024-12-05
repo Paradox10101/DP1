@@ -9,7 +9,7 @@ import {
   vehiclePositionsAtom,
   loadingAtom
 } from '../atoms';
-import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
+import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -27,6 +27,8 @@ import ModalVehiculo from './ModalVehiculo';
 
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
+import Dashboard from './Dashboard';
+import CollapseDashboard from './CollapseDashboard';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -47,7 +49,6 @@ const getSvgString = (IconComponent, bgColor) => {
 
 
 // Componente StatusBadge actualizado
-// Componente StatusBadge actualizado
 const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
@@ -59,19 +60,19 @@ const StatusBadge = ({ status }) => {
       case "AVERIADO_1":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado T1
+                  Averiado Leve
               </div>
           );
       case "AVERIADO_2":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T2
+                Averiado Moderado
             </div>
         );
       case "AVERIADO_3":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado T3
+                Averiado Grave
             </div>
         );
       case "EN_MANTENIMIENTO":
@@ -101,7 +102,7 @@ const StatusBadge = ({ status }) => {
   }
 };
 
-const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
+const VehicleMap = ({ simulationStatus }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -117,6 +118,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
+  
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -318,7 +320,10 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         attributionControl: false,
       });
 
-      mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+      //mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+      mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+      mapRef.current.dragRotate.disable();
+      mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
       class CenterControl {
@@ -353,7 +358,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         }
       }
 
-      mapRef.current.addControl(new CenterControl(), 'bottom-right');
+      //mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
       mapRef.current.on('load', async () => {
         console.log('Mapa completamente cargado');
@@ -972,7 +977,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
             'text-anchor': 'top',
           },
           paint: {
-            'text-color': '#000000',
+            'text-color': '#FFA500',
             'text-halo-color': '#FFFFFF',
             'text-halo-width': 1,
           },
@@ -1084,8 +1089,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
               )}
             </ModalBody>
           </ModalContent>
-        </Modal>
-
+      </Modal>
       <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );

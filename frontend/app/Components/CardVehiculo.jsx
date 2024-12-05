@@ -4,18 +4,7 @@ import BarraProgreso from "@/app/Components/BarraProgreso";
 import IconoEstado from "./IconoEstado";
 import { useEffect } from "react";
 
-export default function CardVehiculo({ vehiculo, renderStatus}) {
-    // Helper function to format status text
-    const formatStatus = (status) => {
-        if (status === "EN_TRANSITO_ORDEN") return "En Tránsito";
-        return status
-            .toLowerCase()
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, (char) => char.toUpperCase());
-    };
-    
-
-    
+export default function CardVehiculo({ vehiculo, RenderStatus}) {
 
     return (
         <div className="flex flex-col p-4 border-2 stroke-black rounded-xl gap-1 w-full">
@@ -30,9 +19,9 @@ export default function CardVehiculo({ vehiculo, renderStatus}) {
                     ) : null}
                     <div className="pequenno_bold">{vehiculo.vehicleCode}</div>
                 </div>
-                {
-                    renderStatus
-                }
+                
+                <RenderStatus status={vehiculo.status}/>
+                
             </div>
             <div className="flex flex-row gap-2 items-center">
                 <MapPin size={16} />
@@ -55,8 +44,3 @@ export default function CardVehiculo({ vehiculo, renderStatus}) {
         </div>
     );
 }
-/*
-<div className={`pequenno border rounded-xl w-[140px] text-center`}>
-    {formatStatus(vehiculo.status)}
-</div>
-*/

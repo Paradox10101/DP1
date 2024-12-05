@@ -369,7 +369,7 @@ export default function OpcionAlmacenes() {
                             <div className="w-1/2 flex flex-row gap-4">
                               <div className="flex flex-col gap-1 w-full">
                                   <div className="regular_bold">
-                                      Cantidad de paquetes:
+                                      Capacidad de oficina (paquetes):
                                   </div>
                                   <div className="w-full flex flex-row justify-between gap-2">
                                       <Input
@@ -391,12 +391,12 @@ export default function OpcionAlmacenes() {
                                       <div className="flex items-center">hasta</div>
                                       <Input
                                           type="number"
-                                          value={locationsFilter.maxQuantity || 0}
+                                          value={locationsFilter.maxQuantity === null ? "" : locationsFilter.maxQuantity}
                                           min={0}
                                           step="1"
                                           className="w-full text-right"
                                           onChange={(e) => {
-                                            const value = parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
+                                            const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10) || 0; // Convertir a número, manejar valores vacíos
                                             
                                             setLocationsFilter((prev) => ({
                                                 ...prev,

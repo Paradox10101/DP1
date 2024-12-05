@@ -14,13 +14,13 @@ export const BaseModal = ({
     footer,
     size = "4xl",
     isOpen = true,
-    onClose
+    onClose,
   }) => (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       size={size}
-      isDismissable={false}
+      isDismissable={true}
       classNames={{
         closeButton: "hidden"
       }}
