@@ -599,13 +599,16 @@ public class SimulationState {
                 blockage.getEndTime());
     }
 
-    public String findNearestWarehouse(List<String> warehouses, String destinationUbigeo) {
+    public String findNearestWarehouse(List<String> warehouses, String destinationUbigeo, Map<String, List<RouteSegment>> allCalculatedRoutes) {
         String nearestWarehouse = null;
         double minRouteDistance = Double.MAX_VALUE;
 
         for (String warehouseUbigeo : warehouses) {
-            // Obtener la ruta desde el almacén al punto de avería
-            List<RouteSegment> route = routeCache.getRoute(warehouseUbigeo, destinationUbigeo, activeBlockages);
+            // Las llaves en allCalculatedRoutes se asumen como "startUbigeo-endUbigeo"
+            // Dado que creamos las rutas como (warehouse, office), la llave será "warehouseUbigeo-destinationUbigeo"
+            String routeKey = warehouseUbigeo + "-" + destinationUbigeo;
+            List<RouteSegment> route = allCalculatedRoutes.get(routeKey);
+
             if (route != null) {
                 double routeDistance = calculateRouteDistance(route);
                 if (routeDistance < minRouteDistance) {
@@ -613,9 +616,10 @@ public class SimulationState {
                     nearestWarehouse = warehouseUbigeo;
                 }
             } else {
-                logger.warning("Ruta no encontrada en caché: " + warehouseUbigeo + " -> " + destinationUbigeo);
+                logger.warning("Ruta no encontrada en allCalculatedRoutes: " + warehouseUbigeo + " -> " + destinationUbigeo);
             }
         }
+
         return nearestWarehouse;
     }
 

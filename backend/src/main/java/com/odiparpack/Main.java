@@ -133,7 +133,7 @@ public class Main {
             startDateTime = earliestOrder;
         } else {
             // Para otros tipos de simulación, cargar desde archivo
-            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations, "160401");
+            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations);
         }
 
         routeCache = new RouteCache(ROUTE_CACHE_CAPACITY);

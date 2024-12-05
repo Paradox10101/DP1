@@ -572,7 +572,7 @@ public class SimulationRunner {
         for (String office : destinationPoints) {
             for (String warehouse : warehouses) {
                 if (!office.equals(warehouse)) {
-                    allPossibleRoutes.add(new SimulationState.RouteRequest(office, warehouse)); // start - end
+                    allPossibleRoutes.add(new SimulationState.RouteRequest(warehouse, office)); // start - end
                 }
             }
         }
@@ -591,7 +591,7 @@ public class SimulationRunner {
         // Paso 5: Determinar el almacén más cercano para cada orden
         for (Order order : orders) {
             String destinationUbigeo = order.getDestinationUbigeo();
-            String nearestWarehouse = state.findNearestWarehouse(warehouses, destinationUbigeo);
+            String nearestWarehouse = state.findNearestWarehouse(warehouses, destinationUbigeo, allCalculatedRoutes);
             if (nearestWarehouse != null) {
                 order.setOriginUbigeo(nearestWarehouse);
                 logger.info("Orden " + order.getId() + ": Se asignó almacén más cercano " + nearestWarehouse + " como origen.");
