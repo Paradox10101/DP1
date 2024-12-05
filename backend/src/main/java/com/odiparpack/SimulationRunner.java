@@ -19,8 +19,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.Main.logger;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static com.odiparpack.Utils.formatTime;
+import static com.odiparpack.models.SimulationState.buildRouteKey;
+import static com.odiparpack.models.SimulationState.groupRoutesWithoutRepetitions;
 
 public class SimulationRunner {
     // Constantes para el manejo de threads
@@ -414,6 +417,7 @@ public class SimulationRunner {
                     // Actualizar el contador en el mapa
                     state.guardarCiudadDestino(destinationCity);
 
+                    // TODO: CORREGIR ESTO, VENTAS PROYECTADAS ES NULO ORIGEN
                     state.registrarParadaEnAlmacen(order.getOriginUbigeo()); //se analiza el ubigeo origen del pedido
 
                     //Llamar para contar que se está haciendo un pedido en tal Region
@@ -522,6 +526,53 @@ public class SimulationRunner {
         }
     }*/
 
+    public static void processOrdersWithUnknownOrigin(List<Order> orders, SimulationState state) {
+        // Paso 1: Crear todas las posibles rutas entre oficinas y almacenes
+        List<String> warehouses = state.getAlmacenesPrincipales(); // Lista de ubigeos de almacenes
+
+        List<String> destinationPoints = orders.stream()
+                .map(Order::getDestinationUbigeo)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<SimulationState.RouteRequest> allPossibleRoutes = new ArrayList<>();
+
+        for (String office : destinationPoints) {
+            for (String warehouse : warehouses) {
+                if (!office.equals(warehouse)) {
+                    allPossibleRoutes.add(new SimulationState.RouteRequest(office, warehouse)); // start - end
+                }
+            }
+        }
+
+        // Paso 2: Crear grupos sin repeticiones de origen y destino
+        List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
+
+        // Paso 4: Calcular rutas en paralelo para cada grupo
+        Map<String, List<RouteSegment>> allCalculatedRoutes = state.calculateRoutesInParallel(routeGroups, 7);
+
+        logger.info("Rutas para ventas proyectadas terminadas de calcular.");
+
+        // Lista para las órdenes cuyo proceso de asignación falló
+        List<Order> ordersFailedProcess = new ArrayList<>();
+
+        // Paso 5: Determinar el almacén más cercano para cada orden
+        for (Order order : orders) {
+            String destinationUbigeo = order.getDestinationUbigeo();
+            String nearestWarehouse = state.findNearestWarehouse(warehouses, destinationUbigeo);
+            if (nearestWarehouse != null) {
+                order.setOriginUbigeo(nearestWarehouse);
+                logger.info("Orden " + order.getId() + ": Se asignó almacén más cercano " + nearestWarehouse + " como origen.");
+            } else {
+                logger.warning("Orden " + order.getId() + ": No se pudo determinar almacén más cercano.");
+                ordersFailedProcess.add(order);
+            }
+        }
+    }
+
+
+
+
     public static void calculateAndApplyRoutes(
             long[][] currentTimeMatrix,
             List<VehicleAssignment> assignments,
@@ -543,7 +594,37 @@ public class SimulationRunner {
             filteredAssignments.add(group.get(0));
         }
 
-        // Crear el DataModel para todas las asignaciones
+        // Verificar si las rutas están en caché antes de intentar resolverlas
+        Map<String, List<RouteSegment>> cachedRoutes = new HashMap<>();
+        List<VehicleAssignment> assignmentsToSolve = new ArrayList<>();
+
+        for (VehicleAssignment va : filteredAssignments) {
+            String originUbigeo = va.getOrder().getOriginUbigeo();
+            String destinationUbigeo = va.getOrder().getDestinationUbigeo();
+            String routeKey = buildRouteKey(originUbigeo, destinationUbigeo);
+
+            // Intentar obtener la ruta desde el caché
+            List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(originUbigeo, destinationUbigeo, state.getActiveBlockages());
+            if (cachedRoute != null) {
+                cachedRoutes.put(va.getVehicle().getCode(), cachedRoute);
+            } else {
+                logger.info("MON - La orden " + va.getOrder().getId() + "(" + va.getOrder().getOriginUbigeo() + "-"
+                        + va.getOrder().getDestinationUbigeo() + ") no se encuentra ruta en caché.");
+                assignmentsToSolve.add(va);
+            }
+        }
+
+        // Si todas las rutas están en caché, asignarlas a los vehículos y terminar
+        if (assignmentsToSolve.isEmpty()) {
+            applyRoutesToVehiclesWithGroups(cachedRoutes, assignmentGroups, state);
+            vehicleRoutes.putAll(cachedRoutes);
+            return;
+        }
+
+        // Actualizar filteredAssignments para incluir solo las asignaciones que necesitan ser resueltas
+        filteredAssignments = assignmentsToSolve;
+
+        // Crear el DataModel para las asignaciones que necesitan ser resueltas
         DataModel data = new DataModel(currentTimeMatrix, state.getActiveBlockages(),
                 filteredAssignments, locationIndices,
                 locationNames, locationUbigeos);
@@ -556,6 +637,9 @@ public class SimulationRunner {
         ));
 
         if (routes != null && !routes.isEmpty()) {
+            // Combinar las rutas resueltas con las rutas en caché
+            routes.putAll(cachedRoutes);
+
             // Asignar las rutas a los vehículos
             applyRoutesToVehiclesWithGroups(routes, assignmentGroups, state);
             vehicleRoutes.putAll(routes);
@@ -576,23 +660,44 @@ public class SimulationRunner {
                 }
             }
 
-            // Agrupar rutas sin repeticiones de origen y destino
-            List<List<SimulationState.RouteRequest>> routeGroups = SimulationState.groupRoutesWithoutRepetitions(uniqueRoutes);
+            // Verificar si las rutas únicas están en caché
+            Map<String, List<RouteSegment>> cachedRoutes2 = new HashMap<>();
+            List<SimulationState.RouteRequest> routesToCalculate = new ArrayList<>();
 
-            // Extraer vehículos de las asignaciones
-            List<Vehicle> vehicles = assignments.stream()
-                    .map(VehicleAssignment::getVehicle)
-                    .distinct()
-                    .collect(Collectors.toList());
+            for (SimulationState.RouteRequest routeRequest : uniqueRoutes) {
+                List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(
+                        routeRequest.start, routeRequest.end, state.getActiveBlockages());
+                if (cachedRoute != null) {
+                    String routeKey = buildRouteKey(routeRequest.start, routeRequest.end);
+                    cachedRoutes2.put(routeKey, cachedRoute);
+                } else {
+                    routesToCalculate.add(routeRequest);
+                }
+            }
 
-            // Calcular rutas en paralelo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = state.calculateRoutesInParallel(
-                    routeGroups, vehicles, 5, true);
+            // Si hay rutas que no están en caché, agruparlas sin repeticiones de origen y destino
+            Map<String, List<RouteSegment>> calculatedRoutes = new HashMap<>();
+            if (!routesToCalculate.isEmpty()) {
+                // Agrupar rutas sin repeticiones de origen y destino
+                List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(routesToCalculate);
 
-            // Asignar las rutas a los vehículos
-            applyRoutesToVehiclesWithGroups(allCalculatedRoutes, assignmentGroups, state);
+                // Calcular rutas en paralelo
+                calculatedRoutes = state.calculateRoutesInParallel(routeGroups, 5);
+            }
 
-            vehicleRoutes.putAll(allCalculatedRoutes);
+            // Combinar rutas en caché y rutas calculadas
+            Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
+            allRoutes.putAll(cachedRoutes2);
+            allRoutes.putAll(calculatedRoutes);
+
+            if (!allRoutes.isEmpty()) {
+                // Asignar las rutas a los vehículos
+                applyRoutesToVehiclesWithGroups(allRoutes, assignmentGroups, state);
+
+                vehicleRoutes.putAll(allRoutes);
+            } else {
+                logger.warning("No se pudieron obtener rutas para las asignaciones.");
+            }
         }
     }
 
@@ -1165,16 +1270,6 @@ public class SimulationRunner {
 
                 routeTime += matrixTime;
 
-                /*route.append(String.format(
-                        "%d. De %s (%s) a %s (%s): %s\n",
-                        routeStep,
-                        fromLocationName, fromLocationUbigeo,
-                        toLocationName, toLocationUbigeo,
-                        formatTime(matrixTime)
-                ));*/
-                /*logger.info(String.format("  ArcCost: %d, DimCost: %d, MatrixTime: %d",
-                        arcCost, dimCost, matrixTime));*/
-
                 // Formatear el tiempo de duración
                 String formattedDuration = formatTime(matrixTime);
 
@@ -1195,6 +1290,5 @@ public class SimulationRunner {
             localTotalTime += routeTime;
         }
         logger.info("Máximo tiempo de las rutas: " + formatTime(maxRouteTime));
-        //totalDeliveryTime = localTotalTime;
     }
 }

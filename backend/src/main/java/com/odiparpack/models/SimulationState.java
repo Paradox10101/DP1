@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
-import static com.odiparpack.Main.createSearchParameters;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 
 public class SimulationState {
@@ -79,6 +78,10 @@ public class SimulationState {
     private Map<String, Integer> paradasAlmacenesOrderCount = new HashMap<>();
     private Map<String, Integer> pedidosPorRegion = new HashMap<>();
     private Map<String, Double> eficienciaPedidos = new HashMap<>();
+
+    public List<String> getAlmacenesPrincipales() {
+        return almacenesPrincipales;
+    }
 
     public LocalDateTime getSimulationStartTime() {
         return simulationStartTime;
@@ -496,6 +499,26 @@ public class SimulationState {
                 blockage.getEndTime());
     }
 
+    public String findNearestWarehouse(List<String> warehouses, String destinationUbigeo) {
+        String nearestWarehouse = null;
+        double minRouteDistance = Double.MAX_VALUE;
+
+        for (String warehouseUbigeo : warehouses) {
+            // Obtener la ruta desde el almacén al punto de avería
+            List<RouteSegment> route = routeCache.getRoute(warehouseUbigeo, destinationUbigeo, activeBlockages);
+            if (route != null) {
+                double routeDistance = calculateRouteDistance(route);
+                if (routeDistance < minRouteDistance) {
+                    minRouteDistance = routeDistance;
+                    nearestWarehouse = warehouseUbigeo;
+                }
+            } else {
+                logger.warning("Ruta no encontrada en caché: " + warehouseUbigeo + " -> " + destinationUbigeo);
+            }
+        }
+        return nearestWarehouse;
+    }
+
     private void updateTimeMatrix() {
         logger.info("Actualizando matriz de tiempo basada en bloqueos activos");
 
@@ -520,10 +543,8 @@ public class SimulationState {
     public JsonObject getShipmentListJsonInPeriod(LocalDateTime initialDate, LocalDateTime endDate, String lastClientMessage) {
         StringBuilder builder = stringBuilderPool.borrow();
         try {
-            // Inicia el JSON con el contenedor de features
             builder.append("{\"type\":\"FeatureCollection\",\"features\":[");
 
-            // Filtra las órdenes en el período
             List<Order> ordersInPeriod = orders.stream()
                     .filter(order -> {
                         LocalDateTime orderTime = order.getOrderTime();
@@ -532,32 +553,44 @@ public class SimulationState {
                     })
                     .collect(Collectors.toList());
 
-            // Añadir las características de los envíos
             boolean first = true;
             boolean existOrder = true;
             for (Order order : ordersInPeriod) {
                 if (order != null) {
-                    if (!first) {
-                        if(existOrder)
-                            builder.append(','); // Añadir coma entre objetos, pero no al final
+                    if (!first && existOrder) {
+                        builder.append(',');
                     }
                     first = false;
 
-                    // Asegúrate de que `appendShipmentFeature` no produzca un error
                     try {
                         existOrder = appendShipmentFeature(builder, order, lastClientMessage);
                     } catch (Exception e) {
-                        // Captura cualquier excepción durante la generación de características y decide cómo manejarlo
-                        System.err.println("Error procesando la orden: " + order);
+                        logger.warning("Error procesando la orden " + order.getOrderCode() + ": " + e.getMessage());
+                        existOrder = false; // Aseguramos que no se agregue una coma extra
                     }
                 }
             }
 
-            // Finaliza el JSON
-            builder.append("]}");  // Cierra los objetos
+            builder.append("]}");
 
-            // Convertir la cadena generada en un JsonObject
-            return JsonParser.parseString(builder.toString()).getAsJsonObject();
+            String jsonString = builder.toString();
+            try {
+                // Intentar parsear el JSON para validar su estructura
+                JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+
+                // Validación adicional de la estructura esperada
+                if (!jsonObject.has("type") || !jsonObject.has("features")) {
+                    throw new JsonSyntaxException("JSON structure is invalid");
+                }
+
+                return jsonObject;
+            } catch (JsonSyntaxException e) {
+                logger.severe("Error en la estructura del JSON generado: " + e.getMessage());
+                logger.severe("JSON malformado: " + jsonString);
+
+                // Devolver un JSON válido vacío como fallback
+                return JsonParser.parseString("{\"type\":\"FeatureCollection\",\"features\":[]}").getAsJsonObject();
+            }
         } finally {
             stringBuilderPool.release(builder);
         }
@@ -1189,7 +1222,7 @@ public class SimulationState {
             List<List<RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
             // Paso 4: Calcular rutas en paralelo para cada grupo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, brokenVehiclesNotAtWarehouse, 3, false);
+            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 3);
 
             // Lista para los vehículos cuyo proceso de reemplazo falló
             List<Vehicle> vehiclesFailedToReplace = new ArrayList<>();
@@ -1263,7 +1296,7 @@ public class SimulationState {
     // Hacia almacen: origen: oficina - destino: almacen
     // Hacia oficina: origen: almacen - destino: oficina
     public Map<String, List<RouteSegment>> calculateRoutesInParallel(
-            List<List<RouteRequest>> routeGroups, List<Vehicle> vehicles, int seconds, boolean vehiclesAtStart) {
+            List<List<RouteRequest>> routeGroups, int seconds) {
         Map<String, List<RouteSegment>> allCalculatedRoutes = new ConcurrentHashMap<>();
 
         ExecutorService executorService = SimulationRunner.getComputeIntensiveExecutor();
@@ -1285,13 +1318,6 @@ public class SimulationState {
                         if (cachedRoute == null) {
                             routesToCalculate.add(route);
                         }
-
-                        // Agrupar vehículos basados en su ubicación actual
-                        List<Vehicle> vehiclesAtLocation = vehicles.stream()
-                                .filter(v -> v.getCurrentLocationUbigeo().equals(vehiclesAtStart ? route.start : route.end))
-                                .collect(Collectors.toList());
-                        String routeKey = buildRouteKey(route.start, route.end);
-                        groupedVehicles.put(routeKey, vehiclesAtLocation);
                     }
 
                     // Crear DataModel para el grupo
@@ -1678,7 +1704,7 @@ public class SimulationState {
     /**
      * Construye la clave de la ruta usando origen y destino
      */
-    private static String buildRouteKey(String origin, String destination) {
+    public static String buildRouteKey(String origin, String destination) {
         return origin + "-" + destination;
     }
 
@@ -2332,7 +2358,7 @@ public class SimulationState {
             List<List<RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
             // Paso 4: Calcular rutas en paralelo para cada grupo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, vehiclesNotAtWarehouse, 6, true);
+            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 6);
 
             // Lista para los vehículos cuyo proceso de regreso falló
             List<Vehicle> vehiclesFailedToReturn = new ArrayList<>();
@@ -2591,8 +2617,8 @@ public class SimulationState {
     }
 
     public static class RouteRequest {
-        final String start;
-        final String end;
+        public final String start;
+        public final String end;
 
         public RouteRequest(String start, String end) {
             this.start = start;

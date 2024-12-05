@@ -29,14 +29,31 @@ public class DataLoader {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty() || line.startsWith("#")) continue;
                 String[] parts = line.split(",");
-                if (parts.length < 7) continue; // Asegurarse de que hay suficientes campos
+                if (parts.length < 6) continue; // Ahora solo necesitamos 6 campos ya que ignoramos el warehouse capacity del archivo
+
                 String ubigeo = parts[0].trim();
                 String department = parts[1].trim();
                 String province = parts[2].trim();
                 double latitude = Double.parseDouble(parts[3].trim());
                 double longitude = Double.parseDouble(parts[4].trim());
-                String naturalRegion = parts[5].trim();
-                int warehouseCapacity = Integer.parseInt(parts[6].trim());
+                String naturalRegion = parts[5].trim().toUpperCase(); // Convertimos a mayúsculas para hacer la comparación más robusta
+
+                // Asignamos el warehouseCapacity según la región natural
+                int warehouseCapacity;
+                switch (naturalRegion) {
+                    case "COSTA":
+                        warehouseCapacity = 150;
+                        break;
+                    case "SIERRA":
+                        warehouseCapacity = 200;
+                        break;
+                    case "SELVA":
+                        warehouseCapacity = 220;
+                        break;
+                    default:
+                        System.err.println("Región natural no reconocida para ubigeo " + ubigeo + ": " + naturalRegion);
+                        continue; // Saltamos esta entrada si la región no es válida
+                }
 
                 Location location = new Location(ubigeo, department, province, latitude, longitude, naturalRegion, warehouseCapacity);
                 locations.put(ubigeo, location);
@@ -80,15 +97,18 @@ public class DataLoader {
     public List<Order> loadOrders(LocalDateTime startDateTime, LocalDateTime endDateTime, Map<String, Location> locations) {
         List<Order> orders = new ArrayList<>();
         AtomicInteger orderId = new AtomicInteger(1);
-        Pattern timePattern = Pattern.compile("(\\d{2})\\s(\\d{2}:\\d{2}),\\s*(\\d+)\\s*=>\\s*(\\d+),\\s*(\\d+),\\s*(\\d+)");
+        Pattern timePattern = Pattern.compile("(\\d{2})\\s(\\d{2}:\\d{2}),\\s*(\\*{6}|\\d+)\\s*=>\\s*(\\d+),\\s*(\\d+)");
 
         // Obtener los archivos relevantes
         List<String> files = endDateTime == null ?
                 getAllOrderFiles() :
                 getMonthFileNamesBetween(startDateTime, endDateTime);
 
+        logger.info("Comenzando carga de órdenes desde " + files.size() + " archivos");
+
+        int totalOrders = 0;
         for (String filePath : files) {
-            // Extraer año y mes del nombre del archivo
+            int fileOrders = 0;
             String fileName = new File(filePath).getName();
             Matcher yearMonthMatcher = Pattern.compile("ventas(\\d{4})(\\d{2})").matcher(fileName);
 
@@ -104,22 +124,19 @@ public class DataLoader {
                     if (!m.find()) continue;
 
                     try {
-                        // Extraer componentes de la línea usando los grupos del patrón
                         int day = Integer.parseInt(m.group(1));
                         LocalTime time = LocalTime.parse(m.group(2));
                         String originUbigeo = m.group(3);
                         String destinationUbigeo = m.group(4);
                         int quantity = Integer.parseInt(m.group(5));
-                        String clientId = String.format("%06d", Integer.parseInt(m.group(6)));
+                        // Usamos valor por defecto para clientId ya que no viene en el archivo
+                        String clientId = "000000";
 
-                        // Construir fecha
                         LocalDateTime orderDateTime = LocalDateTime.of(year, month, day, time.getHour(), time.getMinute());
 
-                        // Verificar rango de fechas
                         if (orderDateTime.isBefore(startDateTime)) continue;
                         if (endDateTime != null && orderDateTime.isAfter(endDateTime)) continue;
 
-                        // Crear orden
                         Order order = new Order(
                                 orderId.getAndIncrement(),
                                 originUbigeo,
@@ -132,16 +149,21 @@ public class DataLoader {
 
                         order.setOrderCode(String.format("P%d%06d", order.getId() / 1000000, order.getId() % 1000000));
                         orders.add(order);
+                        fileOrders++;
 
                     } catch (NumberFormatException | DateTimeException e) {
                         logger.warning("Error parsing line: " + line);
                     }
                 }
+                totalOrders += fileOrders;
+                logger.info("Cargadas " + fileOrders + " órdenes del archivo " + fileName);
+
             } catch (IOException e) {
                 logger.severe("Error reading file " + filePath + ": " + e.getMessage());
             }
         }
 
+        logger.info("Carga de órdenes completada. Total de órdenes cargadas: " + totalOrders);
         return orders;
     }
 

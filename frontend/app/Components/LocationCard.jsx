@@ -15,7 +15,7 @@ const LocationCard = memo(({
   capacity,
   occupiedPercentage
 }) => {
-  console.log(`Rendering LocationCard for ${ubigeo} with occupancy ${occupiedPercentage}%`); // Debug log
+  //console.log(`Rendering LocationCard for ${ubigeo} with occupancy ${occupiedPercentage}%`); // Debug log
 
   // Determinamos si es un almacén
   const isWarehouse = type === 'warehouse';

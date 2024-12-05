@@ -31,8 +31,8 @@ export default function SimulationModal() {
   // Generar opciones de mes-año
   const monthOptions = useMemo(() => {
     const months = [];
-    const startDate = new Date(2024, 2); // Marzo 2024
-    const endDate = new Date(2025, 4);   // Mayo 2025
+    const startDate = new Date(2024, 6); // Junio 2024
+    const endDate = new Date(2026, 11);   // Noviembre 2026
 
     while (startDate <= endDate) {
       const monthYear = startDate.toLocaleDateString('es', { 

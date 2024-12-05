@@ -27,6 +27,7 @@ export const MAP_CONFIG = {
     LAYERS: {
       VEHICLES: {
         SYMBOL: 'vehicles-symbol-layer',
+        CIRCLE: 'vehicles-circle-layer',
         TEXT: 'vehicles-text-layer'
       },
       LOCATIONS: {
@@ -68,44 +69,48 @@ export const MAP_CONFIG = {
   
   export const LAYER_STYLES = {
     vehicles: {
-      symbol: {
-        id: MAP_CONFIG.LAYERS.VEHICLES.SYMBOL,
-        type: 'symbol',
+      circle: {
+        id: MAP_CONFIG.LAYERS.VEHICLES.CIRCLE,
+        type: 'circle',
         source: MAP_CONFIG.SOURCES.VEHICLES.id,
-        layout: {
-          'icon-image': [
+        paint: {
+          // Adjust radius dynamically based on zoom level and vehicle type
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            5, // At zoom level 5
+            [
+              'match',
+              ['get', 'tipo'],
+              'A', 14, // Larger circle for type A (90 capacity)
+              'B', 12, // Medium circle for type B (45 capacity)
+              'C', 8,  // Smaller circle for type C (30 capacity)
+              6        // Default size if no match
+            ],
+            15, // At zoom level 15
+            [
+              'match',
+              ['get', 'tipo'],
+              'A', 22, // Larger at higher zoom for type A
+              'B', 20, // Medium at higher zoom for type B
+              'C', 16, // Smaller at higher zoom for type C
+              14       // Default size if no match
+            ],
+          ],
+          // Use distinct colors for each vehicle type (avoiding red and green)
+          'circle-color': [
             'match',
             ['get', 'tipo'],
-            'A', 'truck-icon',
-            'B', 'car-front-icon',
-            'C', 'car-icon',
-            'alert-triangle-icon' // default icon
+            'A', '#1E90FF', // Dodger blue for type A
+            'B', '#FFD700', // Gold for type B
+            'C', '#8A2BE2', // Blue violet for type C
+            '#888888'       // Gray as fallback
           ],
-          'icon-size': 0.8,
-          'icon-allow-overlap': true,
-          'text-field': ['get', 'vehicleCode'],
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-size': 12,
-          'text-offset': [0, 2],
-          'text-anchor': 'top'
-        },
-        paint: {
-          // Asigna colores basados en capacidadUsada
-          'icon-color': [
-            'case',
-            ['all', ['has', 'capacidadUsada'], ['has', 'capacidadMaxima']], // Verificar si ambas propiedades existen
-            [
-              'case',
-              ['<', ['*', ['/', ['get', 'capacidadUsada'], ['get', 'capacidadMaxima']], 100], 50], '#08CA57', // Verde (< 50%)
-              ['<', ['*', ['/', ['get', 'capacidadUsada'], ['get', 'capacidadMaxima']], 100], 75], '#FFC107', // Amarillo (50% <= x < 75%)
-              '#FF5252' // Rojo (>= 75%)
-            ],
-            '#CCCCCC' // Color por defecto si falta alguna propiedad
-          ],
-          'text-color': '#FFFFFF',
-          'text-halo-color': '#000000',
-          'text-halo-width': 1
-        }
+          // Apply consistent stroke for all circles
+          'circle-stroke-color': '#FFFFFF', // White border
+          'circle-stroke-width': 2,         // Border width
+        }        
       },
       text: {
         id: MAP_CONFIG.LAYERS.VEHICLES.TEXT,
@@ -114,14 +119,21 @@ export const MAP_CONFIG = {
         layout: {
           'text-field': ['get', 'vehicleCode'],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-size': 12,
-          'text-offset': [0, 2],
-          'text-anchor': 'center'
+          'text-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            5, 12,
+            10, 14,
+            15, 16,
+          ],
+          'text-offset': [0, 0],
+          'text-anchor': 'center',
         },
         paint: {
           'text-color': '#FFFFFF',
           'text-halo-color': '#000000',
-          'text-halo-width': 1
+          'text-halo-width': 1,
         }
       }
     },

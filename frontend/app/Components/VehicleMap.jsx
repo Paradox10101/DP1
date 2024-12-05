@@ -122,7 +122,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   // 2. Usa el átomo para obtener las ubicaciones filtradas
   const locationsUltimo = useAtomValue(filteredLocationsAtom);
 
-  console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
+  //console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
   // Función auxiliar para crear mensajes de error
   const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
@@ -158,7 +158,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
     }
   }, [setLocations, setError]);
 
-  console.log("LISTADO DE LOCACIONES AAAAAAAAAAAAAAAAAAAAAA ENCONTRADOS:",locations)
+  //console.log("LISTADO DE LOCACIONES AAAAAAAAAAAAAAAAAAAAAA ENCONTRADOS:",locations)
   // Limpiar timeout de reintento si existe
   const clearLocationRetryTimeout = useCallback(() => {
     if (locationRetryTimeoutRef.current) {
@@ -403,39 +403,23 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
           });
         }
 
-        // Configurar la capa de vehículos
-        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.SYMBOL)) {
+        // Configurar capas de vehículos
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.CIRCLE)) {
           mapRef.current.addLayer({
-            id: MAP_CONFIG.LAYERS.VEHICLES.SYMBOL,
+            id: MAP_CONFIG.LAYERS.VEHICLES.CIRCLE,
+            type: 'circle',
+            source: MAP_CONFIG.SOURCES.VEHICLES.id,
+            paint: LAYER_STYLES.vehicles.circle.paint
+          });
+        }
+        
+        if (!mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.TEXT)) {
+          mapRef.current.addLayer({
+            id: MAP_CONFIG.LAYERS.VEHICLES.TEXT,
             type: 'symbol',
             source: MAP_CONFIG.SOURCES.VEHICLES.id,
-            layout: {
-              'icon-image': [
-                'concat',
-                ['get', 'iconBaseName'],
-                '-',
-                [
-                  'case',
-                  ['<', ['get', 'capacidadPorcentaje'], 50],
-                  'green',
-                  ['<', ['get', 'capacidadPorcentaje'], 75],
-                  'yellow',
-                  'red',
-                ],
-              ],
-              'icon-size': 0.6,
-              'icon-allow-overlap': true,
-              'text-field': ['get', 'vehicleCode'],
-              'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-              'text-offset': [0, 2],
-              'text-anchor': 'top',
-            },
-            paint: {
-              'text-color': '#FFFFFF',
-              'text-halo-color': '#000000',
-              'text-halo-width': 1,
-            },
+            layout: LAYER_STYLES.vehicles.text.layout,
+            paint: LAYER_STYLES.vehicles.text.paint
           });
         }
 
@@ -499,11 +483,11 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
         });
 
         // Configurar eventos del vehiculo
-        mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, handleVehicleClick);
-        mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, () => {
+        mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, handleVehicleClick);
+        mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
           mapRef.current.getCanvas().style.cursor = 'pointer';
         });
-        mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, () => {
+        mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
 
@@ -535,21 +519,45 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
   // Manejar click en vehículo
   const handleVehicleClick = (e) => {
     console.log('handleVehicleClick triggered');
-
-    // Obtener los features del punto clickeado
-    const features = mapRef.current.queryRenderedFeatures(e.point, {
-      layers: [MAP_CONFIG.LAYERS.VEHICLES.SYMBOL],
-    });
-
-    if (!features.length) {
-      console.error('No se encontraron vehículos en el punto clickeado.');
+  
+    // Verificar que tengamos un evento válido
+    if (!e || !e.point) {
+      console.error('Evento de click inválido');
       return;
     }
-
+  
+    // Obtener los features del punto clickeado de manera segura
+    let features;
+    try {
+      features = mapRef.current.queryRenderedFeatures(e.point, {
+        layers: [MAP_CONFIG.LAYERS.VEHICLES.CIRCLE]
+      });
+    } catch (error) {
+      console.error('Error al consultar features:', error);
+      return;
+    }
+  
+    // Verificar si tenemos features
+    if (!features || !features.length) {
+      console.log('No se encontraron vehículos en el punto clickeado.');
+      return;
+    }
+  
     const feature = features[0];
-
-    // Normalizar y obtener vehicleCode
-    const vehicleCode = String(feature.properties.vehicleCode || feature.properties.id || "No especificado").trim().toUpperCase();
+    
+    // Verificar que el feature tenga las propiedades necesarias
+    if (!feature || !feature.properties) {
+      console.error('Feature inválido o sin propiedades');
+      return;
+    }
+  
+    // Normalizar y obtener vehicleCode de manera segura
+    const vehicleCode = String(
+      feature.properties.vehicleCode || 
+      feature.properties.id || 
+      "No especificado"
+    ).trim().toUpperCase();
+  
     console.log(`Vehicle clicked: ${vehicleCode}`);
 
     // Obtener el array de vehículos desde la referencia
@@ -581,7 +589,7 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
       popupsRef.current[vehicleCode] = popup;
       return;
     }
-    console.log("LISTADO DE VEHICULOS ENCONTRADOS:",vehiculosArray)
+    //console.log("LISTADO DE VEHICULOS ENCONTRADOS:",vehiculosArray)
     // Extraer las propiedades importantes del vehículo encontrado
     const capacidadMaxima = vehiculo.properties.capacidadMaxima || "No especificada";
     const capacidadUsada = vehiculo.properties.capacidadUsada ?? "No especificada";
@@ -1003,12 +1011,12 @@ const VehicleMap = ({ simulationStatus, setSimulationStatus }) => {
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {
-    if (mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.SYMBOL)) {
-      mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, handleVehicleClick);
-      mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, () => {
+    if (mapRef.current.getLayer(MAP_CONFIG.LAYERS.VEHICLES.CIRCLE)) {
+      mapRef.current.on('click', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, handleVehicleClick);
+      mapRef.current.on('mouseenter', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
         mapRef.current.getCanvas().style.cursor = 'pointer';
       });
-      mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.SYMBOL, () => {
+      mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
         mapRef.current.getCanvas().style.cursor = '';
       });
     }

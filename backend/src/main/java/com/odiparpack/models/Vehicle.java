@@ -373,7 +373,7 @@ public class Vehicle {
 
     private boolean listoParaRegresarAlmacen;
     private LocalDateTime waitStartTime;
-    public static final long WAIT_TIME_MINUTES = 120; // 2 horas
+    public static final long WAIT_TIME_MINUTES = 60; // 1 hora (nuevo)
     private Position breakdownPosition; // Nueva variable para guardar la posición de la avería
     private LocalDateTime tiempoFinAveria;
 
@@ -941,7 +941,7 @@ public class Vehicle {
 
     private void startWaitingPeriod(LocalDateTime currentTime) {
         waitStartTime = currentTime;
-        logger.info(String.format("Vehículo %s comienza periodo de espera de 2 horas en %s",
+        logger.info(String.format("Vehículo %s comienza periodo de espera de 1 hora en %s",
                 this.getCode(), this.currentLocationUbigeo));
     }
 

@@ -58,6 +58,12 @@ public class Order {
     // Getters y Setters
     public int getId() { return id; }
     public String getOriginUbigeo() { return originUbigeo; }
+
+    public void setOriginUbigeo(String originUbigeo) {
+        this.originUbigeo = originUbigeo;
+    }
+
+
     public String getDestinationUbigeo() { return destinationUbigeo; }
     public int getQuantity() { return quantity; }
     public LocalDateTime getOrderTime() { return orderTime; }

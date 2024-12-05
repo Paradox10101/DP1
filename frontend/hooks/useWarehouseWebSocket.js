@@ -1,5 +1,4 @@
-// hooks/useWarehouseWebSocket.js
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { occupancyUpdatesAtom, totalStatsAtom } from '../atoms/locationAtoms';
 
@@ -10,6 +9,8 @@ const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
 export const useWarehouseWebSocket = () => {
   const setOccupancyUpdates = useSetAtom(occupancyUpdatesAtom);
   const setTotalStats = useSetAtom(totalStatsAtom);
+  const wsRef = useRef(null); // Usamos una referencia para manejar la instancia del WebSocket
+  const reconnectTimeoutRef = useRef(null); // Para manejar el timeout de reconexión
 
   const handleMessage = useCallback(
     (event) => {
@@ -24,12 +25,10 @@ export const useWarehouseWebSocket = () => {
               occupiedPercentage: data.occupiedPercentage,
             },
           }));
-          
-          // Actualizar estadísticas totales
           setTotalStats({
             totalOccupancy: data.totalOccupancy,
             warehouseCount: data.warehouseCount,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
           });
         } else if (data.type === 'occupancy_update_batch') {
           setOccupancyUpdates((prev) => ({
@@ -42,12 +41,10 @@ export const useWarehouseWebSocket = () => {
               {}
             ),
           }));
-          
-          // Actualizar estadísticas totales del batch
           setTotalStats({
             totalOccupancy: data.totalOccupancy,
             warehouseCount: data.warehouseCount,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
           });
         }
       } catch (error) {
@@ -57,7 +54,12 @@ export const useWarehouseWebSocket = () => {
     [setOccupancyUpdates, setTotalStats]
   );
 
-  useEffect(() => {
+  const connect = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+    }
+
+    console.log('Connecting to WebSocket...');
     const ws = new WebSocket(WEBSOCKET_URL);
 
     ws.onopen = () => {
@@ -66,6 +68,7 @@ export const useWarehouseWebSocket = () => {
 
     ws.onclose = () => {
       console.log('WebSocket Capacidad disconnected');
+      reconnect(); // Intentar reconectar al desconectarse
     };
 
     ws.onerror = (error) => {
@@ -74,8 +77,30 @@ export const useWarehouseWebSocket = () => {
 
     ws.onmessage = handleMessage;
 
-    return () => {
-      ws.close();
-    };
+    wsRef.current = ws; // Guardar referencia del WebSocket
   }, [handleMessage]);
+
+  const reconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+    }
+    reconnectTimeoutRef.current = setTimeout(() => {
+      connect();
+    }, 5000); // Intentar reconectar cada 5 segundos
+  }, [connect]);
+
+  useEffect(() => {
+    connect();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, [connect, reconnect]);
+
+  return null; // Este hook no tiene UI, solo maneja lógica
 };

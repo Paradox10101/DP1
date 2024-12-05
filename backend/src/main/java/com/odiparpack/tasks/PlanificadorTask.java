@@ -42,6 +42,9 @@ public class PlanificadorTask implements Runnable {
             List<Order> availableOrders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
             logAvailableOrders(availableOrders);
 
+            // Procesar órdenes con ubigeo de origen indefinido
+            processOrdersWithUnknownOrigin(availableOrders, state);
+
             if (!availableOrders.isEmpty()) {
                 List<VehicleAssignment> assignments = assignOrdersToVehicles(
                         availableOrders,
@@ -61,7 +64,7 @@ public class PlanificadorTask implements Runnable {
                             state
                     );
 
-                    for(VehicleAssignment vehicleAssingnment: assignments){
+                    for(VehicleAssignment vehicleAssingnment: assignments) {
                         if(vehicleRoutes.containsKey(vehicleAssingnment.getVehicle().getCode())){
                             if(!state.getVehicleAssignmentsPerOrder().containsKey(vehicleAssingnment.getOrder().getId()))
                                 state.getVehicleAssignmentsPerOrder().put(vehicleAssingnment.getOrder().getId(), new ArrayList<>());
