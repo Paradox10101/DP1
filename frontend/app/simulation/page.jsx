@@ -51,7 +51,7 @@ const page = () => {
   }, [])
 
   useEffect(()=>{
-    if(simulationStatus=='stopped'){
+    if(simulationStatus=='stopped' && simulationType){
       onOpenReport()
       setLoadedSimulationType(true);
     }
