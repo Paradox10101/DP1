@@ -97,6 +97,13 @@ public class TimeAdvancementTask implements Runnable {
                     return;
                 }
             }
+            else if(state.getSimulationType() == SimulationRouter.SimulationType.WEEKLY){
+                if(state.checkWeeklySimulationEnd()){
+                    isSimulationRunning.set(false);
+                    state.stopSimulation();
+                    return;
+                }
+            }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en actualización de tiempo", e);

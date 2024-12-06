@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, Timer, Layout } from "lucide-react";
 import { useSimulationMetrics } from "../../hooks/useSimulationMetrics";
 import { MetricItem } from './MetricItem';
+import { useAtom } from 'jotai';
+import { simulationStatusAtom } from '@/atoms/simulationAtoms';
 
 const MetricsDisplay = () => {
   const { metrics } = useSimulationMetrics();
   const [selectedCategories, setSelectedCategories] = useState(['time']);
+  const [, setSimulationStatus] = useAtom(simulationStatusAtom);
+
+  useEffect(()=>{
+    if(metrics?.type)
+      setSimulationStatus('stopped')
+  }, [metrics])
   
-  if (!metrics) return null;
+  if (!metrics || metrics?.type) return <></>;
 
   const categories = [
     { id: 'time', label: 'Tiempos', icon: Clock },
