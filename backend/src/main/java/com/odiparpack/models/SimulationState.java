@@ -58,7 +58,7 @@ public class SimulationState {
     private SimulationRouter.SimulationType simulationType;
 
     private LocalDateTime simulationStartTime; // Tiempo inicial de simulación
-    private LocalDateTime simulationEndTime;   // Tiempo final de simulación
+    private LocalDateTime simulationEndTime = null;   // Tiempo final de simulación
     private LocalDateTime currentTime;         // Tiempo actual de simulación
     private LocalDateTime realStartTime;       // Momento real de inicio
     private long effectiveRunningTime = 0;     // Tiempo efectivo de ejecución en ms
@@ -82,6 +82,8 @@ public class SimulationState {
     private int averiasTipo1 = 0;
     private int averiasTipo2 = 0;
     private int averiasTipo3 = 0;
+
+    private Duration collapseThresholdDuration = null;
 
     // Agregar getters
     public int getAveriasTipo1() {
@@ -107,10 +109,18 @@ public class SimulationState {
 
     private List<ScheduledBreakdown> scheduledBreakdowns = new ArrayList<>();
 
+    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
+    private static final int TASK_MULTIPLIER = 2; // Ajusta según la naturaleza de tus tareas
+    private static final int MAX_CONCURRENT_TASKS = NUM_CORES * TASK_MULTIPLIER;
+    private static final Semaphore semaphore = new Semaphore(MAX_CONCURRENT_TASKS);
+
     static {
         // Usar núcleos * 2 para balance entre threads I/O y CPU
         int poolSize = Runtime.getRuntime().availableProcessors() * 2;
         stringBuilderPool = new StringBuilderPool(poolSize, 16384); // 16KB initial capacity
+
+        logger.info("Número de núcleos detectados: " + NUM_CORES);
+        logger.info("Máximo de tareas concurrentes ajustado a: " + MAX_CONCURRENT_TASKS);
     }
 
     public void addScheduledBreakdown(ScheduledBreakdown breakdown) {
@@ -121,8 +131,6 @@ public class SimulationState {
         return scheduledBreakdowns;
     }
 
-    private static final int MAX_CONCURRENT_TASKS = 8; // Ajusta según tus necesidades
-    private static final Semaphore semaphore = new Semaphore(MAX_CONCURRENT_TASKS);
 
     public List<Blockage> getActiveBlockages() {
         return activeBlockages;
@@ -177,10 +185,31 @@ public class SimulationState {
     public boolean checkLogisticCollapse() {
         lock.lock();
         try {
-            // Verificar todos los pedidos no entregados
+            // Calculamos el tiempo simulado
+            Duration simulatedDuration = Duration.between(simulationStartTime, currentTime);
+
+            // 1. Si el tiempo simulado es menor a 2 semanas (14 días), no colapsar.
+            if (simulatedDuration.toDays() < 14) {
+                return false;
+            }
+
+            // 2. Si ya pasamos de 2 semanas, verificamos si ya tenemos umbral. Si no, lo generamos.
+            if (collapseThresholdDuration == null) {
+                // Generamos un número aleatorio entre 0 y 14 días adicionales
+                Random rand = new Random();
+                long extraDays = rand.nextInt(15); // 0 a 14 días extra
+                collapseThresholdDuration = Duration.ofDays(14 + extraDays);
+                logger.info("Umbral de colapso definido: " + collapseThresholdDuration.toDays() + " días desde el inicio.");
+            }
+
+            // 3. Si el tiempo simulado aún no supera el umbral, no se dispara el colapso.
+            if (simulatedDuration.compareTo(collapseThresholdDuration) < 0) {
+                return false;
+            }
+
+            // 4. Si ya superamos el umbral, revisamos si hay pedidos vencidos.
             for (Order order : orders) {
                 if (order.getStatus() != Order.OrderStatus.DELIVERED) {
-
                     // Si el tiempo actual es posterior al tiempo límite de entrega
                     if (currentTime.isAfter(order.getDueTime())) {
                         logger.severe("¡Colapso logístico detectado!");
@@ -265,9 +294,13 @@ public class SimulationState {
         }
     }
 
-    public void initializeSimulation() {
+    public void initializeSimulation(SimulationRouter.SimulationType type) {
         simulationStartTime = currentTime;
-        simulationEndTime = simulationStartTime.plusDays(7);
+
+        if (type == SimulationRouter.SimulationType.COLLAPSE) {
+            simulationEndTime = null;
+        } else simulationEndTime = simulationStartTime.plusDays(7);
+
         realStartTime = LocalDateTime.now();
         lastUpdateTime = System.currentTimeMillis();
         effectiveRunningTime = 0;
@@ -286,12 +319,12 @@ public class SimulationState {
                 logger.info("Tiempo actualizado - Current Time: " + currentTime);
 
 
-                // Verificar colapso logístico
+                /*// Verificar colapso logístico
                 if (checkLogisticCollapse()) {
                     if (simulationType == SimulationRouter.SimulationType.COLLAPSE) {
                         stopSimulation();
                     }
-                }
+                }*/
 
                 // Actualizar tiempo efectivo de ejecución
                 long now = System.currentTimeMillis();
@@ -337,7 +370,14 @@ public class SimulationState {
                 .withZone(ZoneOffset.UTC);
 
         String formattedStartTime = simulationStartTime.format(dateFormatter);
-        String formattedEndTime = simulationEndTime.format(dateFormatter);
+        String formattedEndTime;
+
+        if (simulationEndTime != null) {
+            formattedEndTime = simulationEndTime.format(dateFormatter);
+        } else {
+            // Si `simulationEndTime` es null, establecemos un valor predeterminado
+            formattedEndTime = "Simulación aún en curso";
+        }
 
         summary.addProperty("startTime", formattedStartTime);
         summary.addProperty("endTime", formattedEndTime);
@@ -513,7 +553,7 @@ public class SimulationState {
         pedidosPorRegion.put("SIERRA", 0);
 
         // Inicializar tiempos de simulación
-        initializeSimulation();
+        initializeSimulation(type);
         updateBlockages(initialSimulationTime, allBlockages);
     }
 
@@ -1326,7 +1366,7 @@ public class SimulationState {
             List<List<RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
             // Paso 4: Calcular rutas en paralelo para cada grupo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 3);
+            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 5);
 
             // Lista para los vehículos cuyo proceso de reemplazo falló
             List<Vehicle> vehiclesFailedToReplace = new ArrayList<>();

@@ -714,7 +714,7 @@ public class SimulationRunner {
                 List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(routesToCalculate);
 
                 // Calcular rutas en paralelo
-                calculatedRoutes = state.calculateRoutesInParallel(routeGroups, 5);
+                calculatedRoutes = state.calculateRoutesInParallel(routeGroups, 7);
             }
 
             // Combinar rutas en caché y rutas calculadas
