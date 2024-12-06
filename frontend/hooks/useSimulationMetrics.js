@@ -80,7 +80,21 @@ export const useSimulationMetrics = () => {
                     return prevMetrics;
                 });
                 setError(null);
-            } else {
+            } else if(data?.type){
+                // Incluimos las nuevas métricas de duración
+                const formattedData = {
+                    type: data.type,
+                };
+                setMetrics(prevMetrics => {
+                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
+                        return formattedData;
+                    }
+                    return prevMetrics;
+                });
+                setError(null);
+
+            }
+            else {
                 console.warn('Datos incompletos recibidos:', data);
                 throw new Error('Formato de métricas inválido');
             }
