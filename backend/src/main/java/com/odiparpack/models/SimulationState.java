@@ -236,6 +236,23 @@ public class SimulationState {
         }
     }
 
+
+    public boolean checkWeeklySimulationEnd() {
+        lock.lock();
+        try {
+            if( currentTime.isAfter(simulationEndTime) || currentTime.isEqual(simulationEndTime)){
+                JsonObject weeklyInfo = new JsonObject();
+                weeklyInfo.addProperty("type", "WEEKLY");
+                weeklyInfo.addProperty("currentTime", currentTime.toString());
+                SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(weeklyInfo);
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public long[][] getCurrentTimeMatrix() {
         return currentTimeMatrix;
     }
