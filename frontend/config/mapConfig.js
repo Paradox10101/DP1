@@ -215,7 +215,7 @@ export const MAP_CONFIG = {
         },
         paint: {
           'icon-color': '#FFA500',
-          'text-color': '#FFA500',
+          'text-color': '#000000',
           'text-halo-color': '#FFFFFF',
           'text-halo-width': 1,
         }
