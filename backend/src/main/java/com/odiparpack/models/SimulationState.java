@@ -757,6 +757,22 @@ public class SimulationState {
         }
     }
 
+    // Método helper para validar y obtener provincia
+    private String getValidatedProvince(String ubigeo) {
+        if (ubigeo != null && ubigeo.contains("******")) {
+            return "------";
+        }
+        return locations.get(ubigeo).getProvince();
+    }
+
+    // Método helper para validar y obtener región natural
+    private String getValidatedNaturalRegion(String ubigeo) {
+        if (ubigeo != null && ubigeo.contains("******")) {
+            return "------";
+        }
+        return locations.get(ubigeo).getNaturalRegion();
+    }
+
     private boolean appendShipmentFeature(StringBuilder builder, Order order, String lastClientMessage) {
         Order.OrderStatus currentOrderStatus = order.getStatus();
         JsonObject lastClientJSON = new JsonObject();
@@ -776,9 +792,9 @@ public class SimulationState {
                 .append("\"orderCode\":\"").append(order.getOrderCode()).append("\",")
                 .append("\"status\":\"").append(currentOrderStatus).append("\",")
                 .append("\"quantity\":").append(order.getQuantity()).append(",")
-                .append("\"originCity\":\"").append(locations.get(order.getOriginUbigeo()).getProvince()).append("\",")
-                .append("\"destinationCity\":\"").append(locations.get(order.getDestinationUbigeo()).getProvince()).append("\",")
-                .append("\"destinationRegion\":\"").append(locations.get(order.getDestinationUbigeo()).getNaturalRegion()).append("\",")
+                .append("\"originCity\":\"").append(getValidatedProvince(order.getOriginUbigeo())).append("\",")
+                .append("\"destinationCity\":\"").append(getValidatedProvince(order.getDestinationUbigeo())).append("\",")
+                .append("\"destinationRegion\":\"").append(getValidatedNaturalRegion(order.getDestinationUbigeo())).append("\",")
                 .append("\"orderTime\":\"").append(order.getOrderTime()).append("\",")
                 .append("\"quantityVehicles\":").append(!vehicleAssignmentsPerOrder.containsKey(order.getId())?0:vehicleAssignmentsPerOrder.get(order.getId()).size()).append(",")
                 .append("\"dueTime\":\"").append(order.getDueTime()).append("\",");
@@ -858,7 +874,7 @@ public class SimulationState {
                                 ) {
                                     routeContentBuilder.append("{")
                                             .append("\"originUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).append("\",")
-                                            .append("\"originCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(0).getFromUbigeo()).getProvince()).append("\",")
+                                            .append("\"originCity\":\"").append(getValidatedProvince(assignedVehicle.getRouteSegments().get(0).getFromUbigeo())).append("\",")
                                             .append("\"destinationUbigeo\":null,")
                                             .append("\"durationMinutes\":null,")
                                             .append("\"distance\":null")
@@ -880,8 +896,8 @@ public class SimulationState {
                                         routeContentBuilder.append("{")
                                                 .append("\"originUbigeo\":\"").append(routeSegment.getFromUbigeo()).append("\",")
                                                 .append("\"destinationUbigeo\":\"").append(routeSegment.getToUbigeo()).append("\",")
-                                                .append("\"originCity\":\"").append(locations.get(routeSegment.getFromUbigeo()).getProvince()).append("\",")
-                                                .append("\"destinationCity\":\"").append(locations.get(routeSegment.getToUbigeo()).getProvince()).append("\",")
+                                                .append("\"originCity\":\"").append(getValidatedProvince(routeSegment.getFromUbigeo())).append("\",")
+                                                .append("\"destinationCity\":\"").append(getValidatedProvince(routeSegment.getToUbigeo())).append("\",")
                                                 .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
                                                 .append("\"status\":\"").append(attendedOrder || traveled ? "TRAVELED" : inTravel ? "IN_TRAVEL" : "NO_TRAVELED").append("\",")
                                                 .append("\"distance\":").append(routeSegment.getDistance())
@@ -894,7 +910,7 @@ public class SimulationState {
                                     routeContentBuilder.append(",{")
                                             .append("\"originUbigeo\":null,")
                                             .append("\"destinationUbigeo\":\"").append(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).append("\",")
-                                            .append("\"destinationCity\":\"").append(locations.get(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo()).getProvince()).append("\",")
+                                            .append("\"destinationCity\":\"").append(getValidatedProvince(assignedVehicle.getRouteSegments().get(assignedVehicle.getRouteSegments().size() - 1).getToUbigeo())).append("\",")
                                             .append("\"durationMinutes\":null,")
                                             .append("\"distance\":null")
                                             .append("}");
