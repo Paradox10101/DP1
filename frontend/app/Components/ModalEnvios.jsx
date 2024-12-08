@@ -322,7 +322,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                         </td>
                                         <td className="py-3 px-6 text-center">
                                             <button
-                                                className="bg-principal items-center p-2 rounded text-center"
+                                                className="bg-principal items-center p-2 rounded text-center w-full flex flex-row justify-center"
                                                 onClick={() => {
                                                     setSelectedVehicleIndex(index);
                                                     sendMessage({
@@ -331,7 +331,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                                                     });
                                                 }}
                                             >
-                                                <Eye className="w-4 h-4 mr-1 text-white" />
+                                                <Eye className="w-4 h-4 mr-1 text-white items-center" />
                                                 <span className="cursor-pointer text-white">Ver ruta</span>
                                             </button>
                                         </td>

@@ -29,6 +29,7 @@ import ModalVehiculo from './ModalVehiculo';
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 import Dashboard from './Dashboard';
 import CollapseDashboard from './CollapseDashboard';
+import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -105,6 +106,7 @@ const StatusBadge = ({ status }) => {
 };
 
 const VehicleMap = ({ simulationStatus }) => {
+  useShipmentWebSocket();
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});

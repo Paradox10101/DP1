@@ -107,7 +107,7 @@ export default function OpcionEnvios() {
             ?
             ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
             (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"   || shipment.status === "PARTIALLY_ASSIGNED")))
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"   || shipment.status === "PARTIALLY_ASSIGNED" )))
             : true;
 
 
@@ -292,7 +292,7 @@ export default function OpcionEnvios() {
                                 
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED"? (
+                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                                     ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>

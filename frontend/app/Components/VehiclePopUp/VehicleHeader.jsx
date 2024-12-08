@@ -91,7 +91,7 @@ const VehicleHeader = ({ iconoComponent, title, status }) => {
   
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-100">
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 gap-2">
         {iconoComponent}
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
       </div>

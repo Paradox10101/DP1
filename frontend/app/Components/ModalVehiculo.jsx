@@ -112,8 +112,8 @@ export default function ModalVehiculo({vehicle}){
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT"  || shipment.status === "PARTIALLY_ARRIVED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.status === "PARTIALLY_ASSIGNED"))
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT"  || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED")) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.status === "PARTIALLY_ASSIGNED" ))
             )
             : true;
 
@@ -174,13 +174,13 @@ export default function ModalVehiculo({vehicle}){
                 <div className="text-center col-span-1 pequenno">{shipment.code}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
                 {
-                    shipment.status==="REGISTERED" || shipment.status==="PARTIALLY_ASSIGNED"?
+                    shipment.status==="REGISTERED" || shipment.status==="PARTIALLY_ASSIGNED" ?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                     :
                     shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
                     :
-                    shipment.status==="FULLY_ASSIGNED" || shipment.status==="IN_TRANSIT" || shipment.status==="PARTIALLY_ARRIVED" ?
+                    shipment.status==="IN_TRANSIT" || shipment.status==="PARTIALLY_ARRIVED" || shipment.status==="FULLY_ASSIGNED"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
                     :
                     <></>
