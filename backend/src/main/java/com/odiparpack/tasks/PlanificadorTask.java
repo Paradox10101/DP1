@@ -42,13 +42,25 @@ public class PlanificadorTask implements Runnable {
             List<Order> availableOrders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
             logAvailableOrders(availableOrders);
 
-            // Procesar órdenes con ubigeo de origen indefinido
-            processOrdersWithUnknownOrigin(availableOrders, state);
+            // Filtrar órdenes con ubigeo origen inválido (******)
+            List<Order> ordersWithInvalidUbigeo = availableOrders.stream()
+                    .filter(order -> "******".equals(order.getOriginUbigeo())) // Verificar ubigeo inválido
+                    .collect(Collectors.toList());
+
+            // Bloqueos para calcular planificacion
+            List<Blockage> blockages = state.getActiveBlockages().stream()
+                    .map(blockage -> blockage.clone())
+                    .collect(Collectors.toList());
+
+            // Solo procesar si hay órdenes con ubigeo inválido
+            if (!ordersWithInvalidUbigeo.isEmpty()) {
+                processOrdersWithUnknownOrigin(ordersWithInvalidUbigeo, state, blockages); // Asigna ubigeo origen
+            }
 
             if (!availableOrders.isEmpty()) {
                 List<VehicleAssignment> assignments = assignOrdersToVehicles(
                         availableOrders,
-                        new ArrayList<>(state.getVehicles().values()),
+                        new ArrayList<>(state.getVehicles().values()), // copia de los vehiculos
                         state.getCurrentTime(),
                         state
                 );
@@ -61,7 +73,8 @@ public class PlanificadorTask implements Runnable {
                             state.getLocationNames(),
                             state.getLocationUbigeos(),
                             vehicleRoutes,
-                            state
+                            state,
+                            blockages
                     );
 
                     for(VehicleAssignment vehicleAssingnment: assignments) {

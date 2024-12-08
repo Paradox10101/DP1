@@ -337,39 +337,17 @@ public class SimulationRunner {
         );
     }
 
-    /*private static void schedulePlanning(SimulationState state, List<Order> allOrders,
-                                         Map<String, Integer> locationIndices, List<String> locationNames,
-                                         List<String> locationUbigeos, Map<String, List<RouteSegment>> vehicleRoutes,
-                                         ScheduledExecutorService executorService, AtomicBoolean isSimulationRunning) {
-        executorService.scheduleAtFixedRate(() -> {
-            if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) return;
-
-            logger.info("Iniciando algoritmo de planificación en tiempo de simulación: " + state.getCurrentTime());
-
-            try {
-                long[][] currentTimeMatrix = state.getCurrentTimeMatrix();
-                List<Order> availableOrders = getAvailableOrders(allOrders, state.getCurrentTime());
-                logAvailableOrders(availableOrders);
-
-                if (!availableOrders.isEmpty()) {
-                    List<VehicleAssignment> assignments = assignOrdersToVehicles(availableOrders, new ArrayList<>(state.getVehicles().values()), state.getCurrentTime(), state);
-                    if (!assignments.isEmpty()) {
-                        calculateAndApplyRoutes(currentTimeMatrix, assignments, locationIndices, locationNames,
-                                locationUbigeos, vehicleRoutes, state, executorService);
-                    }
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error en el ciclo de planificación", e);
-            }
-        }, 0, PLANNING_INTERVAL_MINUTES * 1000L / SIMULATION_SPEED, TimeUnit.MILLISECONDS);
-    }*/
-
+    /* Obtiene ordenes disponibles y las ordena por tiempo limite y fecha de registro */
     public static List<Order> getAvailableOrders(List<Order> allOrders, LocalDateTime currentTime) {
         return allOrders.stream()
                 .filter(order -> (order.getStatus() == Order.OrderStatus.REGISTERED
                         || order.getStatus() == Order.OrderStatus.PARTIALLY_ASSIGNED
                         || order.getStatus() == Order.OrderStatus.PARTIALLY_ARRIVED)
                         && !order.getOrderTime().isAfter(currentTime))
+                .sorted(Comparator
+                        .comparing((Order order) -> order.getDueTime().isBefore(currentTime) ? 0 : 1) // Prioridad a las vencidas
+                        .thenComparing(Order::getDueTime)  // Ordenar por dueTime (más cercano primero)
+                        .thenComparing(Order::getOrderTime)) // Si dueTime es igual, ordenar por registro
                 .collect(Collectors.toList());
     }
 
@@ -380,13 +358,20 @@ public class SimulationRunner {
         }
     }
 
-    public static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, LocalDateTime currentTime, SimulationState state) {
+    public static List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles,
+                                                                 LocalDateTime currentTime, SimulationState state) {
         List<VehicleAssignment> assignments = new ArrayList<>();
 
-        // Ordenar los pedidos por dueTime (los más urgentes primero)
-        orders.sort(Comparator.comparing(Order::getDueTime));
+        // Agrupar órdenes por destino para optimizar acceso
+        Map<String, List<Order>> ordersByDestination = orders.stream()
+                .filter(order -> order.getStatus() == Order.OrderStatus.REGISTERED ||
+                        order.getStatus() == Order.OrderStatus.PARTIALLY_ASSIGNED ||
+                        order.getStatus() == Order.OrderStatus.PARTIALLY_ARRIVED)
+                .filter(order -> order.getUnassignedPackages() > 0)
+                .collect(Collectors.groupingBy(Order::getDestinationUbigeo));
 
         for (Order order : orders) {
+            // Filtrado de órdenes válidas
             if (order.getStatus() != Order.OrderStatus.REGISTERED &&
                     order.getStatus() != Order.OrderStatus.PARTIALLY_ASSIGNED &&
                     order.getStatus() != Order.OrderStatus.PARTIALLY_ARRIVED) {
@@ -399,6 +384,7 @@ public class SimulationRunner {
                 continue; // No hay paquetes por asignar
             }
 
+            // Obtener y ordenar vehículos disponibles
             List<Vehicle> availableVehicles = getAvailableVehicles(vehicles, order.getOriginUbigeo()).stream()
                     .sorted(Comparator.comparingInt(Vehicle::getCapacity).reversed()) // Ordenar por capacidad descendente
                     .collect(Collectors.toList());
@@ -413,92 +399,88 @@ public class SimulationRunner {
                     break; // No hay más paquetes que asignar
                 }
 
-                if (vehicle.getCapacity() >= unassignedPackages) {
-                    // El vehículo puede satisfacer completamente la orden
-                    assignments.add(new VehicleAssignment(vehicle, order, unassignedPackages));
-                    vehicle.setCurrentCapacity(vehicle.getCurrentCapacity()  + unassignedPackages);
-                    vehicle.setAvailable(false);
-                    vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
-                    order.incrementAssignedPackages(unassignedPackages); // Actualización completa
+                synchronized (vehicle) { // Sincronizar acceso al vehículo
+                    if (vehicle.getCapacity() >= unassignedPackages) {
+                        // Asignación completa
+                        assignments.add(new VehicleAssignment(vehicle, order, unassignedPackages));
+                        vehicle.setCurrentCapacity(vehicle.getCurrentCapacity() + unassignedPackages);
+                        vehicle.setAvailable(false);
+                        vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
+                        order.incrementAssignedPackages(unassignedPackages); // Actualización completa
 
-                    String logMessage = String.format(
-                            "\n--- Asignación Completa ---\n" +
-                                    "Código de la Orden: %d\n" +
-                                    "Cantidad Total de la Orden: %d paquetes\n" +
-                                    "Cantidad Asignada al Vehículo: %d paquetes\n" +
-                                    "Código del Vehículo: %s\n" +
-                                    "Capacidad Actual del Vehículo: %d / %d\n" +
-                                    "---------------------------",
-                            order.getId(),
-                            order.getQuantity(),
-                            unassignedPackages,
-                            vehicle.getCode(),
-                            vehicle.getCurrentCapacity(),
-                            vehicle.getCapacity()
-                    );
+                        // Log de asignación
+                        String logMessage = String.format(
+                                "\n--- Asignación Completa ---\n" +
+                                        "Código de la Orden: %d\n" +
+                                        "Cantidad Total de la Orden: %d paquetes\n" +
+                                        "Cantidad Asignada al Vehículo: %d paquetes\n" +
+                                        "Código del Vehículo: %s\n" +
+                                        "Capacidad Actual del Vehículo: %d / %d\n" +
+                                        "---------------------------",
+                                order.getId(),
+                                order.getQuantity(),
+                                unassignedPackages,
+                                vehicle.getCode(),
+                                vehicle.getCurrentCapacity(),
+                                vehicle.getCapacity()
+                        );
 
-                    // Actualizar la métrica de capacidad efectiva acumulada
-                    state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
+                        // Actualizar métricas de estado de manera sincronizada
+                        synchronized (state) {
+                            state.updateCapacityMetrics(unassignedPackages, vehicle.getCapacity());
+                            state.assignOrdersCount();
+                            String destinationCity = order.getDestinationCity();
+                            state.guardarCiudadDestino(destinationCity);
+                            state.registrarParadaEnAlmacen(order.getOriginUbigeo());
+                            state.asignarPedidoAlmacenCount(order.getDestinationUbigeo());
+                        }
 
-                    //AQUI CREO QUE ES <------------------------------- OJITO
-                    state.assignOrdersCount();
+                        logger.info(logMessage);
 
-                    //Aqui se procesa el pedido para sacar su ubigeo
-                    String destinationCity = order.getDestinationCity();
+                        unassignedPackages = 0;
+                    } else if (vehicle.getCapacity() > 0) {
+                        // Asignación parcial
+                        int assignedQuantity = Math.min(vehicle.getCapacity(), unassignedPackages); // Limitar a paquetes restantes
+                        assignments.add(new VehicleAssignment(vehicle, order, assignedQuantity));
+                        vehicle.setAvailable(false);
+                        vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
+                        order.incrementAssignedPackages(assignedQuantity); // Actualización parcial
 
-                    // Actualizar el contador en el mapa
-                    state.guardarCiudadDestino(destinationCity);
+                        // Log de asignación parcial
+                        String logMessage = String.format(
+                                "\n--- Asignación Parcial ---\n" +
+                                        "Código de la Orden: %d\n" +
+                                        "Cantidad Total de la Orden: %d paquetes\n" +
+                                        "Cantidad Asignada al Vehículo: %d paquetes\n" +
+                                        "Código del Vehículo: %s\n" +
+                                        "---------------------------",
+                                order.getId(),
+                                order.getQuantity(),
+                                assignedQuantity,
+                                vehicle.getCode()
+                        );
+                        logger.info(logMessage);
 
-                    // TODO: CORREGIR ESTO, VENTAS PROYECTADAS ES NULO ORIGEN
-                    state.registrarParadaEnAlmacen(order.getOriginUbigeo()); //se analiza el ubigeo origen del pedido
-
-                    //Llamar para contar que se está haciendo un pedido en tal Region
-                    state.asignarPedidoAlmacenCount(order.getDestinationUbigeo());
-
-                    //state.calcularEficienciaPedido(vehicle.getCode(),vehicle.getEstimatedDeliveryTime(),order.getOrderTime());// AQUI YA NO PIPIPI
-
-                    logger.info(logMessage);
-
-                    //order.setAssignedPackages(unassignedPackages);
-                    unassignedPackages = 0;
-                    break;
-                } else if (vehicle.getCapacity() > 0) {
-                    // El vehículo puede satisfacer parcialmente la orden
-                    int assignedQuantity = Math.min(vehicle.getCapacity(), unassignedPackages); // Limitar a paquetes restantes
-                    assignments.add(new VehicleAssignment(vehicle, order, assignedQuantity));
-                    vehicle.setAvailable(false);
-                    vehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
-                    order.incrementAssignedPackages(assignedQuantity); // Actualización parcial
-
-                    String logMessage = String.format(
-                            "\n--- Asignación Parcial ---\n" +
-                                    "Código de la Orden: %d\n" +
-                                    "Cantidad Total de la Orden: %d paquetes\n" +
-                                    "Cantidad Asignada al Vehículo: %d paquetes\n" +
-                                    "Código del Vehículo: %s\n" +
-                                    "---------------------------",
-                            order.getId(),
-                            order.getQuantity(),
-                            assignedQuantity,
-                            vehicle.getCode()
-                    );
-                    logger.info(logMessage);
-
-                    unassignedPackages -= assignedQuantity;
+                        unassignedPackages -= assignedQuantity;
+                    }
                 }
             }
 
-            if (unassignedPackages > 0) {
-                order.setStatus(Order.OrderStatus.PARTIALLY_ASSIGNED);
-                logger.warning("Quedan " + unassignedPackages + " paquetes por asignar para la orden " + order.getId());
-            } else {
-                order.setStatus(Order.OrderStatus.FULLY_ASSIGNED);
-                logger.info("Orden " + order.getId() + " completamente asignada.");
+            // Actualizar el estado de la orden fuera del bloque sincronizado para minimizar el tiempo de bloqueo
+            synchronized (order) {
+                if (unassignedPackages > 0) {
+                    order.setStatus(Order.OrderStatus.PARTIALLY_ASSIGNED);
+                    logger.warning("Quedan " + unassignedPackages + " paquetes por asignar para la orden " + order.getId());
+                } else {
+                    order.setStatus(Order.OrderStatus.FULLY_ASSIGNED);
+                    logger.info("Orden " + order.getId() + " completamente asignada.");
+                }
             }
         }
 
         return assignments;
     }
+
 
     private static List<Vehicle> getAvailableVehicles(List<Vehicle> vehicles, String locationUbigeo) {
         // Loguear el origen del ubigeo de la orden antes del filtrado
@@ -558,7 +540,7 @@ public class SimulationRunner {
         }
     }*/
 
-    public static void processOrdersWithUnknownOrigin(List<Order> orders, SimulationState state) {
+    public static void processOrdersWithUnknownOrigin(List<Order> orders, SimulationState state, List<Blockage> blockages) {
         // Paso 1: Crear todas las posibles rutas entre oficinas y almacenes
         List<String> warehouses = state.getAlmacenesPrincipales(); // Lista de ubigeos de almacenes
 
@@ -581,12 +563,12 @@ public class SimulationRunner {
         List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
         // Paso 4: Calcular rutas en paralelo para cada grupo
-        Map<String, List<RouteSegment>> allCalculatedRoutes = state.calculateRoutesInParallel(routeGroups, 7);
+        Map<String, List<RouteSegment>> allCalculatedRoutes = state.calculateRoutesInParallel(routeGroups, blockages, 7);
 
         logger.info("Rutas para ventas proyectadas terminadas de calcular.");
 
         // Lista para las órdenes cuyo proceso de asignación falló
-        List<Order> ordersFailedProcess = new ArrayList<>();
+        //List<Order> ordersFailedProcess = new ArrayList<>();
 
         // Paso 5: Determinar el almacén más cercano para cada orden
         for (Order order : orders) {
@@ -597,13 +579,10 @@ public class SimulationRunner {
                 logger.info("Orden " + order.getId() + ": Se asignó almacén más cercano " + nearestWarehouse + " como origen.");
             } else {
                 logger.warning("Orden " + order.getId() + ": No se pudo determinar almacén más cercano.");
-                ordersFailedProcess.add(order);
+                //ordersFailedProcess.add(order);
             }
         }
     }
-
-
-
 
     public static void calculateAndApplyRoutes(
             long[][] currentTimeMatrix,
@@ -612,7 +591,8 @@ public class SimulationRunner {
             List<String> locationNames,
             List<String> locationUbigeos,
             Map<String, List<RouteSegment>> vehicleRoutes,
-            SimulationState state) {
+            SimulationState state,
+            List<Blockage> blockages) {
 
         if (assignments == null || assignments.isEmpty()) {
             logger.warning("No hay asignaciones para procesar.");
@@ -633,10 +613,9 @@ public class SimulationRunner {
         for (VehicleAssignment va : filteredAssignments) {
             String originUbigeo = va.getOrder().getOriginUbigeo();
             String destinationUbigeo = va.getOrder().getDestinationUbigeo();
-            String routeKey = buildRouteKey(originUbigeo, destinationUbigeo);
 
             // Intentar obtener la ruta desde el caché
-            List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(originUbigeo, destinationUbigeo, state.getActiveBlockages());
+            List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(originUbigeo, destinationUbigeo, blockages);
             if (cachedRoute != null) {
                 cachedRoutes.put(va.getVehicle().getCode(), cachedRoute);
             } else {
@@ -646,89 +625,85 @@ public class SimulationRunner {
             }
         }
 
-        // Si todas las rutas están en caché, asignarlas a los vehículos y terminar
-        if (assignmentsToSolve.isEmpty()) {
+        if (!cachedRoutes.isEmpty()) {
             applyRoutesToVehiclesWithGroups(cachedRoutes, assignmentGroups, state);
             vehicleRoutes.putAll(cachedRoutes);
-            return;
         }
 
         // Actualizar filteredAssignments para incluir solo las asignaciones que necesitan ser resueltas
         filteredAssignments = assignmentsToSolve;
 
-        // Crear el DataModel para las asignaciones que necesitan ser resueltas
-        DataModel data = new DataModel(currentTimeMatrix, state.getActiveBlockages(),
-                filteredAssignments, locationIndices,
-                locationNames, locationUbigeos);
+        if (!filteredAssignments.isEmpty()) {
+            // Crear el DataModel para las asignaciones que necesitan ser resueltas
+            DataModel data = new DataModel(currentTimeMatrix, blockages,
+                    filteredAssignments, locationIndices,
+                    locationNames, locationUbigeos);
 
-        // Intentar resolver todas las rutas juntas
-        Map<String, List<RouteSegment>> routes = trySolvingWithStrategies(data, Arrays.asList(
-                FirstSolutionStrategy.Value.CHRISTOFIDES,
-                FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC,
-                FirstSolutionStrategy.Value.GLOBAL_CHEAPEST_ARC
-        ));
+            // Intentar resolver todas las rutas juntas
+            Map<String, List<RouteSegment>> routes = trySolvingWithStrategies(data, Arrays.asList(
+                    FirstSolutionStrategy.Value.CHRISTOFIDES,
+                    FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC,
+                    FirstSolutionStrategy.Value.GLOBAL_CHEAPEST_ARC
+            ));
 
-        if (routes != null && !routes.isEmpty()) {
-            // Combinar las rutas resueltas con las rutas en caché
-            routes.putAll(cachedRoutes);
-
-            // Asignar las rutas a los vehículos
-            applyRoutesToVehiclesWithGroups(routes, assignmentGroups, state);
-            vehicleRoutes.putAll(routes);
-        } else {
-            // Si no se pudo resolver, proceder a agrupar y calcular en paralelo
-
-            // Obtener las rutas únicas a calcular
-            List<SimulationState.RouteRequest> uniqueRoutes = new ArrayList<>();
-            Set<String> processedRoutes = new HashSet<>();
-
-            for (String key : assignmentGroups.keySet()) {
-                String[] parts = key.split("-");
-                String origin = parts[0];
-                String destination = parts[1];
-                if (!processedRoutes.contains(key)) {
-                    uniqueRoutes.add(new SimulationState.RouteRequest(origin, destination));
-                    processedRoutes.add(key);
-                }
-            }
-
-            // Verificar si las rutas únicas están en caché
-            Map<String, List<RouteSegment>> cachedRoutes2 = new HashMap<>();
-            List<SimulationState.RouteRequest> routesToCalculate = new ArrayList<>();
-
-            for (SimulationState.RouteRequest routeRequest : uniqueRoutes) {
-                List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(
-                        routeRequest.start, routeRequest.end, state.getActiveBlockages());
-                if (cachedRoute != null) {
-                    String routeKey = buildRouteKey(routeRequest.start, routeRequest.end);
-                    cachedRoutes2.put(routeKey, cachedRoute);
-                } else {
-                    routesToCalculate.add(routeRequest);
-                }
-            }
-
-            // Si hay rutas que no están en caché, agruparlas sin repeticiones de origen y destino
-            Map<String, List<RouteSegment>> calculatedRoutes = new HashMap<>();
-            if (!routesToCalculate.isEmpty()) {
-                // Agrupar rutas sin repeticiones de origen y destino
-                List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(routesToCalculate);
-
-                // Calcular rutas en paralelo
-                calculatedRoutes = state.calculateRoutesInParallel(routeGroups, 7);
-            }
-
-            // Combinar rutas en caché y rutas calculadas
-            Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
-            allRoutes.putAll(cachedRoutes2);
-            allRoutes.putAll(calculatedRoutes);
-
-            if (!allRoutes.isEmpty()) {
+            if (routes != null && !routes.isEmpty()) {
                 // Asignar las rutas a los vehículos
-                applyRoutesToVehiclesWithGroups(allRoutes, assignmentGroups, state);
-
-                vehicleRoutes.putAll(allRoutes);
+                applyRoutesToVehiclesWithGroups(routes, assignmentGroups, state);
+                vehicleRoutes.putAll(routes);
             } else {
-                logger.warning("No se pudieron obtener rutas para las asignaciones.");
+                // Si no se pudo resolver, proceder a agrupar y calcular en paralelo
+
+                // Obtener las rutas únicas a calcular
+                List<SimulationState.RouteRequest> uniqueRoutes = new ArrayList<>();
+                Set<String> processedRoutes = new HashSet<>();
+
+                for (String key : assignmentGroups.keySet()) {
+                    String[] parts = key.split("-");
+                    String origin = parts[0];
+                    String destination = parts[1];
+                    if (!processedRoutes.contains(key)) {
+                        uniqueRoutes.add(new SimulationState.RouteRequest(origin, destination));
+                        processedRoutes.add(key);
+                    }
+                }
+
+                // Verificar si las rutas únicas están en caché
+                Map<String, List<RouteSegment>> cachedRoutes2 = new HashMap<>();
+                List<SimulationState.RouteRequest> routesToCalculate = new ArrayList<>();
+
+                for (SimulationState.RouteRequest routeRequest : uniqueRoutes) {
+                    List<RouteSegment> cachedRoute = state.getRouteCache().getRoute(
+                            routeRequest.start, routeRequest.end, blockages);
+                    if (cachedRoute != null) {
+                        String routeKey = buildRouteKey(routeRequest.start, routeRequest.end);
+                        cachedRoutes2.put(routeKey, cachedRoute);
+                    } else {
+                        routesToCalculate.add(routeRequest);
+                    }
+                }
+
+                // Si hay rutas que no están en caché, agruparlas sin repeticiones de origen y destino
+                Map<String, List<RouteSegment>> calculatedRoutes = new HashMap<>();
+                if (!routesToCalculate.isEmpty()) {
+                    // Agrupar rutas sin repeticiones de origen y destino
+                    List<List<SimulationState.RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(routesToCalculate);
+
+                    // Calcular rutas en paralelo
+                    calculatedRoutes = state.calculateRoutesInParallel(routeGroups, blockages, 7);
+                }
+
+                // Combinar rutas en caché y rutas calculadas
+                Map<String, List<RouteSegment>> allRoutes = new HashMap<>();
+                allRoutes.putAll(cachedRoutes2);
+                allRoutes.putAll(calculatedRoutes);
+
+                if (!allRoutes.isEmpty()) {
+                    // Asignar las rutas a los vehículos
+                    applyRoutesToVehiclesWithGroups(allRoutes, assignmentGroups, state);
+                    vehicleRoutes.putAll(allRoutes);
+                } else {
+                    logger.warning("No se pudieron obtener rutas para las asignaciones.");
+                }
             }
         }
     }
