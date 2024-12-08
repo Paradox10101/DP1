@@ -620,6 +620,7 @@ const VehicleMap = ({ simulationStatus }) => {
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
+    const ubicacionSiguiente = vehiculo.properties.ubicacionSiguiente || " ";
     const velocidad = vehiculo.properties.velocidad ?? "No especificada";
 
     // Mostrar el popup con la información completa
@@ -640,6 +641,7 @@ const VehicleMap = ({ simulationStatus }) => {
         capacidadUtilizada={capacidadUsada}
         estado={status}
         ubicacionActual={ubicacionActual}
+        ubicacionSiguiente={ubicacionSiguiente}
         velocidad={velocidad}
         iconoComponent={
           <IconoEstado

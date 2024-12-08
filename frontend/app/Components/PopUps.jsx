@@ -130,6 +130,7 @@ const VehiculoPopUp = ({
   capacidadUtilizada,
   estado,
   ubicacionActual,
+  ubicacionSiguiente,
   velocidad,
   iconoComponent,
   vehicleData,
@@ -168,6 +169,7 @@ const VehiculoPopUp = ({
           capacidadUtilizada={capacidadUtilizada}
           capacidadMaxima={capacidadMaxima}
           ubicacionActual={ubicacionActual}
+          ubicacionSiguiente={ubicacionSiguiente}
           velocidad={velocidad}
         />
         

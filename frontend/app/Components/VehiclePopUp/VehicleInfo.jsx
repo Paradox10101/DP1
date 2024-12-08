@@ -10,7 +10,7 @@ const InfoItem = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const VehicleInfo = ({ capacidadUtilizada, capacidadMaxima, ubicacionActual, velocidad }) => (
+const VehicleInfo = ({ capacidadUtilizada, capacidadMaxima, ubicacionActual, ubicacionSiguiente, velocidad }) => (
   <CardBody className="p-4 space-y-3">
     <InfoItem
       icon={Activity}
@@ -19,8 +19,8 @@ const VehicleInfo = ({ capacidadUtilizada, capacidadMaxima, ubicacionActual, vel
     />
     <InfoItem
       icon={MapPin}
-      label="Ubicación"
-      value={ubicacionActual}
+      label="Tramo actual"
+      value={`${ubicacionActual} -> ${ubicacionSiguiente}`}
     />
     <InfoItem
       icon={Gauge}
