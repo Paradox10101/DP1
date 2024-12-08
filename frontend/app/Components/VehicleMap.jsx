@@ -1078,7 +1078,7 @@ const VehicleMap = ({ simulationStatus }) => {
           closeButton
           isOpen={isOpen}
           onOpenChange={onClose}
-          blur
+          blur="true"
           aria-labelledby="modal-vehiculo"
         >
           <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">

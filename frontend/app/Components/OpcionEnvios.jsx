@@ -105,9 +105,10 @@ export default function OpcionEnvios() {
             // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
             const matchesStatus = shipmentsFilter.statusShipment
             ?
-            ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"   || shipment.status === "PARTIALLY_ASSIGNED" )))
+            
+            (shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length > 0))) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"   || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length === 0)) )
             : true;
 
 
@@ -283,7 +284,7 @@ export default function OpcionEnvios() {
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     isDismissable={true}
-                    blur
+                    blur="true"
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
@@ -292,11 +293,11 @@ export default function OpcionEnvios() {
                                 
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    shipments[selectedShipmentIndex].status === "REGISTERED" || shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" ? (
+                                    (shipments[selectedShipmentIndex].status === "REGISTERED" || ((shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED") && shipments[selectedShipmentIndex].vehicles.length === 0)) ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
-                                    ) : shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP" ? (
+                                    ) : (shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP") ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                                    ) : shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED" ? (
+                                    ) : (shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || ((shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED") && shipments[selectedShipmentIndex].vehicles.length > 0))  ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                                     ) : (
                                         <></>
@@ -321,7 +322,7 @@ export default function OpcionEnvios() {
                     onOpenChange={onOpenChange}
                     onClose={()=>{setSelectedVehicleIndex(null)}}
                     isDismissable={true}
-                    blur
+                    blur="true"
                 >
                     <ModalContent className="h-[775px] min-w-[850px]">
                         <ModalHeader>
@@ -349,7 +350,7 @@ export default function OpcionEnvios() {
                     closeButton
                     isOpen={isFilterModalOpen}
                     onOpenChange={setFilterModalOpen}
-                    blur
+                    blur="true"
                 >
                     <ModalContent className="h-[450px] min-w-[650px]">
                         <ModalHeader>

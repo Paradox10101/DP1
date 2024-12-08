@@ -241,7 +241,7 @@ export default function OpcionAlmacenes() {
                 
               }}
               isDismissable={true}
-              blur
+              blur="true"
           >
               <ModalContent className="h-[800px] min-w-[850px]">
                   <ModalHeader>
@@ -273,7 +273,7 @@ export default function OpcionAlmacenes() {
                     closeButton
                     isOpen={isFilterModalOpen}
                     onOpenChange={setFilterModalOpen}
-                    blur
+                    blur="true"
             >
                 <ModalContent className="h-[450px] min-w-[650px]">
                     <ModalHeader>

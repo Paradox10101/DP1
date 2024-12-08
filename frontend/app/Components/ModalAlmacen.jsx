@@ -88,8 +88,8 @@ export default function ModalAlmacen({ warehouse }) {
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             (shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.status === "PARTIALLY_ASSIGNED")) ||
-            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED") )
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length === 0) )) ||
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length > 0)))
             : true;
 
 
@@ -153,11 +153,11 @@ export default function ModalAlmacen({ warehouse }) {
                 <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
                 <div className="text-center col-span-2 pequenno flex justify-center items-center">
                 {
-                    (shipment.status === "REGISTERED" || shipment.status === "PARTIALLY_ASSIGNED" ) ? (
+                    (shipment.status === "REGISTERED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length === 0)) ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                     ) : (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                    ) : (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED") ? (
+                    ) : (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length > 0)) ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                     ) 
                     :
