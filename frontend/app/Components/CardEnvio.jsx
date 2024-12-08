@@ -18,6 +18,7 @@ const CardEnvio = memo(({
     timeElapsedHours,
     quantityVehicles,
     vehicles
+    
 }) => {
     return (
         
@@ -28,14 +29,14 @@ const CardEnvio = memo(({
                     <div className="pequenno_bold">{orderCode}</div>    
                 </div>
                 {
-                    (status === "REGISTERED" || ((status === "PARTIALLY_ASSIGNED" || status === "FULLY_ASSIGNED") && vehicles.length === 0)) ? (
+                    (status === "REGISTERED" ) ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
-                    ) : (status === "DELIVERED" || status === "PENDING_PICKUP") ? (
+                    ) : (status === "DELIVERED" || status === "PENDING_PICKUP" ) ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                    ) : (status === "IN_TRANSIT" || status === "PARTIALLY_ARRIVED" || ((status === "PARTIALLY_ASSIGNED" || status === "FULLY_ASSIGNED") && vehicles.length > 0))  ? (
+                    ) : (quantityVehicles > 0 || vehicles.legth > 0)  ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                     ) : (
-                        <></>
+                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                     )
                 } 
 
