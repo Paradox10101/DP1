@@ -3,6 +3,8 @@ import { Pie, Bar, Doughnut } from "react-chartjs-2";
 import 'chart.js/auto';
 import { useEffect, useState } from "react";
 import { exportDataToCSV } from "./controls/exportDataCSVDash";
+import { FaDownload, FaQuestionCircle } from 'react-icons/fa';
+import { Tooltip } from "@nextui-org/react";
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -23,13 +25,13 @@ export default function Dashboard({ shipment, onClose}) {
           setData(result);
         } else {
           console.error('Error al obtener los datos: ', response.statusText);
-          onClose()
+          onClose();
         }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
-        onClose()
+        onClose();
       }
     };
     fetchData();
@@ -58,42 +60,150 @@ export default function Dashboard({ shipment, onClose}) {
   const barLabels = top5Cities.map(([city]) => capitalizeCityName(city));
   const barDataValues = top5Cities.map(([_, value]) => value);
 
+  // Preparar datos para el gráfico de barras de almacenes
+  const almacenesData = {
+    labels: Object.keys(data.demandasEnAlmacenes),
+    values: Object.values(data.demandasEnAlmacenes)
+  };
+
+  // Preparar datos para el gráfico de averías
+  const averiasData = {
+    labels: Object.keys(data.averiasPorTipo),
+    values: Object.values(data.averiasPorTipo)
+  };
+
+  // Estilo común para los tooltips
+  const tooltipStyles = {
+    //className: "max-w-[300px] text-sm p-3", // Tamaño fijo para tooltips
+    className: "max-w-[300px] text-sm p-3", // Tamaño fijo para tooltips
+    placement: "right",
+    offset: 10
+  };
+
+  // Configuración común para los gráficos de dona/pie
+  const doughnutOptions = {
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 12
+        },
+        formatter: (value, ctx) => {
+          const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${percentage}%`;
+        },
+        anchor: 'center',
+        align: 'center',
+        offset: 0
+      },
+      legend: {
+        position: 'top'
+      }
+    }
+  };
+
+  // Configuración común para los gráficos de barras
+  const barOptions = {
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      datalabels: {
+        color: '#fff',
+        font: {
+          weight: 'bold',
+          size: 12
+        },
+        formatter: (value) => `${value}`,
+        anchor: 'end',
+        align: 'start',
+        offset: -20
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  };
+
+  // Definición de tooltips para las métricas
+  const tooltips = {
+    capacidadEfectiva: "Promedio acumulado del porcentaje de capacidad utilizada por los vehículos durante el transporte de pedidos.",
+    pedidosAtendidos: "Número total de pedidos que han sido completamente procesados y entregados durante la simulación.",
+    eficienciaRutas: "Medida de la eficiencia en la planificación de rutas, calculada como la relación entre el tiempo estimado y el tiempo límite de entrega.",
+    promedioPedidos: "Promedio diario de pedidos procesados durante toda la simulación.",
+    demandaRegion: "Distribución de pedidos por región natural del Perú.",
+    topCiudades: "Las 5 ciudades con mayor cantidad de pedidos registrados.",
+    averias: "Cantidad de incidentes técnicos registrados por tipo de avería.",
+    demandaAlmacen: "Distribución de pedidos procesados por cada almacén principal."
+  };
+
   return (
     <div className="dashboard-container">
       <div className="grid grid-cols-4 gap-4">
-        {/* Tarjetas de información */}
-        <div className="col-span-1 flex flex-col gap-4">
+        {/* Tarjetas de información de métricas */}
+        <div className="col-span-1 flex flex-col gap-6">
           <div className="card border p-4 shadow-md">
-            <p>Proporción de Capacidad Efectiva transportada</p>
-            <h3>{data.capacidadEfectiva.toFixed(2)}%</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gray-700">Capacidad Efectiva</h3>
+              <Tooltip content={tooltips.capacidadEfectiva} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
+            <p className="text-3xl font-bold text-blue-700 mt-2">{data.capacidadEfectiva.toFixed(2)}%</p>
           </div>
           <div className="card border p-4 shadow-md">
-            <p>Cantidad Total de Pedidos Atendidos</p>
-            <h3>{data.pedidosAtendidos}</h3>
+            <div className="flex items-center gap-2">
+              <p className="text-lg font-semibold text-gray-700">Total Pedidos Atendidos</p>
+              <Tooltip content={tooltips.pedidosAtendidos} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
+            <h3 className="text-3xl font-bold text-blue-700 mt-2">{data.pedidosAtendidos}</h3>
           </div>
           <div className="card border p-4 shadow-md">
-            <p>Eficiencia de Planificación de Rutas</p>
-            <h3>{data.eficienciaRutas.toFixed(2)}%</h3>
+            <div className="flex items-center gap-2">
+              <p className="text-lg font-semibold text-gray-700">Eficiencia de Rutas</p>
+              <Tooltip content={tooltips.eficienciaRutas} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
+            <h3 className="text-3xl font-bold text-blue-700 mt-2">{data.eficienciaRutas.toFixed(2)}%</h3>
           </div>
           <div className="card border p-4 shadow-md">
-            <p>Cantidad Promedio de Pedidos por Día</p>
-            <h3>{data.promedioPedidos.toFixed(2)}</h3>
+            <div className="flex items-center gap-2">
+              <p className="text-lg font-semibold text-gray-700">Promedio Diario de Pedidos</p>
+              <Tooltip content={tooltips.promedioPedidos} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
+            <h3 className="text-3xl font-bold text-blue-700 mt-2">{data.promedioPedidos.toFixed(2)}</h3>
           </div>
           <button
             onClick={() => exportDataToCSV(data)} 
             className="bg-blue-700 text-white w-full rounded p-3 flex items-center justify-center mt-4"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16m8-8H4" />
-            </svg>
+            <FaDownload className="h-5 w-5 mr-2" />
             Exportar CSV
           </button>
         </div>
 
         {/* Gráficos */}
         <div className="col-span-3 grid grid-cols-2 gap-4">
+          {/* Gráfico de Demanda por Región */}
           <div className="chart-container" style={{ height: '250px' }}>
-            <h4>Demanda por Region</h4>
+            <div className="flex items-center gap-2 mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Demanda por Región</h4>
+              <Tooltip content={tooltips.demandaRegion} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
             <Doughnut
               data={{
                 labels: ['Costa', 'Sierra', 'Selva'],
@@ -109,13 +219,18 @@ export default function Dashboard({ shipment, onClose}) {
                   },
                 ],
               }}
-              options={{
-                maintainAspectRatio: false,
-              }}
+              options={doughnutOptions}
             />
           </div>
+
+          {/* Gráfico de Top 5 Ciudades Populares */}
           <div className="chart-container" style={{ height: '300px' }}>
-            <h4>Demanda por Ciudad</h4>
+            <div className="flex items-center gap-2 mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Top 5 Ciudades Populares</h4>
+              <Tooltip content={tooltips.topCiudades} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
             <Bar
               data={{
                 labels: barLabels,
@@ -127,17 +242,21 @@ export default function Dashboard({ shipment, onClose}) {
                   },
                 ],
               }}
-              options={{
-                maintainAspectRatio: false,
-                indexAxis: 'y', // Invertir ejes para mostrar barras horizontales
-              }}
+              options={barOptions}
             />
           </div>
+
+          {/* Gráfico de Averías por Tipo */}
           <div className="chart-container" style={{ height: '250px' }}>
-            <h4>Número de Averías por Tipo</h4>
+            <div className="flex items-center gap-2 mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Averías por Tipo</h4>
+              <Tooltip content={tooltips.averias} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
             <Bar
               data={{
-                labels: ['Tipo 1', 'Tipo 2', 'Tipo 3'],
+                labels: averiasData.labels,
                 datasets: [
                   {
                     label: 'Número de Averías por Tipo',
@@ -150,31 +269,30 @@ export default function Dashboard({ shipment, onClose}) {
                   },
                 ],
               }}
-              options={{
-                maintainAspectRatio: false,
-              }}
+              options={barOptions}
             />
           </div>
+
+          {/* Gráfico de Demanda por Almacén */}
           <div className="chart-container" style={{ height: '250px' }}>
-            <h4>Demanda de Pedidos por Almacen</h4>
+            <div className="flex items-center gap-2 mb-4">
+              <h4 className="text-lg font-semibold text-gray-700">Demanda por Almacén</h4>
+              <Tooltip content={tooltips.demandaAlmacen} {...tooltipStyles}>
+                <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help" />
+              </Tooltip>
+            </div>
             <Bar
               data={{
                 labels: ['Trujillo', 'Lima', 'Arequipa'],
                 datasets: [
                   {
-                    label: 'Demanda por Almacen',
-                    data: [
-                      data.demandasEnAlmacenes?.Trujillo,
-                      data.demandasEnAlmacenes?.Lima,
-                      data.demandasEnAlmacenes?.Arequipa,
-                    ],
+                    label: 'Demanda por Almacén',
+                    data: almacenesData.values,
                     backgroundColor: '#284BCC',
                   },
                 ],
               }}
-              options={{
-                maintainAspectRatio: false,
-              }}
+              options={barOptions}
             />
           </div>
         </div>

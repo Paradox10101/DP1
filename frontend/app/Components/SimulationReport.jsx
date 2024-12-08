@@ -11,7 +11,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             isDismissable={false}
             blur
         >
-            <ModalContent className="h-[775px] min-w-[850px]">
+            <ModalContent className="h-[800px] min-w-[900px]">
             <ModalHeader>
             <div className="flex flex-row gap-2">
                     <div className="text-xl font-bold">{"Reporte de Simulación " + simulationType}</div>

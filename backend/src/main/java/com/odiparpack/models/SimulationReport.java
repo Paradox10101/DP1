@@ -75,7 +75,7 @@ public class SimulationReport {
         double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
 
         System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
-        return (1 - eficienciaPromedio) * 100;
+        return (eficienciaPromedio) * 100;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {
