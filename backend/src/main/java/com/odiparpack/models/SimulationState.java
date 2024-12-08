@@ -1137,6 +1137,7 @@ public class SimulationState {
 
         double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
                 / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+        /* Aqui sugerencia: MODIFCAR LA FORMA DE CALCULAR LA EFICIENCIA PARA QUE SEA MAS FACIL --> SOLO SE DEBE DIVIDIR EL TIEMPO ESTIMADO ENTRE EL TIEMPO LIMITE */
 
         eficienciaPedidos.put(codigo, eficiencia);
     }
