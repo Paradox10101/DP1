@@ -85,6 +85,14 @@ public class SimulationState {
 
     private Duration collapseThresholdDuration = null;
 
+    public List<LocalDateTime> obtenerTiempos(){
+        List<LocalDateTime> tiempos = new ArrayList<>();
+        tiempos.add(simulationStartTime);
+        tiempos.add(simulationEndTime != null ? simulationEndTime : currentTime);
+        return tiempos;
+    }
+
+
     // Agregar getters
     public int getAveriasTipo1() {
         return averiasTipo1;
@@ -160,6 +168,7 @@ public class SimulationState {
 
                 // Verificar si la capacidad utilizada supera la máxima
                 if (capacidadUtilizada > maxCapacity) {
+                    simulationEndTime = currentTime;
                     logger.severe("¡Colapso logístico detectado por capacidad!");
                     logger.severe(String.format("Oficina %s ha excedido su capacidad máxima. Utilizada: %d, Máxima: %d",
                             location.getProvince(), currentCapacity, maxCapacity));
@@ -212,6 +221,7 @@ public class SimulationState {
                 if (order.getStatus() != Order.OrderStatus.DELIVERED) {
                     // Si el tiempo actual es posterior al tiempo límite de entrega
                     if (currentTime.isAfter(order.getDueTime())) {
+                        simulationEndTime = currentTime;
                         logger.severe("¡Colapso logístico detectado!");
                         logger.severe("Pedido " + order.getOrderCode() +
                                 " no entregado. Tiempo límite: " + order.getDueTime() +
@@ -1137,6 +1147,13 @@ public class SimulationState {
 
         double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
                 / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+
+        // Convertir ambos tiempos a minutos o segundos para hacer la división
+        //long tiempoEstimadoMinutos = tiempoEstimado.toLocalTime().toSecondOfDay();
+        //long tiempoLimiteMinutos = tiempoLimite.toLocalTime().toSecondOfDay();
+
+        // Calcular eficiencia como tiempo estimado / tiempo límite
+        //double eficiencia = (double) tiempoEstimadoMinutos / tiempoLimiteMinutos;
         /* Aqui sugerencia: MODIFCAR LA FORMA DE CALCULAR LA EFICIENCIA PARA QUE SEA MAS FACIL --> SOLO SE DEBE DIVIDIR EL TIEMPO ESTIMADO ENTRE EL TIEMPO LIMITE */
 
         eficienciaPedidos.put(codigo, eficiencia);
