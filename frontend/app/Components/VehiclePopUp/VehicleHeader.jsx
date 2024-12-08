@@ -3,11 +3,11 @@ import { Chip } from "@nextui-org/react";
 
 const getStatusColor = (status) => {
   const statusColors = {
-    // Vehiculo en almacen
+    // Vehículo en almacén
     'EN_ALMACEN': "#DEA71A", 
     "ORDENES_CARGADAS": "#DEA71A",
     
-    // Vehiculo en mantenimiento
+    // Vehículo en mantenimiento
     "EN_MANTENIMIENTO": "#7B15FA",
     "EN_REPARACION": "#7B15FA",
 
@@ -16,22 +16,21 @@ const getStatusColor = (status) => {
     'EN_ESPERA_EN_OFICINA': "#7B15FA",
     'EN_REEMPLAZO': "#7B15FA",
 
-    // Vehhiculo en transito
+    // Vehículo en tránsito
     'EN_TRANSITO_ORDEN': "#284BCC",
     'HACIA_ALMACEN': "#284BCC",
     
-
     // Averías por severidad
-    'AVERIADO_1': 'warning',            // Amarillo - Avería leve
-    'AVERIADO_2': 'danger',             // Rojo suave - Avería moderada
-    'AVERIADO_3': {                     // Rojo intenso - Avería grave
-      color: 'danger',
+    'AVERIADO_1': "#FFD700", // Amarillo - Avería leve
+    'AVERIADO_2': "#FF4500", // Naranja/rojo - Avería moderada
+    'AVERIADO_3': {          // Rojo intenso - Avería grave
+      color: "#B22222",
       variant: 'solid'
     },
 
     // Estados especiales
-    'DETENIDO': {                       // Gris - Vehículo detenido
-      color: 'default',
+    'DETENIDO': {            // Gris - Vehículo detenido
+      color: '#A9A9A9',
       variant: 'flat'
     }
   };
@@ -53,6 +52,7 @@ const getStatusColor = (status) => {
 
   return statusC || defaultStatus;
 };
+
 
 const getStatusText = (status) => {
   const statusTexts = {
