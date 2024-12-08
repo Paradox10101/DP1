@@ -112,12 +112,12 @@ const doughnutOptions = {
 // Tooltips definitions
 const tooltips = {
   capacidadEfectiva: "Promedio acumulado del porcentaje de capacidad utilizada por los vehículos durante el transporte de pedidos.",
-  pedidosAtendidos: "Número total de pedidos que han sido completamente procesados y entregados durante la simulación.",
-  eficienciaRutas: "Medida de la eficiencia en la planificación de rutas, calculada como la relación entre el tiempo estimado y el tiempo límite de entrega.",
+  pedidosAtendidos: "Número total de pedidos que han sido procesados y atendidos durante la simulación.",
+  eficienciaRutas: "Medida de la eficiencia en la planificación de rutas, calculada como la relación entre el tiempo diferencial del tiempo estimado y del tiempo límite de entrega.",
   promedioPedidos: "Promedio diario de pedidos procesados durante toda la simulación.",
   demandaRegion: "Distribución de pedidos por región natural del Perú.",
-  topCiudades: "Las 5 ciudades con mayor cantidad de pedidos registrados.",
-  averias: "Cantidad de incidentes técnicos registrados por tipo de avería.",
+  topCiudades: "Las ciudades con mayor cantidad de pedidos registrados.",
+  averias: "Cantidad de averías registradas por tipo de avería.",
   demandaAlmacen: "Distribución de pedidos procesados por cada almacén principal."
 };
 
