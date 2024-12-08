@@ -62,18 +62,18 @@ const getStatusText = (status) => {
 
     // Vehiculo en mantenimiento
     "EN_MANTENIMIENTO": 'En mantenimiento',
-    "EN_REPARACION": 'En mantenimiento',
+    "EN_REPARACION": 'En reparación',
 
     // Vehículo en espera
-    'LISTO_PARA_RETORNO': 'En Espera',
+    'LISTO_PARA_RETORNO': 'Por retornar',
     'EN_ESPERA_EN_OFICINA': 'En Espera',
-    'EN_REEMPLAZO': 'En Espera',
+    'EN_REEMPLAZO': 'En Reemplazo',
 
-    // Vehhiculo en transito
+    // Vehiculo en transito
     'EN_TRANSITO_ORDEN': 'En Tránsito',
-    'HACIA_ALMACEN': 'En Tránsito',
+    'HACIA_ALMACEN': 'Hacia almacén',
 
-    
+
     // Estados de avería
     'AVERIADO_1': 'Avería Leve',
     'AVERIADO_2': 'Avería Moderada',

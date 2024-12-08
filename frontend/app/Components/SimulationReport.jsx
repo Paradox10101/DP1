@@ -34,17 +34,11 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
         }
     }, [isOpen]);
 
-    const formatDateTime = (date) => {
-        if (!date) return '';
-        return date.toLocaleString('es-PE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
+    const capitalize = (str) => {
+        if (typeof str !== 'string') return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      };
+      
     return(
         <Modal
             closeButton
@@ -52,37 +46,24 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             onOpenChange={onOpenChange}
             isDismissable={false}
             blur="true"
+            scrollBehavior="normal"
         >
-            <ModalContent className="h-[800px] min-w-[900px]">
+            <ModalContent className="h-[800px] min-w-[900px] overflow-y-auto">
                 <ModalHeader>
-                    <div className="flex flex-row gap-2">
-                        <div className="text-xl font-bold">{"Reporte de Simulación " + simulationType}</div>
-                        {tiempos && (
-                            <div className="text-sm text-gray-600 flex gap-2 items-center">
-                                <span className="font-semibold">Periodo:</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        {formatDateTime(tiempos.inicio)}
-                                    </span>
-                                    <span>→</span>
-                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        {formatDateTime(tiempos.fin)}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                    <div className="text-xl font-bold">
+                        {"Reporte de Simulación " + capitalize(simulationType)}
                     </div>
                 </ModalHeader>
-            <ModalBody>
-            {simulationType==='semanal'?
-                <Dashboard onClose={onOpenChange}/>
-            :
-            simulationType==='colapso'?
-                <CollapseDashboard />
-            :
-            <></>
-            }
-            </ModalBody>
+                <ModalBody>
+                {simulationType==='semanal'?
+                    <Dashboard onClose={onOpenChange} tiempos={tiempos}/>
+                :
+                simulationType==='colapso'?
+                    <CollapseDashboard />
+                :
+                <></>
+                }
+                </ModalBody>
             </ModalContent>
         </Modal>
     )

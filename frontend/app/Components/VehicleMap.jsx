@@ -193,7 +193,6 @@ const VehicleMap = ({ simulationStatus }) => {
   };
 
   const {
-    animateTransition,
     performanceManager
   } = useVehicleAnimation(mapRef, updatePopups);
 

@@ -75,3 +75,46 @@ body{
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* Personalización del contenedor del popup */
+.maplibregl-popup {
+  max-width: 240px !important;
+}
+
+.maplibregl-popup-content {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Personalización del botón de cerrar */
+.maplibregl-popup-close-button {
+  padding: 0 !important;
+  right: 0px !important;
+  top: 6px !important;
+  color: #666 !important;
+  font-size: 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s !important;
+  z-index: 1 !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: rgba(0,0,0,0.05) !important;
+  color: #333 !important;
+}
+
+/* Contenido del popup */
+.warehouse-popup-content {
+  padding: 12px;
+  min-width: 200px;
+  background: white;
+  @apply rounded-lg;
+}
