@@ -108,7 +108,7 @@ export default function OpcionEnvios() {
             
             (shipmentsFilter.statusShipment === "ENTREGADO" && ((shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP"))) ||
             (shipmentsFilter.statusShipment === "EN TRANSITO" && ((shipment.quantityVehicles > 0 || shipment.vehicles.legth > 0) && !(shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP"))) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" )
+            (shipmentsFilter.statusShipment === "REGISTRADO" && ((!(shipment.quantityVehicles > 0 || shipment.vehicles.legth > 0) && !(shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) || shipment.status === "REGISTERED"))
             : true;
 
 
@@ -173,9 +173,26 @@ export default function OpcionEnvios() {
     const hasSearchResults = hasInitialData && filteredShipments.length > 0;
     const isSearching = searchInput.length > 0;
 
+
+    const visibleShipments = useMemo(
+        () =>
+          filteredShipments.filter(
+            (shipment) =>
+              shipment.timeElapsedDays <
+              Math.floor(
+                (new Date(new Date(shipment.dueTime).setHours(0, 0, 0, 0)) -
+                  new Date(new Date(shipment.orderTime).setHours(0, 0, 0, 0))) /
+                  (1000 * 60 * 60 * 24)
+              )
+          ),
+        [filteredShipments]
+      );
+
     const Row = ({ index, style }) => {
-        const shipment = filteredShipments[index];
+        const shipment = visibleShipments[index];
         return (
+            !(shipment.timeElapsedDays >= Math.floor((new Date(new Date(shipment.dueTime).setHours(0, 0, 0, 0)) - new Date(new Date(shipment.orderTime).setHours(0, 0, 0, 0))) / (1000 * 60 * 60 * 24)))
+            &&
             <div style={style}
                 className={`p-2 border-2 rounded-xl stroke-black `}
                 onMouseDown={() => {
@@ -192,6 +209,8 @@ export default function OpcionEnvios() {
             </div>
         );
     };
+
+
 
     return (
         <div className="flex flex-col h-full gap-4 w-full">
@@ -263,7 +282,7 @@ export default function OpcionEnvios() {
                                 {({ height, width }) => (
                                     <List
                                         height={height}
-                                        itemCount={filteredShipments.length}
+                                        itemCount={visibleShipments.length}
                                         itemSize={180}
                                         width={width}
                                         className="scroll-area"
