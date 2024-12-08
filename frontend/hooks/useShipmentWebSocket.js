@@ -44,7 +44,7 @@ export const useShipmentWebSocket = () => {
     };
 
     ws.onerror = (error) => {
-      console.error('Error en WebSocket de envíos:', error);
+      console.log('Error en WebSocket de envíos:', error);
       ws.close(); // Cerrar el WebSocket para desencadenar la reconexión
     };
 

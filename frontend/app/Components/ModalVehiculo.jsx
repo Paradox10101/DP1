@@ -244,7 +244,7 @@ export default function ModalVehiculo({vehicle}){
                                 
                             }
                             {index!==0?
-                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]" key={index}>
                                 <div className="text-center mx-auto">
                                     
                                     {location.status==="Recorrido"?
@@ -265,7 +265,7 @@ export default function ModalVehiculo({vehicle}){
                                 </div>
                             </div>
                             :
-                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[300px]">
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[300px]" key={index}>
                                 {location.type==="office"?
                                 <>
                                     <div className="text-center mx-auto">

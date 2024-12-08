@@ -51,7 +51,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             isDismissable={false}
-            blur = "true"
+            blur
         >
             <ModalContent className="h-[800px] min-w-[900px]">
                 <ModalHeader>

@@ -38,9 +38,9 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
 
 
             <div className="max-h-[590px] overflow-y-auto flex flex-col gap-4 align-top scroll-area">
-                {selectedVehicle.routes && selectedVehicle.routes.map((route)=>
+                {selectedVehicle.routes && selectedVehicle.routes.map((route, index)=>
                     route?.originUbigeo&&route?.destinationUbigeo?
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2" key={index}>
                         <div>
                             {
                             (route?.status)&&
@@ -66,7 +66,7 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
                     </div>
                     :
                     route?.originUbigeo&&!route?.destinationUbigeo?
-                    <div className="flex flex-row gap-2 items-center">
+                    <div className="flex flex-row gap-2 items-center" key={index}>
                         <div>
                             <IconoEstado Icono={Warehouse} classNameContenedor={"bg-black w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                         </div>
@@ -76,7 +76,7 @@ export default function ModalRutaVehiculoEnvio({selectedVehicle}){
                         </div>
                     </div>
                     :
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2" key={index}>
                         <div>
                             <IconoEstado Icono={Building} classNameContenedor={"bg-[#2ACF58] w-[36px] h-[36px] relative rounded-full flex items-center justify-center"} classNameContenido={"w-[20px] h-[20px] stroke-blanco z-10"}/>
                         </div>
