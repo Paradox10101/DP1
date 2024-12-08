@@ -106,9 +106,9 @@ export default function OpcionEnvios() {
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             
-            (shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ARRIVED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length > 0))) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"   || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length === 0)) )
+            (shipmentsFilter.statusShipment === "ENTREGADO" && ((shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP"))) ||
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && ((shipment.quantityVehicles > 0 || shipment.vehicles.legth > 0) && !(shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP"))) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && ((!(shipment.quantityVehicles > 0 || shipment.vehicles.legth > 0) && !(shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) || shipment.status === "REGISTERED"))
             : true;
 
 
@@ -173,9 +173,26 @@ export default function OpcionEnvios() {
     const hasSearchResults = hasInitialData && filteredShipments.length > 0;
     const isSearching = searchInput.length > 0;
 
+
+    const visibleShipments = useMemo(
+        () =>
+          filteredShipments.filter(
+            (shipment) =>
+              shipment.timeElapsedDays <
+              Math.floor(
+                (new Date(new Date(shipment.dueTime).setHours(0, 0, 0, 0)) -
+                  new Date(new Date(shipment.orderTime).setHours(0, 0, 0, 0))) /
+                  (1000 * 60 * 60 * 24)
+              )
+          ),
+        [filteredShipments]
+      );
+
     const Row = ({ index, style }) => {
-        const shipment = filteredShipments[index];
+        const shipment = visibleShipments[index];
         return (
+            !(shipment.timeElapsedDays >= Math.floor((new Date(new Date(shipment.dueTime).setHours(0, 0, 0, 0)) - new Date(new Date(shipment.orderTime).setHours(0, 0, 0, 0))) / (1000 * 60 * 60 * 24)))
+            &&
             <div style={style}
                 className={`p-2 border-2 rounded-xl stroke-black `}
                 onMouseDown={() => {
@@ -192,6 +209,8 @@ export default function OpcionEnvios() {
             </div>
         );
     };
+
+
 
     return (
         <div className="flex flex-col h-full gap-4 w-full">
@@ -263,7 +282,7 @@ export default function OpcionEnvios() {
                                 {({ height, width }) => (
                                     <List
                                         height={height}
-                                        itemCount={filteredShipments.length}
+                                        itemCount={visibleShipments.length}
                                         itemSize={180}
                                         width={width}
                                         className="scroll-area"
@@ -293,14 +312,14 @@ export default function OpcionEnvios() {
                                 
                                 <div className="subEncabezado">Información del envío {shipments[selectedShipmentIndex].orderCode}</div>
                                 {
-                                    (shipments[selectedShipmentIndex].status === "REGISTERED" || ((shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED") && shipments[selectedShipmentIndex].vehicles.length === 0)) ? (
+                                    (shipments[selectedShipmentIndex].status === "REGISTERED") ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                                     ) : (shipments[selectedShipmentIndex].status === "DELIVERED" || shipments[selectedShipmentIndex].status === "PENDING_PICKUP") ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
-                                    ) : (shipments[selectedShipmentIndex].status === "IN_TRANSIT" || shipments[selectedShipmentIndex].status === "PARTIALLY_ARRIVED" || ((shipments[selectedShipmentIndex].status === "PARTIALLY_ASSIGNED" || shipments[selectedShipmentIndex].status === "FULLY_ASSIGNED") && shipments[selectedShipmentIndex].vehicles.length > 0))  ? (
+                                    ) : (shipments[selectedShipmentIndex].quantityVehicles > 0 || shipments[selectedShipmentIndex].vehicles.length > 0)  ? (
                                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl"}>EN TRÁNSITO</div>
                                     ) : (
-                                        <></>
+                                        <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                                     )
                                 }   
                             </div>
