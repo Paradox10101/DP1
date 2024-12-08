@@ -1,2 +1,3 @@
 #Ignorar el directorio .idea en backend
 /backend/.idea/
+backend/.idea/remote-targets.xml
