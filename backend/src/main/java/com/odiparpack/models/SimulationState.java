@@ -346,14 +346,6 @@ public class SimulationState {
                 currentTime = currentTime.plus(timeToAdvance);
                 logger.info("Tiempo actualizado - Current Time: " + currentTime);
 
-
-                /*// Verificar colapso logístico
-                if (checkLogisticCollapse()) {
-                    if (simulationType == SimulationRouter.SimulationType.COLLAPSE) {
-                        stopSimulation();
-                    }
-                }*/
-
                 // Actualizar tiempo efectivo de ejecución
                 long now = System.currentTimeMillis();
                 long timeDiff = now - lastUpdateTime;
@@ -410,20 +402,18 @@ public class SimulationState {
         summary.addProperty("startTime", formattedStartTime);
         summary.addProperty("endTime", formattedEndTime);
 
-        // Formatear tiempo simulado con días y AM/PM
+        // Formatear tiempo simulado con fecha completa y AM/PM
         LocalDateTime simulatedDateTime = simulationStartTime.plus(simulatedDuration);
-        long simulatedDays = simulatedDuration.toDays();
-        String simulatedTimeOfDay = simulatedDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
-        String simulatedTime = String.format("%d días, %s", simulatedDays, simulatedTimeOfDay);
+        String simulatedTimeStr = simulatedDateTime.format(dateFormatter);
+        String simulatedTime = simulatedTimeStr;
 
         // Formatear duración simulada
         String simulatedDurationStr = formatDuration(simulatedDuration);
 
-        // Formatear tiempo real basado en la hora inicial
-        long realDays = realDuration.toDays();
+        // Formatear tiempo real con fecha completa y AM/PM
         LocalDateTime realDateTime = simulationStartTime.plus(realDuration);
-        String realTimeOfDay = realDateTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a"));
-        String realTime = String.format("%d días, %s", realDays, realTimeOfDay);
+        String realTimeStr = realDateTime.format(dateFormatter);
+        String realTime = realTimeStr;
 
         // Formatear duración real
         String realDurationStr = formatDuration(realDuration);
