@@ -8,9 +8,9 @@ const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
 
 export const useShipmentWebSocket = () => {
   const setShipments = useSetAtom(shipmentsAtom);
-  const websocketRef = useRef(null); // Ref para manejar el WebSocket
-  const reconnectTimeoutRef = useRef(null); // Ref para manejar el timeout de reconexión
-  const reconnectAttemptsRef = useRef(0); // Contador de intentos de reconexión
+  const websocketRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const isUnmountedRef = useRef(false); // Para evitar reconexiones después del desmontaje
 
   const handleMessage = useCallback(
     (event) => {
@@ -18,7 +18,7 @@ export const useShipmentWebSocket = () => {
         const data = JSON.parse(event.data);
         setShipments(data);
       } catch (error) {
-        console.error('Error processing WebSocket message:', error);
+        console.error('Error procesando el mensaje de WebSocket:', error);
       }
     },
     [setShipments]
@@ -26,44 +26,41 @@ export const useShipmentWebSocket = () => {
 
   const connect = useCallback(() => {
     if (websocketRef.current) {
-      websocketRef.current.close(); // Cerrar conexión existente si hay alguna
+      websocketRef.current.close();
     }
 
-    console.log('Connecting to WebSocket de envios...');
+    console.log('Conectando al WebSocket de envíos...');
     const ws = new WebSocket(WEBSOCKET_URL);
 
     ws.onopen = () => {
-      console.log('WebSocket de envios connected');
-      reconnectAttemptsRef.current = 0; // Reiniciar contador de intentos en éxito
+      console.log('WebSocket de envíos conectado');
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket de envios disconnected');
-      scheduleReconnect(); // Intentar reconectar
+    ws.onclose = (event) => {
+      if (!isUnmountedRef.current) {
+        console.log('WebSocket de envíos desconectado:', event.code, event.reason);
+        reconnect();
+      }
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket de envios error:', error);
+      console.error('Error en WebSocket de envíos:', error);
+      ws.close(); // Cerrar el WebSocket para desencadenar la reconexión
     };
 
     ws.onmessage = handleMessage;
 
-    websocketRef.current = ws; // Guardar la instancia del WebSocket en el ref
-  }, [handleMessage]);
+    websocketRef.current = ws;
+  }, [handleMessage, reconnectTimeoutRef]);
 
-  const scheduleReconnect = useCallback(() => {
+  const reconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
     }
-
-    const delay = Math.min(1000 * 2 ** reconnectAttemptsRef.current, 30000); // Exponencial con máximo de 30s
-    reconnectAttemptsRef.current += 1;
-
-    console.log(`Attempting to reconnect in ${delay / 1000} seconds...`);
-
     reconnectTimeoutRef.current = setTimeout(() => {
+      console.log('Intentando reconectar al WebSocket de envíos...');
       connect();
-    }, delay);
+    }, 5000); // Intentar reconectar cada 5 segundos
   }, [connect]);
 
   const sendMessage = useCallback((message) => {
@@ -78,6 +75,7 @@ export const useShipmentWebSocket = () => {
     connect();
 
     return () => {
+      isUnmountedRef.current = true;
       if (websocketRef.current) {
         websocketRef.current.close();
       }
@@ -87,5 +85,5 @@ export const useShipmentWebSocket = () => {
     };
   }, [connect]);
 
-  return { sendMessage }; // Retornar sendMessage para uso en componentes
+  return { sendMessage };
 };
