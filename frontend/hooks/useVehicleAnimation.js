@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
+import vehicleWorker from "../workers/vehicleWorker"
 
 const ANIMATION_CONFIG = {
   BASE: {
@@ -205,7 +206,7 @@ export const useVehicleAnimation = (mapRef, updatePopups) => {
     if (typeof window !== 'undefined') {
       workerRef.current = new Worker(
         new URL('../workers/vehicleWorker.js', import.meta.url)
-      );
+      );      
 
       workerRef.current.onmessage = (e) => {
         if (!isMountedRef.current) return;

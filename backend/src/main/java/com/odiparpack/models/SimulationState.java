@@ -7,6 +7,7 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.services.LocationService;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
+import org.jfree.chart.block.Block;
 
 
 import java.time.*;
@@ -85,6 +86,14 @@ public class SimulationState {
 
     private Duration collapseThresholdDuration = null;
 
+    public List<LocalDateTime> obtenerTiempos(){
+        List<LocalDateTime> tiempos = new ArrayList<>();
+        tiempos.add(simulationStartTime);
+        tiempos.add(simulationEndTime != null ? simulationEndTime : currentTime);
+        return tiempos;
+    }
+
+
     // Agregar getters
     public int getAveriasTipo1() {
         return averiasTipo1;
@@ -160,6 +169,7 @@ public class SimulationState {
 
                 // Verificar si la capacidad utilizada supera la máxima
                 if (capacidadUtilizada > maxCapacity) {
+                    simulationEndTime = currentTime;
                     logger.severe("¡Colapso logístico detectado por capacidad!");
                     logger.severe(String.format("Oficina %s ha excedido su capacidad máxima. Utilizada: %d, Máxima: %d",
                             location.getProvince(), currentCapacity, maxCapacity));
@@ -212,6 +222,7 @@ public class SimulationState {
                 if (order.getStatus() != Order.OrderStatus.DELIVERED) {
                     // Si el tiempo actual es posterior al tiempo límite de entrega
                     if (currentTime.isAfter(order.getDueTime())) {
+                        simulationEndTime = currentTime;
                         logger.severe("¡Colapso logístico detectado!");
                         logger.severe("Pedido " + order.getOrderCode() +
                                 " no entregado. Tiempo límite: " + order.getDueTime() +
@@ -1137,6 +1148,13 @@ public class SimulationState {
 
         double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
                 / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+
+        // Convertir ambos tiempos a minutos o segundos para hacer la división
+        //long tiempoEstimadoMinutos = tiempoEstimado.toLocalTime().toSecondOfDay();
+        //long tiempoLimiteMinutos = tiempoLimite.toLocalTime().toSecondOfDay();
+
+        // Calcular eficiencia como tiempo estimado / tiempo límite
+        //double eficiencia = (double) tiempoEstimadoMinutos / tiempoLimiteMinutos;
         /* Aqui sugerencia: MODIFCAR LA FORMA DE CALCULAR LA EFICIENCIA PARA QUE SEA MAS FACIL --> SOLO SE DEBE DIVIDIR EL TIEMPO ESTIMADO ENTRE EL TIEMPO LIMITE */
 
         eficienciaPedidos.put(codigo, eficiencia);
@@ -1323,7 +1341,7 @@ public class SimulationState {
         return groups;
     }
 
-    private DataModel createDataModelForGroup(Set<RouteRequest> routesToCalculate) {
+    private DataModel createDataModelForGroup(Set<RouteRequest> routesToCalculate, List<Blockage> blockages) {
         List<Integer> starts = new ArrayList<>();
         List<Integer> ends = new ArrayList<>();
 
@@ -1347,7 +1365,7 @@ public class SimulationState {
 
         return new DataModel(
                 getCurrentTimeMatrix(),
-                getActiveBlockages(),
+                blockages,
                 starts.stream().mapToInt(Integer::intValue).toArray(),
                 ends.stream().mapToInt(Integer::intValue).toArray(),
                 locationNames,
@@ -1400,8 +1418,12 @@ public class SimulationState {
             // Paso 3: Crear grupos sin repeticiones de origen y destino
             List<List<RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
+            List<Blockage> blockages = getActiveBlockages().stream()
+                    .map(blockage -> blockage.clone())
+                    .collect(Collectors.toList());
+
             // Paso 4: Calcular rutas en paralelo para cada grupo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 5);
+            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, blockages,5);
 
             // Lista para los vehículos cuyo proceso de reemplazo falló
             List<Vehicle> vehiclesFailedToReplace = new ArrayList<>();
@@ -1409,7 +1431,7 @@ public class SimulationState {
             // Paso 5: Determinar el almacén más cercano para cada vehículo
             for (Vehicle vehicle : brokenVehiclesNotAtWarehouse) {
                 String breakdownUbigeo = vehicle.getCurrentLocationUbigeo();
-                String nearestWarehouse = findNearestWarehouseBasedOnCalculatedRoutes(breakdownUbigeo, warehouses);
+                String nearestWarehouse = findNearestWarehouseBasedOnCalculatedRoutes(breakdownUbigeo, warehouses, blockages);
                 if (nearestWarehouse != null) {
                     boolean assigned = assignWarehouseToBrokenVehicle(vehicle, nearestWarehouse);
                     if (!assigned) {
@@ -1447,13 +1469,13 @@ public class SimulationState {
         return asignado;
     }
 
-    private String findNearestWarehouseBasedOnCalculatedRoutes(String ubigeo, List<String> warehouses) {
+    private String findNearestWarehouseBasedOnCalculatedRoutes(String ubigeo, List<String> warehouses, List<Blockage> blockages) {
         String nearestWarehouse = null;
         double minRouteDistance = Double.MAX_VALUE;
 
         for (String warehouseUbigeo : warehouses) {
             // Obtener la ruta desde el almacén al punto de avería
-            List<RouteSegment> route = routeCache.getRoute(warehouseUbigeo, ubigeo, activeBlockages);
+            List<RouteSegment> route = routeCache.getRoute(warehouseUbigeo, ubigeo, blockages);
             if (route != null) {
                 double routeDistance = calculateRouteDistance(route);
                 if (routeDistance < minRouteDistance) {
@@ -1475,7 +1497,7 @@ public class SimulationState {
     // Hacia almacen: origen: oficina - destino: almacen
     // Hacia oficina: origen: almacen - destino: oficina
     public Map<String, List<RouteSegment>> calculateRoutesInParallel(
-            List<List<RouteRequest>> routeGroups, int seconds) {
+            List<List<RouteRequest>> routeGroups, List<Blockage> blockages, int seconds) {
         Map<String, List<RouteSegment>> allCalculatedRoutes = new ConcurrentHashMap<>();
 
         ExecutorService executorService = SimulationRunner.getComputeIntensiveExecutor();
@@ -1489,18 +1511,17 @@ public class SimulationState {
                     semaphore.acquire();
 
                     Set<RouteRequest> routesToCalculate = new HashSet<>();
-                    Map<String, List<Vehicle>> groupedVehicles = new HashMap<>();
 
                     for (RouteRequest route : group) {
                         // Verificar si la ruta ya está en caché
-                        List<RouteSegment> cachedRoute = routeCache.getRoute(route.start, route.end, activeBlockages);
+                        List<RouteSegment> cachedRoute = routeCache.getRoute(route.start, route.end, blockages);
                         if (cachedRoute == null) {
                             routesToCalculate.add(route);
                         }
                     }
 
                     // Crear DataModel para el grupo
-                    DataModel data = createDataModelForGroup(routesToCalculate);
+                    DataModel data = createDataModelForGroup(routesToCalculate, blockages);
                     if (data != null && data.vehicleNumber > 0) {
                         Map<String, List<RouteSegment>> routes = null;
                         try {
@@ -1519,7 +1540,7 @@ public class SimulationState {
                             for (RouteRequest route : routesToCalculate) {
                                 String routeKey = buildRouteKey(route.start, route.end);
                                 if (routes.containsKey(routeKey)) {
-                                    routeCache.putRoute(route.start, route.end, routes.get(routeKey), activeBlockages);
+                                    routeCache.putRoute(route.start, route.end, routes.get(routeKey), blockages);
                                 } else {
                                     logger.warning("No se pudo calcular la ruta: " + routeKey);
                                 }
@@ -2559,8 +2580,13 @@ public class SimulationState {
             // Paso 3: Crear grupos sin repeticiones de origen y destino
             List<List<RouteRequest>> routeGroups = groupRoutesWithoutRepetitions(allPossibleRoutes);
 
+            // Bloqueos para calcular planificacion
+            List<Blockage> blockages = getActiveBlockages().stream()
+                    .map(blockage -> blockage.clone())
+                    .collect(Collectors.toList());
+
             // Paso 4: Calcular rutas en paralelo para cada grupo
-            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, 6);
+            Map<String, List<RouteSegment>> allCalculatedRoutes = calculateRoutesInParallel(routeGroups, blockages, 6);
 
             // Lista para los vehículos cuyo proceso de regreso falló
             List<Vehicle> vehiclesFailedToReturn = new ArrayList<>();
@@ -2568,7 +2594,7 @@ public class SimulationState {
             // Paso 5: Determinar el almacén más cercano para cada vehículo
             for (Vehicle vehicle : vehiclesNotAtWarehouse) {
                 String currentUbigeo = vehicle.getCurrentLocationUbigeo();
-                String nearestWarehouse = findNearestWarehouseBasedOnCalculatedRoutes(currentUbigeo, warehouses);
+                String nearestWarehouse = findNearestWarehouseBasedOnCalculatedRoutes(currentUbigeo, warehouses, blockages);
                 if (nearestWarehouse != null) {
                     boolean assigned = assignVehicleToWarehouse(vehicle, nearestWarehouse);
                     if (!assigned) {
