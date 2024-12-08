@@ -1128,16 +1128,16 @@ public class SimulationState {
         //luego se tiene que ir sumando en total
         //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
         // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
-        if (tiempoEstimado.isAfter(tiempoLimite)) {
+        /*if (tiempoEstimado.isAfter(tiempoLimite)) {
             logger.info("El tiempo estimado no puede ser después del tiempo límite.\n");
-        }
+        }*/
 
 // Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
         //long tiempoEstimadoSegundos = Duration.between(currentTime, tiempoEstimado).getSeconds();
         //long tiempoLimiteSegundos = Duration.between(currentTime, tiempoLimite.getSeconds());
 
-        double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
-                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();
+        /*double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
+                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();*/
 
         // Convertir ambos tiempos a minutos o segundos para hacer la división
         //long tiempoEstimadoMinutos = tiempoEstimado.toLocalTime().toSecondOfDay();
@@ -1146,6 +1146,24 @@ public class SimulationState {
         // Calcular eficiencia como tiempo estimado / tiempo límite
         //double eficiencia = (double) tiempoEstimadoMinutos / tiempoLimiteMinutos;
         /* Aqui sugerencia: MODIFCAR LA FORMA DE CALCULAR LA EFICIENCIA PARA QUE SEA MAS FACIL --> SOLO SE DEBE DIVIDIR EL TIEMPO ESTIMADO ENTRE EL TIEMPO LIMITE */
+        if (tiempoEstimado.isAfter(tiempoLimite)) {
+            // Si el tiempo estimado supera el límite, la eficiencia es 0
+            eficienciaPedidos.put(codigo, 0.0);
+            return;
+        }
+
+        // Convertir ambos tiempos a minutos
+        long tiempoEstimadoMinutos = tiempoEstimado.toLocalTime().toSecondOfDay();
+        long tiempoLimiteMinutos = tiempoLimite.toLocalTime().toSecondOfDay();
+
+        // Calcular la diferencia entre el tiempo límite y el estimado
+        double margenTiempo = tiempoLimiteMinutos - tiempoEstimadoMinutos;
+
+        // La eficiencia es mejor mientras más margen de tiempo tengamos
+        double eficiencia = margenTiempo / tiempoLimiteMinutos;
+
+        // Normalizar la eficiencia entre 0 y 1
+        eficiencia = Math.max(0.0, Math.min(1.0, eficiencia));
 
         eficienciaPedidos.put(codigo, eficiencia);
     }
