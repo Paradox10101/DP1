@@ -1142,6 +1142,7 @@ public class SimulationState {
         eficienciaPedidos.put(codigo, eficiencia);
     }
 
+
     public Map<String, Integer> getPedidosPorRegion(){
         return pedidosPorRegion;
     }
@@ -1595,6 +1596,22 @@ public class SimulationState {
             vehicle.setAvailable(true);
             logger.info("Vehículo " + vehicle.getCode() + " ha salido de mantenimiento y está disponible en " +
                     vehicle.getCurrentLocationUbigeo() + " a partir de " + currentTime);
+        }
+    }
+
+    public void incrementarAveria(String tipo) {
+        switch (tipo) {
+            case "1":
+                averiasTipo1++;
+                break;
+            case "2":
+                averiasTipo2++;
+                break;
+            case "3":
+                averiasTipo3++;
+                break;
+            default:
+                logger.warning("Tipo de avería no reconocido: " + tipo);
         }
     }
 
