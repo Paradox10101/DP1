@@ -13,6 +13,7 @@ import ModalAlmacen from './ModalAlmacen'
 import { useShipmentWebSocket } from "@/hooks/useShipmentWebSocket";
 
 export default function OpcionAlmacenes() {
+  useShipmentWebSocket();
   useWarehouseWebSocket();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const locations = useAtomValue(filteredLocationsAtom);

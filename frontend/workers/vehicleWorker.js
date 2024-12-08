@@ -67,6 +67,8 @@ function calculateSmoothVelocity(current, target, smoothing) {
 self.onmessage = (e) => {
   const { data, config } = e.data;
 
+  if(!(data&&data.features)) return;
+
   const updatedFeatures = data.features.map(feature => {
     const vehicleCode = feature.properties.vehicleCode;
     let state = vehicleStates.get(vehicleCode);

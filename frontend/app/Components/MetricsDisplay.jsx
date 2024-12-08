@@ -10,10 +10,6 @@ const MetricsDisplay = () => {
   const [selectedCategories, setSelectedCategories] = useState(['time']);
   const [, setSimulationStatus] = useAtom(simulationStatusAtom);
 
-  useEffect(()=>{
-    if(metrics?.type)
-      setSimulationStatus('stopped')
-  }, [metrics])
   
   if (!metrics || metrics?.type) return <></>;
 

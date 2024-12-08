@@ -16,6 +16,7 @@ import SimulationModal from '@/app/Components/SimulationModal';
 import SimulationPanel from "../Components/SimulationPanel/SimulationPanel";
 import SimulationReport from "@/app/Components/SimulationReport"
 import { useDisclosure } from "@nextui-org/react";
+import { useSimulationMetrics } from "@/hooks/useSimulationMetrics";
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 
@@ -27,7 +28,7 @@ const page = () => {
   const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
   const [loadedSimulationType, setLoadedSimulationType] = useState(false);
   const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
-  
+  const { metrics } = useSimulationMetrics();
 
   const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -57,7 +58,10 @@ const page = () => {
     }
   }, [simulationStatus])
 
-  
+  useEffect(()=>{
+    if(metrics?.type)
+      setSimulationStatus('stopped')
+  }, [metrics])
 
   return (
     <>
