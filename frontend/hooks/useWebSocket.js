@@ -99,7 +99,7 @@ export const useWebSocket = ({
         return false;
       }
     } catch (error) {
-      console.error('Error al verificar estado:', error);
+      console.log('Error al verificar estado:', error);
       setServerAvailable(false);
       setError(createError(ErrorTypes.CONNECTION));
       return false;
