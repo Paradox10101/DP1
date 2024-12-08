@@ -25,14 +25,25 @@ public class ReportRouter extends BaseRouter {
     public void setupRoutes() {
         // Agregar el endpoint para el reporte de capacidades
         Spark.get("/api/v1/simulation/report", (request, response) -> {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                    .create();
             response.type("application/json");
 
-            // Crear el reporte basándonos en el estado de la simulación
-            SimulationReport simulationReport = new SimulationReport(simulationState);
-            String reportJson = simulationReport.toJson();
+            try {
+                // Crear el reporte basándonos en el estado de la simulación
+                SimulationReport simulationReport = new SimulationReport(simulationState);
+                // Usar el gson configurado con el adaptador en lugar del método toJson del
+                // reporte
+                String reportJson = gson.toJson(simulationReport);
 
-            response.status(200);
-            return reportJson;
+                response.status(200);
+                return reportJson;
+            } catch (Exception e) {
+                response.status(500);
+                return gson.toJson(Collections.singletonMap("error",
+                        "Error al generar el reporte: " + e.getMessage()));
+            }
         });
 
         Spark.get("/api/v1/simulation/list_pedidos", (request, response) -> {

@@ -55,4 +55,23 @@ body{
   height: 100%;
 }
 
+.cursor-help {
+  cursor: help;
+}
 
+.chart-container {
+  min-height: 300px;
+  position: relative;
+}
+
+.chart-container {
+  position: relative;
+  margin: auto;
+  height: 300px;
+}
+
+.tooltip {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

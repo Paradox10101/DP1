@@ -1,5 +1,6 @@
 package com.odiparpack.models;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ public class SimulationReport {
     private Map<String, Integer> demandasEnAlmacenes;
     private Map<String, Integer> averiasPorTipo;
     private Map<String, Integer> regionConMayorDemanda;
+    private List<LocalDateTime> tiempos;
 
     private Map<String, String> ubigeoToProvincia = new HashMap<String, String>() {{
         put("150101", "Lima");
@@ -36,6 +38,12 @@ public class SimulationReport {
         this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
+        this.tiempos = state.obtenerTiempos();
+    }
+    
+    // Agregar getter para tiempos
+    public List<LocalDateTime> getTiempos() {
+        return tiempos;
     }
 
     // Método para calcular la capacidad efectiva
@@ -75,7 +83,7 @@ public class SimulationReport {
         double eficienciaPromedio = sumaEficiencia / eficienciaPedidos.size();
 
         System.out.println("Eficiencia promedio de rutas: " + eficienciaPromedio);
-        return (1 - eficienciaPromedio) * 100;
+        return (eficienciaPromedio) * 100;
     }
 
     private double calculatePromedioPedidos(SimulationState state) {

@@ -140,6 +140,8 @@ public class PlanificadorTask implements Runnable {
         long halfTravelMinutes = totalTravelMinutes / 2;
         LocalDateTime breakdownTime = departureTime.plusMinutes(halfTravelMinutes);
 
+        // Agregar esta línea para incrementar el contador
+        state.incrementarAveria(breakdownType);
         ScheduledBreakdown breakdown = new ScheduledBreakdown(
                 vehicle.getCode(),
                 breakdownTime,
