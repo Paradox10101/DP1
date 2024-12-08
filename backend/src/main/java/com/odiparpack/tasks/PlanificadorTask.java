@@ -43,9 +43,9 @@ public class PlanificadorTask implements Runnable {
             logAvailableOrders(availableOrders);
 
             // Filtrar órdenes con ubigeo origen inválido (******)
-            List<Order> ordersWithInvalidUbigeo = availableOrders.stream()
+            /*List<Order> ordersWithInvalidUbigeo = availableOrders.stream()
                     .filter(order -> "******".equals(order.getOriginUbigeo())) // Verificar ubigeo inválido
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList());*/
 
             // Bloqueos para calcular planificacion
             List<Blockage> blockages = state.getActiveBlockages().stream()
@@ -53,9 +53,9 @@ public class PlanificadorTask implements Runnable {
                     .collect(Collectors.toList());
 
             // Solo procesar si hay órdenes con ubigeo inválido
-            if (!ordersWithInvalidUbigeo.isEmpty()) {
-                processOrdersWithUnknownOrigin(ordersWithInvalidUbigeo, state, blockages); // Asigna ubigeo origen
-            }
+            //if (!ordersWithInvalidUbigeo.isEmpty()) {
+            processOrdersWithUnknownOrigin(availableOrders, state, blockages); // Asigna ubigeo origen
+            //}
 
             if (!availableOrders.isEmpty()) {
                 List<VehicleAssignment> assignments = assignOrdersToVehicles(
