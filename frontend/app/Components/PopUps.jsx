@@ -14,7 +14,7 @@ const AlmacenPopUp = ({ title, ubigeo, warehouseData }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   
   return (
-      <div className="bg-white rounded p-4 w-80 flex flex-col">
+      <div className="bg-white rounded p-4 flex flex-col">
         <div className="flex items-center justify-between mb-2">
           {/*<div dangerouslySetInnerHTML={{ __html: iconoHtmlString }} className="mr-3" />*/}
           <img src={MAP_CONFIG.IMAGES.WAREHOUSE.url} alt="Warehouse Icon" className="w-6 h-6" />
@@ -32,7 +32,7 @@ const AlmacenPopUp = ({ title, ubigeo, warehouseData }) => {
           isOpen={isOpen}
           onClose={onClose}
           isDismissable={true}
-          blur
+          blur="true"
         >
           <ModalContent className="h-[800px] min-w-[850px]">
             <ModalHeader>
@@ -74,7 +74,7 @@ const OficinaPopUp = ({ title, ubigeo, capacidadMaxima, capacidadUtilizada, offi
           isOpen={isOpen}
           onClose={onClose}
           isDismissable={true}
-          blur
+          blur="true"
         >
           <ModalContent className="h-[800px] min-w-[850px]">
             <ModalHeader>

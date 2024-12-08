@@ -29,6 +29,7 @@ import ModalVehiculo from './ModalVehiculo';
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 import Dashboard from './Dashboard';
 import CollapseDashboard from './CollapseDashboard';
+import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -48,10 +49,10 @@ const getSvgString = (IconComponent, bgColor) => {
 };
 
 
-// Componente StatusBadge actualizado
 const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
+      case "ORDENES_CARGADAS":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
                   En Almacén
@@ -60,13 +61,13 @@ const StatusBadge = ({ status }) => {
       case "AVERIADO_1":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Averiado Leve
+                  Avería Leve
               </div>
           );
       case "AVERIADO_2":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado Moderado
+                Averia Moderada
             </div>
         );
       case "AVERIADO_3":
@@ -76,33 +77,36 @@ const StatusBadge = ({ status }) => {
             </div>
         );
       case "EN_MANTENIMIENTO":
+      case "EN_REPARACION":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                   En Mantenimiento
               </div>
           );
       case "EN_ESPERA_EN_OFICINA":
+      case "LISTO_PARA_RETORNO":
+      case "EN_REEMPLAZO":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                 En Espera
             </div>
         );
-      case "LISTO_PARA_RETORNO":
+      case "EN_TRANSITO_ORDEN":
+      case "HACIA_ALMACEN":
         return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                En Espera
-            </div>
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
+            En Tránsito
+          </div>
         );
       default:
         return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-                En Tránsito
-            </div>
+            <></>
         );
   }
 };
 
 const VehicleMap = ({ simulationStatus }) => {
+  useShipmentWebSocket();
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -1074,7 +1078,7 @@ const VehicleMap = ({ simulationStatus }) => {
           closeButton
           isOpen={isOpen}
           onOpenChange={onClose}
-          blur
+          blur="true"
           aria-labelledby="modal-vehiculo"
         >
           <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">

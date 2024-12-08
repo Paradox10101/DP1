@@ -2,7 +2,7 @@ import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigg
 import { AlertTriangle, ArrowRight, Building, Calendar, Car, CarFront, Check, ChevronDown, Circle, CircleAlert, CircleAlertIcon, Clock, Eye, Filter, Flag, Gauge, Globe, MapPin, Package, Truck, Warehouse, X } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import { parseDate } from "@internationalized/date"
@@ -112,8 +112,8 @@ export default function ModalVehiculo({vehicle}){
             const matchesStatus = shipmentsFilter.statusShipment
             ?
             ((shipmentsFilter.statusShipment === "ENTREGADO" && (shipment.status === "DELIVERED" || shipment.status === "PENDING_PICKUP")) ||
-            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "FULLY_ASSIGNED" || shipment.status === "IN_TRANSIT" || shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "PARTIALLY_ARRIVED")) ||
-            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED"))
+            (shipmentsFilter.statusShipment === "EN TRANSITO" && (shipment.status === "IN_TRANSIT"  || shipment.status === "PARTIALLY_ARRIVED" || shipment.status === "FULLY_ASSIGNED")) ||
+            (shipmentsFilter.statusShipment === "REGISTRADO" && (shipment.status === "REGISTERED" || shipment.status === "PARTIALLY_ASSIGNED" ))
             )
             : true;
 
@@ -174,13 +174,13 @@ export default function ModalVehiculo({vehicle}){
                 <div className="text-center col-span-1 pequenno">{shipment.code}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
                 {
-                    shipment.status==="REGISTERED"?
+                    shipment.status==="REGISTERED" || shipment.status==="PARTIALLY_ASSIGNED" ?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                     :
                     shipment.status==="DELIVERED"||shipment.status==="PENDING_PICKUP"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>
                     :
-                    shipment.status==="FULLY_ASSIGNED" || shipment.status==="IN_TRANSIT" || shipment.status==="PARTIALLY_ARRIVED" || shipment.status==="PARTIALLY_ASSIGNED"?
+                    shipment.status==="IN_TRANSIT" || shipment.status==="PARTIALLY_ARRIVED" || shipment.status==="FULLY_ASSIGNED"?
                     <div className={"p-1 col-span-2 items-center pequenno border text-center justify-center bg-[#284BCC] text-[#BECCFF] rounded-xl" }>EN TRÁNSITO</div>
                     :
                     <></>
@@ -233,18 +233,18 @@ export default function ModalVehiculo({vehicle}){
                         </Button>
                 </div>
                 
-                <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full ">
+                <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full" >
                     {vehicle&&vehicle.currentRoute&&vehicle.currentRoute.length>1?
                     vehicle.currentRoute.map((location, index) => (
-                        <>
+                        <Fragment key={index}>
                             {index!==0&&
                                 <div className="flex flex-col justify-center mx-3 px-2">
-                                    <ArrowRight />
+                                    <ArrowRight key={"arrow-"+index}/>
                                 </div>
                                 
                             }
                             {index!==0?
-                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]">
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px]" >
                                 <div className="text-center mx-auto">
                                     
                                     {location.status==="Recorrido"?
@@ -265,7 +265,7 @@ export default function ModalVehiculo({vehicle}){
                                 </div>
                             </div>
                             :
-                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[300px]">
+                            <div className="inline-flex flex-col gap-2 items-center mx-3 px-2 min-w-[100px] max-w-[300px]" key={index}>
                                 {location.type==="office"?
                                 <>
                                     <div className="text-center mx-auto">
@@ -290,7 +290,7 @@ export default function ModalVehiculo({vehicle}){
                                 }
                             </div>
                             }
-                        </>
+                        </Fragment>
                     )
                     )
                     :

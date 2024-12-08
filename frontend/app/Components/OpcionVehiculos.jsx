@@ -71,60 +71,63 @@ export default function OpcionVehiculos() {
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
+
 useEffect(() => {
-  
-  if(!vehiculos){
-      setFilteredVehicles([]);
-      return
+  if (!vehiculos || !Array.isArray(filteredVehiculosArray)) {
+    setFilteredVehicles([]);
+    return;
   }
-  
-  if(vehiclesFilter === initialFilterStateRef.current){
-    setFilteredVehicles(filteredVehiculosArray)
-      return
+
+  // Verificar si es el estado inicial del filtro
+  const isInitialFilter = JSON.stringify(vehiclesFilter) === JSON.stringify(initialFilterStateRef.current);
+  if (isInitialFilter) {
+    // Prevenir actualizaciones innecesarias
+    if (JSON.stringify(filteredVehicles) !== JSON.stringify(filteredVehiculosArray)) {
+      setFilteredVehicles(filteredVehiculosArray);
+    }
+    return;
   }
-      
+
+  // Filtrar basado en filtros activos
   const filtered = filteredVehiculosArray.filter((vehiculo) => {
-      // Filtrar por tipo de vehiculo
-      const matchesType = vehiclesFilter.vehicleType
-      ? (vehiculo.properties.tipo === vehiclesFilter.vehicleType)
+    if (!vehiculo || !vehiculo.properties) return false;
+
+    // Filtrar por tipo de vehículo
+    const matchesType = vehiclesFilter.vehicleType
+      ? vehiculo.properties.tipo === vehiclesFilter.vehicleType
       : true;
 
-
-      // Filtrar por estado de vehiculo
-      const matchesStatus = vehiclesFilter.status
-      ? ((vehiculo.properties.status === "EN_ALMACEN" || vehiculo.properties.status === "ORDENES_CARGADAS") && vehiclesFilter.status==="EN ALMACEN")
-      ||
-      (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status==="AVERIADO LEVE")
-      ||
-      (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status==="AVERIADO MODERADO")
-      ||
-      (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status==="AVERIADO GRAVE")
-      ||
-      ((vehiculo.properties.status === "EN_MANTENIMIENTO" || vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status==="EN MANTENIMIENTO")
-      ||
-      ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status==="LISTO_PARA_RETORNO" || vehiculo.properties.status==="EN_REEMPLAZO") && vehiclesFilter.status==="EN ESPERA")
-      ||
-      ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status==="EN TRANSITO")
+    // Filtrar por estado
+    const matchesStatus = vehiclesFilter.status
+      ? ((vehiculo.properties.status === "EN_ALMACEN" || vehiculo.properties.status === "ORDENES_CARGADAS") && vehiclesFilter.status === "EN ALMACEN") ||
+        (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status === "AVERIADO LEVE") ||
+        (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status === "AVERIADO MODERADO") ||
+        (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status === "AVERIADO GRAVE") ||
+        ((vehiculo.properties.status === "EN_MANTENIMIENTO" || vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status === "EN MANTENIMIENTO") ||
+        ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status === "LISTO_PARA_RETORNO" || vehiculo.properties.status === "EN_REEMPLAZO") && vehiclesFilter.status === "EN ESPERA") ||
+        ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status === "EN TRANSITO")
       : true;
-  
-      // Filtrar por minQuantity (si se tiene un valor en shipmentsFilter.minQuantity)
-      const matchesMinQuantity = vehiclesFilter.minQuantity
+
+    // Filtrar por cantidad mínima
+    const matchesMinQuantity = vehiclesFilter.minQuantity
       ? vehiculo.properties.capacidadUsada >= vehiclesFilter.minQuantity
       : true;
 
-      // Filtrar por maxQuantity (si se tiene un valor en shipmentsFilter.maxQuantity)
-      const matchesMaxQuantity = vehiclesFilter.maxQuantity
-          ? vehiculo.properties.capacidadUsada <= vehiclesFilter.maxQuantity
-          : true;
+    // Filtrar por cantidad máxima
+    const matchesMaxQuantity = vehiclesFilter.maxQuantity
+      ? vehiculo.properties.capacidadUsada <= vehiclesFilter.maxQuantity
+      : true;
 
-
-    // Retornar true solo si todos los filtros coinciden
-    return matchesType && matchesMinQuantity && matchesMaxQuantity && matchesStatus
+    // Combinar todas las condiciones
+    return matchesType && matchesStatus && matchesMinQuantity && matchesMaxQuantity;
   });
-  
-  // Establecer la lista filtrada en filteredShipments
-  setFilteredVehicles(filtered);
-}, [vehiculos, vehiclesFilter]);
+
+  // Actualizar solo si el resultado cambió
+  if (JSON.stringify(filteredVehicles) !== JSON.stringify(filtered)) {
+    setFilteredVehicles(filtered);
+  }
+}, [vehiculos, vehiclesFilter, filteredVehiculosArray]);
+
 
 const StatusBadge = ({ status }) => {
   switch (status) {
@@ -311,7 +314,7 @@ const StatusBadge = ({ status }) => {
               isOpen={isOpen}
               onOpenChange={onOpenChange}
               isDismissable={true}
-              blur
+              blur="true"
           >
               <ModalContent className="h-[790px] min-w-[850px] overflow-y-auto scroll-area">
                   <ModalHeader>
@@ -339,7 +342,7 @@ const StatusBadge = ({ status }) => {
                     closeButton
                     isOpen={isFilterModalOpen}
                     onOpenChange={setFilterModalOpen}
-                    blur
+                    blur="true"
             >
                 <ModalContent className="h-[450px] min-w-[550px]">
                     <ModalHeader>

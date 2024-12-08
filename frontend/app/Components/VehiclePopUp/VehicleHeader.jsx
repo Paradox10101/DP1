@@ -3,10 +3,23 @@ import { Chip } from "@nextui-org/react";
 
 const getStatusColor = (status) => {
   const statusColors = {
-    // Vehículo operativo
-    'EN_TRANSITO_ORDEN': 'success',     // Verde - Activamente en ruta
-    'EN_ESPERA_EN_OFICINA': 'secondary',   // Morado - Esperando en oficina
-    'EN_ALMACEN': 'primary',            // Azul - En almacén
+    // Vehiculo en almacen
+    'EN_ALMACEN': "#DEA71A", 
+    "ORDENES_CARGADAS": "#DEA71A",
+    
+    // Vehiculo en mantenimiento
+    "EN_MANTENIMIENTO": "#7B15FA",
+    "EN_REPARACION": "#7B15FA",
+
+    // Vehículo en espera
+    'LISTO_PARA_RETORNO': "#7B15FA",
+    'EN_ESPERA_EN_OFICINA': "#7B15FA",
+    'EN_REEMPLAZO': "#7B15FA",
+
+    // Vehhiculo en transito
+    'EN_TRANSITO_ORDEN': "#284BCC",
+    'HACIA_ALMACEN': "#284BCC",
+    
 
     // Averías por severidad
     'AVERIADO_1': 'warning',            // Amarillo - Avería leve
@@ -43,10 +56,23 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   const statusTexts = {
-    // Estados operativos
-    'EN_TRANSITO_ORDEN': 'En Tránsito',
+    // Vehiculo en almacen
+    'EN_ALMACEN': 'En Almacén', 
+    "ORDENES_CARGADAS": 'En Almacén',
+
+    // Vehiculo en mantenimiento
+    "EN_MANTENIMIENTO": 'En mantenimiento',
+    "EN_REPARACION": 'En mantenimiento',
+
+    // Vehículo en espera
+    'LISTO_PARA_RETORNO': 'En Espera',
     'EN_ESPERA_EN_OFICINA': 'En Espera',
-    'EN_ALMACEN': 'En Almacén',
+    'EN_REEMPLAZO': 'En Espera',
+
+    // Vehhiculo en transito
+    'EN_TRANSITO_ORDEN': 'En Tránsito',
+    'HACIA_ALMACEN': 'En Tránsito',
+
     
     // Estados de avería
     'AVERIADO_1': 'Avería Leve',
@@ -65,21 +91,23 @@ const VehicleHeader = ({ iconoComponent, title, status }) => {
   
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-100">
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 gap-2">
         {iconoComponent}
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
       </div>
       <Chip
-        color={statusStyle.color}
-        variant={statusStyle.variant}
-        size="sm"
-        classNames={{
-          base: "font-medium",
-          content: "text-sm"
-        }}
-      >
-        {getStatusText(status)}
-      </Chip>
+      variant={statusStyle.variant}
+      size="sm"
+      style={{
+        backgroundColor: statusStyle.color, // Color de fondo dinámico
+        borderColor: statusStyle.color, // Color del borde dinámico
+        color: '#FFFFFF', // Texto blanco
+        fontWeight: 'bold', // Texto en negrita
+        fontSize: '0.875rem', // Ajuste al tamaño pequeño
+      }}
+    >
+      {getStatusText(status)} {/* Llamada para mostrar el estado */}
+    </Chip>
     </div>
   );
 };

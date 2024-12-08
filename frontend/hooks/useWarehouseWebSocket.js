@@ -72,7 +72,7 @@ export const useWarehouseWebSocket = () => {
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket Capacidad error:', error);
+      console.log('WebSocket Capacidad error:', error);
     };
 
     ws.onmessage = handleMessage;
