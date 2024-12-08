@@ -34,7 +34,7 @@ public class SimulationReport {
         this.pedidosAtendidos = calculatePedidosAtendidos(state);
         this.eficienciaRutas = calculateEficienciaRutas(state);
         this.promedioPedidos = calculatePromedioPedidos(state);
-        this.demandasPorCiudad = calculateDemandasPorCiudad(state);
+        this.demandasPorCiudad = calculateDemandasPorCiudad(state, 10);
         this.demandasEnAlmacenes = calculateDemandasEnAlmacenes(state);
         this.averiasPorTipo = calculateAveriasPorTipo(state);
         this.regionConMayorDemanda = calculateRegionConMayorDemanda(state);
@@ -100,7 +100,7 @@ public class SimulationReport {
         return (double) totalPedidos / orderbyDays.size();
     }
 
-    private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state) {
+    private Map<String, Integer> calculateDemandasPorCiudad(SimulationState state, int cantidad) {
         //Aqui se debe considerar solo cuando se realiza el pedido
         //!Cuando se entrega el pedido ya es otra metrica (que no estamos abarcando)
         //Entonces se debe colocar en el mismo lugar donde se esta asignando el pedido --> pero ahora la relevancia esta en el "DESTINO"
@@ -111,7 +111,7 @@ public class SimulationReport {
         Map<String, Integer> topDemandCities = cityOrderCount.entrySet()
                 .stream()
                 .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())) // Ordenar de mayor a menor demanda
-                .limit(5) // Limitar a las 5 ciudades con mayor demanda
+                .limit(cantidad) // Limitar a las cantidad ciudades con mayor demanda
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
