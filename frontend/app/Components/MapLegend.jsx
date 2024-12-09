@@ -40,12 +40,12 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
       items: [
         {
           icon: Warehouse,
-          containerClass: "bg-black w-8 h-8",
+          containerClass: "bg-blue-500 w-8 h-8",
           label: "Almacén"
         },
         {
           icon: Building,
-          containerClass: "bg-blue-500 w-8 h-8",
+          containerClass: "bg-green-500 w-8 h-8",
           label: "Oficina"
         }
       ]
@@ -55,23 +55,18 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
       items: [
         {
           icon: Truck,
-          containerClass: "bg-blue-500 w-8 h-8",
+          containerClass: "bg-[#1E90FF] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo A"
         },
         {
           icon: CarFront,
-          containerClass: "bg-blue-500 w-8 h-8",
+          containerClass: "bg-[#FFD700] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo B"
         },
         {
           icon: Car,
-          containerClass: "bg-blue-500 w-8 h-8",
+          containerClass: "bg-[#8A2BE2] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo C"
-        },
-        {
-          icon: AlertTriangle,
-          containerClass: "bg-yellow-500 w-8 h-8",
-          label: "Vehículo averiado"
         }
       ]
     },

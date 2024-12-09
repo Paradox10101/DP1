@@ -803,7 +803,7 @@ public class SimulationRunner {
             try {
                 RoutingIndexManager manager = createRoutingIndexManager(data, data.starts, data.ends);
                 RoutingModel routing = createRoutingModel(manager, data);
-                RoutingSearchParameters searchParameters = Main.createSearchParameters(strategy, 7);
+                RoutingSearchParameters searchParameters = Main.createSearchParameters(strategy, 10);
 
                 logger.info("Intentando resolver con estrategia: " + strategy);
                 Assignment solution = routing.solveWithParameters(searchParameters);

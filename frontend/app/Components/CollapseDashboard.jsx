@@ -33,10 +33,10 @@ export default function CollapseDashboard() {
         const result = await response.json();
         setPedidos(result);
       } else {
-        console.error('Error al obtener la lista de pedidos: ', response.statusText);
+        console.log('Error al obtener la lista de pedidos: ', response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching pedidos:', error);
+      console.log('Error fetching pedidos:', error);
     }
   };
   fetchPedidos();
@@ -59,10 +59,10 @@ export default function CollapseDashboard() {
           const result = await response.json();
           setData(result);
         } else {
-          console.error('Error al obtener los datos de colapso: ', response.statusText);
+          console.log('Error al obtener los datos de colapso: ', response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching collapse data:', error);
+        console.log('Error fetching collapse data:', error);
       } finally {
         setLoading(false);
       }
