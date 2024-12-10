@@ -8,6 +8,7 @@ import com.odiparpack.models.OrderRegistry;
 import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
+
 import spark.Spark;
 
 import java.time.LocalDate;
@@ -139,10 +140,14 @@ public class SimulationRouter extends BaseRouter {
                     // Reiniciar el estado si estaba apagado
                     if (simulationState.isStopped()) {
                         simulationController.resetSimulationState(startDateTime, endDateTime, simulationType);
+                        // Asegurarnos de que los endpoints usen el estado reiniciado
+                        //this.simulationState = simulationController.getSimulationState();
                     }
                 } else {
                     logger.info("Intentando inicializar simulacion.");
                     simulationController.initializeSimulation(startDateTime, endDateTime, simulationType);
+                    // Asegurarnos de que los endpoints usen el estado reiniciado
+                    //this.simulationState = simulationController.getSimulationState();
                 }
 
                 startSimulation();

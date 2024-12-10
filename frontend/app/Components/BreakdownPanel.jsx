@@ -8,6 +8,9 @@ import { es } from 'date-fns/locale';
 import { Modal, ModalContent, ModalHeader, ModalBody, useDisclosure } from '@nextui-org/react';
 import ModalVehiculo from './ModalVehiculo';
 //import StatusBadge from './StatusBadge';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const StatusBadge = ({ status }) => {
   switch (status) {
@@ -44,24 +47,56 @@ export default function BreakdownPanel() {
   const [vehiclePositions] = useAtom(vehiclePositionsAtom);
   const { isOpen: isModalOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [tiempos, setTiempos] = useState({ inicio: new Date() });
+
+    // Función para obtener tiempos
+    const fetchTiempos = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/simulation/report`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.tiempos && data.tiempos.length >= 2) {
+            setTiempos({
+                inicio: new Date(data.tiempos[2])
+            });
+            }
+        }
+        } catch (error) {
+        console.error('Error al obtener los tiempos:', error);
+        }
+    };
+
+  // Modificar esta función para que realmente sume las horas al tiempo base
+    const calculateTime = (baseTime, hoursToAdd) => {
+        if (!baseTime) return new Date();
+        const time = new Date(baseTime);
+        time.setHours(time.getHours() + hoursToAdd); // Aquí sumamos las horas según la severidad
+        return time;
+    };
 
   useEffect(() => {
     if (vehiclePositions?.features) {
-      const broken = vehiclePositions.features.filter(vehicle => 
+      const newBrokenVehicles = vehiclePositions.features.filter(vehicle => 
         vehicle.properties.status.includes('AVERIADO')
       );
-      setBrokenVehicles(broken);
+      // Si hay un cambio en la cantidad de vehículos averiados, actualizar tiempos
+      if (newBrokenVehicles.length !== brokenVehicles.length) {
+        fetchTiempos();
+      }
+      setBrokenVehicles(newBrokenVehicles);
     }
   }, [vehiclePositions]);
+
+  //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", vehiclePositions);
 
   const getBreakdownSeverity = (status) => {
     switch (status) {
       case 'AVERIADO_1':
-        return { text: 'Leve', color: 'text-yellow-600', bg: 'bg-yellow-100', hours: 2 };
+        return { text: 'Leve', color: 'text-yellow-600', bg: 'bg-yellow-100', hours: 4 };
       case 'AVERIADO_2':
-        return { text: 'Moderada', color: 'text-orange-600', bg: 'bg-orange-100', hours: 4 };
+        return { text: 'Moderada', color: 'text-orange-600', bg: 'bg-orange-100', hours: 36 };
       case 'AVERIADO_3':
-        return { text: 'Grave', color: 'text-red-600', bg: 'bg-red-100', hours: 8 };
+        return { text: 'Grave', color: 'text-red-600', bg: 'bg-red-100', hours: 72 };
       default:
         return { text: 'Desconocida', color: 'text-gray-600', bg: 'bg-gray-100', hours: 0 };
     }
@@ -116,8 +151,8 @@ export default function BreakdownPanel() {
               <div className="space-y-3">
                 {brokenVehicles.map((vehicle) => {
                   const severity = getBreakdownSeverity(vehicle.properties.status);
-                  const startTime = new Date(vehicle.properties.breakdownStartTime || Date.now());
-                  const endTime = addHours(startTime, severity.hours);
+                  const startTime = tiempos?.inicio || new Date();
+                  const endTime = calculateTime(startTime, severity.hours);
                   const coordinates = vehicle.geometry.coordinates;
                   
                   return (
