@@ -139,22 +139,22 @@ const StatusBadge = ({ status }) => {
               </div>
           );
       case "AVERIADO_1":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                  Avería Leve
-              </div>
-          );
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-yellow-100 text-black-600 font-medium">
+            Avería Leve
+          </div>
+        );
       case "AVERIADO_2":
         return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averia Moderada
-            </div>
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-orange-100 text-black-600 font-medium">
+            Avería Moderada
+          </div>
         );
       case "AVERIADO_3":
         return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#BE0627] text-[#FFB9C1]">
-                Averiado Grave
-            </div>
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-red-100 text-black-600 font-medium">
+            Avería Grave
+          </div>
         );
       case "EN_MANTENIMIENTO":
       case "EN_REPARACION":
