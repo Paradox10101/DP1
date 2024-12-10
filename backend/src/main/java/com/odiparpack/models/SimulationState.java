@@ -7,7 +7,6 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.services.LocationService;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
-import org.jfree.chart.block.Block;
 
 
 import java.time.*;
@@ -90,6 +89,7 @@ public class SimulationState {
         List<LocalDateTime> tiempos = new ArrayList<>();
         tiempos.add(simulationStartTime);
         tiempos.add(simulationEndTime != null ? simulationEndTime : currentTime);
+        tiempos.add(currentTime);
         return tiempos;
     }
 
@@ -1647,7 +1647,7 @@ public class SimulationState {
     public void provocarAveria(String vehicleCode, String breakdownType) {
         Vehicle vehicle = vehicles.get(vehicleCode);
         if (vehicle != null) {
-            if (vehicle.getEstado() == Vehicle.EstadoVehiculo.EN_TRANSITO_ORDEN) {
+            if (vehicle.getEstado() == Vehicle.EstadoVehiculo.EN_TRANSITO_ORDEN || vehicle.getEstado() == Vehicle.EstadoVehiculo.HACIA_ALMACEN) {
                 Vehicle.EstadoVehiculo estadoAveria;
                 switch (breakdownType) {
                     case "1":

@@ -55,6 +55,11 @@ public class SimulationController {
         );
     }
 
+    // Agregar getter si no existe
+    public SimulationState getSimulationState() {
+        return this.simulationState;
+    }
+
     public void start() {
         try {
             int port = Integer.parseInt(dotenv.get("SERVER_PORT", "4567")); // Usa la variable de entorno o el valor por defecto
@@ -146,7 +151,7 @@ public class SimulationController {
 
             // Actualizar los routers
             routers.forEach(router -> {
-                if (router instanceof SimulationRouter) {
+                /*if (router instanceof SimulationRouter) {
                     ((SimulationRouter) router).setSimulationState(this.simulationState);
                 } else if (router instanceof VehicleRouter) {
                     ((VehicleRouter) router).setSimulationState(this.simulationState);
@@ -154,7 +159,10 @@ public class SimulationController {
                     ((ReportRouter) router).setSimulationState(this.simulationState);
                 } else if (router instanceof ShipmentRouter) {
                     ((ShipmentRouter) router).setSimulationState(this.simulationState);
-                }
+                } else if (router instanceof ReportRouter) {
+                    ((ReportRouter) router).setSimulationState(this.simulationState);
+                }*/
+                router.setSimulationState(this.simulationState);
             });
 
         } catch (IOException e) {
@@ -174,9 +182,11 @@ public class SimulationController {
 
         // Actualizar los routers
         routers.forEach(router -> {
-            if (router instanceof SimulationRouter) {
-                ((SimulationRouter) router).updateSimulationState(newState);
-            }
+            /*if (router instanceof SimulationRouter) {
+                //((SimulationRouter) router).updateSimulationState(newState);
+                ((SimulationRouter) router).setSimulationState(newState);
+            }*/
+            router.setSimulationState(newState);
         });
     }
 
