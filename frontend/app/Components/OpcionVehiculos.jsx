@@ -67,7 +67,7 @@ export default function OpcionVehiculos() {
     if(!isFilterModalOpen)return;
     setLoadingFilters(true)
     setVehicleTypes(["A", "B","C"]);
-    setStatusesVehicle(["AVERIADO LEVE", "AVERIADO MODERADO", "AVERIADO GRAVE", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN TRANSITO"]);
+    setStatusesVehicle(["AVERIADO LEVE", "AVERIADO MODERADO", "AVERIADO GRAVE", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN REEMPLAZO", "EN REPARACION", "EN TRANSITO"]);
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
@@ -103,9 +103,11 @@ useEffect(() => {
         (vehiculo.properties.status === "AVERIADO_1" && vehiclesFilter.status === "AVERIADO LEVE") ||
         (vehiculo.properties.status === "AVERIADO_2" && vehiclesFilter.status === "AVERIADO MODERADO") ||
         (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status === "AVERIADO GRAVE") ||
-        ((vehiculo.properties.status === "EN_MANTENIMIENTO" || vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status === "EN MANTENIMIENTO") ||
-        ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status === "LISTO_PARA_RETORNO" || vehiculo.properties.status === "EN_REEMPLAZO") && vehiclesFilter.status === "EN ESPERA") ||
-        ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status === "EN TRANSITO")
+        ((vehiculo.properties.status === "EN_MANTENIMIENTO") && vehiclesFilter.status === "EN MANTENIMIENTO") ||
+        ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status === "LISTO_PARA_RETORNO") && vehiclesFilter.status === "EN ESPERA") ||
+        ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status === "EN TRANSITO") ||
+        ((vehiculo.properties.status === "EN_REEMPLAZO") && vehiclesFilter.status === "EN REEMPLAZO") ||
+        ((vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status === "EN REPARACION")
       : true;
 
     // Filtrar por cantidad mínima
@@ -157,7 +159,6 @@ const StatusBadge = ({ status }) => {
           </div>
         );
       case "EN_MANTENIMIENTO":
-      case "EN_REPARACION":
           return (
               <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                   En Mantenimiento
@@ -165,7 +166,6 @@ const StatusBadge = ({ status }) => {
           );
       case "EN_ESPERA_EN_OFICINA":
       case "LISTO_PARA_RETORNO":
-      case "EN_REEMPLAZO":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                 En Espera
@@ -178,6 +178,18 @@ const StatusBadge = ({ status }) => {
             En Tránsito
           </div>
         );
+        case "EN_REEMPLAZO":
+          return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
+              En Reemplazo
+            </div>
+          );
+        case "EN_REPARACION":
+          return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
+              En Reparación
+            </div>
+          );
       default:
         return (
             <></>
