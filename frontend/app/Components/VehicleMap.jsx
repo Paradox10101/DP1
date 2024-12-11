@@ -37,11 +37,19 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
+  const needsBorder = bgColor === '#FFFFFF' || bgColor === '#808080'; // Añadir borde para blanco y gris
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-      <circle cx="20" cy="20" r="20" fill={bgColor} />
+      <circle 
+        cx="20" 
+        cy="20" 
+        r="20" 
+        fill={bgColor} 
+        stroke={needsBorder ? '#000000' : 'none'} 
+        strokeWidth={needsBorder ? 2 : 0}
+      />
       <g transform="translate(8, 8)">
-        <IconComponent color="#FFFFFF" size={24} />
+        <IconComponent color={needsBorder ? "#000000" : "#FFFFFF"} size={24} />
       </g>
     </svg>
   );
@@ -378,6 +386,8 @@ const VehicleMap = ({ simulationStatus }) => {
           green: '#08CA57',
           yellow: '#FFC107',
           red: '#FF5252',
+          white: '#FFFFFF', // Nuevo color para vehículos en reemplazo
+          gray: '#808080',  // Nuevo color para vehículos hacia almacén
         };
 
         vehicleIcons.forEach(({ type, component }) => {
@@ -620,6 +630,10 @@ const VehicleMap = ({ simulationStatus }) => {
       default:
         Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
     }
+    if(status === 'AVERIADO_1' || status === 'AVERIADO_2' || status === 'AVERIADO_3'){
+      Icono = AlertTriangle;
+    }
+
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";

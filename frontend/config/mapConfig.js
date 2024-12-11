@@ -101,16 +101,39 @@ export const MAP_CONFIG = {
           ],
           // Use distinct colors for each vehicle type (avoiding red and green)
           'circle-color': [
-            'match',
-            ['get', 'tipo'],
-            'A', '#1E90FF', // Dodger blue for type A
-            'B', '#FFD700', // Gold for type B
-            'C', '#8A2BE2', // Blue violet for type C
-            '#888888'       // Gray as fallback
+            'case',
+            ['==', ['get', 'status'], 'HACIA_ALMACEN'],
+            '#808080', // Color gris para vehículos hacia almacén
+            ['==', ['get', 'status'], 'EN_REEMPLAZO'],
+            '#FFFFFF', // Color blanco para vehículos en reemplazo
+            [
+              'match',
+              ['get', 'tipo'],
+              'A', '#1E90FF', // Dodger blue para tipo A
+              'B', '#FFD700', // Gold para tipo B
+              'C', '#8A2BE2', // Blue violet para tipo C
+              '#888888'       // Gray como fallback
+            ]
           ],
-          // Apply consistent stroke for all circles
-          'circle-stroke-color': '#FFFFFF', // White border
-          'circle-stroke-width': 2,         // Border width
+          // Añadir borde negro para estados especiales
+          'circle-stroke-color': [
+            'case',
+            ['any',
+              ['==', ['get', 'status'], 'HACIA_ALMACEN'],
+              ['==', ['get', 'status'], 'EN_REEMPLAZO']
+            ],
+            '#000000', // Borde negro para estados especiales
+            '#FFFFFF'  // Borde blanco para el resto
+          ],
+          'circle-stroke-width': [
+            'case',
+            ['any',
+              ['==', ['get', 'status'], 'HACIA_ALMACEN'],
+              ['==', ['get', 'status'], 'EN_REEMPLAZO']
+            ],
+            2, // Ancho del borde para estados especiales
+            1  // Ancho del borde para el resto
+          ],         // Border width
         }        
       },
       text: {
