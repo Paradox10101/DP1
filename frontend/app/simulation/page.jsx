@@ -90,6 +90,7 @@ const page = () => {
             <SimulationPanel openReport={onOpenReport}/>
             <MapLegend cornerPosition={"top-20 right-5"} />
             <BreakdownPanel />
+          
         </div>
     </>
   )

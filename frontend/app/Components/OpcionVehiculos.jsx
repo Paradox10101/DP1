@@ -67,7 +67,7 @@ export default function OpcionVehiculos() {
     if(!isFilterModalOpen)return;
     setLoadingFilters(true)
     setVehicleTypes(["A", "B","C"]);
-    setStatusesVehicle(["AVERIADO LEVE", "AVERIADO MODERADO", "AVERIADO GRAVE", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN REEMPLAZO", "EN REPARACION", "EN TRANSITO"]);
+    setStatusesVehicle(["ATENDIENDO ORDEN", "AVERIADO LEVE", "AVERIADO MODERADO", "AVERIADO GRAVE", "EN ALMACEN", "EN ESPERA", "EN MANTENIMIENTO", "EN REEMPLAZO", "EN REPARACION", "HACIA ALMACEN"]);
     setLoadingFilters(false)
 }, [isFilterModalOpen]);
 
@@ -105,7 +105,8 @@ useEffect(() => {
         (vehiculo.properties.status === "AVERIADO_3" && vehiclesFilter.status === "AVERIADO GRAVE") ||
         ((vehiculo.properties.status === "EN_MANTENIMIENTO") && vehiclesFilter.status === "EN MANTENIMIENTO") ||
         ((vehiculo.properties.status === "EN_ESPERA_EN_OFICINA" || vehiculo.properties.status === "LISTO_PARA_RETORNO") && vehiclesFilter.status === "EN ESPERA") ||
-        ((vehiculo.properties.status === "EN_TRANSITO_ORDEN" || vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status === "EN TRANSITO") ||
+        ((vehiculo.properties.status === "EN_TRANSITO_ORDEN") && vehiclesFilter.status === "ATENDIENDO ORDEN") ||
+        ((vehiculo.properties.status === "HACIA_ALMACEN") && vehiclesFilter.status === "HACIA ALMACEN") ||
         ((vehiculo.properties.status === "EN_REEMPLAZO") && vehiclesFilter.status === "EN REEMPLAZO") ||
         ((vehiculo.properties.status === "EN_REPARACION") && vehiclesFilter.status === "EN REPARACION")
       : true;
@@ -172,10 +173,16 @@ const StatusBadge = ({ status }) => {
             </div>
         );
       case "EN_TRANSITO_ORDEN":
-      case "HACIA_ALMACEN":
+      
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-            En Tránsito
+            Atendiendo orden
+          </div>
+        );
+      case "HACIA_ALMACEN":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#608272] text-[#f1f1f1]">
+            Hacia almacén
           </div>
         );
       case "EN_REEMPLAZO":

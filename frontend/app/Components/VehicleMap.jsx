@@ -382,7 +382,7 @@ const VehicleMap = ({ simulationStatus }) => {
       //mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
       mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
       mapRef.current.dragRotate.disable();
-      //mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
+      mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
       /*class CenterControl {
