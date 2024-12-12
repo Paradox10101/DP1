@@ -44,94 +44,9 @@ public class VehiculoController {
 
         // Endpoint para obtener el estado de todos los vehículos
         get("/vehicles", (request, response) -> {
-            Map<String, Vehicle> vehicles = simulationState.getVehicles();
+            List<Vehicle> vehicles = simulationState.getVehicles();
             response.type("application/json");
             return gson.toJson(vehicles);
-        });
-
-        // Endpoint para reiniciar la simulación
-        /*post("/resetSimulation", (request, response) -> {
-            try {
-                simulationState.reset();
-                response.status(200);
-                return "Simulación reiniciada con éxito.";
-            } catch (Exception e) {
-                response.status(500);
-                return "Error al reiniciar la simulación: " + e.getMessage();
-            }
-        });*/
-
-        // Endpoint para obtener el estado de un vehículo específico
-        get("/vehicleState/:vehicleCode", (request, response) -> {
-            String vehicleCode = request.params(":vehicleCode");
-            EstadoVehiculo vehicleState = simulationState.getVehicles().get(vehicleCode).getEstado();
-            
-            if (vehicleState == null) {
-                response.status(404);
-                return "No se encontró el estado del vehículo con código " + vehicleCode;
-            }
-
-            response.type("application/json");
-            return gson.toJson(vehicleState);
-        });
-
-        // Endpoint para asignar una orden a un vehículo
-        post("/assignOrder", (request, response) -> {
-            String vehicleCode = request.queryParams("vehicleCode");
-            String orderId = request.queryParams("orderId");
-            int assignedQuantity = Integer.parseInt(request.queryParams("quantity"));
-
-            if (vehicleCode == null || orderId == null) {
-                response.status(400);
-                return "Parámetros faltantes: vehicleCode y orderId son obligatorios.";
-            }
-
-            Vehicle vehicle = simulationState.getVehicles().get(vehicleCode);
-            Order order = simulationState.getOrders().stream()
-                    .filter(o -> o.getId() == Integer.parseInt(orderId))
-                    .findFirst()
-                    .orElse(null);
-
-            if (vehicle == null) {
-                response.status(404);
-                return "No se encontró el vehículo con código " + vehicleCode;
-            }
-            
-            if (order == null) {
-                response.status(404);
-                return "No se encontró la orden con ID " + orderId;
-            }
-
-            VehicleAssignment assignment = new VehicleAssignment(vehicle, order, assignedQuantity);
-            Vehicle aux = simulationState.getVehicles().get(vehicleCode);
-            aux.startJourney(simulationState.getCurrentTime(), order, simulationState);
-            
-            response.status(200);
-            return "Orden asignada al vehículo con éxito.";
-        });
-
-       
-
-        // Endpoint para actualizar el estado de un vehículo (ej. en tránsito o disponible)
-        put("/vehicleStatus/:vehicleCode", (request, response) -> {
-            String vehicleCode = request.params(":vehicleCode");
-            EstadoVehiculo vehicleState = simulationState.getVehicles().get(vehicleCode).getEstado();
-
-            if (vehicleState == null) {
-                response.status(404);
-                return "No se encontró el estado del vehículo con código " + vehicleCode;
-            }
-
-            String newUbigeo = request.queryParams("currentUbigeo");
-            boolean inTransit = Boolean.parseBoolean(request.queryParams("inTransit"));
-
-            if (newUbigeo != null) {
-                //vehicleState.setCurrentUbigeo(newUbigeo);
-            }
-
-            //vehicleState.setInTransit(inTransit);
-            response.status(200);
-            return "Estado del vehículo actualizado con éxito.";
         });
 
         // Endpoint para obtener el log de averías por vehículo

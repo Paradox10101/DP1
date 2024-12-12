@@ -14,14 +14,20 @@ import static com.odiparpack.Main.locationIndices;
 import static com.odiparpack.Main.logger;
 
 public class DataModel {
-    public final long[][] timeMatrix;
+    public long[][] timeMatrix;
     public final int vehicleNumber;
     public final int[] starts;
     public final int[] ends;
-    public final List<String> locationNames;
-    public final List<String> locationUbigeos;
-    public final List<VehicleAssignment> assignments;
-    public final List<Blockage> activeBlockages;
+    public List<String> locationNames;
+    public List<String> locationUbigeos;
+    public List<VehicleAssignment> assignments;
+    public List<Blockage> activeBlockages;
+
+    public DataModel(int startIndex, int endIndex) {
+        vehicleNumber = 1;
+        this.starts = new int[]{startIndex};
+        this.ends = new int[]{endIndex};
+    }
 
     public DataModel(long[][] timeMatrix, List<Blockage> activeBlockages, List<VehicleAssignment> assignments,
                      Map<String, Integer> locationIndices, List<String> locationNames,

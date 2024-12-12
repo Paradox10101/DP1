@@ -10,11 +10,11 @@ public class RouteSegment {
     private long durationMinutes;
 
     // Constructor
-    public RouteSegment(String name, String fromUbigeo, String toUbigeo, double distance, long durationMinutes) {
+    public RouteSegment(String name, String fromUbigeo, String toUbigeo, long durationMinutes) {
         this.name = name;
         this.fromUbigeo = fromUbigeo;
         this.toUbigeo = toUbigeo;
-        this.distance = distance;
+        //this.distance = distance;
         this.durationMinutes = durationMinutes;
     }
 
@@ -52,5 +52,13 @@ public class RouteSegment {
 
     public void setDurationMinutes(long durationMinutes) {
         this.durationMinutes = durationMinutes;
+    }
+
+    public void setFromUbigeo(String fromUbigeo) {
+        this.fromUbigeo = fromUbigeo;
+    }
+
+    public void setToUbigeo(String toUbigeo) {
+        this.toUbigeo = toUbigeo;
     }
 }

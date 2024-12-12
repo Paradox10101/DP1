@@ -131,7 +131,6 @@ public class RouteCache {
                     fromName + " to " + toName,
                     originalSegment.getToUbigeo(),
                     originalSegment.getFromUbigeo(),
-                    originalSegment.getDistance(),
                     originalSegment.getDurationMinutes()
             );
 

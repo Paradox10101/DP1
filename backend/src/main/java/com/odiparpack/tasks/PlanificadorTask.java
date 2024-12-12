@@ -2,6 +2,10 @@ package com.odiparpack.tasks;
 
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
+import com.odiparpack.routing.model.Route;
+import com.odiparpack.routing.service.OrderAssignmentService;
+import com.odiparpack.routing.service.RouteService;
+import com.odiparpack.routing.service.VehicleAssignmentService;
 import com.odiparpack.services.LocationService;
 
 import java.time.LocalDateTime;
@@ -9,7 +13,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.logger;
 import static com.odiparpack.SimulationRunner.*;
@@ -22,7 +25,8 @@ public class PlanificadorTask implements Runnable {
     private final List<String> pendingBreakdownTypes = new ArrayList<>(Arrays.asList("1", "2", "3"));
     private final Set<String> vehiclesWithScheduledBreakdown = new HashSet<>();
 
-    public PlanificadorTask(SimulationState state, AtomicBoolean isSimulationRunning,
+    public PlanificadorTask(SimulationState state,
+                            AtomicBoolean isSimulationRunning,
                             Map<String, List<RouteSegment>> vehicleRoutes) {
         this.state = state;
         this.isSimulationRunning = isSimulationRunning;
@@ -38,61 +42,40 @@ public class PlanificadorTask implements Runnable {
         logger.info("Iniciando planificación: " + state.getCurrentTime());
 
         try {
-            long[][] currentTimeMatrix = state.getCurrentTimeMatrix();
-            List<Order> availableOrders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
-            logAvailableOrders(availableOrders);
+            long[][] timeMatrix = state.getCurrentTimeMatrix();
+            List<Order> orders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
+            logAvailableOrders(orders);
 
-            // Filtrar órdenes con ubigeo origen inválido (******)
-            /*List<Order> ordersWithInvalidUbigeo = availableOrders.stream()
-                    .filter(order -> "******".equals(order.getOriginUbigeo())) // Verificar ubigeo inválido
-                    .collect(Collectors.toList());*/
+            if (orders.isEmpty()) {
+                logger.info("No hay órdenes disponibles para planificar en: " + state.getCurrentTime());
+                return;  // Salimos temprano para evitar procesamiento innecesario
+            }
 
-            // Bloqueos para calcular planificacion
-            List<Blockage> blockages = state.getActiveBlockages().stream()
-                    .map(blockage -> blockage.clone())
-                    .collect(Collectors.toList());
+            // Obtener destinos únicos de las órdenes
+            Set<String> destinationSet = new HashSet<>();
+            for (Order order : orders) {
+                destinationSet.add(order.getDestinationUbigeo());
+            }
+            String[] destinations = destinationSet.toArray(new String[0]);
 
-            // Solo procesar si hay órdenes con ubigeo inválido
-            //if (!ordersWithInvalidUbigeo.isEmpty()) {
-            processOrdersWithUnknownOrigin(availableOrders, state, blockages); // Asigna ubigeo origen
-            //}
+            // Calcular las mejores rutas para cada destino
+            RouteService routeService = new RouteService(state.getLocationIndices(), timeMatrix);
+            Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations);
 
-            if (!availableOrders.isEmpty()) {
-                List<VehicleAssignment> assignments = assignOrdersToVehicles(
-                        availableOrders,
-                        new ArrayList<>(state.getVehicles().values()), // copia de los vehiculos
-                        state.getCurrentTime(),
-                        state
-                );
+            // Asignar almacenes a las órdenes basándose en las mejores rutas
+            OrderAssignmentService assignmentService = new OrderAssignmentService();
+            List<Order> ordenesAsignables = assignmentService.assignWarehousesToOrders(orders, bestRoutes);
 
-                if (!assignments.isEmpty()) {
-                    calculateAndApplyRoutes(
-                            currentTimeMatrix,
-                            assignments,
-                            state.getLocationIndices(),
-                            state.getLocationNames(),
-                            state.getLocationUbigeos(),
-                            vehicleRoutes,
-                            state,
-                            blockages
-                    );
-
-                    for(VehicleAssignment vehicleAssingnment: assignments) {
-                        if(vehicleRoutes.containsKey(vehicleAssingnment.getVehicle().getCode())){
-                            if(!state.getVehicleAssignmentsPerOrder().containsKey(vehicleAssingnment.getOrder().getId()))
-                                state.getVehicleAssignmentsPerOrder().put(vehicleAssingnment.getOrder().getId(), new ArrayList<>());
-                            if(vehicleAssingnment.getVehicle().getEstimatedDeliveryTime()!=null)
-                                vehicleAssingnment.setEstimatedDeliveryTime(vehicleAssingnment.getVehicle().getEstimatedDeliveryTime());
-                            vehicleAssingnment.getRouteSegments().addAll(vehicleRoutes.get(vehicleAssingnment.getVehicle().getCode()));
-                            state.getVehicleAssignmentsPerOrder().get(vehicleAssingnment.getOrder().getId()).add(vehicleAssingnment);
-                        }
-                    }
-                }
+            if (!ordenesAsignables.isEmpty()) {
+                VehicleAssignmentService vehicleAssignmentService = new VehicleAssignmentService(state);
+                List<VehicleAssignment> assignments = vehicleAssignmentService.assignOrdersToVehicles(ordenesAsignables, state.getVehicles(), bestRoutes);
 
                 // Programar averías después de la primera planificación en simulación semanal
                 if (state.getSimulationType() == SimulationRouter.SimulationType.WEEKLY && !breakdownsScheduled) {
                     scheduleBreakdowns(assignments, state);
                 }
+            } else {
+                logger.warning("No hay órdenes asignables para procesar");
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en planificación", e);

@@ -59,7 +59,7 @@ public class VehicleRouter extends BaseRouter {
     }
 
     private JsonObject getVehiclePosition(String vehicleCode) {
-        Vehicle vehicle = simulationState.getVehicles().get(vehicleCode);
+        Vehicle vehicle = simulationState.findVehicleByCode(simulationState.getVehicles(), vehicleCode);
         if (vehicle == null) {
             return createErrorResponse("Vehículo no encontrado");
         }
@@ -77,10 +77,10 @@ public class VehicleRouter extends BaseRouter {
         featureCollection.addProperty("type", "FeatureCollection");
         JsonArray features = new JsonArray();
 
-        for (Map.Entry<String, Vehicle> entry : simulationState.getVehicles().entrySet()) {
-            Position position = entry.getValue().getCurrentPosition(simulationState.getCurrentTime(), simulationState.getSimulationType());
+        for (Vehicle vehicle : simulationState.getVehicles()) {
+            Position position = vehicle.getCurrentPosition(simulationState.getCurrentTime(), simulationState.getSimulationType());
             if (position != null) {
-                features.add(createFeature(entry.getKey(), position));
+                features.add(createFeature(vehicle.getCode(), position));
             }
         }
 

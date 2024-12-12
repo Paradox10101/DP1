@@ -86,7 +86,6 @@ public class RouteSolutionData {
                 fromName + " to " + toName,
                 fromUbigeo,
                 toUbigeo,
-                distance,
                 durationMinutes
         );
     }

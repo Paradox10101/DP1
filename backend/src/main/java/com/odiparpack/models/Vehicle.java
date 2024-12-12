@@ -1,20 +1,14 @@
 package com.odiparpack.models;
 
 import com.odiparpack.DataLoader;
-import com.odiparpack.Main;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.services.LocationService;
-import org.springframework.cglib.core.Local;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import static com.odiparpack.DataLoader.getUbigeoFromName;
 import static com.odiparpack.Main.locations;
@@ -537,13 +531,12 @@ public class Vehicle {
         double distanceRemaining = segmentDistance - distanceCovered;
         long timeRemaining = segmentDurationMinutes - elapsedMinutes;
 
-        if (timeRemaining > 0 && distanceRemaining > 0) {
+        if (timeRemaining > 0) {
             // Crear un nuevo segmento ajustado desde el punto de avería
             RouteSegment adjustedSegment = new RouteSegment(
                     currentSegment.getName() + " (Averiado)",
                     this.getCurrentLocationUbigeo(),
                     currentSegment.getToUbigeo(),
-                    distanceRemaining,
                     timeRemaining
             );
             //adjustedSegment.setAdjusted(true); // Opcional: para depuración o lógica adicional
