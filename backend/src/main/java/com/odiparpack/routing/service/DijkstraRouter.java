@@ -45,6 +45,11 @@ public class DijkstraRouter {
     }
 
     private DijkstraResult executeDijkstraAlgorithm(int n, int startIdx, int endIdx) {
+        /*System.out.println("\n=== Iniciando Dijkstra ===");
+        System.out.println("Nodos totales: " + n);
+        System.out.println("Índice inicio: " + startIdx);
+        System.out.println("Índice fin: " + endIdx);*/
+
         long[] distances = new long[n];
         boolean[] visited = new boolean[n];
         int[] previous = new int[n];
@@ -53,14 +58,37 @@ public class DijkstraRouter {
         Arrays.fill(previous, -1);
         distances[startIdx] = 0;
 
+        /*System.out.println("\nDistancia inicial al nodo inicio: " + distances[startIdx]);
+        System.out.println("Distancia inicial al nodo fin: " + distances[endIdx]);*/
+
         for (int count = 0; count < n - 1; count++) {
             int u = findMinimumDistanceNode(distances, visited);
-            if (u == -1) break;
+            if (u == -1) {
+                //System.out.println("\nNo se encontraron más nodos alcanzables en iteración " + count);
+                break;
+            }
+
+            /*System.out.println("\nIteración " + count + ":");
+            System.out.println("Procesando nodo: " + u);
+            System.out.println("Distancia actual al nodo: " + distances[u]);*/
 
             visited[u] = true;
+
+            // Verificar conexiones del nodo actual
+            /*System.out.println("Conexiones desde nodo " + u + ":");
+            int conexionesValidas = 0;
+            for (int v = 0; v < n; v++) {
+                if (timeMatrix[u][v] != Long.MAX_VALUE) {
+                    conexionesValidas++;
+                }
+            }
+            System.out.println("Tiene " + conexionesValidas + " conexiones válidas");*/
+
             updateNeighborDistances(u, distances, visited, previous);
         }
 
+        // Mostrar distancia al nodo final después de cada iteración
+        //System.out.println("Distancia actual al nodo final: " + distances[endIdx]);
         return new DijkstraResult(distances, previous);
     }
 

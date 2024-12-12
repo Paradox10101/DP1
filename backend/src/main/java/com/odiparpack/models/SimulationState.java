@@ -742,7 +742,7 @@ public class SimulationState {
 
         // Crear las "blockages" como objetos de tipo "Feature"
         if (vehicles != null && !vehicles.isEmpty()) {
-            for (Vehicle vehicle : vehicles.values()) {
+            for (Vehicle vehicle : vehicles) {
                 JsonObject blockageFeature = new JsonObject();
                 blockageFeature.addProperty("type", "Feature");
 
@@ -1563,84 +1563,6 @@ public class SimulationState {
         return asignado;
     }
 
-    private double calculateRouteDistance(List<RouteSegment> route) {
-        return route.stream().mapToDouble(RouteSegment::getDistance).sum();
-    }
-
-    // Averia: origen: almacen - destino: punto averia
-    // Hacia almacen: origen: oficina - destino: almacen
-    // Hacia oficina: origen: almacen - destino: oficina
-    public Map<String, List<com.odiparpack.routing.model.RouteSegment>> calculateRoutesInParallel(
-            List<List<RouteRequest>> routeGroups, List<Blockage> blockages, int seconds) {
-        Map<String, List<com.odiparpack.routing.model.RouteSegment>> allCalculatedRoutes = new ConcurrentHashMap<>();
-
-        ExecutorService executorService = SimulationRunner.getComputeIntensiveExecutor();
-
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (List<RouteRequest> group : routeGroups) {
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                try {
-                    // Adquirir permiso para ejecutar la tarea
-                    semaphore.acquire();
-
-                    Set<RouteRequest> routesToCalculate = new HashSet<>();
-
-                    for (RouteRequest route : group) {
-                        // Verificar si la ruta ya está en caché
-                        List<RouteSegment> cachedRoute = routeCache.getRoute(route.start, route.end, blockages);
-                        if (cachedRoute == null) {
-                            routesToCalculate.add(route);
-                        }
-                    }
-                    // Crear DataModel para el grupo
-                    DataModel data = createDataModelForGroup(routesToCalculate, blockages);
-                    if (data != null && data.vehicleNumber > 0) {
-                        Map<String, List<com.odiparpack.routing.model.RouteSegment>> routes = null;
-                        try {
-                            // Intentar resolver con las estrategias definidas
-                            routes = trySolvingWithStrategies2(data, Arrays.asList(
-                                    FirstSolutionStrategy.Value.CHRISTOFIDES,
-                                    FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC
-                            ), this, seconds);
-                        } catch (Exception e) {
-                            logger.log(Level.SEVERE, "Error durante el cálculo de rutas en paralelo.", e);
-                        }
-
-                        if (routes != null && !routes.isEmpty()) {
-                            allCalculatedRoutes.putAll(routes);
-                            // Agregar rutas calculadas a la caché
-                            for (RouteRequest route : routesToCalculate) {
-                                String routeKey = buildRouteKey(route.start, route.end);
-                                if (routes.containsKey(routeKey)) {
-                                    //routeCache.putRoute(route.start, route.end, routes.get(routeKey), blockages);
-                                } else {
-                                    logger.info("No se pudo calcular la ruta: " + routeKey);
-                                }
-                            }
-                        } else {
-                            logger.info("No se encontraron rutas para el grupo.");
-                        }
-                    }
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
-                    logger.log(Level.SEVERE, "Tarea interrumpida", ie);
-                } finally {
-                    // Liberar el permiso después de completar la tarea
-                    semaphore.release();
-                }
-            }, executorService);
-
-            futures.add(future);
-        }
-
-        // Esperar a que todas las tareas completen
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        logger.info("Todas las tareas para el calculo de rutas en paralelo terminaron.");
-
-        return allCalculatedRoutes;
-    }
-
     private Vehicle getAvailableVehicleAtWarehouse(String warehouseUbigeo, Vehicle brokenVehicle) {
         // Calcular la cantidad de paquetes que el vehículo averiado está llevando
         int packagesToCarry = brokenVehicle.getCurrentCapacity();
@@ -1858,36 +1780,6 @@ public class SimulationState {
         currentTimeMatrix = newMatrix;
     }
 
-    /*private void expandMatrixForTemporaryNode(int newSize) {
-        if (newSize <= currentTimeMatrix.length) {
-            // No es necesario ampliar
-            return;
-        }
-
-        // Crear una nueva matriz con dimensiones ampliadas
-        long[][] newMatrix = new long[newSize][newSize];
-
-        // Copiar datos de la matriz existente a la nueva
-        for (int i = 0; i < currentTimeMatrix.length; i++) {
-            System.arraycopy(currentTimeMatrix[i], 0, newMatrix[i], 0, currentTimeMatrix[i].length);
-        }
-
-        // Rellenar las nuevas celdas con valores predeterminados (por ejemplo, Long.MAX_VALUE o 0)
-        for (int i = currentTimeMatrix.length; i < newSize; i++) {
-            for (int j = 0; j < newSize; j++) {
-                newMatrix[i][j] = Long.MAX_VALUE; // O un valor predeterminado que represente la falta de conexión
-            }
-        }
-        for (int i = 0; i < newSize; i++) {
-            for (int j = currentTimeMatrix.length; j < newSize; j++) {
-                newMatrix[i][j] = Long.MAX_VALUE; // O un valor predeterminado
-            }
-        }
-
-        // Reemplazar la matriz antigua con la nueva
-        currentTimeMatrix = newMatrix;
-    }*/
-
     private void expandMatrixForTemporaryNode(int newSize) {
         // Incorporar nuevo nodo en matriz actual
         // Crear una nueva matriz con dimensiones ampliadas
@@ -1995,51 +1887,6 @@ public class SimulationState {
     }
 
     /**
-     * Agrupa vehículos por rutas basándose en ubicaciones de origen y destino configurables
-     * @param vehicles Lista de vehículos a agrupar
-     * @param locations Lista de ubicaciones (almacenes) a considerar
-     * @param routeOrigin Determina qué ubicación se usa como origen (CURRENT_LOCATION o WAREHOUSE)
-     * @param routeDestination Determina qué ubicación se usa como destino (CURRENT_LOCATION o WAREHOUSE)
-     * @return Mapa de rutas con sus vehículos asociados
-     */
-    public Map<String, List<Vehicle>> groupVehiclesByRoute(
-            List<Vehicle> vehicles,
-            List<String> locations,
-            LocationType routeOrigin,
-            LocationType routeDestination) {
-
-        if (routeOrigin == routeDestination) {
-            throw new IllegalArgumentException("Origin and destination types must be different");
-        }
-
-        Map<String, List<Vehicle>> groupedVehicles = new HashMap<>();
-
-        for (Vehicle vehicle : vehicles) {
-            String currentLocation = vehicle.getCurrentLocationUbigeo();
-
-            for (String warehouseUbigeo : locations) {
-                // Skip if current location matches warehouse location
-                if (warehouseUbigeo.equals(currentLocation)) {
-                    continue;
-                }
-
-                String origin = (routeOrigin == LocationType.ORIGIN)
-                        ? currentLocation
-                        : warehouseUbigeo;
-
-                String destination = (routeDestination == LocationType.ORIGIN)
-                        ? currentLocation
-                        : warehouseUbigeo;
-
-                String routeKey = buildRouteKey(origin, destination);
-                addVehicleToRoute(groupedVehicles, routeKey, vehicle);
-            }
-        }
-
-        return groupedVehicles;
-    }
-
-    /**
      * Construye la clave de la ruta usando origen y destino
      */
     public static String buildRouteKey(String origin, String destination) {
@@ -2055,145 +1902,6 @@ public class SimulationState {
             Vehicle vehicle) {
         groupedVehicles.computeIfAbsent(routeKey, k -> new ArrayList<>()).add(vehicle);
     }
-
-    private void processGroupedVehicles(Map<String, List<Vehicle>> groupedVehicles,
-                                        Set<RouteRequest> routesToCalculate) {
-        for (String routeKey : groupedVehicles.keySet()) {
-            // Separar origen y destino de la clave
-            String[] locations = routeKey.split("-");
-            String origin = locations[0];
-            String destination = locations[1];
-
-            // Verificar si la ruta está en caché
-            List<RouteSegment> cachedRoute = routeCache.getRoute(origin, destination, activeBlockages);
-
-            if (cachedRoute == null) {
-                // Si la ruta no está en caché, añadir a las rutas a calcular
-                routesToCalculate.add(new RouteRequest(origin, destination));
-            }
-        }
-    }
-
-    private boolean processCachedRoute(String origin, String destination, List<Vehicle> vehiclesInRoute,
-                                       Map<String, Map<String, Long>> vehicleRouteTimes) {
-        List<RouteSegment> cachedRoute = routeCache.getRoute(origin, destination, activeBlockages);
-
-        if (cachedRoute != null) {
-            long routeTime = calculateRouteTime(cachedRoute);
-            for (Vehicle vehicle : vehiclesInRoute) {
-                vehicleRouteTimes.computeIfAbsent(vehicle.getCode(), k -> new HashMap<>())
-                        .put(destination, routeTime);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void addRouteRequest(String origin, String destination, List<Vehicle> vehiclesInRoute,
-                                 List<WarehouseRouteRequest> routeRequests,
-                                 Set<RouteRequest> routesToCalculate) {
-        routesToCalculate.add(new RouteRequest(origin, destination));
-        for (Vehicle vehicle : vehiclesInRoute) {
-            WarehouseRouteRequest request = new WarehouseRouteRequest(vehicle, origin, destination);
-            routeRequests.add(request);
-        }
-    }
-
-    private DataModel createIndividualDataModel(
-            String routeKey,
-            List<Vehicle> vehicles,
-            Map<String, Integer> locationIndices,
-            List<String> locationNames,
-            List<String> locationUbigeos) {
-
-        // Parsear el routeKey para obtener los ubigeos de inicio y fin
-        String[] routeParts = routeKey.split("-");
-        if (routeParts.length != 2) {
-            logger.warning("Formato de routeKey inválido: " + routeKey);
-            return null;
-        }
-
-        String startUbigeo = routeParts[0];
-        String endUbigeo = routeParts[1];
-
-        Integer startIndex = locationIndices.get(startUbigeo);
-        Integer endIndex = locationIndices.get(endUbigeo);
-
-        if (startIndex == null || endIndex == null) {
-            logger.warning(String.format("Ubigeo de inicio o fin no encontrado en locationIndices: %s -> %s",
-                    startUbigeo, endUbigeo));
-            return null;
-        }
-
-        // Configurar los arrays starts y ends con un solo inicio y fin
-        int[] startsArray = new int[]{startIndex};
-        int[] endsArray = new int[]{endIndex};
-
-        // Número de vehículos en el grupo
-        int vehicleNumber = vehicles.size();
-
-        if (vehicleNumber == 0) {
-            logger.warning("No hay vehículos en el grupo para calcular rutas.");
-            return null; // Omitir cálculo de rutas
-        }
-
-        // Crear el DataModel usando los arrays de inicio y fin
-        DataModel dataModel = new DataModel(
-                currentTimeMatrix,
-                getActiveBlockages(),
-                startsArray,
-                endsArray,
-                locationNames,
-                locationUbigeos
-        );
-
-        return dataModel;
-    }
-
-    private DataModel createDataModel(Set<RouteRequest> routesToCalculate,
-                                      Map<String, Integer> locationIndices,
-                                      List<String> locationNames,
-                                      List<String> locationUbigeos) {
-        List<Integer> starts = new ArrayList<>();
-        List<Integer> ends = new ArrayList<>();
-
-        for (RouteRequest request : routesToCalculate) {
-            Integer startIndex = locationIndices.get(request.start);
-            Integer endIndex = locationIndices.get(request.end);
-
-            if (startIndex == null || endIndex == null) {
-                logger.warning(String.format("Ubigeo de inicio o fin no encontrado en locationIndices: %s -> %s",
-                        request.start, request.end));
-            } else {
-                starts.add(startIndex);
-                ends.add(endIndex);
-            }
-        }
-
-        int[] startsArray = starts.stream().mapToInt(Integer::intValue).toArray();
-        if (startsArray.length == 0) {
-            logger.warning("No routes to calculate. Starts and ends are empty.");
-            return null; // Skip route calculation
-        }
-
-        // Crear el DataModel usando los arrays de inicio y fin
-        return new DataModel(
-                getCurrentTimeMatrix(),
-                getActiveBlockages(),
-                starts.stream().mapToInt(Integer::intValue).toArray(),
-                ends.stream().mapToInt(Integer::intValue).toArray(),
-                locationNames,
-                locationUbigeos
-        );
-    }
-
-
-    // Origen: Almacen, Destino: Tramo
-    // Almacenes A, B, C
-    // Tramo H => A-H, B-H, C-H
-    // Tramo G => A-G, B-G, C-G
-    // Tramo K => A-K, B-K, C-K
-
 
     private void assignReplacementVehicle(Vehicle replacementVehicle, Vehicle brokenVehicle, List<RouteSegment> routeToBreakdown, LocalDateTime currentTime) {
         // Imprimir los segmentos de la ruta antes de asignarla
@@ -2249,15 +1957,6 @@ public class SimulationState {
         }
     }
 
-    private List<RouteSegment> getRouteToBreakdown(Vehicle replacementVehicle, Vehicle brokenVehicle) {
-        // El vehículo de reemplazo ya está en el punto de avería
-        logger.info(String.format("El vehículo de reemplazo %s ya está en la ubicación del vehículo averiado %s.",
-                replacementVehicle.getCode(), brokenVehicle.getCode()));
-        return Collections.emptyList();
-    }
-
-
-
     private void assignReplacementVehicleAtSameLocation(Vehicle replacementVehicle, Vehicle brokenVehicle, LocalDateTime currentTime) {
         // Asignar la ruta desde el almacén al punto de avería
         replacementVehicle.setRoute(Collections.emptyList());
@@ -2298,124 +1997,6 @@ public class SimulationState {
         }
     }
 
-    // Origin: para averias => tramo
-    private RouteResult findShortestRoute(String origin, RouteCache routeCache, Map<String, List<RouteSegment>> allRoutes, List<Blockage> activeBlockages) {
-        String bestDestination = null;
-        long shortestTime = Long.MAX_VALUE;
-        List<RouteSegment> bestRoute = null;
-
-        for (String warehouseUbigeo : almacenesPrincipales) {
-            // Verificar la caché primero
-            List<RouteSegment> route = routeCache.getRoute(origin, warehouseUbigeo, activeBlockages);
-            if (route == null) {
-                // Si la ruta no está en la caché, usar `allRoutes`
-                route = allRoutes.get(origin + "-" + warehouseUbigeo);
-            }
-
-            if (route != null) {
-                long routeTime = calculateRouteTime(route);
-                logger.info(String.format("Ruta encontrada para %s -> %s con tiempo de %d minutos", origin, warehouseUbigeo, routeTime));
-
-                if (routeTime < shortestTime) {
-                    shortestTime = routeTime;
-                    bestDestination = warehouseUbigeo;
-                    bestRoute = route;
-                }
-            } else {
-                logger.info(String.format("No se encontró ninguna ruta válida para %s -> %s en caché ni en rutas calculadas.", origin, warehouseUbigeo));
-            }
-        }
-
-        if (bestRoute != null) {
-            return new RouteResult(bestRoute, bestDestination, shortestTime);
-        } else {
-            return null;
-        }
-    }
-
-    private static Map<String, List<com.odiparpack.routing.model.RouteSegment>> trySolvingWithStrategies2(
-            DataModel data,
-            List<FirstSolutionStrategy.Value> strategies,
-            SimulationState state,
-            int seconds) {
-
-        for (FirstSolutionStrategy.Value strategy : strategies) {
-            try {
-                RoutingIndexManager manager = SimulationRunner.createRoutingIndexManager(data, data.starts, data.ends);
-                RoutingModel routing = SimulationRunner.createRoutingModel(manager, data);
-                RoutingSearchParameters searchParameters = createSearchParameters(strategy, seconds);
-
-                logger.info("Intentando resolver con estrategia: " + strategy);
-                Assignment solution = routing.solveWithParameters(searchParameters);
-
-                if (solution != null) {
-                    logger.info("Solución encontrada con estrategia: " + strategy);
-                    return extractCalculatedRoutesWithStartsEnds(
-                            data.activeBlockages,
-                            manager,
-                            data,
-                            routing,
-                            solution,
-                            state.getRouteCache()
-                    );
-                } else {
-                    logger.info("No se encontró solución con estrategia: " + strategy);
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error al resolver con estrategia: " + strategy, e);
-            }
-        }
-        return null;
-    }
-
-    private static Map<String, List<com.odiparpack.routing.model.RouteSegment>> extractCalculatedRoutesWithStartsEnds(
-            List<Blockage> activeBlockages,
-            RoutingIndexManager manager,
-            DataModel data,
-            RoutingModel routing,
-            Assignment solution,
-            RouteCache routeCache) {
-
-        Map<String, List<com.odiparpack.routing.model.RouteSegment>> calculatedRoutes = new HashMap<>();
-
-        for (int i = 0; i < data.vehicleNumber; ++i) {
-            String originUbigeo = data.locationUbigeos.get(data.starts[i]);
-            String destinationUbigeo = data.locationUbigeos.get(data.ends[i]);
-            String routeKey = originUbigeo + "-" + destinationUbigeo;
-
-            List<com.odiparpack.routing.model.RouteSegment> route = new ArrayList<>();
-            long index = routing.start(i);
-
-            while (!routing.isEnd(index)) {
-                long nextIndex = solution.value(routing.nextVar(index));
-                int fromNode = manager.indexToNode(index);
-                int toNode = manager.indexToNode(nextIndex);
-
-                String fromName = data.locationNames.get(fromNode);
-                String fromUbigeo = data.locationUbigeos.get(fromNode);
-                String toName = data.locationNames.get(toNode);
-                String toUbigeo = data.locationUbigeos.get(toNode);
-
-                long durationMinutes = data.timeMatrix[fromNode][toNode];
-                double distance = calculateDistanceFromNodes(data, fromNode, toNode);
-
-                route.add(new com.odiparpack.routing.model.RouteSegment(fromUbigeo, toUbigeo, durationMinutes));
-
-                index = nextIndex;
-            }
-
-            calculatedRoutes.put(routeKey, route);
-
-            // Añadir la ruta calculada al caché si está disponible
-            if (routeCache != null) {
-                //routeCache.putRoute(originUbigeo, destinationUbigeo, route, activeBlockages);
-            }
-
-            logger.info("Ruta calculada para " + routeKey + " con " + route.size() + " segmentos.");
-        }
-        return calculatedRoutes;
-    }
-
     private void initiateReturnToWarehouseProcess(List<Vehicle> vehicles) {
         // Obtener destinos únicos de las oficinas
         Set<String> destinationSet = new HashSet<>();
@@ -2454,15 +2035,6 @@ public class SimulationState {
             return true;
         }
         return false;
-    }
-
-    private List<RouteSegment> createRouteToWarehouse(Vehicle vehicle, String warehouseUbigeo) {
-        String currentUbigeo = vehicle.getCurrentLocationUbigeo();
-        return routeCache.getRoute(currentUbigeo, warehouseUbigeo, activeBlockages);
-    }
-
-    private long calculateRouteTime(List<RouteSegment> route) {
-        return route.stream().mapToLong(RouteSegment::getDurationMinutes).sum();
     }
 
     public static class RouteRequest {

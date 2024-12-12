@@ -35,6 +35,13 @@ const createError = (type, customMessage = null) => {
 
 export const useSimulationMetrics = () => {
     const [metrics, setMetrics] = useState(null);
+    const [planningStatus, setPlanningStatus] = useState({
+        phase: 'collecting',
+        totalOrders: 0,
+        assignedOrders: 0,
+        unassignedOrders: 0,
+        message: ''
+    });
     const [isConnected, setIsConnected] = useState(false);
     const [reconnectAttempts, setReconnectAttempts] = useState(0);
     const [error, setError] = useAtom(errorAtom);
@@ -58,10 +65,19 @@ export const useSimulationMetrics = () => {
     const handleMetricsMessage = useCallback((event) => {
         try {
             const data = JSON.parse(event.data);
-            if (data.startTime && data.endTime &&
-                data.simulatedTime && data.realElapsedTime) {
-    
-                // Incluimos las nuevas métricas de duración
+            
+            // Handle planning status updates
+            if (data.phase) {
+                setPlanningStatus(prevStatus => ({
+                    ...prevStatus,
+                    ...data
+                }));
+                setError(null);
+                return;
+            }
+
+            // Handle simulation metrics
+            if (data.startTime && data.endTime && data.simulatedTime && data.realElapsedTime) {
                 const formattedData = {
                     startTime: data.startTime,
                     endTime: data.endTime,
@@ -72,41 +88,36 @@ export const useSimulationMetrics = () => {
                     isPaused: data.isPaused,
                     isStopped: data.isStopped
                 };
-    
-                setMetrics(prevMetrics => {
-                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
-                        return formattedData;
-                    }
-                    return prevMetrics;
-                });
-                setError(null);
-            } else if(data?.type){
-                // Incluimos las nuevas métricas de duración
-                const formattedData = {
-                    type: data.type,
-                };
-                setMetrics(prevMetrics => {
-                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
-                        return formattedData;
-                    }
-                    return prevMetrics;
-                });
-                setError(null);
 
-            }
-            else {
+                setMetrics(prevMetrics => {
+                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
+                        return formattedData;
+                    }
+                    return prevMetrics;
+                });
+                setError(null);
+            } else if (data?.type) {
+                const formattedData = { type: data.type };
+                setMetrics(prevMetrics => {
+                    if (JSON.stringify(prevMetrics) !== JSON.stringify(formattedData)) {
+                        return formattedData;
+                    }
+                    return prevMetrics;
+                });
+                setError(null);
+            } else {
                 console.warn('Datos incompletos recibidos:', data);
                 throw new Error('Formato de métricas inválido');
             }
         } catch (err) {
-            console.error('Error al procesar métricas:', err);
+            console.error('Error al procesar datos:', err);
             setError(createError(ErrorTypes.DATA));
         }
     }, [setError]);
 
     const attemptReconnect = useCallback(() => {
         if (reconnectAttempts >= WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS) {
-            console.log('Máximo número de intentos de reconexión de métricas alcanzado');
+            console.log('Máximo número de intentos de reconexión alcanzado');
             setError(createError(
                 ErrorTypes.CONNECTION,
                 'No se pudo reconectar al servicio de métricas.'
@@ -115,7 +126,7 @@ export const useSimulationMetrics = () => {
         }
 
         reconnectTimeoutRef.current = setTimeout(() => {
-            console.log(`Intentando reconectar métricas... (Intento ${reconnectAttempts + 1})`);
+            console.log(`Intentando reconectar... (Intento ${reconnectAttempts + 1})`);
             setReconnectAttempts(prev => prev + 1);
             connectWebSocket();
         }, WEBSOCKET_CONFIG.RECONNECT_DELAY);
@@ -130,14 +141,14 @@ export const useSimulationMetrics = () => {
             websocketRef.current = new WebSocket(WEBSOCKET_CONFIG.URL);
 
             websocketRef.current.onopen = () => {
-                console.log('WebSocket de métricas conectado');
+                console.log('WebSocket conectado');
                 setIsConnected(true);
                 setError(null);
                 setReconnectAttempts(0);
             };
 
             websocketRef.current.onclose = () => {
-                console.log('WebSocket de métricas cerrado');
+                console.log('WebSocket cerrado');
                 setIsConnected(false);
                 if (simulationStatus === 'running') {
                     attemptReconnect();
@@ -145,24 +156,24 @@ export const useSimulationMetrics = () => {
             };
 
             websocketRef.current.onerror = () => {
-                console.log('Error en WebSocket de métricas');
+                console.log('Error en WebSocket');
                 setError(createError(ErrorTypes.CONNECTION));
             };
 
             websocketRef.current.onmessage = handleMetricsMessage;
 
         } catch (error) {
-            console.error('Error al crear conexión WebSocket de métricas:', error);
+            console.error('Error al crear conexión WebSocket:', error);
             setError(createError(ErrorTypes.CONNECTION));
         }
     }, [handleMetricsMessage, cleanup, attemptReconnect, simulationStatus, setError]);
 
     useEffect(() => {
         if (simulationStatus === 'running') {
-            console.log('Iniciando conexión de métricas...');
+            console.log('Iniciando conexión...');
             connectWebSocket();
         } else {
-            console.log('Cerrando conexión de métricas...');
+            console.log('Cerrando conexión...');
             cleanup();
         }
 
@@ -171,6 +182,7 @@ export const useSimulationMetrics = () => {
 
     return {
         metrics,
+        planningStatus,
         isConnected,
         error,
         reconnectAttempts

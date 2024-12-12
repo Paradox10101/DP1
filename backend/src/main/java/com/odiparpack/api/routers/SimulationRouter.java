@@ -294,20 +294,6 @@ public class SimulationRouter extends BaseRouter {
             return status;
         });
 
-        // Reiniciar simulación
-        /*Spark.post("/api/v1/simulation/reset", (request, response) -> {
-            response.type("application/json");
-
-            try {
-                resetSimulationState();
-                return createSuccessResponse("Simulación reiniciada exitosamente.");
-            } catch (Exception e) {
-                logger.severe("Error al reiniciar la simulación: " + e.getMessage());
-                response.status(500);
-                return createErrorResponse("Error al reiniciar la simulación: " + e.getMessage());
-            }
-        });*/
-
         // Nueva ruta para cambiar velocidad
         Spark.post("/api/v1/simulation/speed", (request, response) -> {
             response.type("application/json");

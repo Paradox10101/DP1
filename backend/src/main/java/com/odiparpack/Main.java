@@ -1,16 +1,15 @@
 package com.odiparpack;
 
 import com.google.ortools.Loader;
-import com.google.ortools.constraintsolver.*;
 import com.odiparpack.api.controllers.SimulationController;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import java.util.stream.Collectors;
-import com.google.protobuf.Duration;
 
 import java.io.IOException;
 
@@ -22,6 +21,62 @@ public class Main {
     public static List<String> locationNames;
     public static List<String> locationUbigeos;
     public static Map<String, Location> locations;
+
+    static {
+        try {
+            // Configurar el formato de los logs
+            SimpleFormatter formatter = new SimpleFormatter() {
+                private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
+
+                @Override
+                public synchronized String format(LogRecord lr) {
+                    return String.format(format,
+                            new java.util.Date(lr.getMillis()),
+                            lr.getLevel().getLocalizedName(),
+                            lr.getMessage()
+                    );
+                }
+            };
+
+            // Crear el directorio logs si no existe
+            java.nio.file.Path logPath = java.nio.file.Paths.get("logs");
+            if (!java.nio.file.Files.exists(logPath)) {
+                java.nio.file.Files.createDirectories(logPath);
+            }
+
+            // Crear el nombre del archivo con la fecha actual
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String logFileName = "logs/simulation_" + timestamp + ".log";
+
+            // Configurar el manejador de archivo
+            FileHandler fileHandler = new FileHandler(logFileName, true);
+            fileHandler.setFormatter(formatter);
+
+            // Configurar el manejador de consola
+            ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(formatter);
+
+            // Remover los manejadores existentes y agregar los nuevos
+            Logger rootLogger = Logger.getLogger("");
+            Handler[] handlers = rootLogger.getHandlers();
+            for (Handler handler : handlers) {
+                rootLogger.removeHandler(handler);
+            }
+
+            // Agregar ambos manejadores al logger raíz
+            rootLogger.addHandler(fileHandler);
+            rootLogger.addHandler(consoleHandler);
+
+            // Establecer el nivel de logging
+            rootLogger.setLevel(Level.INFO);
+
+            logger.info("Sistema de logs iniciado. Archivo de logs: " + logFileName);
+
+        } catch (IOException e) {
+            System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public static com.odiparpack.models.SimulationState initializeSimulationState(LocalDateTime startDateTime,
                                                                                   LocalDateTime endDateTime,
@@ -107,23 +162,4 @@ public class Main {
         simulationController.start();
     }
 
-    public static RoutingSearchParameters createSearchParameters(
-            FirstSolutionStrategy.Value firstSolutionStrategy) {
-        // Llamar al método sobrecargado con el valor predeterminado de 10 segundos
-        return createSearchParameters(firstSolutionStrategy, 10);
-    }
-
-    public static RoutingSearchParameters createSearchParameters(
-            FirstSolutionStrategy.Value firstSolutionStrategy, int timeLimitInSeconds) {
-        RoutingSearchParameters searchParameters = main.defaultRoutingSearchParameters()
-                .toBuilder()
-                .setFirstSolutionStrategy(firstSolutionStrategy)
-                .setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
-                .setTimeLimit(Duration.newBuilder().setSeconds(3).build())
-                //.setLogSearch(true)  // Habilitar "verbose logging"
-                .build();
-        logger.info("Parámetros de búsqueda configurados con estrategia: " + firstSolutionStrategy +
-                ", límite de tiempo: " + timeLimitInSeconds + " segundos.");
-        return searchParameters;
-    }
 }

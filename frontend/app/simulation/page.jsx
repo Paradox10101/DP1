@@ -17,6 +17,8 @@ import SimulationPanel from "../Components/SimulationPanel/SimulationPanel";
 import SimulationReport from "@/app/Components/SimulationReport"
 import { useDisclosure } from "@nextui-org/react";
 import { useSimulationMetrics } from "@/hooks/useSimulationMetrics";
+import PlannerStatusPanel from "@/app/Components/PlannerStatusPanel";
+
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 const BreakdownPanel = dynamic(() => import('@/app/Components/BreakdownPanel'), { ssr: false });
@@ -89,6 +91,7 @@ const page = () => {
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
             <SimulationPanel openReport={onOpenReport}/>
             <MapLegend cornerPosition={"top-20 right-5"} />
+            <PlannerStatusPanel/>
             <BreakdownPanel />
           
         </div>
