@@ -19,6 +19,7 @@ import { useDisclosure } from "@nextui-org/react";
 import { useSimulationMetrics } from "@/hooks/useSimulationMetrics";
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
+const BreakdownPanel = dynamic(() => import('@/app/Components/BreakdownPanel'), { ssr: false });
 
 const page = () => {
   const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
@@ -29,6 +30,16 @@ const page = () => {
   const [loadedSimulationType, setLoadedSimulationType] = useState(false);
   const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
   const { metrics } = useSimulationMetrics();
+  const [showControls, setShowControls] = useState(true);
+  const [showBreakdowns, setShowBreakdowns] = useState(true);
+
+  const toggleControls = () => {
+    setShowControls(!showControls);
+  };
+
+  const toggleBreakdowns = () => {
+    setShowBreakdowns(!showBreakdowns);
+  };
 
   const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -78,6 +89,8 @@ const page = () => {
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
             <SimulationPanel openReport={onOpenReport}/>
             <MapLegend cornerPosition={"top-20 right-5"} />
+            <BreakdownPanel />
+          
         </div>
     </>
   )

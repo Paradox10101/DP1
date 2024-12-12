@@ -66,7 +66,7 @@ export const useMap = ({ mapContainer, onMapLoaded, onError }) => {
         data: { type: 'FeatureCollection', features: [] },
         cluster: true,
         clusterMaxZoom: 14,
-        clusterRadius: 50,
+        clusterRadius: 20,
       });
     }
   }, []);

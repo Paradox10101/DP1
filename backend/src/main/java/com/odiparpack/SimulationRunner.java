@@ -185,7 +185,7 @@ public class SimulationRunner {
             // Iniciar broadcasts
             scheduleWebSocketVehicleBroadcast(state, isSimulationRunning);
             scheduleWebSocketShipmentBroadcast(state, isSimulationRunning);
-
+            scheduleWebSocketRouteBroadcast(state, isSimulationRunning);
             // Programar tareas principales
             Future<?> timeAdvancement = scheduleTimeAdvancement(
                     state, isSimulationRunning, vehicleRoutes);
@@ -258,6 +258,13 @@ public class SimulationRunner {
     private static void scheduleWebSocketShipmentBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
         ScheduledFuture<?> future = webSocketExecutorService.scheduleAtFixedRate(
                 new WebSocketShipmentBroadcastTask(state, isSimulationRunning),
+                0, BROADCAST_INTERVAL, TimeUnit.MILLISECONDS
+        );
+    }
+
+    private static void scheduleWebSocketRouteBroadcast(SimulationState state, AtomicBoolean isSimulationRunning) {
+        ScheduledFuture<?> future = webSocketExecutorService.scheduleAtFixedRate(
+                new WebSocketRouteBroadcastTask(state, isSimulationRunning),
                 0, BROADCAST_INTERVAL, TimeUnit.MILLISECONDS
         );
     }

@@ -90,6 +90,7 @@ public class SimulationState {
         List<LocalDateTime> tiempos = new ArrayList<>();
         tiempos.add(simulationStartTime);
         tiempos.add(simulationEndTime != null ? simulationEndTime : currentTime);
+        tiempos.add(currentTime);
         return tiempos;
     }
 
@@ -729,6 +730,96 @@ public class SimulationState {
             stringBuilderPool.release(builder);
         }
     }
+
+    public JsonObject getBlockedAndCurrentRoutes(LocalDateTime initialDate, LocalDateTime endDate) {
+        // Crear el objeto principal con "type" y "features"
+        JsonObject featureCollection = new JsonObject();
+        featureCollection.addProperty("type", "FeatureCollection");
+
+        // Crear el arreglo "features"
+        JsonArray featuresArray = new JsonArray();
+
+
+        // Crear las "blockages" como objetos de tipo "Feature"
+        if (vehicles != null && !vehicles.isEmpty()) {
+            for (Vehicle vehicle : vehicles.values()) {
+                JsonObject blockageFeature = new JsonObject();
+                blockageFeature.addProperty("type", "Feature");
+
+                // Agregar las propiedades del bloqueo
+                JsonObject properties = new JsonObject();
+                blockageFeature.add("properties", properties);
+
+                // (Opcional) Agregar una geometría si es relevante
+                JsonObject geometry = new JsonObject();
+                geometry.addProperty("type", "Point"); // Ejemplo
+
+                if (vehicle.getRoute() == null || vehicle.getRoute().isEmpty() || vehicle.getCurrentSegmentIndex() >= vehicle.getRoute().size()) continue;
+                // El primer elemento corresponde al origen y el segundo al destino
+                JsonArray coordinates = new JsonArray();
+                JsonArray coordinatesOrigin = new JsonArray();
+                coordinatesOrigin.add(locations.get(vehicle.getCurrentLocationUbigeo()).getLongitude());
+                coordinatesOrigin.add(locations.get(vehicle.getCurrentLocationUbigeo()).getLatitude());
+
+                JsonArray coordinatesDestination = new JsonArray();
+                coordinatesDestination.add(locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getLongitude());
+                coordinatesDestination.add(locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getLatitude());
+
+                coordinates.add(coordinatesOrigin);
+                coordinates.add(coordinatesDestination);
+
+                geometry.add("coordinates", coordinates);
+
+                //Ruta actual de vehiculo
+                properties.addProperty("routeType", "vRoute");
+                properties.add("geometry", geometry);
+
+                featuresArray.add(blockageFeature);
+            }
+        }
+        // Crear las "blockages" como objetos de tipo "Feature"
+        if (activeBlockages != null) {
+            for (Blockage activeBlockage : activeBlockages) {
+                JsonObject blockageFeature = new JsonObject();
+                blockageFeature.addProperty("type", "Feature");
+
+                // Agregar las propiedades del bloqueo
+                JsonObject properties = new JsonObject();
+                blockageFeature.add("properties", properties);
+
+                // (Opcional) Agregar una geometría si es relevante
+                JsonObject geometry = new JsonObject();
+                geometry.addProperty("type", "Point"); // Ejemplo
+
+                // El primer elemento corresponde al origen y el segundo al destino
+                JsonArray coordinates = new JsonArray();
+                JsonArray coordinatesOrigin = new JsonArray();
+                coordinatesOrigin.add(locations.get(activeBlockage.getOriginUbigeo()).getLongitude());
+                coordinatesOrigin.add(locations.get(activeBlockage.getOriginUbigeo()).getLatitude());
+
+                JsonArray coordinatesDestination = new JsonArray();
+                coordinatesDestination.add(locations.get(activeBlockage.getDestinationUbigeo()).getLongitude());
+                coordinatesDestination.add(locations.get(activeBlockage.getDestinationUbigeo()).getLatitude());
+
+                coordinates.add(coordinatesOrigin);
+                coordinates.add(coordinatesDestination);
+
+                geometry.add("coordinates", coordinates);
+
+                //Ruta de bloqueo
+                properties.addProperty("routeType", "blockage");
+                properties.add("geometry", geometry);
+
+                featuresArray.add(blockageFeature);
+            }
+        }
+
+        // Agregar el arreglo "features" al objeto principal
+        featureCollection.add("features", featuresArray);
+
+        return featureCollection;
+    }
+
 
     // Método helper para validar y obtener provincia
     private String getValidatedProvince(String ubigeo) {
@@ -1663,7 +1754,7 @@ public class SimulationState {
     public void provocarAveria(String vehicleCode, String breakdownType) {
         Vehicle vehicle = findVehicleByCode(vehicles, vehicleCode);
         if (vehicle != null) {
-            if (vehicle.getEstado() == Vehicle.EstadoVehiculo.EN_TRANSITO_ORDEN) {
+            if (vehicle.getEstado() == Vehicle.EstadoVehiculo.EN_TRANSITO_ORDEN || vehicle.getEstado() == Vehicle.EstadoVehiculo.HACIA_ALMACEN) {
                 Vehicle.EstadoVehiculo estadoAveria;
                 switch (breakdownType) {
                     case "1":
