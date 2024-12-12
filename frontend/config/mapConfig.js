@@ -1,4 +1,18 @@
 // src/config/mapConfig.js
+// Añadir estas constantes al inicio del archivo
+const VEHICLE_CAPACITIES = {
+  A: 90,
+  B: 45,
+  C: 30
+};
+
+// Función para obtener el color según el porcentaje
+const getColorByPercentage = (percentage) => {
+  if (percentage >= 90) return '#EF4444'; // Rojo (equivalente a red-500)
+  if (percentage >= 75) return '#F97316'; // Naranja (equivalente a orange-400)
+  if (percentage >= 50) return '#EAB308'; // Amarillo (equivalente a yellow-400)
+  return '#22C55E'; // Verde (equivalente a green-500)
+};
 
 export const MAP_CONFIG = {
     // Configuración básica del mapa
@@ -81,46 +95,48 @@ export const MAP_CONFIG = {
             ['linear'],
             ['zoom'],
             5, // At zoom level 5
-            [
-              'match',
-              ['get', 'tipo'],
-              'A', 14, // Larger circle for type A (90 capacity)
-              'B', 12, // Medium circle for type B (45 capacity)
-              'C', 8,  // Smaller circle for type C (30 capacity)
-              6        // Default size if no match
-            ],
+            14, // Tamaño estandarizado para todos los vehículos
             15, // At zoom level 15
-            [
-              'match',
-              ['get', 'tipo'],
-              'A', 22, // Larger at higher zoom for type A
-              'B', 20, // Medium at higher zoom for type B
-              'C', 16, // Smaller at higher zoom for type C
-              14       // Default size if no match
-            ],
+            22, // Tamaño estandarizado para todos los vehículos
           ],
           // Use distinct colors for each vehicle type (avoiding red and green)
           'circle-color': [
             'case',
+            ['==', ['get', 'status'], 'AVERIADO_1'],
+            '#FFFFFF', // Blanco para avería leve
+            ['==', ['get', 'status'], 'AVERIADO_2'],
+            '#808080', // Gris para avería moderada
+            ['==', ['get', 'status'], 'AVERIADO_3'],
+            '#404040', // Gris oscuro para avería grave
             ['==', ['get', 'status'], 'HACIA_ALMACEN'],
-            '#808080', // Color gris para vehículos hacia almacén
+            '#0000FF', // Azul para vehículos en regreso
             ['==', ['get', 'status'], 'EN_REEMPLAZO'],
-            '#FFFFFF', // Color blanco para vehículos en reemplazo
-            [
-              'match',
-              ['get', 'tipo'],
-              'A', '#1E90FF', // Dodger blue para tipo A
-              'B', '#FFD700', // Gold para tipo B
-              'C', '#8A2BE2', // Blue violet para tipo C
-              '#888888'       // Gray como fallback
-            ]
+            '#00BFFF', // Celeste para vehículos en reemplazo
+            //'#00FF00', // Verde como color base para el resto de estados            
+            // Si no es estado especial, usar color basado en capacidad
+            //['all', 
+            //  ['>=', ['get', 'capacidadPorcentaje'], 90]
+            //],
+            //'#EF4444', // Rojo para >= 90%
+            ['all',
+              ['>=', ['get', 'capacidadPorcentaje'], 81]
+            ],
+            '#F97316', // Naranja para >= 75%
+            ['all',
+              ['>=', ['get', 'capacidadPorcentaje'], 41]
+            ],
+            '#EAB308', // Amarillo para >= 50%
+            '#A8D5BA'  // Verde por defecto
           ],
           // Añadir borde negro para estados especiales
           'circle-stroke-color': [
             'case',
             ['any',
               ['==', ['get', 'status'], 'HACIA_ALMACEN'],
-              ['==', ['get', 'status'], 'EN_REEMPLAZO']
+              ['==', ['get', 'status'], 'EN_REEMPLAZO'],
+              ['==', ['get', 'status'], 'AVERIADO_1'],
+              ['==', ['get', 'status'], 'AVERIADO_2'],
+              ['==', ['get', 'status'], 'AVERIADO_3']
             ],
             '#000000', // Borde negro para estados especiales
             '#FFFFFF'  // Borde blanco para el resto
@@ -129,7 +145,10 @@ export const MAP_CONFIG = {
             'case',
             ['any',
               ['==', ['get', 'status'], 'HACIA_ALMACEN'],
-              ['==', ['get', 'status'], 'EN_REEMPLAZO']
+              ['==', ['get', 'status'], 'EN_REEMPLAZO'],
+              ['==', ['get', 'status'], 'AVERIADO_1'],
+              ['==', ['get', 'status'], 'AVERIADO_2'],
+              ['==', ['get', 'status'], 'AVERIADO_3']
             ],
             2, // Ancho del borde para estados especiales
             1  // Ancho del borde para el resto
@@ -166,9 +185,10 @@ export const MAP_CONFIG = {
         id: MAP_CONFIG.LAYERS.LOCATIONS.CLUSTERS,
         type: 'circle',
         source: MAP_CONFIG.SOURCES.LOCATIONS.id,
-        filter: ['has', 'point_count'],
+        filter: ['has', 
+          'point_count'],
         paint: {
-          'circle-color': '#FFA500',
+          'circle-color': '#808080',
           'circle-radius': [
             'step',
             ['get', 'point_count'],
@@ -229,7 +249,7 @@ export const MAP_CONFIG = {
         layout: {
           'icon-image': MAP_CONFIG.IMAGES.OFFICE.id,
           'icon-size': 0.6,
-          'icon-allow-overlap': false,
+          'icon-allow-overlap': true,
           'text-field': ['get', 'name'],
           'text-font': ['Open Sans Regular'],
           'text-size': 10,

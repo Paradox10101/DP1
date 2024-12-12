@@ -55,23 +55,23 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
       items: [
         {
           icon: Truck,
-          containerClass: "bg-[#1E90FF] w-8 h-8 rounded-full border-2 border-white shadow-sm",
+          containerClass: "bg-[#A8D5BA] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo A"
         },
         {
           icon: CarFront,
-          containerClass: "bg-[#FFD700] w-8 h-8 rounded-full border-2 border-white shadow-sm",
+          containerClass: "bg-[#A8D5BA] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo B"
         },
         {
           icon: Car,
-          containerClass: "bg-[#8A2BE2] w-8 h-8 rounded-full border-2 border-white shadow-sm",
+          containerClass: "bg-[#A8D5BA] w-8 h-8 rounded-full border-2 border-white shadow-sm",
           label: "Vehículo Tipo C"
         }
       ]
     },
     {
-      title: "Capacidad de Vehículos",
+      title: "Capacidad de Vehículos y Oficinas",
       items: [
         {
           colorClass: "bg-green-400",

@@ -19,7 +19,7 @@ import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
-import IconoEstado from './IconoEstado';
+import IconoEstado, { VEHICLE_CAPACITIES } from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
@@ -56,6 +56,22 @@ const getSvgString = (IconComponent, bgColor) => {
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
+
+const getVehicleColor = (tipo, capacidadUsada) => {
+  const maxCapacity = {
+    A: 90,
+    B: 45,
+    C: 30
+  }[tipo] || 30;
+  
+  const percentageUsed = (capacidadUsada / maxCapacity) * 100;
+  
+  // Retorna el color según el porcentaje, similar a IconoEstado
+  if (percentageUsed >= 90) return '#EF4444';      // Rojo
+  if (percentageUsed >= 75) return '#F97316';      // Naranja
+  if (percentageUsed >= 50) return '#EAB308';      // Amarillo
+  return '#22C55E';                                // Verde
+};
 
 const StatusBadge = ({ status }) => {
   switch (status) {
@@ -263,6 +279,10 @@ const VehicleMap = ({ simulationStatus }) => {
           ...feature,
           properties: {
             ...feature.properties,
+            color: getVehicleColor(
+              feature.properties.tipo || 'A',
+              feature.properties.capacidadUsada || 0
+            ),
             capacidadPorcentaje,
             iconBaseName,
           },
@@ -452,7 +472,7 @@ const VehicleMap = ({ simulationStatus }) => {
           });
         }
 
-        // Luego agregar las capas en orden específico (de abajo hacia arriba)
+        // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
         // 1. Clusters y conteo
         if (!mapRef.current.getLayer('clusters')) {
           mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
@@ -467,8 +487,10 @@ const VehicleMap = ({ simulationStatus }) => {
             ...LAYER_STYLES.locations.warehouses,
             layout: {
               ...LAYER_STYLES.locations.warehouses.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+              'icon-allow-overlap': false,     // Cambiar a true
+              'icon-ignore-placement': false,   // Añadir esta línea
+              //'text-allow-overlap': true,      // Añadir esta línea
+              //'text-ignore-placement': true,   // Añadir esta línea
             }
           });
         }
@@ -478,8 +500,10 @@ const VehicleMap = ({ simulationStatus }) => {
             ...LAYER_STYLES.locations.offices,
             layout: {
               ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+              'icon-allow-overlap': false,     // Cambiar a true
+              'icon-ignore-placement': false,   // Añadir esta línea
+              //'text-allow-overlap': true,      // Añadir esta línea
+              //'text-ignore-placement': true,   // Añadir esta línea
             }
           });
         }
@@ -923,6 +947,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.on('mouseleave', 'clusters', () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
+        //CLUSTERES
       }
 
       if (!mapRef.current.getLayer('cluster-count')) {
