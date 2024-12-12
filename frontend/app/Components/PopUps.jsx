@@ -162,7 +162,7 @@ const VehiculoPopUp = ({
     // Aquí puedes actualizar el estado del vehículo o recargar los datos
     onReportIssue?.(vehicleData);
   };
-
+  //AQUI EL "VEHICLE HEADER" --> SOLO CAMBIA EL COLOR DEL TAG DE STATUS <---- LO MÁS RELEVANTE DE ESO
   return (
     <>
       <Card className="min-w-[300px]">

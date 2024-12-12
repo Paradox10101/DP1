@@ -19,7 +19,7 @@ import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
-import IconoEstado from './IconoEstado';
+import IconoEstado, { VEHICLE_CAPACITIES } from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
@@ -40,17 +40,41 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
+  const needsBorder = bgColor === '#FFFFFF' || bgColor === '#808080'; // Añadir borde para blanco y gris
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-      <circle cx="20" cy="20" r="20" fill={bgColor} />
+      <circle 
+        cx="20" 
+        cy="20" 
+        r="20" 
+        fill={bgColor} 
+        stroke={needsBorder ? '#000000' : 'none'} 
+        strokeWidth={needsBorder ? 2 : 0}
+      />
       <g transform="translate(8, 8)">
-        <IconComponent color="#FFFFFF" size={24} />
+        <IconComponent color={needsBorder ? "#000000" : "#FFFFFF"} size={24} />
       </g>
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
+
+const getVehicleColor = (tipo, capacidadUsada) => {
+  const maxCapacity = {
+    A: 90,
+    B: 45,
+    C: 30
+  }[tipo] || 30;
+  
+  const percentageUsed = (capacidadUsada / maxCapacity) * 100;
+  
+  // Retorna el color según el porcentaje, similar a IconoEstado
+  if (percentageUsed >= 90) return '#EF4444';      // Rojo
+  if (percentageUsed >= 75) return '#F97316';      // Naranja
+  if (percentageUsed >= 50) return '#EAB308';      // Amarillo
+  return '#22C55E';                                // Verde
+};
 
 const StatusBadge = ({ status }) => {
   switch (status) {
@@ -152,7 +176,27 @@ const VehicleMap = ({ simulationStatus }) => {
       }
       const data = await response.json();
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        setLocations(data); // Actualizar el átomo compartido
+        // Separar features por tipo
+        const offices = {
+          type: 'FeatureCollection',
+          features: data.features.filter(f => f.properties.type === 'office')
+        };
+        
+        const warehouses = {
+          type: 'FeatureCollection',
+          features: data.features.filter(f => f.properties.type === 'warehouse')
+        };
+
+        // Actualizar las fuentes por separado
+        if (mapRef.current) {
+          const officesSource = mapRef.current.getSource('offices');
+          const warehousesSource = mapRef.current.getSource('warehouses');
+          
+          if (officesSource) officesSource.setData(offices);
+          if (warehousesSource) warehousesSource.setData(warehouses);
+        }
+        
+        setLocations(data); // Mantener el estado completo si es necesario
         setError(null);
         return true;
       } else {
@@ -263,6 +307,10 @@ const VehicleMap = ({ simulationStatus }) => {
           ...feature,
           properties: {
             ...feature.properties,
+            color: getVehicleColor(
+              feature.properties.tipo || 'A',
+              feature.properties.capacidadUsada || 0
+            ),
             capacidadPorcentaje,
             iconBaseName,
           },
@@ -337,7 +385,7 @@ const VehicleMap = ({ simulationStatus }) => {
       //mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
-      class CenterControl {
+      /*class CenterControl {
         onAdd(map) {
           this.map = map;
           this.container = document.createElement('button');
@@ -367,8 +415,7 @@ const VehicleMap = ({ simulationStatus }) => {
           this.container.parentNode.removeChild(this.container);
           this.map = undefined;
         }
-      }
-
+      }*/
       //mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
       mapRef.current.on('load', async () => {
@@ -386,6 +433,8 @@ const VehicleMap = ({ simulationStatus }) => {
           green: '#08CA57',
           yellow: '#FFC107',
           red: '#FF5252',
+          white: '#FFFFFF', // Nuevo color para vehículos en reemplazo
+          gray: '#808080',  // Nuevo color para vehículos hacia almacén
         };
 
         vehicleIcons.forEach(({ type, component }) => {
@@ -440,7 +489,7 @@ const VehicleMap = ({ simulationStatus }) => {
         }
 
         // Primero agregar la fuente de ubicaciones
-        if (!mapRef.current.getSource('locations')) {
+        /*if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
             data: locations || { type: 'FeatureCollection', features: [] },
@@ -448,36 +497,81 @@ const VehicleMap = ({ simulationStatus }) => {
             clusterMaxZoom: 14,
             clusterRadius: 50,
           });
+        }*/
+
+          // Agregar fuente de oficinas (con clustering)
+        if (!mapRef.current.getSource('offices')) {
+          mapRef.current.addSource('offices', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: (locations?.features || []).filter(f => f.properties.type === 'office')
+            },
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
         }
 
-        // Luego agregar las capas en orden específico (de abajo hacia arriba)
-        // 1. Clusters y conteo
-        if (!mapRef.current.getLayer('clusters')) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
-        }
-        if (!mapRef.current.getLayer('cluster-count')) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusterCount);
-        }
-
-        // 2. Almacenes y oficinas
-        if (!mapRef.current.getLayer('unclustered-warehouses')) {
-          mapRef.current.addLayer({
-            ...LAYER_STYLES.locations.warehouses,
-            layout: {
-              ...LAYER_STYLES.locations.warehouses.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+        // Agregar fuente de almacenes (sin clustering)
+        if (!mapRef.current.getSource('warehouses')) {
+          mapRef.current.addSource('warehouses', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: (locations?.features || []).filter(f => f.properties.type === 'warehouse')
             }
           });
         }
 
+        // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
+        // 1. Clusters y conteo
+        // Clusters (solo para oficinas)
+        if (!mapRef.current.getLayer('clusters')) {
+          mapRef.current.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'offices', // Cambiar a la fuente de oficinas
+            filter: ['has', 'point_count'],
+            paint: LAYER_STYLES.locations.clusters.paint
+          });
+        }
+
+        if (!mapRef.current.getLayer('cluster-count')) {
+          mapRef.current.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'offices', // Cambiar a la fuente de oficinas
+            filter: ['has', 'point_count'],
+            layout: LAYER_STYLES.locations.clusterCount.layout,
+            paint: LAYER_STYLES.locations.clusterCount.paint
+          });
+        }
+
+        // 2. Almacenes y oficinas       
         if (!mapRef.current.getLayer('unclustered-offices')) {
           mapRef.current.addLayer({
-            ...LAYER_STYLES.locations.offices,
+            id: 'unclustered-offices',
+            type: 'symbol',
+            source: 'offices',
+            filter: ['!', ['has', 'point_count']],
             layout: {
               ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+              'icon-allow-overlap': false,
+              'icon-ignore-placement': false,
+            }
+          });
+        }
+
+        if (!mapRef.current.getLayer('unclustered-warehouses')) {
+          mapRef.current.addLayer({
+            id: 'unclustered-warehouses',
+            type: 'symbol',
+            source: 'warehouses', // Usar la nueva fuente de almacenes
+            layout: {
+              ...LAYER_STYLES.locations.warehouses.layout,
+              'icon-allow-overlap': false,
+              'icon-ignore-placement': false,
             }
           });
         }
@@ -628,6 +722,10 @@ const VehicleMap = ({ simulationStatus }) => {
       default:
         Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
     }
+    if(status === 'AVERIADO_1' || status === 'AVERIADO_2' || status === 'AVERIADO_3'){
+      Icono = AlertTriangle;
+    }
+
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
@@ -838,6 +936,60 @@ const VehicleMap = ({ simulationStatus }) => {
     };
   }, [clearLocationRetryTimeout]);
 
+
+  // Asegurarse de que los eventos estén correctamente asignados
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+
+    // Eventos para almacenes
+    mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+    mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
+      mapRef.current.getCanvas().style.cursor = 'pointer';
+    });
+    mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
+      mapRef.current.getCanvas().style.cursor = '';
+    });
+
+    // Eventos para oficinas y clusters
+    mapRef.current.on('click', 'clusters', handleClusterClick);
+    mapRef.current.on('click', 'unclustered-offices', handleLocationClick);
+    
+    return () => {
+      // Limpiar eventos al desmontar
+      if (mapRef.current) {
+        mapRef.current.off('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.off('click', 'clusters', handleClusterClick);
+        mapRef.current.off('click', 'unclustered-offices', handleLocationClick);
+        // ... limpiar otros eventos
+      }
+    };
+  }, [mapLoaded]);
+
+  // Agregar esta función junto con los otros manejadores de eventos
+  const handleClusterClick = (e) => {
+    const features = mapRef.current.queryRenderedFeatures(e.point, {
+      layers: ['clusters']
+    });
+
+    if (!features.length) return;
+
+    const clusterId = features[0].properties.cluster_id;
+    const source = mapRef.current.getSource('offices'); // Usamos la fuente de oficinas
+
+    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+      if (err) {
+        console.error('Error al expandir cluster:', err);
+        return;
+      }
+
+      mapRef.current.easeTo({
+        center: features[0].geometry.coordinates,
+        zoom: zoom,
+        duration: 500 // Duración de la animación en milisegundos
+      });
+    });
+  };
+
   // Actualizar ubicaciones en el mapa
   useEffect(() => {
     const updateMap = async () => {
@@ -917,6 +1069,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.on('mouseleave', 'clusters', () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
+        //CLUSTERES
       }
 
       if (!mapRef.current.getLayer('cluster-count')) {

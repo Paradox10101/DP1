@@ -6,10 +6,28 @@ const VEHICLE_CAPACITIES = {
   C: 30
 };
 
+// Capacidades según región natural
+const OFFICE_CAPACITIES = {
+  COSTA: 150,
+  SIERRA: 200,
+  SELVA: 220
+};
+
 const getCapacityData = (tipo, capacidadUsada) => {
   const maxCapacity = VEHICLE_CAPACITIES[tipo] || 30;
   const percentageUsed = (capacidadUsada / maxCapacity) * 100;
   
+  return getColorsByPercentage(percentageUsed);
+};
+
+export const getOfficeCapacityData = (region, capacidadUsada) => {
+  const maxCapacity = OFFICE_CAPACITIES[region] || 150; // Por defecto COSTA
+  const percentageUsed = (capacidadUsada / maxCapacity) * 100;
+  
+  return getColorsByPercentage(percentageUsed);
+};
+
+const getColorsByPercentage = (percentageUsed)  => {  
   // Colores modernos con gradientes
   if (percentageUsed >= 90) {
     return {
@@ -43,11 +61,16 @@ const IconoEstado = ({
   tipo = 'C',
   capacidadUsada = 0,
   classNameContenido = "w-4 h-4 stroke-white",
-  tooltipText 
-}) => {
-  const { bgColor, ringColor, textColor } = getCapacityData(tipo, capacidadUsada);
-  const maxCapacity = VEHICLE_CAPACITIES[tipo] || 30;
-  const percentageUsed = ((capacidadUsada / maxCapacity) * 100).toFixed(1);
+  tooltipText,
+  isOffice = false,
+  region = 'COSTA',
+}) => {  
+  //const maxCapacity = VEHICLE_CAPACITIES[tipo] || 30;
+  //const percentageUsed = ((capacidadUsada / maxCapacity) * 100).toFixed(1);
+  const colorData = isOffice 
+    ? getOfficeCapacityData(region, capacidadUsada)
+    : getCapacityData(tipo, capacidadUsada);
+  const { bgColor, ringColor } = colorData;
 
   return (
     <div className="group relative">
