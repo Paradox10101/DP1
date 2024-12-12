@@ -1,6 +1,6 @@
 "use client"
 
-import { Building, Car, CarFront, AlertTriangle, Truck, Warehouse, ChevronDown } from "lucide-react";
+import { Building, Car, CarFront, AlertTriangle, Truck, Warehouse, ChevronDown, Spline } from "lucide-react";
 import { useState } from "react";
 
 const IconoEstado = ({ Icono, containerClass, iconClass }) => (
@@ -10,7 +10,7 @@ const IconoEstado = ({ Icono, containerClass, iconClass }) => (
 );
 
 const LegendSection = ({ title, items }) => (
-  <div className="space-y-3">
+  <div className="space-y-2">
     <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
     <div className="space-y-2">
       {items.map((item, index) => (
@@ -19,7 +19,7 @@ const LegendSection = ({ title, items }) => (
             <IconoEstado
               Icono={item.icon}
               containerClass={item.containerClass}
-              iconClass="w-4 h-4 text-white"
+              iconClass={"w-4 h-4 " + (item.iconClass?item.iconClass:"text-white")}
             />
           ) : (
             <div className={`w-4 h-4 rounded ${item.colorClass}`} />
@@ -47,6 +47,23 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
           icon: Building,
           containerClass: "bg-green-500 w-8 h-8",
           label: "Oficina"
+        }
+      ]
+    },
+    {
+      title: "Rutas",
+      items: [
+        {
+          icon: Spline,
+          containerClass: "bg-white w-8 h-8",
+          label: "Recorrido actual",
+          iconClass: "text-[#0000FF]"
+        },
+        {
+          icon: Spline,
+          containerClass: "bg-white w-8 h-8",
+          label: "Ruta bloqueda",
+          iconClass: "text-[#FF0000]"
         }
       ]
     },
@@ -119,7 +136,7 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
               ${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
             `}
           >
-            <div className="p-6 space-y-6">
+            <div className="p-6 pt-1 space-y-3">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Leyenda</h2>
               <div className="space-y-6">
                 {legendSections.map((section, index) => (

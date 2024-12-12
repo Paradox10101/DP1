@@ -6,10 +6,7 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.models.Location;
 import com.odiparpack.api.routers.*;
 import com.odiparpack.models.SimulationState;
-import com.odiparpack.websocket.ShipmentWebSocketHandler;
-import com.odiparpack.websocket.VehicleWebSocketHandler;
-import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
-import com.odiparpack.websocket.WarehouseOccupancyWebSocketHandler;
+import com.odiparpack.websocket.*;
 import spark.Spark;
 
 import static com.odiparpack.Main.initializeSimulationState;
@@ -85,6 +82,8 @@ public class SimulationController {
         webSocket("/api/v1/ws/occupancy", WarehouseOccupancyWebSocketHandler.class);  // Nueva línea
         //VehicleWebSocketHandler.setSimulationState(simulationState);
         webSocket("/api/v1/ws/shipments", ShipmentWebSocketHandler.class);
+        webSocket("/api/v1/ws/routes", RouteWebSocketHandler.class);
+
     }
 
     private void initializeRoutes() {
