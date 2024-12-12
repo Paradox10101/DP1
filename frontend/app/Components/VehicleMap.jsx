@@ -19,7 +19,7 @@ import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
 import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
-import IconoEstado from './IconoEstado';
+import IconoEstado, { VEHICLE_CAPACITIES } from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
@@ -37,17 +37,41 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
+  const needsBorder = bgColor === '#FFFFFF' || bgColor === '#808080'; // Añadir borde para blanco y gris
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-      <circle cx="20" cy="20" r="20" fill={bgColor} />
+      <circle 
+        cx="20" 
+        cy="20" 
+        r="20" 
+        fill={bgColor} 
+        stroke={needsBorder ? '#000000' : 'none'} 
+        strokeWidth={needsBorder ? 2 : 0}
+      />
       <g transform="translate(8, 8)">
-        <IconComponent color="#FFFFFF" size={24} />
+        <IconComponent color={needsBorder ? "#000000" : "#FFFFFF"} size={24} />
       </g>
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
+
+const getVehicleColor = (tipo, capacidadUsada) => {
+  const maxCapacity = {
+    A: 90,
+    B: 45,
+    C: 30
+  }[tipo] || 30;
+  
+  const percentageUsed = (capacidadUsada / maxCapacity) * 100;
+  
+  // Retorna el color según el porcentaje, similar a IconoEstado
+  if (percentageUsed >= 90) return '#EF4444';      // Rojo
+  if (percentageUsed >= 75) return '#F97316';      // Naranja
+  if (percentageUsed >= 50) return '#EAB308';      // Amarillo
+  return '#22C55E';                                // Verde
+};
 
 const StatusBadge = ({ status }) => {
   switch (status) {
@@ -255,6 +279,10 @@ const VehicleMap = ({ simulationStatus }) => {
           ...feature,
           properties: {
             ...feature.properties,
+            color: getVehicleColor(
+              feature.properties.tipo || 'A',
+              feature.properties.capacidadUsada || 0
+            ),
             capacidadPorcentaje,
             iconBaseName,
           },
@@ -378,6 +406,8 @@ const VehicleMap = ({ simulationStatus }) => {
           green: '#08CA57',
           yellow: '#FFC107',
           red: '#FF5252',
+          white: '#FFFFFF', // Nuevo color para vehículos en reemplazo
+          gray: '#808080',  // Nuevo color para vehículos hacia almacén
         };
 
         vehicleIcons.forEach(({ type, component }) => {
@@ -442,7 +472,7 @@ const VehicleMap = ({ simulationStatus }) => {
           });
         }
 
-        // Luego agregar las capas en orden específico (de abajo hacia arriba)
+        // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
         // 1. Clusters y conteo
         if (!mapRef.current.getLayer('clusters')) {
           mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
@@ -457,8 +487,10 @@ const VehicleMap = ({ simulationStatus }) => {
             ...LAYER_STYLES.locations.warehouses,
             layout: {
               ...LAYER_STYLES.locations.warehouses.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+              'icon-allow-overlap': false,     // Cambiar a true
+              'icon-ignore-placement': false,   // Añadir esta línea
+              //'text-allow-overlap': true,      // Añadir esta línea
+              //'text-ignore-placement': true,   // Añadir esta línea
             }
           });
         }
@@ -468,8 +500,10 @@ const VehicleMap = ({ simulationStatus }) => {
             ...LAYER_STYLES.locations.offices,
             layout: {
               ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false, // Cambiar a false
-              'icon-ignore-placement': false, // Agregar esta propiedad
+              'icon-allow-overlap': false,     // Cambiar a true
+              'icon-ignore-placement': false,   // Añadir esta línea
+              //'text-allow-overlap': true,      // Añadir esta línea
+              //'text-ignore-placement': true,   // Añadir esta línea
             }
           });
         }
@@ -620,6 +654,10 @@ const VehicleMap = ({ simulationStatus }) => {
       default:
         Icono = AlertTriangle; // Icono por defecto si no se encuentra el tipo
     }
+    if(status === 'AVERIADO_1' || status === 'AVERIADO_2' || status === 'AVERIADO_3'){
+      Icono = AlertTriangle;
+    }
+
 
     // Puedes extraer más propiedades si lo deseas
     const ubicacionActual = vehiculo.properties.ubicacionActual || "No especificada";
@@ -909,6 +947,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.on('mouseleave', 'clusters', () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
+        //CLUSTERES
       }
 
       if (!mapRef.current.getLayer('cluster-count')) {
