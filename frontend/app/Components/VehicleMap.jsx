@@ -168,7 +168,27 @@ const VehicleMap = ({ simulationStatus }) => {
       }
       const data = await response.json();
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        setLocations(data); // Actualizar el átomo compartido
+        // Separar features por tipo
+        const offices = {
+          type: 'FeatureCollection',
+          features: data.features.filter(f => f.properties.type === 'office')
+        };
+        
+        const warehouses = {
+          type: 'FeatureCollection',
+          features: data.features.filter(f => f.properties.type === 'warehouse')
+        };
+
+        // Actualizar las fuentes por separado
+        if (mapRef.current) {
+          const officesSource = mapRef.current.getSource('offices');
+          const warehousesSource = mapRef.current.getSource('warehouses');
+          
+          if (officesSource) officesSource.setData(offices);
+          if (warehousesSource) warehousesSource.setData(warehouses);
+        }
+        
+        setLocations(data); // Mantener el estado completo si es necesario
         setError(null);
         return true;
       } else {
@@ -357,7 +377,7 @@ const VehicleMap = ({ simulationStatus }) => {
       mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
-      class CenterControl {
+      /*class CenterControl {
         onAdd(map) {
           this.map = map;
           this.container = document.createElement('button');
@@ -387,8 +407,7 @@ const VehicleMap = ({ simulationStatus }) => {
           this.container.parentNode.removeChild(this.container);
           this.map = undefined;
         }
-      }
-
+      }*/
       //mapRef.current.addControl(new CenterControl(), 'bottom-right');
 
       mapRef.current.on('load', async () => {
@@ -462,7 +481,7 @@ const VehicleMap = ({ simulationStatus }) => {
         }
 
         // Primero agregar la fuente de ubicaciones
-        if (!mapRef.current.getSource('locations')) {
+        /*if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
             data: locations || { type: 'FeatureCollection', features: [] },
@@ -470,40 +489,81 @@ const VehicleMap = ({ simulationStatus }) => {
             clusterMaxZoom: 14,
             clusterRadius: 50,
           });
+        }*/
+
+          // Agregar fuente de oficinas (con clustering)
+        if (!mapRef.current.getSource('offices')) {
+          mapRef.current.addSource('offices', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: (locations?.features || []).filter(f => f.properties.type === 'office')
+            },
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
         }
 
-        // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
-        // 1. Clusters y conteo
-        if (!mapRef.current.getLayer('clusters')) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusters);
-        }
-        if (!mapRef.current.getLayer('cluster-count')) {
-          mapRef.current.addLayer(LAYER_STYLES.locations.clusterCount);
-        }
-
-        // 2. Almacenes y oficinas
-        if (!mapRef.current.getLayer('unclustered-warehouses')) {
-          mapRef.current.addLayer({
-            ...LAYER_STYLES.locations.warehouses,
-            layout: {
-              ...LAYER_STYLES.locations.warehouses.layout,
-              'icon-allow-overlap': false,     // Cambiar a true
-              'icon-ignore-placement': false,   // Añadir esta línea
-              //'text-allow-overlap': true,      // Añadir esta línea
-              //'text-ignore-placement': true,   // Añadir esta línea
+        // Agregar fuente de almacenes (sin clustering)
+        if (!mapRef.current.getSource('warehouses')) {
+          mapRef.current.addSource('warehouses', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: (locations?.features || []).filter(f => f.properties.type === 'warehouse')
             }
           });
         }
 
+        // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
+        // 1. Clusters y conteo
+        // Clusters (solo para oficinas)
+        if (!mapRef.current.getLayer('clusters')) {
+          mapRef.current.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'offices', // Cambiar a la fuente de oficinas
+            filter: ['has', 'point_count'],
+            paint: LAYER_STYLES.locations.clusters.paint
+          });
+        }
+
+        if (!mapRef.current.getLayer('cluster-count')) {
+          mapRef.current.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'offices', // Cambiar a la fuente de oficinas
+            filter: ['has', 'point_count'],
+            layout: LAYER_STYLES.locations.clusterCount.layout,
+            paint: LAYER_STYLES.locations.clusterCount.paint
+          });
+        }
+
+        // 2. Almacenes y oficinas       
         if (!mapRef.current.getLayer('unclustered-offices')) {
           mapRef.current.addLayer({
-            ...LAYER_STYLES.locations.offices,
+            id: 'unclustered-offices',
+            type: 'symbol',
+            source: 'offices',
+            filter: ['!', ['has', 'point_count']],
             layout: {
               ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false,     // Cambiar a true
-              'icon-ignore-placement': false,   // Añadir esta línea
-              //'text-allow-overlap': true,      // Añadir esta línea
-              //'text-ignore-placement': true,   // Añadir esta línea
+              'icon-allow-overlap': false,
+              'icon-ignore-placement': false,
+            }
+          });
+        }
+
+        if (!mapRef.current.getLayer('unclustered-warehouses')) {
+          mapRef.current.addLayer({
+            id: 'unclustered-warehouses',
+            type: 'symbol',
+            source: 'warehouses', // Usar la nueva fuente de almacenes
+            layout: {
+              ...LAYER_STYLES.locations.warehouses.layout,
+              'icon-allow-overlap': false,
+              'icon-ignore-placement': false,
             }
           });
         }
@@ -867,6 +927,60 @@ const VehicleMap = ({ simulationStatus }) => {
       clearLocationRetryTimeout();
     };
   }, [clearLocationRetryTimeout]);
+
+
+  // Asegurarse de que los eventos estén correctamente asignados
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+
+    // Eventos para almacenes
+    mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+    mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
+      mapRef.current.getCanvas().style.cursor = 'pointer';
+    });
+    mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
+      mapRef.current.getCanvas().style.cursor = '';
+    });
+
+    // Eventos para oficinas y clusters
+    mapRef.current.on('click', 'clusters', handleClusterClick);
+    mapRef.current.on('click', 'unclustered-offices', handleLocationClick);
+    
+    return () => {
+      // Limpiar eventos al desmontar
+      if (mapRef.current) {
+        mapRef.current.off('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.off('click', 'clusters', handleClusterClick);
+        mapRef.current.off('click', 'unclustered-offices', handleLocationClick);
+        // ... limpiar otros eventos
+      }
+    };
+  }, [mapLoaded]);
+
+  // Agregar esta función junto con los otros manejadores de eventos
+  const handleClusterClick = (e) => {
+    const features = mapRef.current.queryRenderedFeatures(e.point, {
+      layers: ['clusters']
+    });
+
+    if (!features.length) return;
+
+    const clusterId = features[0].properties.cluster_id;
+    const source = mapRef.current.getSource('offices'); // Usamos la fuente de oficinas
+
+    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+      if (err) {
+        console.error('Error al expandir cluster:', err);
+        return;
+      }
+
+      mapRef.current.easeTo({
+        center: features[0].geometry.coordinates,
+        zoom: zoom,
+        duration: 500 // Duración de la animación en milisegundos
+      });
+    });
+  };
 
   // Actualizar ubicaciones en el mapa
   useEffect(() => {

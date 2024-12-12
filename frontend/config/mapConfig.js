@@ -28,12 +28,18 @@ export const MAP_CONFIG = {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] }
       },
-      LOCATIONS: {
-        id: 'locations',
+      OFFICES: {  // Nueva fuente específica para oficinas
+        id: 'offices',
         type: 'geojson',
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50,
+        data: { type: 'FeatureCollection', features: [] }
+      },
+      WAREHOUSES: {  // Nueva fuente específica para almacenes
+        id: 'warehouses',
+        type: 'geojson',
+        cluster: false, // Sin clustering
         data: { type: 'FeatureCollection', features: [] }
       }
     },
@@ -184,9 +190,8 @@ export const MAP_CONFIG = {
       clusters: {
         id: MAP_CONFIG.LAYERS.LOCATIONS.CLUSTERS,
         type: 'circle',
-        source: MAP_CONFIG.SOURCES.LOCATIONS.id,
-        filter: ['has', 
-          'point_count'],
+        source: MAP_CONFIG.SOURCES.OFFICES.id, // Cambiar a la fuente de oficinas
+        filter: ['has', 'point_count'],
         paint: {
           'circle-color': '#808080',
           'circle-radius': [
@@ -202,7 +207,7 @@ export const MAP_CONFIG = {
       clusterCount: {
         id: MAP_CONFIG.LAYERS.LOCATIONS.CLUSTER_COUNT,
         type: 'symbol',
-        source: MAP_CONFIG.SOURCES.LOCATIONS.id,
+        source: MAP_CONFIG.SOURCES.OFFICES.id, // Cambiar a la fuente de oficinas
         filter: ['has', 'point_count'],
         layout: {
           'text-field': '{point_count_abbreviated}',
@@ -217,11 +222,7 @@ export const MAP_CONFIG = {
       warehouses: {
         id: MAP_CONFIG.LAYERS.LOCATIONS.WAREHOUSES,
         type: 'symbol',
-        source: MAP_CONFIG.SOURCES.LOCATIONS.id,
-        filter: ['all', 
-          ['==', ['get', 'type'], 'warehouse'], 
-          ['!', ['has', 'point_count']]
-        ],
+        source: MAP_CONFIG.SOURCES.WAREHOUSES.id, // Usar la fuente de almacenes
         layout: {
           'icon-image': MAP_CONFIG.IMAGES.WAREHOUSE.id,
           'icon-size': 0.8,
@@ -241,11 +242,8 @@ export const MAP_CONFIG = {
       offices: {
         id: MAP_CONFIG.LAYERS.LOCATIONS.OFFICES,
         type: 'symbol',
-        source: MAP_CONFIG.SOURCES.LOCATIONS.id,
-        filter: ['all', 
-          ['==', ['get', 'type'], 'office'], 
-          ['!', ['has', 'point_count']]
-        ],
+        source: MAP_CONFIG.SOURCES.OFFICES.id, // Usar la fuente de oficinas
+        filter: ['!', ['has', 'point_count']], // Solo mostrar oficinas no agrupadas
         layout: {
           'icon-image': MAP_CONFIG.IMAGES.OFFICE.id,
           'icon-size': 0.6,
