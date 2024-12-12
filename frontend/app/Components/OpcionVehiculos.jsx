@@ -178,18 +178,18 @@ const StatusBadge = ({ status }) => {
             En Tránsito
           </div>
         );
-        case "EN_REEMPLAZO":
-          return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
-              En Reemplazo
-            </div>
-          );
-        case "EN_REPARACION":
-          return (
-            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
-              En Reparación
-            </div>
-          );
+      case "EN_REEMPLAZO":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
+            En Reemplazo
+          </div>
+        );
+      case "EN_REPARACION":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
+            En Reparación
+          </div>
+        );
       default:
         return (
             <></>

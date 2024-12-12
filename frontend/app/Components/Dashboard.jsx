@@ -145,11 +145,11 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
           const result = await response.json();
           setData(result);
         } else {
-          console.error('Error al obtener los datos: ', response.statusText);
+          console.log('Error al obtener los datos: ', response.statusText);
           onClose();
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.log('Error fetching data:', error);
         onClose();
       } finally {
         setLoading(false);

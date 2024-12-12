@@ -30,6 +30,9 @@ import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 import Dashboard from './Dashboard';
 import CollapseDashboard from './CollapseDashboard';
 import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
+import { useRouteWebSocket } from '@/hooks/useRouteWebSocket';
+import { blockageRoutesAtom, formattedRoutesAtom, routesAtom, vehicleCurrentRoutesAtom } from '@/atoms/routeAtoms';
+
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -107,6 +110,7 @@ const StatusBadge = ({ status }) => {
 
 const VehicleMap = ({ simulationStatus }) => {
   useShipmentWebSocket();
+  useRouteWebSocket();
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -114,6 +118,8 @@ const VehicleMap = ({ simulationStatus }) => {
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
+  const [blockageRoutes,] = useAtom(blockageRoutesAtom)
+  const [vehicleCurrentRoutes,] = useAtom(vehicleCurrentRoutesAtom)
   const [mapLoaded, setMapLoaded] = useState(false);
   const [, setPerformanceMetrics] = useAtom(performanceMetricsAtom);
   const locationRetryTimeoutRef = useRef(null);
@@ -123,6 +129,8 @@ const VehicleMap = ({ simulationStatus }) => {
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
   
+
+  console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -326,7 +334,7 @@ const VehicleMap = ({ simulationStatus }) => {
       //mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
       mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
       mapRef.current.dragRotate.disable();
-      mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
+      //mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
       // Botón para centrar en Perú
       class CenterControl {
@@ -1018,6 +1026,108 @@ const VehicleMap = ({ simulationStatus }) => {
       setError('Error al actualizar posiciones de vehículos');
     }
   }, [positions]);
+
+  
+  // Agregado de capa de rutas bloqueadas
+  useEffect(() => {
+    if (blockageRoutes === null || blockageRoutes === undefined) return;
+  
+  
+    const sourceId = 'b-routes'; //blockage routes
+    const layerId = 'b-routes';
+  
+    // Si la fuente ya existe, simplemente actualiza los datos
+    if (mapRef.current.getSource(sourceId)) {
+      const source = mapRef.current.getSource(sourceId);
+      source.setData({
+        type: 'FeatureCollection',
+        features: blockageRoutes.features.map(feature => ({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: feature.properties.geometry.coordinates
+          }
+        }))
+      });
+    } else {
+      // Si la fuente no existe, créala y añade la capa
+      mapRef.current.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: blockageRoutes.features.map(feature => ({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: feature.properties.geometry.coordinates
+            }
+          }))
+        }
+      });
+  
+      mapRef.current.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': '#FF0000', // Color rojo
+          'line-width': 2,
+          'line-opacity': 0.3 // Reduce la opacidad al 30% para mayor transparencia
+        }
+      });
+    }
+  }, [blockageRoutes]);
+
+  // Agregado de capa de rutas actuales de vehiculos
+  useEffect(() => {
+    if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined) return;
+  
+    //Agregado de rutas actuales de vehiculos
+    const sourceId = 'c-routes'; //blockage routes
+    const layerId = 'c-routes';
+  
+    // Si la fuente ya existe, simplemente actualiza los datos
+    if (mapRef.current.getSource(sourceId)) {
+      const source = mapRef.current.getSource(sourceId);
+      source.setData({
+        type: 'FeatureCollection',
+        features: vehicleCurrentRoutes.features.map(feature => ({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: feature.properties.geometry.coordinates
+          }
+        }))
+      });
+    } else {
+      // Si la fuente no existe, créala y añade la capa
+      mapRef.current.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: vehicleCurrentRoutes.features.map(feature => ({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: feature.properties.geometry.coordinates
+            }
+          }))
+        }
+      });
+  
+      mapRef.current.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': '#1A37A1', // Color azul
+          'line-width': 3,
+          'line-opacity': 0.3
+        }
+      });
+    }
+  }, [vehicleCurrentRoutes]);
+  
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {
