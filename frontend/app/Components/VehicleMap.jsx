@@ -211,15 +211,19 @@ const VehicleMap = ({ simulationStatus }) => {
       }
       const data = await response.json();
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+
+        const filteredFeatures = data.features.filter(feature => 
+          !feature.properties.ubigeo?.startsWith('TEMP_')
+        );
         // Separar features por tipo
         const offices = {
           type: 'FeatureCollection',
-          features: data.features.filter(f => f.properties.type === 'office')
+          features: filteredFeatures.filter(f => f.properties.type === 'office')
         };
         
         const warehouses = {
           type: 'FeatureCollection',
-          features: data.features.filter(f => f.properties.type === 'warehouse')
+          features: filteredFeatures.filter(f => f.properties.type === 'warehouse')
         };
 
         // Actualizar las fuentes por separado
@@ -1082,16 +1086,21 @@ const VehicleMap = ({ simulationStatus }) => {
         return;
       }
       try {
+
+        const filteredLocations = locations.features.filter(feature => 
+          !feature.properties.ubigeo?.startsWith('TEMP_')
+        );
         // Separar primero las ubicaciones por tipo
-        const warehouseLocations = locations.features.filter(f => f.properties.type === 'warehouse');
-        const officeLocations = locations.features.filter(f => f.properties.type === 'office');
+        const warehouseLocations = filteredLocations.filter(f => f.properties.type === 'warehouse');
+        const officeLocations = filteredLocations.filter(f => f.properties.type === 'office');
 
         // Actualizar solo las oficinas con la información del WebSocket
         const updatedOfficeLocations = officeLocations.map((location) => {
           const updatedLocation = locationsUltimo.find(
             (loc) =>
               loc.ubigeo === location.properties.ubigeo &&
-              loc.type === location.properties.type
+              loc.type === location.properties.type &&
+              !loc.ubigeo?.startsWith('TEMP_')
           );
 
           if (updatedLocation) {
