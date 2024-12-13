@@ -2023,33 +2023,8 @@ public class SimulationState {
         replacementVehicle.setBrokenVehicleBeingReplaced(brokenVehicle);
     }
 
-
-    private static class RouteResult {
-        private List<RouteSegment> route;
-        private final String destination;
-        private final long time;
-
-        public RouteResult(List<RouteSegment> route, String destination, long time) {
-            this.route = route;
-            this.destination = destination;
-            this.time = time;
-        }
-
-        public List<RouteSegment> getRoute() {
-            return route;
-        }
-
-        public void setRoute(List<RouteSegment> route) {
-            this.route = route;
-        }
-
-        public String getDestination() {
-            return destination;
-        }
-
-        public long getTime() {
-            return time;
-        }
+    public Map<Integer, List<VehicleAssignment>> getVehicleAssignmentsPerOrder() {
+        return vehicleAssignmentsPerOrder;
     }
 
     private void initiateReturnToWarehouseProcess(List<Vehicle> vehicles) {
@@ -2179,9 +2154,6 @@ public class SimulationState {
 
         builder.append("{\"type\":\"Feature\",\"properties\":{")
                 .append("\"vehicleCode\":\"").append(vehicle.getCode()).append("\",")
-                //.append("\"ubicacionActual\":\"").append(vehicle.getCurrentLocationUbigeo()).append("\",")
-                //.append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
-                //        ? vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo() : " ").append("\",")
                 .append("\"ubicacionActual\":\"").append(locations.get(vehicle.getCurrentLocationUbigeo()).getProvince()).append("\",")
                 .append("\"ubicacionSiguiente\":\"").append(vehicle.getRoute() != null && !vehicle.getRoute().isEmpty() && vehicle.getCurrentSegmentIndex() < vehicle.getRoute().size()
                         ? locations.get(vehicle.getRoute().get(vehicle.getCurrentSegmentIndex()).getToUbigeo()).getProvince() : " ").append("\",")

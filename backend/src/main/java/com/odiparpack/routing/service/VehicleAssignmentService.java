@@ -100,7 +100,13 @@ public class VehicleAssignmentService {
                                          int unassignedPackages,
                                          List<VehicleAssignment> assignments,
                                          Route route) {
-        assignments.add(new VehicleAssignment(vehicle, order, unassignedPackages));
+        VehicleAssignment assignment = new VehicleAssignment(vehicle, order, unassignedPackages);
+        assignment.getRouteSegments().addAll(route.getSegments());
+        if(vehicle.getEstimatedDeliveryTime() != null) {
+            assignment.setEstimatedDeliveryTime(vehicle.getEstimatedDeliveryTime());
+        }
+        assignments.add(assignment);
+
         updateVehicleState(vehicle, unassignedPackages);
         order.incrementAssignedPackages(unassignedPackages);
 
@@ -109,6 +115,12 @@ public class VehicleAssignmentService {
 
         vehicle.setRoute(route.getSegments());
         vehicle.startJourney(state.getCurrentTime(), order, state);
+
+        // Actualizar el mapa de asignaciones por orden directamente aquí
+        if(!state.getVehicleAssignmentsPerOrder().containsKey(order.getId())) {
+            state.getVehicleAssignmentsPerOrder().put(order.getId(), new ArrayList<>());
+        }
+        state.getVehicleAssignmentsPerOrder().get(order.getId()).add(assignment);
 
         return 0;
     }
@@ -119,7 +131,13 @@ public class VehicleAssignmentService {
                                         List<VehicleAssignment> assignments,
                                         Route route) {
         int assignedQuantity = Math.min(vehicle.getCapacity(), unassignedPackages);
-        assignments.add(new VehicleAssignment(vehicle, order, assignedQuantity));
+        VehicleAssignment assignment = new VehicleAssignment(vehicle, order, assignedQuantity);
+        assignment.getRouteSegments().addAll(route.getSegments());
+        if(vehicle.getEstimatedDeliveryTime() != null) {
+            assignment.setEstimatedDeliveryTime(vehicle.getEstimatedDeliveryTime());
+        }
+        assignments.add(assignment);
+
         updateVehicleState(vehicle, assignedQuantity);
         order.incrementAssignedPackages(assignedQuantity);
 
@@ -128,6 +146,12 @@ public class VehicleAssignmentService {
 
         vehicle.setRoute(route.getSegments());
         vehicle.startJourney(state.getCurrentTime(), order, state);
+
+        // Actualizar el mapa de asignaciones por orden directamente aquí
+        if(!state.getVehicleAssignmentsPerOrder().containsKey(order.getId())) {
+            state.getVehicleAssignmentsPerOrder().put(order.getId(), new ArrayList<>());
+        }
+        state.getVehicleAssignmentsPerOrder().get(order.getId()).add(assignment);
 
         return unassignedPackages - assignedQuantity;
     }

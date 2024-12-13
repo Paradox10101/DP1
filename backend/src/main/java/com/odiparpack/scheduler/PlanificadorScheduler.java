@@ -94,7 +94,7 @@ public class PlanificadorScheduler {
 
         return scheduledExecutorService.scheduleWithFixedDelay(
                 new PlanificadorTaskWrapper(
-                        new PlanificadorTask(state, isSimulationRunning)
+                        new PlanificadorTask(state, isSimulationRunning, vehicleRoutes)
                 ),
                 0,
                 planningPeriodSeconds * 1000L,
@@ -114,7 +114,7 @@ public class PlanificadorScheduler {
         try {
             manualExecutionInProgress = true;
             isTaskRunning.set(true);
-            new PlanificadorTask(state, new AtomicBoolean(true)).run();
+            new PlanificadorTask(state, new AtomicBoolean(true), currentVehicleRoutes).run();
         } finally {
             isTaskRunning.set(false);
             manualExecutionInProgress = false;

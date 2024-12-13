@@ -310,7 +310,8 @@ public class SimulationRunner {
 
         return scheduledExecutorService.scheduleWithFixedDelay(
                 new PlanificadorTask(state,
-                        isSimulationRunning),
+                        isSimulationRunning,
+                        vehicleRoutes),
                 0,
                 PLANNING_PERIOD_SECONDS * 1000L,
                 TimeUnit.MILLISECONDS

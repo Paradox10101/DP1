@@ -26,13 +26,16 @@ public class PlanificadorTask implements Runnable {
     private boolean breakdownsScheduled = false;
     private final List<String> pendingBreakdownTypes = new ArrayList<>(Arrays.asList("1", "2", "3"));
     private final Set<String> vehiclesWithScheduledBreakdown = new HashSet<>();
+    private final Map<String, List<RouteSegment>> vehicleRoutes;
 
     private final AtomicBoolean isExecuting = new AtomicBoolean(false);
 
     public PlanificadorTask(SimulationState state,
-                            AtomicBoolean isSimulationRunning) {
+                            AtomicBoolean isSimulationRunning,
+                            Map<String, List<RouteSegment>> vehicleRoutes) {
         this.state = state;
         this.isSimulationRunning = isSimulationRunning;
+        this.vehicleRoutes = vehicleRoutes;
     }
 
     private void broadcastPlanningStatus(JsonObject planningStatus) {
@@ -72,8 +75,8 @@ public class PlanificadorTask implements Runnable {
                 return;  // Salimos temprano para evitar procesamiento innecesario
             }
 
-            // Delay de 2 segundos después de recolección
-            Thread.sleep(2000);
+            // Delay de 1.5 segundos después de recolección
+            Thread.sleep(1500);
 
             // Fase 2: Calculando rutas
             planningStatus.addProperty("phase", "routing");
@@ -116,8 +119,8 @@ public class PlanificadorTask implements Runnable {
             OrderAssignmentService assignmentService = new OrderAssignmentService();
             List<Order> ordenesAsignables = assignmentService.assignWarehousesToOrders(orders, bestRoutes);
 
-            // Delay de 2 segundos antes de la asignación final
-            Thread.sleep(2000);
+            // Delay de 1.5 segundos antes de la asignación final
+            Thread.sleep(1500);
 
             if (!ordenesAsignables.isEmpty()) {
                 VehicleAssignmentService vehicleAssignmentService = new VehicleAssignmentService(state);
