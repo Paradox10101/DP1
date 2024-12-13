@@ -28,7 +28,7 @@ public class LocationService {
     // Cargar ubicaciones desde el archivo utilizando DataLoader
     private void loadLocations() {
         DataLoader dataLoader = new DataLoader();
-        this.locations = dataLoader.loadLocations("src/main/resources/locations.txt", "160401"); //Se excluye el ubigeo 160401
+        this.locations = dataLoader.loadLocationsWithCapacityByRegion("src/main/resources/locations.txt", "160401"); //Se excluye el ubigeo 160401
         logger.info("Ubicaciones cargadas: " + locations.size());
     }
 

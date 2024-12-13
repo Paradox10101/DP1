@@ -86,14 +86,15 @@ export default function BlockedRoutesPanel({toggleSecondaryPanel, setToggleSecon
           ${(isOpen) ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}
         `}>
           <div className="p-4 space-y-3 overflow-y-auto max-h-[600px] w-full min-h-[450px]">
+            <div className='flex flex-col gap-2'>
+                  <Switch isSelected={showBlockageRoutes} onValueChange={setShowBlockageRoutes}>{(showBlockageRoutes?"Ocultar":"Visualizar") +" rutas bloquedas"}</Switch>
+                  <Switch isSelected={showVehiclesRoutes} onValueChange={setShowVehiclesRoutes}>{(showVehiclesRoutes?"Ocultar":"Visualizar") +" rutas recorridas"}</Switch>
+            </div>
             {blockageRoutes === undefined ||blockageRoutes === null ||  blockageRoutes.features.length === 0 ? (
               <p className="text-gray-500 text-sm">No hay rutas bloqueadas</p>
             ) : (
               <div className='w-full h-full flex flex-col gap-4'>
-                <div className='flex flex-col gap-2'>
-                  <Switch isSelected={showBlockageRoutes} onValueChange={setShowBlockageRoutes}>{(showBlockageRoutes?"Ocultar":"Visualizar") +" rutas bloquedas"}</Switch>
-                  <Switch isSelected={showVehiclesRoutes} onValueChange={setShowVehiclesRoutes}>{(showVehiclesRoutes?"Ocultar":"Visualizar") +" rutas recorridas"}</Switch>
-                </div>
+                
                 <div>{"Cantidad de rutas bloqueadas: " + blockageRoutes.features.length}</div>
                 <div className='h-[240px]'>
                   <AutoSizer>
