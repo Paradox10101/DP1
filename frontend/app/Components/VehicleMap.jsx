@@ -1082,32 +1082,82 @@ const VehicleMap = ({ simulationStatus }) => {
         return;
       }
       try {
-        // Obtener las ubicaciones filtradas del átomo
-        const updatedLocations = locations.features.map((location) => {
-          if (location.properties.type === 'office') {
-            // Buscar la ubicación correspondiente en el WebSocket
-            const updatedLocation = locationsUltimo.find(
-              (loc) =>
-                loc.ubigeo === location.properties.ubigeo &&
-                loc.type === location.properties.type
-            );
+        // Separar primero las ubicaciones por tipo
+        const warehouseLocations = locations.features.filter(f => f.properties.type === 'warehouse');
+        const officeLocations = locations.features.filter(f => f.properties.type === 'office');
 
-            // Si se encuentra, actualizar el porcentaje ocupado
-            if (updatedLocation) {
-              return {
-                ...location,
-                properties: {
-                  ...location.properties,
-                  // Convertir a número y redondear a 2 decimales
-                  occupiedPercentage: Math.round(Number(updatedLocation.occupiedPercentage)),
-                },
-              };
-            }
+        // Actualizar solo las oficinas con la información del WebSocket
+        const updatedOfficeLocations = officeLocations.map((location) => {
+          const updatedLocation = locationsUltimo.find(
+            (loc) =>
+              loc.ubigeo === location.properties.ubigeo &&
+              loc.type === location.properties.type
+          );
+
+          if (updatedLocation) {
+            return {
+              ...location,
+              properties: {
+                ...location.properties,
+                occupiedPercentage: Math.round(Number(updatedLocation.occupiedPercentage)),
+              },
+            };
           }
           return location;
         });
 
-        const updatedData = {
+        // Crear las colecciones de características separadas
+        const offices = {
+          type: 'FeatureCollection',
+          features: updatedOfficeLocations
+        };
+        
+        const warehouses = {
+          type: 'FeatureCollection',
+          features: warehouseLocations // Usar los almacenes sin modificar
+        };
+
+        // Verificar los valores actualizados
+        console.log('Oficinas actualizadas:', updatedOfficeLocations.map(f => ({
+          name: f.properties.name,
+          occupiedPercentage: f.properties.occupiedPercentage
+        })));
+        
+        console.log('Almacenes:', warehouseLocations.map(f => ({
+          name: f.properties.name
+        })));
+
+        // Actualizar o crear fuente de oficinas (con clustering)
+        if (!mapRef.current.getSource('offices')) {
+          mapRef.current.addSource('offices', {
+            type: 'geojson',
+            data: offices,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
+        } else {
+          mapRef.current.getSource('offices').setData(offices);
+        }
+
+        // Actualizar o crear fuente de almacenes (sin clustering)
+        if (!mapRef.current.getSource('warehouses')) {
+          mapRef.current.addSource('warehouses', {
+            type: 'geojson',
+            data: warehouses
+          });
+        } else {
+          mapRef.current.getSource('warehouses').setData(warehouses);
+        }
+
+        // Solo añadir las capas si no existen
+        await addLocationLayers();
+        if (mapRef.current.getLayer('unclustered-warehouses')) {
+          // Esto moverá la capa de almacenes al frente de todo
+          mapRef.current.moveLayer('unclustered-warehouses');
+        }
+
+        /*const updatedData = {
           ...locations,
           features: updatedLocations,
         };
@@ -1133,7 +1183,7 @@ const VehicleMap = ({ simulationStatus }) => {
           } else {
             throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
           }
-        }
+        }*/
       } catch (error) {
         console.error('Error al actualizar ubicaciones:', error);
         setError('Error al actualizar ubicaciones en el mapa');
@@ -1152,7 +1202,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.addLayer({
           id: 'clusters',
           type: 'circle',
-          source: 'locations',
+          source: 'offices',
           filter: ['has', 'point_count'],
           paint: {
             'circle-color': '#08CA57', // Verde
@@ -1198,7 +1248,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.addLayer({
           id: 'cluster-count',
           type: 'symbol',
-          source: 'locations',
+          source: 'offices',
           filter: ['has', 'point_count'],
           layout: {
             'text-field': '{point_count_abbreviated}',
@@ -1212,47 +1262,14 @@ const VehicleMap = ({ simulationStatus }) => {
           },
         });
       }
-
-      // Capas para ubicaciones no agrupadas (almacenes y oficinas)
-      if (!mapRef.current.getLayer('unclustered-warehouses')) {
-        mapRef.current.addLayer({
-          id: 'unclustered-warehouses',
-          type: 'symbol',
-          source: 'locations',
-          filter: ['all', ['==', ['get', 'type'], 'warehouse'], ['!', ['has', 'point_count']]],
-          layout: {
-            'icon-image': 'warehouse-icon',
-            'icon-size': 0.8,
-            'icon-allow-overlap': true, // Permitir solapamiento para asegurar que se puedan hacer clic
-            'text-field': ['get', 'name'],
-            'text-font': ['Open Sans Bold'],
-            'text-size': 12,
-            'text-offset': [0, 1.5],
-            'text-anchor': 'top',
-          },
-          paint: {
-            'text-color': '#000000',
-            'text-halo-color': '#FFFFFF',
-            'text-halo-width': 1,
-          },
-        });
-
-        // Añadir eventos de clic y cursor para almacenes
-        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
-        mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
-          mapRef.current.getCanvas().style.cursor = 'pointer';
-        });
-        mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
-          mapRef.current.getCanvas().style.cursor = '';
-        });
-      }
+      
 
       if (!mapRef.current.getLayer('unclustered-offices')) {
         mapRef.current.addLayer({
           id: 'unclustered-offices',
           type: 'symbol',
-          source: 'locations',
-          filter: ['all', ['==', ['get', 'type'], 'office'], ['!', ['has', 'point_count']]],
+          source: 'offices',
+          filter: ['!', ['has', 'point_count']],
           layout: {
             'icon-image': [
               'let',
@@ -1288,6 +1305,44 @@ const VehicleMap = ({ simulationStatus }) => {
           mapRef.current.getCanvas().style.cursor = '';
         });
       }
+
+      // Capas para ubicaciones no agrupadas (almacenes y oficinas)
+      if (!mapRef.current.getLayer('unclustered-warehouses')) {
+        mapRef.current.addLayer({
+          id: 'unclustered-warehouses',
+          type: 'symbol',
+          source: 'warehouses',
+          layout: {
+            'icon-image': 'warehouse-icon',
+            'icon-size': 0.8,
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'text-field': ['get', 'name'],
+            'text-font': ['Open Sans Bold'],
+            'text-size': 12,
+            'text-offset': [0, 1.5],
+            'text-anchor': 'top',
+            'text-allow-overlap': true,
+            'text-ignore-placement': true
+          },
+          paint: {
+            'text-color': '#000000',
+            'text-halo-color': '#FFFFFF',
+            'text-halo-width': 1,
+          },
+        });
+
+        // Añadir eventos de clic y cursor para almacenes
+        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = 'pointer';
+        });
+        mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = '';
+        });
+      }
+
+
     } catch (error) {
       console.error('Error al agregar capas de ubicaciones:', error);
       setError('Error al agregar capas de ubicaciones');
