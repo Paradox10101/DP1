@@ -62,13 +62,18 @@ export default function OpcionAlmacenes() {
         setFilteredLocations([]);
         return
     }
+
+    // Primero filtrar las ubicaciones temporales
+    const nonTempLocations = locations.filter(location => 
+        !location.ubigeo?.startsWith('TEMP_')
+    );
     
     if(locationsFilter === initialFilterStateRef.current){
-        setFilteredLocations(locations)
+        setFilteredLocations(nonTempLocations)
         return
     }
         
-    const filtered = locations.filter((location) => {
+    const filtered = nonTempLocations.filter((location) => {
         
       // Filtrar por departamento
         const matchesType = locationsFilter.storageType
