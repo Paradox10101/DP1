@@ -194,7 +194,7 @@ export const MAP_CONFIG = {
         source: MAP_CONFIG.SOURCES.OFFICES.id, // Cambiar a la fuente de oficinas
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': '#808080',
+          'circle-color': '#00D05C',
           'circle-radius': [
             'step',
             ['get', 'point_count'],

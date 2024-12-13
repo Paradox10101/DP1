@@ -742,7 +742,7 @@ public class SimulationState {
 
         // Crear las "blockages" como objetos de tipo "Feature"
         if (vehicles != null && !vehicles.isEmpty()) {
-            for (Vehicle vehicle : vehicles.values()) {
+            for (Vehicle vehicle : vehicles) {
                 JsonObject blockageFeature = new JsonObject();
                 blockageFeature.addProperty("type", "Feature");
 
