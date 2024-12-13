@@ -16,10 +16,10 @@ import { useWebSocket } from '../../hooks/useWebSocket';
 import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
-import { locationsAtom } from '../../atoms/locationAtoms';
+import { followLocationAtom, locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
-import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
-import IconoEstado, { VEHICLE_CAPACITIES } from './IconoEstado';
+import { Truck, CarFront, Car, AlertTriangle, Building, Warehouse } from 'lucide-react'; // Asegúrate de que estos íconos están importados
+import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
@@ -27,16 +27,34 @@ import ModalVehiculo from './ModalVehiculo';
 
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
-import Dashboard from './Dashboard';
-import CollapseDashboard from './CollapseDashboard';
 import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
 import { useRouteWebSocket } from '@/hooks/useRouteWebSocket';
 import { blockageRoutesAtom, formattedRoutesAtom, routesAtom, showBlockagesRoutesAtom, showVehiclesRoutesAtom, vehicleCurrentRoutesAtom } from '@/atoms/routeAtoms';
+import { useWarehouseWebSocket } from '@/hooks/useWarehouseWebSocket';
 
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
+
+
+  const getSvgWithLucideIcon = (IconComponent, bgColor) => {
+    const svgString = renderToStaticMarkup(
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+        <circle 
+          cx="20" 
+          cy="20" 
+          r="20" 
+          fill={bgColor}
+        />
+        <g transform="translate(8, 8)">
+          <IconComponent color="#FFFFFF" size={24} />
+        </g>
+      </svg>
+    );
+    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+  };
+
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
@@ -57,6 +75,20 @@ const getSvgString = (IconComponent, bgColor) => {
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
+};
+
+// Añadir después de getSvgString y antes de getVehicleColor
+const getOfficeIconSvg = (occupiedPercentage) => {
+  let bgColor;
+  console.log(`Generando icono para porcentaje: ${occupiedPercentage}`); // Añadir este log
+  if (occupiedPercentage >= 81) {
+    bgColor = '#F97316'; // Naranja
+  } else if (occupiedPercentage >= 41) {
+    bgColor = '#EAB308'; // Amarillo
+  } else {
+    bgColor = '#22C55E'; // Verde
+  }
+  return getSvgString(Building, bgColor);
 };
 
 
@@ -135,6 +167,7 @@ const StatusBadge = ({ status }) => {
 const VehicleMap = ({ simulationStatus }) => {
   useShipmentWebSocket();
   useRouteWebSocket();
+  useWarehouseWebSocket();
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -154,6 +187,8 @@ const VehicleMap = ({ simulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
+  const [followLocation, setFollowLocation] = useAtom(followLocationAtom)
+  const [simulationType,] = useAtom(simulationTypeAtom);
 
   // Referencias agregadas para animacion
   const currentPositionsRef = useRef(null); 
@@ -241,7 +276,7 @@ const VehicleMap = ({ simulationStatus }) => {
   
 
 
-  //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions) FUERA MRD A CADA RATO ESTO
+  //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
@@ -276,12 +311,16 @@ const VehicleMap = ({ simulationStatus }) => {
 
         // Actualizar las fuentes por separado
         if (mapRef.current) {
-          const officesSource = mapRef.current.getSource('offices');
-          const warehousesSource = mapRef.current.getSource('warehouses');
+          //const officesSource = mapRef.current.getSource('offices');
+          //const warehousesSource = mapRef.current.getSource('warehouses');
+          const officesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.OFFICES.id);
+          const warehousesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.WAREHOUSES.id);
           
           if (officesSource) officesSource.setData(offices);
           if (warehousesSource) warehousesSource.setData(warehouses);
         }
+        //console.log("OFFICESSSSSSSSSSSSSSSSSSS: ", offices);
+        //console.log("DATAAAAAAAAAAAAAAAAAAAAAAAAAA: ", data);
         
         setLocations(data); // Mantener el estado completo si es necesario
         setError(null);
@@ -543,6 +582,27 @@ const VehicleMap = ({ simulationStatus }) => {
           { type: 'alert-triangle-icon', component: AlertTriangle },
         ];
 
+        // Cargar imágenes de oficinas con diferentes niveles de ocupación
+        const occupancyLevels = [
+          { level: 0, name: 'office-icon-0' },
+          { level: 41, name: 'office-icon-41' },
+          { level: 81, name: 'office-icon-81' }
+        ];
+
+        occupancyLevels.forEach(({ level, name }) => {
+          if (!mapRef.current.hasImage(name)) {
+            const svgString = getOfficeIconSvg(level);
+            const image = new Image();
+            image.src = svgString;
+            image.onload = () => {
+              console.log(`Cargando icono: ${name}`); // Añadir este log
+              if (!mapRef.current.hasImage(name)) {
+                mapRef.current.addImage(name, image);
+              }
+            };
+          }
+        });
+
         const colors = {
           green: '#08CA57',
           yellow: '#FFC107',
@@ -573,6 +633,14 @@ const VehicleMap = ({ simulationStatus }) => {
             await loadCustomImage(imageConfig.id, imageConfig.url);
           }
         }
+
+        /*mapRef.current.addSource(MAP_CONFIG.SOURCES.OFFICES.id, {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        });*/
 
         // Configurar la fuente de vehículos
         if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
@@ -663,19 +731,36 @@ const VehicleMap = ({ simulationStatus }) => {
         }
 
         // 2. Almacenes y oficinas       
-        if (!mapRef.current.getLayer('unclustered-offices')) {
+        /*if (!mapRef.current.getLayer('unclustered-offices')) {
           mapRef.current.addLayer({
             id: 'unclustered-offices',
             type: 'symbol',
             source: 'offices',
             filter: ['!', ['has', 'point_count']],
             layout: {
-              ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false,
-              'icon-ignore-placement': false,
+              'icon-image': [
+                'case',
+                ['>=', ['get', 'occupiedPercentage'], 81],
+                'office-icon-81',
+                ['>=', ['get', 'occupiedPercentage'], 41],
+                'office-icon-41',
+                'office-icon-0'
+              ],
+              'icon-size': 0.8,
+              'icon-allow-overlap': true,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular'],
+              'text-size': 10,
+              'text-offset': [0, 1.5],
+              'text-anchor': 'top',
+            },
+            paint: {
+              'text-color': '#000000',
+              'text-halo-color': '#FFFFFF',
+              'text-halo-width': 1,
             }
           });
-        }
+        }*/
 
         if (!mapRef.current.getLayer('unclustered-warehouses')) {
           mapRef.current.addLayer({
@@ -1111,18 +1196,54 @@ const VehicleMap = ({ simulationStatus }) => {
         return;
       }
       try {
+        // Obtener las ubicaciones filtradas del átomo
+        const updatedLocations = locations.features.map((location) => {
+          if (location.properties.type === 'office') {
+            // Buscar la ubicación correspondiente en el WebSocket
+            const updatedLocation = locationsUltimo.find(
+              (loc) =>
+                loc.ubigeo === location.properties.ubigeo &&
+                loc.type === location.properties.type
+            );
+
+            // Si se encuentra, actualizar el porcentaje ocupado
+            if (updatedLocation) {
+              return {
+                ...location,
+                properties: {
+                  ...location.properties,
+                  // Convertir a número y redondear a 2 decimales
+                  occupiedPercentage: Math.round(Number(updatedLocation.occupiedPercentage)),
+                },
+              };
+            }
+          }
+          return location;
+        });
+
+        const updatedData = {
+          ...locations,
+          features: updatedLocations,
+        };
+
+        // Verificar los valores actualizados
+        console.log('Datos actualizados:', updatedData.features.map(f => ({
+          name: f.properties.name,
+          occupiedPercentage: f.properties.occupiedPercentage
+        })));
+
         if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
-            data: locations,
+            data: updatedData,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50,
           });
-          await addLocationLayers(); // Asegurarse de esperar a que las capas se añadan
+          await addLocationLayers();
         } else {
-          if (locations.type === 'FeatureCollection' && Array.isArray(locations.features)) {
-            mapRef.current.getSource('locations').setData(locations);
+          if (updatedData.type === 'FeatureCollection' && Array.isArray(updatedData.features)) {
+            mapRef.current.getSource('locations').setData(updatedData);
           } else {
             throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
           }
@@ -1134,7 +1255,7 @@ const VehicleMap = ({ simulationStatus }) => {
     };
 
     updateMap();
-  }, [locations, mapLoaded]);
+  }, [locations, mapLoaded, locationsUltimo]); 
 
   // Modificar la función addLocationLayers para configurar los eventos después de añadir las capas
   const addLocationLayers = async () => {
@@ -1247,17 +1368,26 @@ const VehicleMap = ({ simulationStatus }) => {
           source: 'locations',
           filter: ['all', ['==', ['get', 'type'], 'office'], ['!', ['has', 'point_count']]],
           layout: {
-            'icon-image': 'office-icon',
-            'icon-size': 0.6,
-            'icon-allow-overlap': true, // Permitir solapamiento para asegurar que se puedan hacer clic
+            'icon-image': [
+              'let',
+              'percentage', ['to-number', ['get', 'occupiedPercentage']],
+              [
+                'case',
+                ['>=', ['var', 'percentage'], 81], 'office-icon-81',
+                ['>=', ['var', 'percentage'], 41], 'office-icon-41',
+                'office-icon-0'
+              ]
+            ],
+            'icon-size': 0.8,
+            'icon-allow-overlap': true,
             'text-field': ['get', 'name'],
             'text-font': ['Open Sans Regular'],
             'text-size': 10,
-            'text-offset': [0, 1.2],
+            'text-offset': [0, 1.5],
             'text-anchor': 'top',
           },
           paint: {
-            'text-color': '#FFA500',
+            'text-color': '#000000',
             'text-halo-color': '#FFFFFF',
             'text-halo-width': 1,
           },
@@ -1301,7 +1431,7 @@ const VehicleMap = ({ simulationStatus }) => {
     const sourceId = 'b-routes'; //blockage routes
     const layerId = 'b-routes';
     
-    if (blockageRoutes === null || blockageRoutes === undefined || mapRef.current === null || mapRef.current === undefined) return;
+    if (blockageRoutes === null || blockageRoutes === undefined || mapRef.current === null || mapRef.current === undefined || !mapLoaded) return;
   
     if (showBlockageRoutes === false ){
       if (mapRef.current.getLayer(layerId)) {
@@ -1354,7 +1484,7 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [blockageRoutes, showBlockageRoutes]);
+  }, [blockageRoutes, showBlockageRoutes, mapLoaded]);
 
   // Agregado de capa de rutas actuales de vehiculos
   useEffect(() => {
@@ -1362,7 +1492,7 @@ const VehicleMap = ({ simulationStatus }) => {
     const sourceId = 'c-routes';
     const layerId = 'c-routes';
 
-    if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined || mapRef.current === null || mapRef.current === undefined) return;
+    if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined || mapRef.current === null || mapRef.current === undefined || !mapLoaded) return;
 
     if (showVehiclesRoutes === false ){
       if (mapRef.current.getLayer(layerId)) {
@@ -1414,11 +1544,53 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [vehicleCurrentRoutes, showVehiclesRoutes]);
+  }, [vehicleCurrentRoutes, showVehiclesRoutes, mapLoaded]);
   
-  //const [showBlockageRoutes,] = useAtom(showBlockagesRoutesAtom)
-  //const [showVehiclesRoutes,] = useAtom(showVehiclesRoutesAtom)
 
+  
+  useEffect(()=>{
+    if (mapRef.current && mapLoaded) { // Verifica si el mapa existe
+    
+    if(followLocation!=null){
+      mapRef.current.flyTo({
+        center: followLocation, // Coordenadas de destino
+        zoom: 9, // Nivel de zoom deseado (ajusta según necesidad)
+        speed: 2, // Velocidad del vuelo (opcional)
+        curve: 1, // Curva del vuelo (opcional)
+        easing: (t) => t, // Efecto de suavizado (opcional)
+      });
+      setFollowLocation(null)
+    }
+    }
+  }, [followLocation, mapLoaded])
+
+
+  useEffect(()=>{
+    const sourceIdCurrentRoutes = 'c-routes';
+    const layerIdCurrentRoutes = 'c-routes';
+
+    const sourceIdBlockedRoutes = 'b-routes'; //blockage routes
+    const layerIdBlockedRoutes = 'b-routes';
+    
+    if(simulationStatus==='stopped'){
+      if (mapRef.current.getLayer(layerIdCurrentRoutes)) {
+        mapRef.current.removeLayer(layerIdCurrentRoutes); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceIdCurrentRoutes)) {
+        mapRef.current.removeSource(sourceIdCurrentRoutes); // Eliminar la fuente si existe
+      }
+      if (mapRef.current.getLayer(layerIdBlockedRoutes)) {
+        mapRef.current.removeLayer(layerIdBlockedRoutes); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceIdBlockedRoutes)) {
+        mapRef.current.removeSource(sourceIdBlockedRoutes); // Eliminar la fuente si existe
+      }
+      
+    }
+    
+
+    
+  }, [simulationStatus])
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {

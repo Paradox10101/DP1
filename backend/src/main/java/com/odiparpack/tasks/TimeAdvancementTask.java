@@ -19,17 +19,14 @@ public class TimeAdvancementTask implements Runnable {
     private final SimulationState state;
     private final AtomicBoolean isSimulationRunning;
     private final LocalDateTime endTime;
-    private final Map<String, List<RouteSegment>> vehicleRoutes;
     private final boolean isDaily;
 
     public TimeAdvancementTask(SimulationState state,
                                AtomicBoolean isSimulationRunning,
-                               Map<String, List<RouteSegment>> vehicleRoutes,
                                boolean isDaily) {
         this.state = state;
         this.isSimulationRunning = isSimulationRunning;
         this.endTime = state.getCurrentTime().plusDays(state.getSimulationType().getDays());
-        this.vehicleRoutes = vehicleRoutes;
         this.isDaily = isDaily;
     }
 

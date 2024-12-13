@@ -56,8 +56,6 @@ public class PlanificadorTask implements Runnable {
         JsonObject planningStatus = new JsonObject(); // Para el estado de planificación
 
         try {
-            long[][] timeMatrix = state.getCurrentTimeMatrix();
-
             // Fase 1: Recopilando órdenes
             planningStatus.addProperty("phase", "collecting");
             List<Order> orders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
@@ -72,8 +70,8 @@ public class PlanificadorTask implements Runnable {
                 return;  // Salimos temprano para evitar procesamiento innecesario
             }
 
-            // Delay de 2 segundos después de recolección
-            Thread.sleep(2000);
+            // Delay de 1.5 segundos después de recolección
+            Thread.sleep(1500);
 
             // Fase 2: Calculando rutas
             planningStatus.addProperty("phase", "routing");
@@ -95,7 +93,9 @@ public class PlanificadorTask implements Runnable {
             broadcastPlanningStatus(planningStatus);
 
             // Calcular las mejores rutas para cada destino
-            RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(state.getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
+            RouteService routeService = new RouteService(RouteUtils.
+                    deepCopyLocationIndices(state.getLocationIndices()),
+                    RouteUtils.deepCopyTimeMatrix(state.getCurrentTimeMatrix()));
             Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations);
 
             // Actualizar estado con rutas completadas
@@ -116,8 +116,8 @@ public class PlanificadorTask implements Runnable {
             OrderAssignmentService assignmentService = new OrderAssignmentService();
             List<Order> ordenesAsignables = assignmentService.assignWarehousesToOrders(orders, bestRoutes);
 
-            // Delay de 2 segundos antes de la asignación final
-            Thread.sleep(2000);
+            // Delay de 1.5 segundos antes de la asignación final
+            Thread.sleep(1500);
 
             if (!ordenesAsignables.isEmpty()) {
                 VehicleAssignmentService vehicleAssignmentService = new VehicleAssignmentService(state);

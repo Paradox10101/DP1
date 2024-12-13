@@ -22,7 +22,6 @@ public class PlanificadorScheduler {
 
     private static SimulationState currentState;
     private static AtomicBoolean currentSimulationRunning;
-    private static Map<String, List<RouteSegment>> currentVehicleRoutes;
 
     // Nuevo método de inicialización
     public static void initialize(ScheduledExecutorService executor) {
@@ -36,8 +35,7 @@ public class PlanificadorScheduler {
     // Nuevo método para iniciar la planificación
     public static synchronized void start(
             SimulationState state,
-            AtomicBoolean isSimulationRunning,
-            Map<String, List<RouteSegment>> vehicleRoutes) {
+            AtomicBoolean isSimulationRunning) {
 
         if (scheduledExecutorService == null) {
             throw new IllegalStateException("PlanificadorScheduler no ha sido inicializado");
@@ -46,9 +44,8 @@ public class PlanificadorScheduler {
         // Guardar referencias
         currentState = state;
         currentSimulationRunning = isSimulationRunning;
-        currentVehicleRoutes = vehicleRoutes;
 
-        currentPlanningTask = schedulePlanning(state, isSimulationRunning, vehicleRoutes);
+        currentPlanningTask = schedulePlanning(state, isSimulationRunning);
     }
 
     // Nuevo método para detener la planificación
@@ -81,16 +78,14 @@ public class PlanificadorScheduler {
             currentPlanningTask.cancel(false);
             currentPlanningTask = schedulePlanning(
                     currentState,
-                    currentSimulationRunning,
-                    currentVehicleRoutes
+                    currentSimulationRunning
             );
         }
     }
 
     private static Future<?> schedulePlanning(
             SimulationState state,
-            AtomicBoolean isSimulationRunning,
-            Map<String, List<RouteSegment>> vehicleRoutes) {
+            AtomicBoolean isSimulationRunning) {
 
         return scheduledExecutorService.scheduleWithFixedDelay(
                 new PlanificadorTaskWrapper(

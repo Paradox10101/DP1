@@ -3,6 +3,8 @@ import { atom } from 'jotai';
 // Átomo para almacenar las ubicaciones base
 export const locationsAtom = atom(null);
 
+export const followLocationAtom = atom(null);
+
 // Átomo para almacenar los porcentajes de ocupación actualizados por WebSocket
 export const occupancyUpdatesAtom = atom({});
 
@@ -98,6 +100,7 @@ export const filteredLocationsAtom = atom((get) => {
     if (!locations) return null;
     if (!searchQuery) return locations;
 
+    console.log("OBJETIVO: ELIMINAR PUNTOS DE AVERIA", locations)
     return locations.filter(location => searchLocation(location, searchQuery));
   } catch (error) {
     console.error('Error filtrando ubicaciones:', error);

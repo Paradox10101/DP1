@@ -146,11 +146,9 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
           setData(result);
         } else {
           console.log('Error al obtener los datos: ', response.statusText);
-          onClose();
         }
       } catch (error) {
         console.log('Error fetching data:', error);
-        onClose();
       } finally {
         setLoading(false);
       }
@@ -166,16 +164,20 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
     );
   }
 
+  
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-red-600 flex items-center gap-2">
+        <div className="text-blue-600 flex items-center gap-2">
           <FaInfoCircle />
-          Error al cargar los datos.
+          No hay registros de envios atendidos
         </div>
       </div>
     );
+    
   }
+  
+  
 
   // Data processing
   const allCities = Object.entries(data.demandasPorCiudad)

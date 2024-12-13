@@ -1,0 +1,1154 @@
+[2024-12-13 12:25:05] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241213_122505.log 
+[2024-12-13 12:25:05] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-13 12:25:05] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-13 12:25:07] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:09] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:14] [INFO   ] DateTime encontrado: 2024-12-01 00:04:00 
+[2024-12-13 12:25:14] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-13 12:25:14] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-13 12:25:14] [INFO   ] Se cargaron 195 bloqueos: 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 250301 => 220401, Inicio: 2024-12-02 04:49, Fin: 2024-12-18 14:47 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 250301 => 120601, Inicio: 2024-12-03 11:26, Fin: 2024-12-17 06:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 250301 => 020201, Inicio: 2024-12-05 07:55, Fin: 2024-12-22 11:52 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 221001 => 100401, Inicio: 2024-12-02 11:02, Fin: 2024-12-20 04:23 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 221001 => 020601, Inicio: 2024-12-01 15:43, Fin: 2024-12-24 04:24 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220901 => 060801, Inicio: 2024-12-01 05:39, Fin: 2024-12-22 01:19 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220801 => 130901, Inicio: 2024-12-03 16:52, Fin: 2024-12-15 08:30 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220801 => 060801, Inicio: 2024-12-06 09:40, Fin: 2024-12-14 19:31 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220701 => 060101, Inicio: 2024-12-01 15:39, Fin: 2024-12-23 23:41 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220701 => 010101, Inicio: 2024-12-01 11:41, Fin: 2024-12-16 16:00 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220601 => 130801, Inicio: 2024-12-03 09:17, Fin: 2024-12-21 05:25 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220501 => 220401, Inicio: 2024-12-04 20:22, Fin: 2024-12-13 07:06 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220501 => 061101, Inicio: 2024-12-03 19:05, Fin: 2024-12-21 03:12 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220501 => 021201, Inicio: 2024-12-01 18:01, Fin: 2024-12-21 03:35 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220401 => 220301, Inicio: 2024-12-03 19:12, Fin: 2024-12-13 12:39 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220401 => 010701, Inicio: 2024-12-01 14:04, Fin: 2024-12-24 17:06 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220301 => 100601, Inicio: 2024-12-07 05:45, Fin: 2024-12-21 21:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220301 => 021901, Inicio: 2024-12-03 02:54, Fin: 2024-12-15 21:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220201 => 061101, Inicio: 2024-12-05 16:45, Fin: 2024-12-23 17:44 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220201 => 020401, Inicio: 2024-12-06 08:33, Fin: 2024-12-19 03:53 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220101 => 220201, Inicio: 2024-12-05 11:53, Fin: 2024-12-13 23:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 220101 => 060701, Inicio: 2024-12-06 03:53, Fin: 2024-12-16 02:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 210801 => 081301, Inicio: 2024-12-03 23:34, Fin: 2024-12-14 03:26 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190301 => 120901, Inicio: 2024-12-06 21:43, Fin: 2024-12-22 23:40 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190301 => 021601, Inicio: 2024-12-04 17:37, Fin: 2024-12-22 19:32 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190201 => 150401, Inicio: 2024-12-03 11:41, Fin: 2024-12-18 18:47 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190201 => 021801, Inicio: 2024-12-03 04:20, Fin: 2024-12-22 04:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190101 => 250301, Inicio: 2024-12-03 16:10, Fin: 2024-12-20 16:00 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190101 => 120401, Inicio: 2024-12-05 17:40, Fin: 2024-12-23 08:21 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 190101 => 021701, Inicio: 2024-12-02 11:13, Fin: 2024-12-16 02:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150901 => 250301, Inicio: 2024-12-01 15:14, Fin: 2024-12-14 23:13 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150801 => 150901, Inicio: 2024-12-05 09:10, Fin: 2024-12-17 10:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150801 => 021601, Inicio: 2024-12-03 05:20, Fin: 2024-12-24 06:26 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150701 => 190201, Inicio: 2024-12-06 10:52, Fin: 2024-12-14 05:59 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150701 => 120101, Inicio: 2024-12-04 05:40, Fin: 2024-12-20 16:51 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150701 => 050401, Inicio: 2024-12-07 13:40, Fin: 2024-12-15 14:37 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150401 => 150801, Inicio: 2024-12-07 04:37, Fin: 2024-12-14 18:11 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150401 => 100801, Inicio: 2024-12-03 16:10, Fin: 2024-12-13 03:18 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150401 => 021201, Inicio: 2024-12-02 17:30, Fin: 2024-12-19 22:34 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150301 => 190101, Inicio: 2024-12-02 01:31, Fin: 2024-12-22 04:01 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150301 => 100201, Inicio: 2024-12-05 02:09, Fin: 2024-12-18 10:42 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150301 => 020901, Inicio: 2024-12-03 09:26, Fin: 2024-12-18 09:52 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150201 => 150701, Inicio: 2024-12-02 20:28, Fin: 2024-12-17 23:45 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150201 => 100801, Inicio: 2024-12-05 08:41, Fin: 2024-12-23 01:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 150201 => 021101, Inicio: 2024-12-04 03:29, Fin: 2024-12-20 07:59 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131201 => 131001, Inicio: 2024-12-06 06:03, Fin: 2024-12-24 18:17 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131201 => 021301, Inicio: 2024-12-04 13:17, Fin: 2024-12-15 18:14 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131101 => 131001, Inicio: 2024-12-03 18:29, Fin: 2024-12-21 21:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131101 => 060401, Inicio: 2024-12-07 23:14, Fin: 2024-12-22 06:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131001 => 220601, Inicio: 2024-12-01 05:10, Fin: 2024-12-18 04:58 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131001 => 130201, Inicio: 2024-12-01 19:26, Fin: 2024-12-20 19:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131001 => 061101, Inicio: 2024-12-05 01:07, Fin: 2024-12-18 07:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 131001 => 020801, Inicio: 2024-12-07 20:56, Fin: 2024-12-20 00:35 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130901 => 220301, Inicio: 2024-12-07 21:12, Fin: 2024-12-20 22:56 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130901 => 100701, Inicio: 2024-12-04 17:38, Fin: 2024-12-22 04:49 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130901 => 021901, Inicio: 2024-12-03 07:19, Fin: 2024-12-16 19:39 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130901 => 010501, Inicio: 2024-12-01 16:13, Fin: 2024-12-24 02:15 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130801 => 060601, Inicio: 2024-12-04 22:33, Fin: 2024-12-21 01:00 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130801 => 021301, Inicio: 2024-12-02 18:49, Fin: 2024-12-23 18:03 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130801 => 010601, Inicio: 2024-12-07 00:02, Fin: 2024-12-18 11:04 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130701 => 060101, Inicio: 2024-12-03 18:14, Fin: 2024-12-19 18:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130701 => 010301, Inicio: 2024-12-07 17:39, Fin: 2024-12-20 21:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130601 => 131201, Inicio: 2024-12-02 04:17, Fin: 2024-12-17 15:06 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130501 => 061201, Inicio: 2024-12-02 10:54, Fin: 2024-12-19 21:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130501 => 010601, Inicio: 2024-12-04 09:30, Fin: 2024-12-24 14:35 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130401 => 010601, Inicio: 2024-12-02 07:48, Fin: 2024-12-21 22:42 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130301 => 021301, Inicio: 2024-12-03 17:01, Fin: 2024-12-16 18:14 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 130201 => 020801, Inicio: 2024-12-04 21:42, Fin: 2024-12-15 08:43 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120901 => 120501, Inicio: 2024-12-07 23:10, Fin: 2024-12-15 14:48 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120801 => 100301, Inicio: 2024-12-06 06:38, Fin: 2024-12-17 11:00 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120801 => 020501, Inicio: 2024-12-05 19:23, Fin: 2024-12-21 23:01 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120701 => 090101, Inicio: 2024-12-05 07:18, Fin: 2024-12-22 07:29 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120501 => 101101, Inicio: 2024-12-07 00:03, Fin: 2024-12-14 22:01 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120501 => 090201, Inicio: 2024-12-07 07:18, Fin: 2024-12-15 07:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120501 => 021001, Inicio: 2024-12-05 03:15, Fin: 2024-12-14 07:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120401 => 150301, Inicio: 2024-12-05 13:33, Fin: 2024-12-20 17:28 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120301 => 100101, Inicio: 2024-12-01 15:36, Fin: 2024-12-17 14:04 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120301 => 020201, Inicio: 2024-12-06 08:23, Fin: 2024-12-15 10:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120101 => 150801, Inicio: 2024-12-03 02:10, Fin: 2024-12-14 20:55 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120101 => 100801, Inicio: 2024-12-05 15:18, Fin: 2024-12-17 08:41 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 120101 => 050101, Inicio: 2024-12-07 07:54, Fin: 2024-12-18 18:13 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 101101 => 120401, Inicio: 2024-12-05 03:29, Fin: 2024-12-16 02:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 101101 => 070101, Inicio: 2024-12-02 07:48, Fin: 2024-12-15 02:56 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 101001 => 150801, Inicio: 2024-12-05 16:26, Fin: 2024-12-21 02:17 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 101001 => 120701, Inicio: 2024-12-04 11:52, Fin: 2024-12-19 08:29 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 101001 => 021801, Inicio: 2024-12-06 11:06, Fin: 2024-12-24 00:00 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100901 => 150701, Inicio: 2024-12-05 20:59, Fin: 2024-12-22 13:42 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100901 => 101101, Inicio: 2024-12-06 11:11, Fin: 2024-12-16 21:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100901 => 021201, Inicio: 2024-12-02 06:39, Fin: 2024-12-13 01:12 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100801 => 021901, Inicio: 2024-12-06 21:00, Fin: 2024-12-24 08:06 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100801 => 020201, Inicio: 2024-12-01 09:37, Fin: 2024-12-19 11:28 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100701 => 150801, Inicio: 2024-12-07 06:28, Fin: 2024-12-20 18:27 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100701 => 100801, Inicio: 2024-12-01 13:25, Fin: 2024-12-16 10:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100601 => 220301, Inicio: 2024-12-03 19:01, Fin: 2024-12-17 13:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100601 => 130601, Inicio: 2024-12-03 01:44, Fin: 2024-12-15 19:26 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100601 => 100501, Inicio: 2024-12-06 17:36, Fin: 2024-12-21 00:08 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100501 => 220401, Inicio: 2024-12-01 13:58, Fin: 2024-12-17 01:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100501 => 101001, Inicio: 2024-12-05 14:05, Fin: 2024-12-24 19:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100401 => 221001, Inicio: 2024-12-05 08:08, Fin: 2024-12-22 08:38 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100401 => 021501, Inicio: 2024-12-05 10:46, Fin: 2024-12-15 21:49 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100401 => 010601, Inicio: 2024-12-01 18:22, Fin: 2024-12-22 03:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100301 => 022001, Inicio: 2024-12-03 21:05, Fin: 2024-12-19 11:51 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100201 => 131001, Inicio: 2024-12-05 13:42, Fin: 2024-12-17 11:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100201 => 100601, Inicio: 2024-12-04 16:35, Fin: 2024-12-17 17:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100201 => 021501, Inicio: 2024-12-04 04:27, Fin: 2024-12-17 21:35 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100201 => 020101, Inicio: 2024-12-02 13:56, Fin: 2024-12-23 14:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 100101 => 100201, Inicio: 2024-12-03 01:00, Fin: 2024-12-17 04:05 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 090701 => 120801, Inicio: 2024-12-01 03:43, Fin: 2024-12-14 06:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 090701 => 081301, Inicio: 2024-12-03 07:08, Fin: 2024-12-17 19:10 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 090501 => 040801, Inicio: 2024-12-01 05:26, Fin: 2024-12-15 10:47 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 090201 => 081001, Inicio: 2024-12-04 06:52, Fin: 2024-12-18 07:19 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 081301 => 050401, Inicio: 2024-12-07 21:32, Fin: 2024-12-21 21:04 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 081001 => 051001, Inicio: 2024-12-02 05:11, Fin: 2024-12-14 19:12 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 080701 => 081001, Inicio: 2024-12-01 13:17, Fin: 2024-12-22 08:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 070101 => 190101, Inicio: 2024-12-05 20:56, Fin: 2024-12-18 16:45 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 070101 => 101001, Inicio: 2024-12-03 11:22, Fin: 2024-12-20 14:03 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 070101 => 020501, Inicio: 2024-12-02 11:27, Fin: 2024-12-17 02:14 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061301 => 131001, Inicio: 2024-12-07 12:35, Fin: 2024-12-14 00:04 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061201 => 220601, Inicio: 2024-12-01 04:42, Fin: 2024-12-22 05:41 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061201 => 130501, Inicio: 2024-12-06 12:35, Fin: 2024-12-13 12:12 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061201 => 021601, Inicio: 2024-12-07 11:31, Fin: 2024-12-15 22:27 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061101 => 010601, Inicio: 2024-12-07 00:45, Fin: 2024-12-17 17:48 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 061001 => 060501, Inicio: 2024-12-04 01:50, Fin: 2024-12-20 08:42 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060801 => 220201, Inicio: 2024-12-01 17:22, Fin: 2024-12-16 17:38 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060701 => 220801, Inicio: 2024-12-03 18:44, Fin: 2024-12-24 15:30 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060701 => 130101, Inicio: 2024-12-06 11:56, Fin: 2024-12-15 23:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060601 => 220601, Inicio: 2024-12-06 16:28, Fin: 2024-12-16 14:03 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060601 => 060101, Inicio: 2024-12-05 10:52, Fin: 2024-12-24 08:28 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060501 => 220501, Inicio: 2024-12-05 00:29, Fin: 2024-12-20 12:16 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060501 => 022001, Inicio: 2024-12-06 01:53, Fin: 2024-12-14 13:17 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060501 => 020101, Inicio: 2024-12-04 12:35, Fin: 2024-12-22 15:59 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060401 => 220101, Inicio: 2024-12-05 13:10, Fin: 2024-12-16 14:34 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060401 => 010701, Inicio: 2024-12-01 14:23, Fin: 2024-12-21 19:31 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060301 => 220101, Inicio: 2024-12-07 03:57, Fin: 2024-12-15 21:39 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060301 => 021001, Inicio: 2024-12-04 12:24, Fin: 2024-12-24 06:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060201 => 250301, Inicio: 2024-12-01 10:34, Fin: 2024-12-21 18:43 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060201 => 130501, Inicio: 2024-12-03 03:22, Fin: 2024-12-16 13:30 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 060101 => 220201, Inicio: 2024-12-07 21:05, Fin: 2024-12-21 17:34 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 051001 => 120901, Inicio: 2024-12-01 16:03, Fin: 2024-12-17 11:49 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 051001 => 050901, Inicio: 2024-12-02 09:21, Fin: 2024-12-18 21:48 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 050501 => 081301, Inicio: 2024-12-03 14:32, Fin: 2024-12-23 21:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 050401 => 120801, Inicio: 2024-12-01 14:54, Fin: 2024-12-22 07:18 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 050201 => 051001, Inicio: 2024-12-04 03:57, Fin: 2024-12-17 12:35 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 040801 => 090501, Inicio: 2024-12-07 09:49, Fin: 2024-12-24 12:17 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 040801 => 030701, Inicio: 2024-12-03 18:25, Fin: 2024-12-14 21:18 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 022001 => 221001, Inicio: 2024-12-03 06:42, Fin: 2024-12-22 04:11 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 022001 => 131001, Inicio: 2024-12-06 12:16, Fin: 2024-12-20 19:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021801 => 061001, Inicio: 2024-12-04 21:14, Fin: 2024-12-19 08:24 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021601 => 220401, Inicio: 2024-12-07 20:27, Fin: 2024-12-24 22:39 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021601 => 060601, Inicio: 2024-12-07 04:28, Fin: 2024-12-22 10:41 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021501 => 220701, Inicio: 2024-12-03 17:59, Fin: 2024-12-23 20:32 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021501 => 130801, Inicio: 2024-12-01 00:52, Fin: 2024-12-13 12:36 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021501 => 100201, Inicio: 2024-12-01 09:24, Fin: 2024-12-23 04:48 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021501 => 021201, Inicio: 2024-12-07 10:43, Fin: 2024-12-17 04:31 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021501 => 010101, Inicio: 2024-12-05 17:07, Fin: 2024-12-23 20:59 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021401 => 130601, Inicio: 2024-12-06 07:20, Fin: 2024-12-23 06:54 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021401 => 100101, Inicio: 2024-12-04 03:18, Fin: 2024-12-20 07:55 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021401 => 020201, Inicio: 2024-12-03 07:03, Fin: 2024-12-22 05:28 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021301 => 100101, Inicio: 2024-12-05 17:20, Fin: 2024-12-19 04:40 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021201 => 220501, Inicio: 2024-12-05 06:26, Fin: 2024-12-14 06:50 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021201 => 130701, Inicio: 2024-12-03 03:31, Fin: 2024-12-15 09:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021201 => 021401, Inicio: 2024-12-06 15:56, Fin: 2024-12-23 14:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021101 => 021701, Inicio: 2024-12-01 13:49, Fin: 2024-12-22 02:26 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021001 => 220301, Inicio: 2024-12-06 15:36, Fin: 2024-12-15 04:22 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 021001 => 130201, Inicio: 2024-12-02 03:36, Fin: 2024-12-21 17:44 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020801 => 190201, Inicio: 2024-12-02 12:09, Fin: 2024-12-16 20:57 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020801 => 020901, Inicio: 2024-12-06 04:29, Fin: 2024-12-17 13:45 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020701 => 150701, Inicio: 2024-12-02 15:08, Fin: 2024-12-19 19:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020701 => 061001, Inicio: 2024-12-07 00:55, Fin: 2024-12-18 21:44 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020701 => 021101, Inicio: 2024-12-06 17:28, Fin: 2024-12-19 17:27 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020601 => 220301, Inicio: 2024-12-04 08:10, Fin: 2024-12-20 12:16 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020601 => 130201, Inicio: 2024-12-01 20:49, Fin: 2024-12-20 20:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020601 => 100201, Inicio: 2024-12-06 21:57, Fin: 2024-12-24 04:09 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020501 => 150401, Inicio: 2024-12-02 18:23, Fin: 2024-12-21 09:01 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020501 => 060201, Inicio: 2024-12-03 17:20, Fin: 2024-12-23 01:55 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020501 => 020401, Inicio: 2024-12-02 00:23, Fin: 2024-12-13 01:38 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020401 => 190201, Inicio: 2024-12-03 01:03, Fin: 2024-12-20 00:02 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020401 => 120801, Inicio: 2024-12-06 15:42, Fin: 2024-12-16 17:27 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020401 => 020601, Inicio: 2024-12-06 04:13, Fin: 2024-12-24 05:59 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020301 => 020401, Inicio: 2024-12-05 05:57, Fin: 2024-12-21 21:38 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020201 => 130301, Inicio: 2024-12-01 17:33, Fin: 2024-12-21 20:47 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020201 => 021301, Inicio: 2024-12-02 17:09, Fin: 2024-12-19 23:56 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020101 => 190101, Inicio: 2024-12-04 16:29, Fin: 2024-12-14 05:03 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020101 => 130101, Inicio: 2024-12-07 02:25, Fin: 2024-12-21 04:29 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 020101 => 070101, Inicio: 2024-12-02 13:16, Fin: 2024-12-13 15:43 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010701 => 220501, Inicio: 2024-12-04 05:05, Fin: 2024-12-17 09:43 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010701 => 130101, Inicio: 2024-12-07 00:53, Fin: 2024-12-21 07:13 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010701 => 021901, Inicio: 2024-12-05 12:57, Fin: 2024-12-15 01:53 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010601 => 131001, Inicio: 2024-12-02 00:07, Fin: 2024-12-15 04:31 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010501 => 131001, Inicio: 2024-12-06 08:18, Fin: 2024-12-22 22:11 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010301 => 131001, Inicio: 2024-12-01 19:16, Fin: 2024-12-22 09:37 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010201 => 220301, Inicio: 2024-12-03 01:47, Fin: 2024-12-20 16:19 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010101 => 221001, Inicio: 2024-12-01 02:25, Fin: 2024-12-14 01:07 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010101 => 130601, Inicio: 2024-12-05 19:56, Fin: 2024-12-14 07:44 
+[2024-12-13 12:25:14] [INFO   ] Bloqueo: 010101 => 022001, Inicio: 2024-12-06 16:59, Fin: 2024-12-23 11:53 
+[2024-12-13 12:25:14] [INFO   ] Iniciando carga del plan de mantenimiento desde: src/main/resources/maintenance.txt 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C017, Inicio: 2024-04-01 00:00, Fin: 2024-04-03 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C001, Inicio: 2024-04-03 00:00, Fin: 2024-04-05 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B011, Inicio: 2024-04-05 00:00, Fin: 2024-04-07 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C018, Inicio: 2024-04-07 00:00, Fin: 2024-04-09 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B001, Inicio: 2024-04-09 00:00, Fin: 2024-04-11 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C002, Inicio: 2024-04-11 00:00, Fin: 2024-04-13 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C019, Inicio: 2024-04-13 00:00, Fin: 2024-04-15 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B012, Inicio: 2024-04-15 00:00, Fin: 2024-04-17 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A001, Inicio: 2024-04-17 00:00, Fin: 2024-04-19 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C020, Inicio: 2024-04-19 00:00, Fin: 2024-04-21 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C003, Inicio: 2024-04-21 00:00, Fin: 2024-04-23 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B013, Inicio: 2024-04-23 00:00, Fin: 2024-04-25 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C021, Inicio: 2024-04-25 00:00, Fin: 2024-04-27 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B002, Inicio: 2024-04-27 00:00, Fin: 2024-04-29 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C004, Inicio: 2024-04-29 00:00, Fin: 2024-05-01 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C022, Inicio: 2024-05-01 00:00, Fin: 2024-05-03 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B014, Inicio: 2024-05-03 00:00, Fin: 2024-05-05 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A005, Inicio: 2024-05-05 00:00, Fin: 2024-05-07 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C023, Inicio: 2024-05-07 00:00, Fin: 2024-05-09 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C005, Inicio: 2024-05-09 00:00, Fin: 2024-05-11 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B015, Inicio: 2024-05-11 00:00, Fin: 2024-05-13 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C024, Inicio: 2024-05-13 00:00, Fin: 2024-05-15 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B003, Inicio: 2024-05-15 00:00, Fin: 2024-05-17 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A002, Inicio: 2024-05-17 00:00, Fin: 2024-05-19 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C011, Inicio: 2024-05-19 00:00, Fin: 2024-05-21 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C006, Inicio: 2024-05-21 00:00, Fin: 2024-05-23 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B008, Inicio: 2024-05-23 00:00, Fin: 2024-05-25 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C012, Inicio: 2024-05-25 00:00, Fin: 2024-05-27 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B004, Inicio: 2024-05-27 00:00, Fin: 2024-05-29 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C007, Inicio: 2024-05-29 00:00, Fin: 2024-05-31 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C013, Inicio: 2024-05-31 00:00, Fin: 2024-06-02 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A003, Inicio: 2024-06-02 00:00, Fin: 2024-06-04 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B005, Inicio: 2024-06-04 00:00, Fin: 2024-06-06 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C014, Inicio: 2024-06-06 00:00, Fin: 2024-06-08 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C008, Inicio: 2024-06-08 00:00, Fin: 2024-06-10 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B009, Inicio: 2024-06-10 00:00, Fin: 2024-06-12 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C015, Inicio: 2024-06-12 00:00, Fin: 2024-06-14 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A006, Inicio: 2024-06-14 00:00, Fin: 2024-06-16 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B006, Inicio: 2024-06-16 00:00, Fin: 2024-06-18 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C016, Inicio: 2024-06-18 00:00, Fin: 2024-06-20 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C009, Inicio: 2024-06-20 00:00, Fin: 2024-06-22 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: A004, Inicio: 2024-06-22 00:00, Fin: 2024-06-24 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B010, Inicio: 2024-06-24 00:00, Fin: 2024-06-26 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: C010, Inicio: 2024-06-26 00:00, Fin: 2024-06-28 23:59 
+[2024-12-13 12:25:14] [INFO   ] Mantenimiento cargado - Vehículo: B007, Inicio: 2024-06-28 00:00, Fin: 2024-06-30 23:59 
+[2024-12-13 12:25:14] [INFO   ] Carga del plan de mantenimiento completada. Total de mantenimientos: 45 
+[2024-12-13 12:25:14] [INFO   ] Comenzando carga de órdenes desde 1 archivos 
+[2024-12-13 12:25:14] [INFO   ] Cargadas 658 órdenes del archivo c.1inf54.ventas202412.txt 
+[2024-12-13 12:25:14] [INFO   ] Carga de órdenes completada. Total de órdenes cargadas: 658 
+[2024-12-13 12:25:14] [INFO   ] Cantidad total de nodos (locations): 195 
+[2024-12-13 12:25:14] [INFO   ] Número de núcleos detectados: 8 
+[2024-12-13 12:25:14] [INFO   ] Máximo de tareas concurrentes ajustado a: 16 
+[2024-12-13 12:25:14] [INFO   ] Simulación inicializada - Start Time: 2024-12-01T00:00, Last Update: 1734103514971 
+[2024-12-13 12:25:14] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:00 
+[2024-12-13 12:25:14] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:14] [INFO   ] Iniciando planificación: 2024-12-01T00:00 
+[2024-12-13 12:25:14] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:05 
+[2024-12-13 12:25:14] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T12:25:14.984320"} 
+[2024-12-13 12:25:14] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 12:25:14] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:05:00 AM, Duración simulada: 5 minutos, Tiempo real: 01/12/2024 12:00:00 AM, Duración real: 0 segundos 
+[2024-12-13 12:25:14] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:05:00 AM","simulatedDuration":"5 minutos","realElapsedTime":"01/12/2024 12:00:00 AM","realDuration":"0 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:14] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:05 
+[2024-12-13 12:25:14] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:15] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-01T00:05 
+[2024-12-13 12:25:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:15] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:10 
+[2024-12-13 12:25:15] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:10:00 AM, Duración simulada: 10 minutos, Tiempo real: 01/12/2024 12:00:01 AM, Duración real: 1 segundo 
+[2024-12-13 12:25:15] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:10:00 AM","simulatedDuration":"10 minutos","realElapsedTime":"01/12/2024 12:00:01 AM","realDuration":"1 segundo","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:15] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:10 
+[2024-12-13 12:25:15] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:16] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:16] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:15 
+[2024-12-13 12:25:16] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:15:00 AM, Duración simulada: 15 minutos, Tiempo real: 01/12/2024 12:00:02 AM, Duración real: 2 segundos 
+[2024-12-13 12:25:16] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:15:00 AM","simulatedDuration":"15 minutos","realElapsedTime":"01/12/2024 12:00:02 AM","realDuration":"2 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:16] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:15 
+[2024-12-13 12:25:16] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:17] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:20 
+[2024-12-13 12:25:17] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:20:00 AM, Duración simulada: 20 minutos, Tiempo real: 01/12/2024 12:00:03 AM, Duración real: 3 segundos 
+[2024-12-13 12:25:17] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:20:00 AM","simulatedDuration":"20 minutos","realElapsedTime":"01/12/2024 12:00:03 AM","realDuration":"3 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:17] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:20 
+[2024-12-13 12:25:17] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:18] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:25 
+[2024-12-13 12:25:18] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:25:00 AM, Duración simulada: 25 minutos, Tiempo real: 01/12/2024 12:00:04 AM, Duración real: 4 segundos 
+[2024-12-13 12:25:18] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:25:00 AM","simulatedDuration":"25 minutos","realElapsedTime":"01/12/2024 12:00:04 AM","realDuration":"4 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:18] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:25 
+[2024-12-13 12:25:18] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:19] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:30 
+[2024-12-13 12:25:19] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:30:00 AM, Duración simulada: 30 minutos, Tiempo real: 01/12/2024 12:00:05 AM, Duración real: 5 segundos 
+[2024-12-13 12:25:19] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:30:00 AM","simulatedDuration":"30 minutos","realElapsedTime":"01/12/2024 12:00:05 AM","realDuration":"5 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:19] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:30 
+[2024-12-13 12:25:19] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:20] [INFO   ] Iniciando planificación: 2024-12-01T00:30 
+[2024-12-13 12:25:20] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":2,"message":"Procesando 2 órdenes","timestamp":"2024-12-13T12:25:20.003241"} 
+[2024-12-13 12:25:20] [INFO   ] Órdenes disponibles: 2 
+[2024-12-13 12:25:20] [INFO   ] Orden 1 - Paquetes restantes sin asignar: 3 
+[2024-12-13 12:25:20] [INFO   ] Orden 2 - Paquetes restantes sin asignar: 10 
+[2024-12-13 12:25:20] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:35 
+[2024-12-13 12:25:20] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:35:00 AM, Duración simulada: 35 minutos, Tiempo real: 01/12/2024 12:00:06 AM, Duración real: 6 segundos 
+[2024-12-13 12:25:20] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:35:00 AM","simulatedDuration":"35 minutos","realElapsedTime":"01/12/2024 12:00:06 AM","realDuration":"6 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:20] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:35 
+[2024-12-13 12:25:20] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:21] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:21] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:21] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Procesando 2 órdenes","timestamp":"2024-12-13T12:25:21.513180"} 
+[2024-12-13 12:25:21] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T12:25:21.514188","routesStats":{"total":2,"completed":0}} 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 150101 hacia 040701 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 150101 hacia 040701 
+[2024-12-13 12:25:21] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 150101 hacia 030301 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 150101 hacia 030301 
+[2024-12-13 12:25:21] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 040101 hacia 040701 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 040101 hacia 040701 
+[2024-12-13 12:25:21] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 040101 hacia 030301 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 040101 hacia 030301 
+[2024-12-13 12:25:21] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 130101 hacia 040701 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 130101 hacia 040701 
+[2024-12-13 12:25:21] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 130101 hacia 030301 
+[2024-12-13 12:25:21] [INFO   ] Calculando ruta desde 130101 hacia 030301 
+[2024-12-13 12:25:21] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:21] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 12:25:21] [INFO   ] 
+Destino: 040701 
+[2024-12-13 12:25:21] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:21] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:21] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 11 horas, 8 minutos) 
+[2024-12-13 12:25:21] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 1 horas, 14 minutos) 
+[2024-12-13 12:25:21] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 18 horas, 5 minutos) 
+[2024-12-13 12:25:21] [INFO   ] 
+Destino: 030301 
+[2024-12-13 12:25:21] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:21] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:21] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 8 horas, 46 minutos) 
+[2024-12-13 12:25:21] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 4 horas, 40 minutos) 
+[2024-12-13 12:25:21] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 15 horas, 22 minutos) 
+[2024-12-13 12:25:21] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T12:25:21.899552","routesStats":{"total":2,"completed":2}} 
+[2024-12-13 12:25:21] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:40 
+[2024-12-13 12:25:21] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:40:00 AM, Duración simulada: 40 minutos, Tiempo real: 01/12/2024 12:00:07 AM, Duración real: 7 segundos 
+[2024-12-13 12:25:21] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:40:00 AM","simulatedDuration":"40 minutos","realElapsedTime":"01/12/2024 12:00:07 AM","realDuration":"7 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:21] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:40 
+[2024-12-13 12:25:21] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:22] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:45 
+[2024-12-13 12:25:22] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:45:00 AM, Duración simulada: 45 minutos, Tiempo real: 01/12/2024 12:00:08 AM, Duración real: 8 segundos 
+[2024-12-13 12:25:22] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:45:00 AM","simulatedDuration":"45 minutos","realElapsedTime":"01/12/2024 12:00:08 AM","realDuration":"8 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:22] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:45 
+[2024-12-13 12:25:22] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:23] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:50 
+[2024-12-13 12:25:23] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:50:00 AM, Duración simulada: 50 minutos, Tiempo real: 01/12/2024 12:00:09 AM, Duración real: 9 segundos 
+[2024-12-13 12:25:23] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:50:00 AM","simulatedDuration":"50 minutos","realElapsedTime":"01/12/2024 12:00:09 AM","realDuration":"9 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:23] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:50 
+[2024-12-13 12:25:23] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:24] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Iniciando asignación de vehículos","timestamp":"2024-12-13T12:25:24.901669"} 
+[2024-12-13 12:25:24] [INFO   ] Orden 1 asignada al almacén 040101 para entrega en 040701 
+[2024-12-13 12:25:24] [INFO   ] Orden 2 asignada al almacén 040101 para entrega en 030301 
+[2024-12-13 12:25:24] [INFO   ] 
+=== Resumen de asignación de almacenes === 
+[2024-12-13 12:25:24] [INFO   ] Órdenes asignadas: 2 
+[2024-12-13 12:25:24] [INFO   ] Órdenes no asignables: 0 
+[2024-12-13 12:25:24] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:55 
+[2024-12-13 12:25:24] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:55:00 AM, Duración simulada: 55 minutos, Tiempo real: 01/12/2024 12:00:10 AM, Duración real: 10 segundos 
+[2024-12-13 12:25:24] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:55:00 AM","simulatedDuration":"55 minutos","realElapsedTime":"01/12/2024 12:00:10 AM","realDuration":"10 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:24] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:55 
+[2024-12-13 12:25:24] [INFO   ] Nuevo bloqueo activado: Origen: 021501, Destino: 130801, Inicio: 2024-12-01T00:52, Fin: 2024-12-13T12:36 
+[2024-12-13 12:25:24] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 12:25:24] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 12:25:24] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 12:25:24] [INFO   ] - Total de bloqueos activos: 1 
+[2024-12-13 12:25:24] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 12:25:24] [INFO   ] Ruta bloqueada: 021501 -> 130801 
+[2024-12-13 12:25:24] [INFO   ] Matriz de tiempo actualizada con 1 bloqueos aplicados 
+[2024-12-13 12:25:25] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:00 
+[2024-12-13 12:25:25] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:00:00 AM, Duración simulada: 1 hora, Tiempo real: 01/12/2024 12:00:11 AM, Duración real: 11 segundos 
+[2024-12-13 12:25:25] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:00:00 AM","simulatedDuration":"1 hora","realElapsedTime":"01/12/2024 12:00:11 AM","realDuration":"11 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:25] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:00 
+[2024-12-13 12:25:25] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:26] [INFO   ] Orden 1 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:26] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 1
+Cantidad Total de la Orden: 3 paquetes
+Cantidad Asignada al Vehículo: 3 paquetes
+Código del Vehículo: A006
+Capacidad Actual del Vehículo: 3 / 90
+--------------------------- 
+[2024-12-13 12:25:26] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 3, Capacidad Total: 90, Total Registros: 1 
+[2024-12-13 12:25:26] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: A006
+Capacidad del Vehículo: 90 paquetes
+Orden a Entregar:
+  - Código de la Orden: 1
+  - Cantidad Total de la Orden: 3 paquetes
+  - Cantidad Asignada al Vehículo: 3 paquetes
+Origen: 040101 (AREQUIPA)
+Destino: 040701 (ISLAY)
+Tiempo de Inicio de Viaje: 2024-12-01 01:00:00
+Tiempo Estimado de Llegada: 2024-12-01 02:14:00
+Tiempo Límite de Entrega: 2024-12-02 00:04:00
+-------------------------Segmentos Restantes:
+ - Segmento: AREQUIPA to ISLAY, Desde: 040101, Hacia: 040701, Distancia: 0.0 km, Duración: 74 min
+ 
+[2024-12-13 12:25:26] [INFO   ] Orden 1 completamente asignada. 
+[2024-12-13 12:25:26] [INFO   ] Orden 2 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:26] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 2
+Cantidad Total de la Orden: 10 paquetes
+Cantidad Asignada al Vehículo: 10 paquetes
+Código del Vehículo: B011
+Capacidad Actual del Vehículo: 10 / 45
+--------------------------- 
+[2024-12-13 12:25:26] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 10, Capacidad Total: 45, Total Registros: 2 
+[2024-12-13 12:25:26] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B011
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 2
+  - Cantidad Total de la Orden: 10 paquetes
+  - Cantidad Asignada al Vehículo: 10 paquetes
+Origen: 040101 (AREQUIPA)
+Destino: 030301 (ANTABAMBA)
+Tiempo de Inicio de Viaje: 2024-12-01 01:00:00
+Tiempo Estimado de Llegada: 2024-12-01 05:40:00
+Tiempo Límite de Entrega: 2024-12-03 00:17:00
+-------------------------Segmentos Restantes:
+ - Segmento: AREQUIPA to LA UNION, Desde: 040101, Hacia: 040801, Distancia: 0.0 km, Duración: 167 min
+ - Segmento: LA UNION to ANTABAMBA, Desde: 040801, Hacia: 030301, Distancia: 0.0 km, Duración: 113 min
+ 
+[2024-12-13 12:25:26] [INFO   ] Orden 2 completamente asignada. 
+[2024-12-13 12:25:26] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Se asignaron 2 vehículos","timestamp":"2024-12-13T12:25:26.417198","assignedVehicles":2} 
+[2024-12-13 12:25:26] [INFO   ] Vehículo A006 programado para avería tipo 1 a las 2024-12-01T01:37 en el tramo de 040101 (AREQUIPA) a 040701 (ISLAY) 
+[2024-12-13 12:25:26] [INFO   ] Vehículo B011 programado para avería tipo 3 a las 2024-12-01T03:20 en el tramo de 040101 (AREQUIPA) a 030301 (ANTABAMBA) 
+[2024-12-13 12:25:26] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:26] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:05 
+[2024-12-13 12:25:26] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:05:00 AM, Duración simulada: 1 hora 5 minutos, Tiempo real: 01/12/2024 12:00:12 AM, Duración real: 12 segundos 
+[2024-12-13 12:25:26] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:05:00 AM","simulatedDuration":"1 hora 5 minutos","realElapsedTime":"01/12/2024 12:00:12 AM","realDuration":"12 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:26] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:05 
+[2024-12-13 12:25:26] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:26] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:26] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:27] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:10 
+[2024-12-13 12:25:27] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:10:00 AM, Duración simulada: 1 hora 10 minutos, Tiempo real: 01/12/2024 12:00:13 AM, Duración real: 13 segundos 
+[2024-12-13 12:25:27] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:10:00 AM","simulatedDuration":"1 hora 10 minutos","realElapsedTime":"01/12/2024 12:00:13 AM","realDuration":"13 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:27] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:10 
+[2024-12-13 12:25:27] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:27] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:27] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:28] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:15 
+[2024-12-13 12:25:28] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:15:00 AM, Duración simulada: 1 hora 15 minutos, Tiempo real: 01/12/2024 12:00:14 AM, Duración real: 14 segundos 
+[2024-12-13 12:25:28] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:15:00 AM","simulatedDuration":"1 hora 15 minutos","realElapsedTime":"01/12/2024 12:00:14 AM","realDuration":"14 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:28] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:15 
+[2024-12-13 12:25:28] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:28] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:28] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:29] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:20 
+[2024-12-13 12:25:29] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:20:00 AM, Duración simulada: 1 hora 20 minutos, Tiempo real: 01/12/2024 12:00:15 AM, Duración real: 15 segundos 
+[2024-12-13 12:25:29] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:20:00 AM","simulatedDuration":"1 hora 20 minutos","realElapsedTime":"01/12/2024 12:00:15 AM","realDuration":"15 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:29] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:20 
+[2024-12-13 12:25:29] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:29] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:29] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:30] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:25 
+[2024-12-13 12:25:30] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:25:00 AM, Duración simulada: 1 hora 25 minutos, Tiempo real: 01/12/2024 12:00:16 AM, Duración real: 16 segundos 
+[2024-12-13 12:25:30] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:25:00 AM","simulatedDuration":"1 hora 25 minutos","realElapsedTime":"01/12/2024 12:00:16 AM","realDuration":"16 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:30] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:25 
+[2024-12-13 12:25:30] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:30] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:30] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:31] [INFO   ] Iniciando planificación: 2024-12-01T01:25 
+[2024-12-13 12:25:31] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":3,"message":"Procesando 3 órdenes","timestamp":"2024-12-13T12:25:31.425206"} 
+[2024-12-13 12:25:31] [INFO   ] Órdenes disponibles: 3 
+[2024-12-13 12:25:31] [INFO   ] Orden 3 - Paquetes restantes sin asignar: 12 
+[2024-12-13 12:25:31] [INFO   ] Orden 4 - Paquetes restantes sin asignar: 12 
+[2024-12-13 12:25:31] [INFO   ] Orden 5 - Paquetes restantes sin asignar: 16 
+[2024-12-13 12:25:31] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:31] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:31] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:30 
+[2024-12-13 12:25:31] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:30:00 AM, Duración simulada: 1 hora 30 minutos, Tiempo real: 01/12/2024 12:00:17 AM, Duración real: 17 segundos 
+[2024-12-13 12:25:31] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:30:00 AM","simulatedDuration":"1 hora 30 minutos","realElapsedTime":"01/12/2024 12:00:17 AM","realDuration":"17 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:31] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:30 
+[2024-12-13 12:25:31] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:31] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:25:31] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:25:32] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":3,"message":"Procesando 3 órdenes","timestamp":"2024-12-13T12:25:32.927221"} 
+[2024-12-13 12:25:32] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":3,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T12:25:32.928149","routesStats":{"total":2,"completed":0}} 
+[2024-12-13 12:25:32] [INFO   ] Calculando ruta desde 150101 hacia 240101 
+[2024-12-13 12:25:32] [INFO   ] Calculando ruta desde 150101 hacia 240101 
+[2024-12-13 12:25:32] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:32] [INFO   ] Calculando ruta desde 150101 hacia 021901 
+[2024-12-13 12:25:32] [INFO   ] Calculando ruta desde 150101 hacia 021901 
+[2024-12-13 12:25:32] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:35 
+[2024-12-13 12:25:32] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:35:00 AM, Duración simulada: 1 hora 35 minutos, Tiempo real: 01/12/2024 12:00:18 AM, Duración real: 18 segundos 
+[2024-12-13 12:25:32] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:35:00 AM","simulatedDuration":"1 hora 35 minutos","realElapsedTime":"01/12/2024 12:00:18 AM","realDuration":"18 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:32] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:35 
+[2024-12-13 12:25:32] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:32] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:25:32] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:25:33] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 040101 hacia 240101 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 040101 hacia 240101 
+[2024-12-13 12:25:33] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 040101 hacia 021901 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 040101 hacia 021901 
+[2024-12-13 12:25:33] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 130101 hacia 240101 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 130101 hacia 240101 
+[2024-12-13 12:25:33] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 130101 hacia 021901 
+[2024-12-13 12:25:33] [INFO   ] Calculando ruta desde 130101 hacia 021901 
+[2024-12-13 12:25:33] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:33] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 12:25:33] [INFO   ] 
+Destino: 240101 
+[2024-12-13 12:25:33] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:33] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:33] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 14 horas, 33 minutos) 
+[2024-12-13 12:25:33] [INFO   ] - 040101: ÉXITO (Tiempo: 1 días, 1 horas, 46 minutos) 
+[2024-12-13 12:25:33] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 7 horas, 36 minutos) 
+[2024-12-13 12:25:33] [INFO   ] 
+Destino: 021901 
+[2024-12-13 12:25:33] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:33] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:33] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 5 horas, 52 minutos) 
+[2024-12-13 12:25:33] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 16 horas, 34 minutos) 
+[2024-12-13 12:25:33] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 2 horas, 18 minutos) 
+[2024-12-13 12:25:33] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":3,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T12:25:33.409591","routesStats":{"total":2,"completed":2}} 
+[2024-12-13 12:25:33] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:40 
+[2024-12-13 12:25:33] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:40:00 AM, Duración simulada: 1 hora 40 minutos, Tiempo real: 01/12/2024 12:00:19 AM, Duración real: 19 segundos 
+[2024-12-13 12:25:33] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:40:00 AM","simulatedDuration":"1 hora 40 minutos","realElapsedTime":"01/12/2024 12:00:19 AM","realDuration":"19 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:33] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:40 
+[2024-12-13 12:25:33] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:33] [INFO   ] Vehículo A006 ha sufrido una avería tipo AVERIADO_1 en el tramo 1: AREQUIPA to ISLAY. Tiempo transcurrido en el tramo: 40 minutos. 
+[2024-12-13 12:25:33] [INFO   ] Vehículo A006 ha sufrido una avería tipo AVERIADO_1 en 040101. Estará detenido hasta 2024-12-01T05:40. 
+[2024-12-13 12:25:33] [INFO   ] Vehículo A006 ha sufrido una avería tipo 1 a las 2024-12-01T01:40 en el tramo de 040101 a 040701 
+[2024-12-13 12:25:33] [INFO   ] Vehículo A006 ha estado averiado durante 0 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:33] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 40 minutos 
+[2024-12-13 12:25:34] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:45 
+[2024-12-13 12:25:34] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:45:00 AM, Duración simulada: 1 hora 45 minutos, Tiempo real: 01/12/2024 12:00:20 AM, Duración real: 20 segundos 
+[2024-12-13 12:25:34] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:45:00 AM","simulatedDuration":"1 hora 45 minutos","realElapsedTime":"01/12/2024 12:00:20 AM","realDuration":"20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:34] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:45 
+[2024-12-13 12:25:34] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:34] [INFO   ] Vehículo A006 ha estado averiado durante 5 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:34] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 45 minutos 
+[2024-12-13 12:25:35] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:50 
+[2024-12-13 12:25:35] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:50:00 AM, Duración simulada: 1 hora 50 minutos, Tiempo real: 01/12/2024 12:00:21 AM, Duración real: 21 segundos 
+[2024-12-13 12:25:35] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:50:00 AM","simulatedDuration":"1 hora 50 minutos","realElapsedTime":"01/12/2024 12:00:21 AM","realDuration":"21 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:35] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:50 
+[2024-12-13 12:25:35] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:35] [INFO   ] Vehículo A006 ha estado averiado durante 10 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:35] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 50 minutos 
+[2024-12-13 12:25:36] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Iniciando asignación de vehículos","timestamp":"2024-12-13T12:25:36.413622"} 
+[2024-12-13 12:25:36] [INFO   ] Orden 3 asignada al almacén 130101 para entrega en 240101 
+[2024-12-13 12:25:36] [INFO   ] Orden 4 asignada al almacén 130101 para entrega en 240101 
+[2024-12-13 12:25:36] [INFO   ] Orden 5 asignada al almacén 130101 para entrega en 021901 
+[2024-12-13 12:25:36] [INFO   ] 
+=== Resumen de asignación de almacenes === 
+[2024-12-13 12:25:36] [INFO   ] Órdenes asignadas: 3 
+[2024-12-13 12:25:36] [INFO   ] Órdenes no asignables: 0 
+[2024-12-13 12:25:36] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:36] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:36] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:55 
+[2024-12-13 12:25:36] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:55:00 AM, Duración simulada: 1 hora 55 minutos, Tiempo real: 01/12/2024 12:00:22 AM, Duración real: 22 segundos 
+[2024-12-13 12:25:36] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:55:00 AM","simulatedDuration":"1 hora 55 minutos","realElapsedTime":"01/12/2024 12:00:22 AM","realDuration":"22 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:36] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:55 
+[2024-12-13 12:25:36] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:36] [INFO   ] Vehículo A006 ha estado averiado durante 15 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:36] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 55 minutos 
+[2024-12-13 12:25:37] [INFO   ] Orden 3 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 3
+Cantidad Total de la Orden: 12 paquetes
+Cantidad Asignada al Vehículo: 12 paquetes
+Código del Vehículo: A005
+Capacidad Actual del Vehículo: 12 / 90
+--------------------------- 
+[2024-12-13 12:25:37] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 12, Capacidad Total: 90, Total Registros: 3 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: A005
+Capacidad del Vehículo: 90 paquetes
+Orden a Entregar:
+  - Código de la Orden: 3
+  - Cantidad Total de la Orden: 12 paquetes
+  - Cantidad Asignada al Vehículo: 12 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 240101 (TUMBES)
+Tiempo de Inicio de Viaje: 2024-12-01 01:55:00
+Tiempo Estimado de Llegada: 2024-12-01 09:31:00
+Tiempo Límite de Entrega: 2024-12-02 00:33:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to FERREÑAFE, Desde: 130101, Hacia: 140201, Distancia: 0.0 km, Duración: 157 min
+ - Segmento: FERREÑAFE to MORROPON, Desde: 140201, Hacia: 200401, Distancia: 0.0 km, Duración: 151 min
+ - Segmento: MORROPON to TUMBES, Desde: 200401, Hacia: 240101, Distancia: 0.0 km, Duración: 148 min
+ 
+[2024-12-13 12:25:37] [INFO   ] Orden 3 completamente asignada. 
+[2024-12-13 12:25:37] [INFO   ] Orden 4 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 4
+Cantidad Total de la Orden: 12 paquetes
+Cantidad Asignada al Vehículo: 12 paquetes
+Código del Vehículo: B008
+Capacidad Actual del Vehículo: 12 / 45
+--------------------------- 
+[2024-12-13 12:25:37] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 12, Capacidad Total: 45, Total Registros: 4 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B008
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 4
+  - Cantidad Total de la Orden: 12 paquetes
+  - Cantidad Asignada al Vehículo: 12 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 240101 (TUMBES)
+Tiempo de Inicio de Viaje: 2024-12-01 01:55:00
+Tiempo Estimado de Llegada: 2024-12-01 09:31:00
+Tiempo Límite de Entrega: 2024-12-02 00:50:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to FERREÑAFE, Desde: 130101, Hacia: 140201, Distancia: 0.0 km, Duración: 157 min
+ - Segmento: FERREÑAFE to MORROPON, Desde: 140201, Hacia: 200401, Distancia: 0.0 km, Duración: 151 min
+ - Segmento: MORROPON to TUMBES, Desde: 200401, Hacia: 240101, Distancia: 0.0 km, Duración: 148 min
+ 
+[2024-12-13 12:25:37] [INFO   ] Orden 4 completamente asignada. 
+[2024-12-13 12:25:37] [INFO   ] Orden 5 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 5
+Cantidad Total de la Orden: 16 paquetes
+Cantidad Asignada al Vehículo: 16 paquetes
+Código del Vehículo: B009
+Capacidad Actual del Vehículo: 16 / 45
+--------------------------- 
+[2024-12-13 12:25:37] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 16, Capacidad Total: 45, Total Registros: 5 
+[2024-12-13 12:25:37] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B009
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 5
+  - Cantidad Total de la Orden: 16 paquetes
+  - Cantidad Asignada al Vehículo: 16 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 021901 (SIHUAS)
+Tiempo de Inicio de Viaje: 2024-12-01 01:55:00
+Tiempo Estimado de Llegada: 2024-12-01 04:13:00
+Tiempo Límite de Entrega: 2024-12-02 01:11:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to SIHUAS, Desde: 130101, Hacia: 021901, Distancia: 0.0 km, Duración: 138 min
+ 
+[2024-12-13 12:25:37] [INFO   ] Orden 5 completamente asignada. 
+[2024-12-13 12:25:37] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Se asignaron 3 vehículos","timestamp":"2024-12-13T12:25:37.917118","assignedVehicles":3} 
+[2024-12-13 12:25:37] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:00 
+[2024-12-13 12:25:37] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:00:00 AM, Duración simulada: 2 horas, Tiempo real: 01/12/2024 12:00:23 AM, Duración real: 23 segundos 
+[2024-12-13 12:25:37] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:00:00 AM","simulatedDuration":"2 horas","realElapsedTime":"01/12/2024 12:00:23 AM","realDuration":"23 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:37] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:00 
+[2024-12-13 12:25:37] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:37] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:37] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:37] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:37] [INFO   ] Vehículo A006 ha estado averiado durante 20 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:37] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 60 minutos 
+[2024-12-13 12:25:38] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:05 
+[2024-12-13 12:25:38] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:05:00 AM, Duración simulada: 2 horas 5 minutos, Tiempo real: 01/12/2024 12:00:24 AM, Duración real: 24 segundos 
+[2024-12-13 12:25:38] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:05:00 AM","simulatedDuration":"2 horas 5 minutos","realElapsedTime":"01/12/2024 12:00:24 AM","realDuration":"24 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:38] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:05 
+[2024-12-13 12:25:38] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:38] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:38] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:38] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:38] [INFO   ] Vehículo A006 ha estado averiado durante 25 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:38] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 65 minutos 
+[2024-12-13 12:25:39] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:10 
+[2024-12-13 12:25:39] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:10:00 AM, Duración simulada: 2 horas 10 minutos, Tiempo real: 01/12/2024 12:00:25 AM, Duración real: 25 segundos 
+[2024-12-13 12:25:39] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:10:00 AM","simulatedDuration":"2 horas 10 minutos","realElapsedTime":"01/12/2024 12:00:25 AM","realDuration":"25 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:39] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:10 
+[2024-12-13 12:25:39] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:39] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:39] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:39] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:39] [INFO   ] Vehículo A006 ha estado averiado durante 30 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:39] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 70 minutos 
+[2024-12-13 12:25:40] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:15 
+[2024-12-13 12:25:40] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:15:00 AM, Duración simulada: 2 horas 15 minutos, Tiempo real: 01/12/2024 12:00:26 AM, Duración real: 26 segundos 
+[2024-12-13 12:25:40] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:15:00 AM","simulatedDuration":"2 horas 15 minutos","realElapsedTime":"01/12/2024 12:00:26 AM","realDuration":"26 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:40] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:15 
+[2024-12-13 12:25:40] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:40] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:40] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:40] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:40] [INFO   ] Vehículo A006 ha estado averiado durante 35 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:40] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 75 minutos 
+[2024-12-13 12:25:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:41] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:41] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:20 
+[2024-12-13 12:25:41] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:20:00 AM, Duración simulada: 2 horas 20 minutos, Tiempo real: 01/12/2024 12:00:27 AM, Duración real: 27 segundos 
+[2024-12-13 12:25:41] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:20:00 AM","simulatedDuration":"2 horas 20 minutos","realElapsedTime":"01/12/2024 12:00:27 AM","realDuration":"27 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:41] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:20 
+[2024-12-13 12:25:41] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:41] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:41] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:41] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:41] [INFO   ] Vehículo A006 ha estado averiado durante 40 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:41] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 80 minutos 
+[2024-12-13 12:25:42] [INFO   ] Iniciando planificación: 2024-12-01T02:20 
+[2024-12-13 12:25:42] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":5,"message":"Procesando 5 órdenes","timestamp":"2024-12-13T12:25:42.918931"} 
+[2024-12-13 12:25:42] [INFO   ] Órdenes disponibles: 5 
+[2024-12-13 12:25:42] [INFO   ] Orden 7 - Paquetes restantes sin asignar: 1 
+[2024-12-13 12:25:42] [INFO   ] Orden 10 - Paquetes restantes sin asignar: 2 
+[2024-12-13 12:25:42] [INFO   ] Orden 9 - Paquetes restantes sin asignar: 11 
+[2024-12-13 12:25:42] [INFO   ] Orden 6 - Paquetes restantes sin asignar: 17 
+[2024-12-13 12:25:42] [INFO   ] Orden 8 - Paquetes restantes sin asignar: 9 
+[2024-12-13 12:25:42] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:25 
+[2024-12-13 12:25:42] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:25:00 AM, Duración simulada: 2 horas 25 minutos, Tiempo real: 01/12/2024 12:00:28 AM, Duración real: 28 segundos 
+[2024-12-13 12:25:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:25:00 AM","simulatedDuration":"2 horas 25 minutos","realElapsedTime":"01/12/2024 12:00:28 AM","realDuration":"28 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:25 
+[2024-12-13 12:25:42] [INFO   ] Nuevo bloqueo activado: Origen: 010101, Destino: 221001, Inicio: 2024-12-01T02:25, Fin: 2024-12-14T01:07 
+[2024-12-13 12:25:42] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 12:25:42] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 12:25:42] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 12:25:42] [INFO   ] - Total de bloqueos activos: 2 
+[2024-12-13 12:25:42] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 12:25:42] [INFO   ] Ruta bloqueada: 021501 -> 130801 
+[2024-12-13 12:25:42] [INFO   ] Ruta bloqueada: 010101 -> 221001 
+[2024-12-13 12:25:42] [INFO   ] Matriz de tiempo actualizada con 2 bloqueos aplicados 
+[2024-12-13 12:25:42] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:25:42] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:25:42] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:25:42] [INFO   ] Vehículo A006 ha estado averiado durante 45 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:42] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 85 minutos 
+[2024-12-13 12:25:43] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:30 
+[2024-12-13 12:25:43] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:30:00 AM, Duración simulada: 2 horas 30 minutos, Tiempo real: 01/12/2024 12:00:29 AM, Duración real: 29 segundos 
+[2024-12-13 12:25:43] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:30:00 AM","simulatedDuration":"2 horas 30 minutos","realElapsedTime":"01/12/2024 12:00:29 AM","realDuration":"29 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:43] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:30 
+[2024-12-13 12:25:43] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:43] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:25:43] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:25:43] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:25:43] [INFO   ] Vehículo A006 ha estado averiado durante 50 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:43] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 90 minutos 
+[2024-12-13 12:25:44] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":5,"message":"Procesando 5 órdenes","timestamp":"2024-12-13T12:25:44.423410"} 
+[2024-12-13 12:25:44] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":5,"message":"Calculando rutas para 5 destinos","timestamp":"2024-12-13T12:25:44.424075","routesStats":{"total":5,"completed":0}} 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 160301 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 160301 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 140101 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 140101 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 020601 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 020601 
+[2024-12-13 12:25:44] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 250101 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 250101 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 030201 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 150101 hacia 030201 
+[2024-12-13 12:25:44] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 160301 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 160301 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 140101 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 140101 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 020601 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 020601 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 250101 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 250101 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 030201 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 040101 hacia 030201 
+[2024-12-13 12:25:44] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 130101 hacia 160301 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 130101 hacia 160301 
+[2024-12-13 12:25:44] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 130101 hacia 140101 
+[2024-12-13 12:25:44] [INFO   ] Calculando ruta desde 130101 hacia 140101 
+[2024-12-13 12:25:44] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:35 
+[2024-12-13 12:25:44] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:35:00 AM, Duración simulada: 2 horas 35 minutos, Tiempo real: 01/12/2024 12:00:30 AM, Duración real: 30 segundos 
+[2024-12-13 12:25:44] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:35:00 AM","simulatedDuration":"2 horas 35 minutos","realElapsedTime":"01/12/2024 12:00:30 AM","realDuration":"30 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:44] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:35 
+[2024-12-13 12:25:44] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:44] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 40 minutos 
+[2024-12-13 12:25:44] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 40 minutos 
+[2024-12-13 12:25:44] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 40 minutos 
+[2024-12-13 12:25:44] [INFO   ] Vehículo A006 ha estado averiado durante 55 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:44] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 95 minutos 
+[2024-12-13 12:25:45] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 020601 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 020601 
+[2024-12-13 12:25:45] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 250101 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 250101 
+[2024-12-13 12:25:45] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 030201 
+[2024-12-13 12:25:45] [INFO   ] Calculando ruta desde 130101 hacia 030201 
+[2024-12-13 12:25:45] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:25:45] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 12:25:45] [INFO   ] 
+Destino: 160301 
+[2024-12-13 12:25:45] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:45] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:45] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 14 horas, 43 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 21 horas, 39 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 14 horas, 58 minutos) 
+[2024-12-13 12:25:45] [INFO   ] 
+Destino: 140101 
+[2024-12-13 12:25:45] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:45] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:45] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 9 horas, 25 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 20 horas, 38 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 2 horas, 28 minutos) 
+[2024-12-13 12:25:45] [INFO   ] 
+Destino: 250101 
+[2024-12-13 12:25:45] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:45] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:45] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 8 horas, 18 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 16 horas, 49 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 8 horas, 12 minutos) 
+[2024-12-13 12:25:45] [INFO   ] 
+Destino: 020601 
+[2024-12-13 12:25:45] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:45] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:45] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 4 horas, 29 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 15 horas, 32 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 2 horas, 51 minutos) 
+[2024-12-13 12:25:45] [INFO   ] 
+Destino: 030201 
+[2024-12-13 12:25:45] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:25:45] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:25:45] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 7 horas, 17 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 6 horas, 46 minutos) 
+[2024-12-13 12:25:45] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 13 horas, 51 minutos) 
+[2024-12-13 12:25:45] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":5,"message":"Calculando rutas para 5 destinos","timestamp":"2024-12-13T12:25:45.198191","routesStats":{"total":5,"completed":5}} 
+[2024-12-13 12:25:45] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:40 
+[2024-12-13 12:25:45] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:40:00 AM, Duración simulada: 2 horas 40 minutos, Tiempo real: 01/12/2024 12:00:31 AM, Duración real: 31 segundos 
+[2024-12-13 12:25:45] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:40:00 AM","simulatedDuration":"2 horas 40 minutos","realElapsedTime":"01/12/2024 12:00:31 AM","realDuration":"31 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:45] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:40 
+[2024-12-13 12:25:45] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:45] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 45 minutos 
+[2024-12-13 12:25:45] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 45 minutos 
+[2024-12-13 12:25:45] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 45 minutos 
+[2024-12-13 12:25:45] [INFO   ] Vehículo A006 ha estado averiado durante 60 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:45] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 100 minutos 
+[2024-12-13 12:25:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:46] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:46] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:45 
+[2024-12-13 12:25:46] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:45:00 AM, Duración simulada: 2 horas 45 minutos, Tiempo real: 01/12/2024 12:00:32 AM, Duración real: 32 segundos 
+[2024-12-13 12:25:46] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:45:00 AM","simulatedDuration":"2 horas 45 minutos","realElapsedTime":"01/12/2024 12:00:32 AM","realDuration":"32 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:46] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:45 
+[2024-12-13 12:25:46] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:46] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 50 minutos 
+[2024-12-13 12:25:46] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 50 minutos 
+[2024-12-13 12:25:46] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 50 minutos 
+[2024-12-13 12:25:46] [INFO   ] Vehículo A006 ha estado averiado durante 65 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:46] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 105 minutos 
+[2024-12-13 12:25:47] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:50 
+[2024-12-13 12:25:47] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:50:00 AM, Duración simulada: 2 horas 50 minutos, Tiempo real: 01/12/2024 12:00:33 AM, Duración real: 33 segundos 
+[2024-12-13 12:25:47] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:50:00 AM","simulatedDuration":"2 horas 50 minutos","realElapsedTime":"01/12/2024 12:00:33 AM","realDuration":"33 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:47] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:50 
+[2024-12-13 12:25:47] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:47] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 55 minutos 
+[2024-12-13 12:25:47] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 55 minutos 
+[2024-12-13 12:25:47] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 55 minutos 
+[2024-12-13 12:25:47] [INFO   ] Vehículo A006 ha estado averiado durante 70 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:47] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 110 minutos 
+[2024-12-13 12:25:48] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Iniciando asignación de vehículos","timestamp":"2024-12-13T12:25:48.198932"} 
+[2024-12-13 12:25:48] [INFO   ] Orden 7 asignada al almacén 130101 para entrega en 140101 
+[2024-12-13 12:25:48] [INFO   ] Orden 10 asignada al almacén 130101 para entrega en 020601 
+[2024-12-13 12:25:48] [INFO   ] Orden 9 asignada al almacén 040101 para entrega en 030201 
+[2024-12-13 12:25:48] [INFO   ] Orden 6 asignada al almacén 150101 para entrega en 160301 
+[2024-12-13 12:25:48] [INFO   ] Orden 8 asignada al almacén 130101 para entrega en 250101 
+[2024-12-13 12:25:48] [INFO   ] 
+=== Resumen de asignación de almacenes === 
+[2024-12-13 12:25:48] [INFO   ] Órdenes asignadas: 5 
+[2024-12-13 12:25:48] [INFO   ] Órdenes no asignables: 0 
+[2024-12-13 12:25:48] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T02:55 
+[2024-12-13 12:25:48] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 02:55:00 AM, Duración simulada: 2 horas 55 minutos, Tiempo real: 01/12/2024 12:00:34 AM, Duración real: 34 segundos 
+[2024-12-13 12:25:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 02:55:00 AM","simulatedDuration":"2 horas 55 minutos","realElapsedTime":"01/12/2024 12:00:34 AM","realDuration":"34 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T02:55 
+[2024-12-13 12:25:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:48] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 60 minutos 
+[2024-12-13 12:25:48] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 60 minutos 
+[2024-12-13 12:25:48] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 60 minutos 
+[2024-12-13 12:25:48] [INFO   ] Vehículo A006 ha estado averiado durante 75 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:48] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 115 minutos 
+[2024-12-13 12:25:49] [INFO   ] Orden 7 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 7
+Cantidad Total de la Orden: 1 paquetes
+Cantidad Asignada al Vehículo: 1 paquetes
+Código del Vehículo: B010
+Capacidad Actual del Vehículo: 1 / 45
+--------------------------- 
+[2024-12-13 12:25:49] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 1, Capacidad Total: 45, Total Registros: 6 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B010
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 7
+  - Cantidad Total de la Orden: 1 paquetes
+  - Cantidad Asignada al Vehículo: 1 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 140101 (CHICLAYO)
+Tiempo de Inicio de Viaje: 2024-12-01 02:55:00
+Tiempo Estimado de Llegada: 2024-12-01 05:23:00
+Tiempo Límite de Entrega: 2024-12-02 01:36:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to CHICLAYO, Desde: 130101, Hacia: 140101, Distancia: 0.0 km, Duración: 148 min
+ 
+[2024-12-13 12:25:49] [INFO   ] Orden 7 completamente asignada. 
+[2024-12-13 12:25:49] [INFO   ] Orden 10 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 10
+Cantidad Total de la Orden: 2 paquetes
+Cantidad Asignada al Vehículo: 2 paquetes
+Código del Vehículo: C011
+Capacidad Actual del Vehículo: 2 / 30
+--------------------------- 
+[2024-12-13 12:25:49] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 2, Capacidad Total: 30, Total Registros: 7 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: C011
+Capacidad del Vehículo: 30 paquetes
+Orden a Entregar:
+  - Código de la Orden: 10
+  - Cantidad Total de la Orden: 2 paquetes
+  - Cantidad Asignada al Vehículo: 2 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 020601 (CARHUAZ)
+Tiempo de Inicio de Viaje: 2024-12-01 02:55:00
+Tiempo Estimado de Llegada: 2024-12-01 05:46:00
+Tiempo Límite de Entrega: 2024-12-02 02:05:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to CARHUAZ, Desde: 130101, Hacia: 020601, Distancia: 0.0 km, Duración: 171 min
+ 
+[2024-12-13 12:25:49] [INFO   ] Orden 10 completamente asignada. 
+[2024-12-13 12:25:49] [INFO   ] Orden 9 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 9
+Cantidad Total de la Orden: 11 paquetes
+Cantidad Asignada al Vehículo: 11 paquetes
+Código del Vehículo: B012
+Capacidad Actual del Vehículo: 11 / 45
+--------------------------- 
+[2024-12-13 12:25:49] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 11, Capacidad Total: 45, Total Registros: 8 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B012
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 9
+  - Cantidad Total de la Orden: 11 paquetes
+  - Cantidad Asignada al Vehículo: 11 paquetes
+Origen: 040101 (AREQUIPA)
+Destino: 030201 (ANDAHUAYLAS)
+Tiempo de Inicio de Viaje: 2024-12-01 02:55:00
+Tiempo Estimado de Llegada: 2024-12-01 09:41:00
+Tiempo Límite de Entrega: 2024-12-03 02:03:00
+-------------------------Segmentos Restantes:
+ - Segmento: AREQUIPA to CAYLLOMA, Desde: 040101, Hacia: 040501, Distancia: 0.0 km, Duración: 72 min
+ - Segmento: CAYLLOMA to CHUMBIVILCAS, Desde: 040501, Hacia: 080701, Distancia: 0.0 km, Duración: 169 min
+ - Segmento: CHUMBIVILCAS to GRAU, Desde: 080701, Hacia: 030701, Distancia: 0.0 km, Duración: 77 min
+ - Segmento: GRAU to ANDAHUAYLAS, Desde: 030701, Hacia: 030201, Distancia: 0.0 km, Duración: 88 min
+ 
+[2024-12-13 12:25:49] [INFO   ] Orden 9 completamente asignada. 
+[2024-12-13 12:25:49] [INFO   ] Orden 6 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 6
+Cantidad Total de la Orden: 17 paquetes
+Cantidad Asignada al Vehículo: 17 paquetes
+Código del Vehículo: A001
+Capacidad Actual del Vehículo: 17 / 90
+--------------------------- 
+[2024-12-13 12:25:49] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 17, Capacidad Total: 90, Total Registros: 9 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: A001
+Capacidad del Vehículo: 90 paquetes
+Orden a Entregar:
+  - Código de la Orden: 6
+  - Cantidad Total de la Orden: 17 paquetes
+  - Cantidad Asignada al Vehículo: 17 paquetes
+Origen: 150101 (LIMA)
+Destino: 160301 (LORETO)
+Tiempo de Inicio de Viaje: 2024-12-01 02:55:00
+Tiempo Estimado de Llegada: 2024-12-01 17:38:00
+Tiempo Límite de Entrega: 2024-12-04 01:34:00
+-------------------------Segmentos Restantes:
+ - Segmento: LIMA to OYON, Desde: 150101, Hacia: 150901, Distancia: 0.0 km, Duración: 133 min
+ - Segmento: OYON to DANIEL ALCIDES CARRION, Desde: 150901, Hacia: 190201, Distancia: 0.0 km, Duración: 41 min
+ - Segmento: DANIEL ALCIDES CARRION to AMBO, Desde: 190201, Hacia: 100201, Distancia: 0.0 km, Duración: 52 min
+ - Segmento: AMBO to PACHITEA, Desde: 100201, Hacia: 100801, Distancia: 0.0 km, Duración: 34 min
+ - Segmento: PACHITEA to PADRE ABAD, Desde: 100801, Hacia: 250301, Distancia: 0.0 km, Duración: 119 min
+ - Segmento: PADRE ABAD to REQUENA, Desde: 250301, Hacia: 160501, Distancia: 0.0 km, Duración: 441 min
+ - Segmento: REQUENA to LORETO, Desde: 160501, Hacia: 160301, Distancia: 0.0 km, Duración: 63 min
+ 
+[2024-12-13 12:25:49] [INFO   ] Orden 6 completamente asignada. 
+[2024-12-13 12:25:49] [INFO   ] Orden 8 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 8
+Cantidad Total de la Orden: 9 paquetes
+Cantidad Asignada al Vehículo: 9 paquetes
+Código del Vehículo: C012
+Capacidad Actual del Vehículo: 9 / 30
+--------------------------- 
+[2024-12-13 12:25:49] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 9, Capacidad Total: 30, Total Registros: 10 
+[2024-12-13 12:25:49] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: C012
+Capacidad del Vehículo: 30 paquetes
+Orden a Entregar:
+  - Código de la Orden: 8
+  - Cantidad Total de la Orden: 9 paquetes
+  - Cantidad Asignada al Vehículo: 9 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 250101 (CORONEL PORTILLO)
+Tiempo de Inicio de Viaje: 2024-12-01 02:55:00
+Tiempo Estimado de Llegada: 2024-12-01 11:07:00
+Tiempo Límite de Entrega: 2024-12-04 01:48:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to PALLASCA, Desde: 130101, Hacia: 021501, Distancia: 0.0 km, Duración: 99 min
+ - Segmento: PALLASCA to SIHUAS, Desde: 021501, Hacia: 021901, Distancia: 0.0 km, Duración: 38 min
+ - Segmento: SIHUAS to MARAÑON, Desde: 021901, Hacia: 100701, Distancia: 0.0 km, Duración: 63 min
+ - Segmento: MARAÑON to TOCACHE, Desde: 100701, Hacia: 221001, Distancia: 0.0 km, Duración: 91 min
+ - Segmento: TOCACHE to CORONEL PORTILLO, Desde: 221001, Hacia: 250101, Distancia: 0.0 km, Duración: 201 min
+ 
+[2024-12-13 12:25:49] [INFO   ] Orden 8 completamente asignada. 
+[2024-12-13 12:25:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Se asignaron 5 vehículos","timestamp":"2024-12-13T12:25:49.703545","assignedVehicles":5} 
+[2024-12-13 12:25:49] [INFO   ] Vehículo C011 programado para avería tipo 2 a las 2024-12-01T04:20 en el tramo de 130101 (TRUJILLO) a 020601 (CARHUAZ) 
+[2024-12-13 12:25:49] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T03:00 
+[2024-12-13 12:25:49] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 03:00:00 AM, Duración simulada: 3 horas, Tiempo real: 01/12/2024 12:00:35 AM, Duración real: 35 segundos 
+[2024-12-13 12:25:49] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 03:00:00 AM","simulatedDuration":"3 horas","realElapsedTime":"01/12/2024 12:00:35 AM","realDuration":"35 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:49] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T03:00 
+[2024-12-13 12:25:49] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:49] [INFO   ] Vehículo A001 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 65 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 65 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 65 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo B010 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CARHUAZ (020601),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo C012 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to PALLASCA (021501),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo A006 ha estado averiado durante 80 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:49] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 120 minutos 
+[2024-12-13 12:25:49] [INFO   ] Vehículo B012 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to CAYLLOMA (040501),Ubicación actual: 040101, Tiempo en tramo: 5 minutos 
+[2024-12-13 12:25:50] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T03:05 
+[2024-12-13 12:25:50] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 03:05:00 AM, Duración simulada: 3 horas 5 minutos, Tiempo real: 01/12/2024 12:00:36 AM, Duración real: 36 segundos 
+[2024-12-13 12:25:50] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 03:05:00 AM","simulatedDuration":"3 horas 5 minutos","realElapsedTime":"01/12/2024 12:00:36 AM","realDuration":"36 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:50] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T03:05 
+[2024-12-13 12:25:50] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:50] [INFO   ] Vehículo A001 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 70 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 70 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 70 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo B010 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CARHUAZ (020601),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo C012 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to PALLASCA (021501),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo A006 ha estado averiado durante 85 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:50] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 125 minutos 
+[2024-12-13 12:25:50] [INFO   ] Vehículo B012 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to CAYLLOMA (040501),Ubicación actual: 040101, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:25:51] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:51] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 12:25:51] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T03:10 
+[2024-12-13 12:25:51] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 03:10:00 AM, Duración simulada: 3 horas 10 minutos, Tiempo real: 01/12/2024 12:00:37 AM, Duración real: 37 segundos 
+[2024-12-13 12:25:51] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 03:10:00 AM","simulatedDuration":"3 horas 10 minutos","realElapsedTime":"01/12/2024 12:00:37 AM","realDuration":"37 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:51] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T03:10 
+[2024-12-13 12:25:51] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:51] [INFO   ] Vehículo A001 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 75 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 75 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 75 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo B010 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CARHUAZ (020601),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo C012 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to PALLASCA (021501),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo A006 ha estado averiado durante 90 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:51] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 130 minutos 
+[2024-12-13 12:25:51] [INFO   ] Vehículo B012 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to CAYLLOMA (040501),Ubicación actual: 040101, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:25:52] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T03:15 
+[2024-12-13 12:25:52] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 03:15:00 AM, Duración simulada: 3 horas 15 minutos, Tiempo real: 01/12/2024 12:00:38 AM, Duración real: 38 segundos 
+[2024-12-13 12:25:52] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 03:15:00 AM","simulatedDuration":"3 horas 15 minutos","realElapsedTime":"01/12/2024 12:00:38 AM","realDuration":"38 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:52] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T03:15 
+[2024-12-13 12:25:52] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:52] [INFO   ] Vehículo A001 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 80 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 80 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 80 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo B010 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CARHUAZ (020601),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo C012 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to PALLASCA (021501),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo A006 ha estado averiado durante 95 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:52] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 135 minutos 
+[2024-12-13 12:25:52] [INFO   ] Vehículo B012 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to CAYLLOMA (040501),Ubicación actual: 040101, Tiempo en tramo: 20 minutos 
+[2024-12-13 12:25:53] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T03:20 
+[2024-12-13 12:25:53] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 03:20:00 AM, Duración simulada: 3 horas 20 minutos, Tiempo real: 01/12/2024 12:00:39 AM, Duración real: 39 segundos 
+[2024-12-13 12:25:53] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 03:20:00 AM","simulatedDuration":"3 horas 20 minutos","realElapsedTime":"01/12/2024 12:00:39 AM","realDuration":"39 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:25:53] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T03:20 
+[2024-12-13 12:25:53] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:25:53] [INFO   ] Vehículo A001 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B011 ha sufrido una avería tipo AVERIADO_3 en el tramo 1: AREQUIPA to LA UNION. Tiempo transcurrido en el tramo: 140 minutos. 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B011 ha sufrido una avería tipo AVERIADO_3 en 040101. Estará detenido hasta 2024-12-04T03:20. 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B011 ha sufrido una avería tipo 3 a las 2024-12-01T03:20 en el tramo de 040101 a 030301 
+[2024-12-13 12:25:53] [INFO   ] Tamaño actual de la matriz: 195 
+[2024-12-13 12:25:53] [INFO   ] Nuevo índice a agregar: 195 
+[2024-12-13 12:25:53] [INFO   ] Tamaño requerido: 196 
+[2024-12-13 12:25:53] [INFO   ] Expandiendo matriz de 195 a 196 
+[2024-12-13 12:25:53] [INFO   ] Actualizando matriz de tiempo para tramo temporal 
+[2024-12-13 12:25:53] [INFO   ] Nuevas dimensiones de la matriz: 196x196 
+[2024-12-13 12:25:53] [INFO   ] Ruta temporal creada: 040101 (108) -> TEMP_B011 (195) minutos: 140 
+[2024-12-13 12:25:53] [INFO   ] Ubicación temporal agregada correctamente: TEMP_B011 con índice 195 
+[2024-12-13 12:25:53] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 85 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to FERREÑAFE (140201),Ubicación actual: 130101, Tiempo en tramo: 85 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B009 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to SIHUAS (021901),Ubicación actual: 130101, Tiempo en tramo: 85 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B010 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CARHUAZ (020601),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo C012 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to PALLASCA (021501),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:53] [INFO   ] Vehículo A006 ha estado averiado durante 100 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B011 ha estado averiado durante 0 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 12:25:53] [INFO   ] Vehículo B012 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to CAYLLOMA (040501),Ubicación actual: 040101, Tiempo en tramo: 25 minutos 
+[2024-12-13 12:25:53] [INFO   ] Calculando ruta desde 150101 hacia TEMP_B011 
+[2024-12-13 12:25:53] [INFO   ] Calculando ruta desde 150101 hacia TEMP_B011 

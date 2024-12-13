@@ -42,12 +42,12 @@ export default function ModalVehiculo({vehicle}){
         setIsBreakdownModalOpen(true);
       };
     
-      const handleBreakdownSuccess = () => {
-        // Aquí puedes actualizar el estado del vehículo o recargar los datos
-        
-        // Manejar el reporte de avería
-        //onReportIssue?.(vehicleData);
-      };
+    const handleBreakdownSuccess = () => {
+    // Aquí puedes actualizar el estado del vehículo o recargar los datos
+    
+    // Manejar el reporte de avería
+    //onReportIssue?.(vehicleData);
+    };
 
 
     useEffect(() => {
