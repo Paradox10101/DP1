@@ -156,7 +156,7 @@ export default function ModalOficina({office}){
                 <div className="text-center col-span-2 pequenno">{new Date(shipment.dueTime).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '')}</div>
                 <div className="text-center col-span-2 pequenno flex justify-center items-center">
                 {
-                    (shipment.status === "REGISTERED" || ((shipment.status === "PARTIALLY_ASSIGNED") && shipment.vehicles.length === 0)) ? (
+                    (shipment.status === "REGISTERED" || ((shipment.status === "PARTIALLY_ASSIGNED" || shipment.status === "FULLY_ASSIGNED") && shipment.vehicles.length === 0)) ? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#B0F8F4] text-[#4B9490] rounded-xl"}>REGISTRADO</div>
                     ) : (shipment.status === "DELIVERED")? (
                         <div className={"flex w-[95px] items-center pequenno border text-center justify-center bg-[#D0B0F8] text-[#7B15FA] rounded-xl"}>ENTREGADO</div>

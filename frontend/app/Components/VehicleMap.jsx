@@ -112,11 +112,11 @@ const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
       case "ORDENES_CARGADAS":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                  En Almacén
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                En Almacén
+            </div>
+        );
       case "AVERIADO_1":
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-yellow-100 text-black-600 font-medium">
@@ -136,25 +136,41 @@ const StatusBadge = ({ status }) => {
           </div>
         );
       case "EN_MANTENIMIENTO":
-      case "EN_REPARACION":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                  En Mantenimiento
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#2174a4] text-[#9dc4db]">
+                En Mantenimiento
+            </div>
+        );
       case "EN_ESPERA_EN_OFICINA":
       case "LISTO_PARA_RETORNO":
-      case "EN_REEMPLAZO":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                 En Espera
             </div>
         );
       case "EN_TRANSITO_ORDEN":
-      case "HACIA_ALMACEN":
+      
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-            En Tránsito
+            Atendiendo orden
+          </div>
+        );
+      case "HACIA_ALMACEN":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#608272] text-[#f1f1f1]">
+            Hacia almacén
+          </div>
+        );
+      case "EN_REEMPLAZO":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
+            En Reemplazo
+          </div>
+        );
+      case "EN_REPARACION":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
+            En Reparación
           </div>
         );
       default:
@@ -1443,8 +1459,8 @@ const VehicleMap = ({ simulationStatus }) => {
       mapRef.current.flyTo({
         center: followLocation, // Coordenadas de destino
         zoom: 9, // Nivel de zoom deseado (ajusta según necesidad)
-        speed: 2, // Velocidad del vuelo (opcional)
-        curve: 1, // Curva del vuelo (opcional)
+        speed: 4, // Velocidad del vuelo (opcional)
+        //curve: 1, // Curva del vuelo (opcional)
         easing: (t) => t, // Efecto de suavizado (opcional)
       });
       setFollowLocation(null)
@@ -1473,6 +1489,8 @@ const VehicleMap = ({ simulationStatus }) => {
       if (mapRef.current.getSource(sourceIdBlockedRoutes)) {
         mapRef.current.removeSource(sourceIdBlockedRoutes); // Eliminar la fuente si existe
       }
+    }
+    else{
       
     }
     

@@ -45,7 +45,8 @@ export default function ModalAlmacen({ warehouse }) {
                 }
                 const data = await response.json();
                 const officeCities = data.features
-                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)) // Filtra los no excluidos
+                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo) &&
+                    !feature.properties.ubigeo.startsWith("TEMP"))
                     .map((feature) => feature.properties.name) // Extrae los nombres
                     .sort((a, b) => a.localeCompare(b));
                 setOfficeCities(officeCities);
