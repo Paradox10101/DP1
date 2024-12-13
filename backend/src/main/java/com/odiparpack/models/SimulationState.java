@@ -7,6 +7,7 @@ import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.routing.model.Route;
 import com.odiparpack.routing.service.RouteService;
+import com.odiparpack.routing.utils.RouteUtils;
 import com.odiparpack.services.LocationService;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 
@@ -33,7 +34,7 @@ public class SimulationState {
     private ReentrantLock lock = new ReentrantLock();
     private WarehouseManager warehouseManager;
     private Map<Integer, List<VehicleAssignment>> vehicleAssignmentsPerOrder = new HashMap<>();
-
+    private final Object matrixLock = new Object();
     private static final String[] almacenesPrincipales = {"150101", "040101", "130101"}; // Lima, Arequipa, Trujillo
 
     private static RouteCache routeCache;
@@ -1533,7 +1534,7 @@ public class SimulationState {
         String[] destinations = destinationSet.toArray(new String[0]);
 
         // Calcular las mejores rutas para cada destino
-        RouteService routeService = new RouteService(getLocationIndices(), currentTimeMatrix);
+        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
         Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
 
         // Determinar el almacén más cercano para cada vehículo
@@ -1727,18 +1728,39 @@ public class SimulationState {
         }
     }
 
-    public void actualizarMatrizConTramoTemporal(String ubigeoInicioAveria, String ubigeoPuntoAveria, long elapsedMinutes) {
-        logger.info("Actualizando matriz de tiempo basada en ubigeo temporal.");
+    public void actualizarMatrizConTramoTemporal(String ubigeoInicioAveria,
+                                                 String ubigeoPuntoAveria,
+                                                 long elapsedMinutes) {
+        synchronized(matrixLock) {
+            logger.info("Actualizando matriz de tiempo para tramo temporal");
 
-        // Asegurarte de que la matriz es lo suficientemente grande
-        int newSize = SimulationState.locations.size(); // Supongamos que los nodos están indexados por la cantidad de ubicaciones
-        expandMatrixForTemporaryNode(newSize);
+            // Validar que los ubigeos existen
+            if (!locationIndices.containsKey(ubigeoInicioAveria) ||
+                    !locationIndices.containsKey(ubigeoPuntoAveria)) {
+                throw new IllegalArgumentException("Ubigeo no encontrado en la matriz");
+            }
 
-        int fromIndex = locationIndices.get(ubigeoInicioAveria);
-        int toIndex = locationIndices.get(ubigeoPuntoAveria);
-        currentTimeMatrix[fromIndex][toIndex] = elapsedMinutes;
-        currentTimeMatrix[toIndex][fromIndex] = elapsedMinutes; // Asumiendo que las rutas son bidireccionales
-        logger.info("Ruta creada: " + ubigeoInicioAveria + " -> " + ubigeoPuntoAveria + " minutos: " + elapsedMinutes);
+            int fromIndex = locationIndices.get(ubigeoInicioAveria);
+            int toIndex = locationIndices.get(ubigeoPuntoAveria);
+
+            // Validar índices
+            if (fromIndex >= currentTimeMatrix.length || toIndex >= currentTimeMatrix.length) {
+                throw new IllegalStateException("Índices fuera de rango en la matriz");
+            }
+
+            // Expandir matriz si es necesario
+            int requiredSize = Math.max(fromIndex, toIndex) + 1;
+            if (requiredSize > currentTimeMatrix.length) {
+                expandMatrixForTemporaryNode(requiredSize);
+            }
+
+            // Actualizar la matriz
+            currentTimeMatrix[fromIndex][toIndex] = elapsedMinutes;
+            currentTimeMatrix[toIndex][fromIndex] = elapsedMinutes;
+
+            logger.info(String.format("Ruta temporal creada: %s (%d) -> %s (%d) minutos: %d",
+                    ubigeoInicioAveria, fromIndex, ubigeoPuntoAveria, toIndex, elapsedMinutes));
+        }
     }
 
     public static void removeTemporaryLocation(String tempUbigeo) {
@@ -1787,33 +1809,29 @@ public class SimulationState {
     }
 
     private void expandMatrixForTemporaryNode(int newSize) {
-        // Incorporar nuevo nodo en matriz actual
-        // Crear una nueva matriz con dimensiones ampliadas
-        long[][] newMatrix = new long[newSize][newSize];
-
-        // Copiar datos de la matriz existente a la nueva
-        for (int i = 0; i < currentTimeMatrix.length; i++) {
-            System.arraycopy(currentTimeMatrix[i], 0, newMatrix[i], 0, currentTimeMatrix[i].length);
-        }
-
-        // Rellenar las nuevas celdas con valores predeterminados (por ejemplo, Long.MAX_VALUE o 0)
-        for (int i = currentTimeMatrix.length; i < newSize; i++) {
-            for (int j = 0; j < newSize; j++) {
-                newMatrix[i][j] = Long.MAX_VALUE; // O un valor predeterminado que represente la falta de conexión
+        synchronized(matrixLock) {
+            if (newSize <= currentTimeMatrix.length) {
+                return;
             }
-        }
-        for (int i = 0; i < newSize; i++) {
-            for (int j = currentTimeMatrix.length; j < newSize; j++) {
-                newMatrix[i][j] = Long.MAX_VALUE; // O un valor predeterminado
+
+            logger.info("Expandiendo matriz de " + currentTimeMatrix.length + " a " + newSize);
+
+            long[][] newMatrix = new long[newSize][newSize];
+
+            // Copiar datos existentes
+            for (int i = 0; i < currentTimeMatrix.length; i++) {
+                System.arraycopy(currentTimeMatrix[i], 0, newMatrix[i], 0, currentTimeMatrix.length);
             }
-        }
 
-        // Reemplazar la matriz antigua con la nueva
-        currentTimeMatrix = newMatrix;
+            // Inicializar nuevas celdas con un valor por defecto (por ejemplo, infinito o -1)
+            for (int i = 0; i < newSize; i++) {
+                for (int j = currentTimeMatrix.length; j < newSize; j++) {
+                    newMatrix[i][j] = Long.MAX_VALUE; // o -1, según tu lógica
+                    newMatrix[j][i] = Long.MAX_VALUE;
+                }
+            }
 
-        // Expandir timeMatrix
-        if (newSize > timeMatrix.length) {
-            timeMatrix = expandMatrix(timeMatrix, newSize, Long.MAX_VALUE);
+            currentTimeMatrix = newMatrix;
         }
     }
 
@@ -1851,11 +1869,42 @@ public class SimulationState {
     }
 
     public void addTemporaryLocationToMatrices(String temporaryUbigeo, String originUbigeo, long elapsedMinutes) {
-        // Agregar el ubigeo temporal a las listas
-        locationUbigeos.add(temporaryUbigeo);
-        locationIndices.put(temporaryUbigeo, locationUbigeos.size() - 1);
-        locationNames.add(temporaryUbigeo);
-        actualizarMatrizConTramoTemporal(originUbigeo, temporaryUbigeo, elapsedMinutes);
+        synchronized(matrixLock) {
+            // Verificar si el ubigeo ya existe
+            if (locationIndices.containsKey(temporaryUbigeo)) {
+                logger.warning("El ubigeo temporal " + temporaryUbigeo + " ya existe en la matriz");
+                return;
+            }
+
+            try {
+                // Agregar el ubigeo temporal a las listas
+                int newIndex = locationUbigeos.size();
+                locationUbigeos.add(temporaryUbigeo);
+                locationIndices.put(temporaryUbigeo, newIndex);
+                locationNames.add(temporaryUbigeo);
+
+                // Actualizar la matriz con el nuevo tramo
+                actualizarMatrizConTramoTemporal(originUbigeo, temporaryUbigeo, elapsedMinutes);
+
+                logger.info("Ubicación temporal agregada correctamente: " + temporaryUbigeo +
+                        " con índice " + newIndex);
+            } catch (Exception e) {
+                logger.severe("Error al agregar ubicación temporal: " + e.getMessage());
+                // Revertir cambios si es necesario
+                rollbackChanges(temporaryUbigeo);
+                throw e;
+            }
+        }
+    }
+
+    private void rollbackChanges(String temporaryUbigeo) {
+        // Eliminar el ubigeo de las estructuras si algo falla
+        locationUbigeos.remove(temporaryUbigeo);
+        locationIndices.remove(temporaryUbigeo);
+        int lastIndex = locationNames.size() - 1;
+        if (lastIndex >= 0 && locationNames.get(lastIndex).equals(temporaryUbigeo)) {
+            locationNames.remove(lastIndex);
+        }
     }
 
     Maintenance getCurrentMaintenance(String code) {
@@ -2012,7 +2061,7 @@ public class SimulationState {
         String[] destinations = destinationSet.toArray(new String[0]);
 
         // Calcular las mejores rutas para cada destino
-        RouteService routeService = new RouteService(getLocationIndices(), timeMatrix);
+        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
         Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
 
         // Paso 5: Determinar el almacén más cercano para cada vehículo

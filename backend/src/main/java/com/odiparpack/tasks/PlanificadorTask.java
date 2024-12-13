@@ -7,6 +7,7 @@ import com.odiparpack.routing.model.Route;
 import com.odiparpack.routing.service.OrderAssignmentService;
 import com.odiparpack.routing.service.RouteService;
 import com.odiparpack.routing.service.VehicleAssignmentService;
+import com.odiparpack.routing.utils.RouteUtils;
 import com.odiparpack.services.LocationService;
 import com.odiparpack.websocket.SimulationMetricsWebSocketHandler;
 
@@ -94,7 +95,7 @@ public class PlanificadorTask implements Runnable {
             broadcastPlanningStatus(planningStatus);
 
             // Calcular las mejores rutas para cada destino
-            RouteService routeService = new RouteService(state.getLocationIndices(), timeMatrix);
+            RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(state.getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
             Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations);
 
             // Actualizar estado con rutas completadas
@@ -162,7 +163,23 @@ public class PlanificadorTask implements Runnable {
     }
 
     private VehicleAssignment findVehicleForBreakdown(List<VehicleAssignment> assignments, String breakdownType) {
-        String requiredType = breakdownType.equals("1") ? "A" : "C";
+        // Mapeo correcto de tipos de avería a tipos de vehículo
+        String requiredType;
+        switch (breakdownType) {
+            case "1":
+                requiredType = "A";
+                break;
+            case "2":
+                requiredType = "C";
+                break;
+            case "3":
+                requiredType = "B";  // Asumiendo que tipo 3 debería ser para vehículos tipo B
+                break;
+            default:
+                logger.warning("Tipo de avería no reconocido: " + breakdownType);
+                return null;
+        }
+
         return assignments.stream()
                 .filter(va -> va.getVehicle().getType().equals(requiredType))
                 .filter(va -> !vehiclesWithScheduledBreakdown.contains(va.getVehicle().getCode()))
