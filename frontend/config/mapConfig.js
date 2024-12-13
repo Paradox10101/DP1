@@ -66,10 +66,6 @@ export const MAP_CONFIG = {
         id: 'warehouse-icon',
         url: '/warehouse-icon.png'
       },
-      OFFICE: {
-        id: 'office-icon',
-        url: '/office-icon.png'
-      },
       CAR_FRONT: {
         id: 'car-front-icon',
         url: '/car-front.png'
@@ -243,10 +239,17 @@ export const MAP_CONFIG = {
       offices: {
         id: MAP_CONFIG.LAYERS.LOCATIONS.OFFICES,
         type: 'symbol',
-        source: MAP_CONFIG.SOURCES.OFFICES.id, // Usar la fuente de oficinas
-        filter: ['!', ['has', 'point_count']], // Solo mostrar oficinas no agrupadas
+        source: MAP_CONFIG.SOURCES.OFFICES.id,
+        filter: ['!', ['has', 'point_count']],
         layout: {
-          'icon-image': MAP_CONFIG.IMAGES.OFFICE.id,
+          'icon-image': [
+            'case',
+            ['>=', ['get', 'occupiedPercentage'], 81],
+            'office-icon-81',  // Cambiar de 'office-icon-orange' a 'office-icon-81'
+            ['>=', ['get', 'occupiedPercentage'], 41],
+            'office-icon-41',  // Cambiar de 'office-icon-yellow' a 'office-icon-41'
+            'office-icon-0'    // Cambiar de 'office-icon' a 'office-icon-0'
+          ],
           'icon-size': 0.6,
           'icon-allow-overlap': true,
           'text-field': ['get', 'name'],
