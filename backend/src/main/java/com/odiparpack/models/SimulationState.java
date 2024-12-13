@@ -808,6 +808,12 @@ public class SimulationState {
 
                 //Ruta de bloqueo
                 properties.addProperty("routeType", "blockage");
+                properties.addProperty("originUbigeo", activeBlockage.getOriginUbigeo());
+                properties.addProperty("destinationUbigeo", activeBlockage.getDestinationUbigeo());
+                properties.addProperty("originCity", locations.get(activeBlockage.getOriginUbigeo()).getProvince());
+                properties.addProperty("destinationCity", locations.get(activeBlockage.getDestinationUbigeo()).getProvince());
+                properties.addProperty("startTime", activeBlockage.getStartTime().toString());
+                properties.addProperty("endTime", activeBlockage.getEndTime().toString());
                 properties.add("geometry", geometry);
 
                 featuresArray.add(blockageFeature);
