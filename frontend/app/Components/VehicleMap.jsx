@@ -7,7 +7,8 @@ import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom
+  loadingAtom,
+  vehiclePositionsListAtom
 } from '../atoms';
 import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -188,6 +189,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const mapRef = useRef(null);
   const popupsRef = useRef({});
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
+  const [vehiclePositionsList, setVehiclePositionsList] = useAtom(vehiclePositionsListAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
@@ -539,7 +541,8 @@ const VehicleMap = ({ simulationStatus }) => {
   
     // Iniciar la animación
     currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
-  }, [setPositions]);
+    setVehiclePositionsList(updatedData);
+  }, [setPositions, setVehiclePositionsList]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
@@ -1369,7 +1372,7 @@ const VehicleMap = ({ simulationStatus }) => {
           }
         }
       } catch (error) {
-        console.error('Error al actualizar ubicaciones:', error);
+        console.log('Error al actualizar ubicaciones:', error);
         setError('Error al actualizar ubicaciones en el mapa');
       }
     };

@@ -2,7 +2,7 @@ import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, M
 import { ChevronDown, Filter, Map, SearchX, X } from "lucide-react";
 import { useAtom } from "jotai";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { vehiclePositionsAtom, loadingAtom } from "../atoms";
+import { vehiclePositionsAtom, loadingAtom, vehiclePositionsListAtom } from "../atoms";
 import BarraProgreso from "./BarraProgreso";
 import CardVehiculo from "@/app/Components/CardVehiculo";
 import { useWebSocket } from "../../hooks/useWebSocket"; // WebSocket hook
@@ -14,7 +14,7 @@ import BreakdownModal from "./VehiclePopUp/BreakdownModal";
 
 export default function OpcionVehiculos() {
   
-  const vehiculos = useAtom(vehiclePositionsAtom);
+  const vehiculos = useAtom(vehiclePositionsListAtom);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [searchInput, setSearchInput] = useState("");
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null);

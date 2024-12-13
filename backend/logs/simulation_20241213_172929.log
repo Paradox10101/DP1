@@ -1,0 +1,578 @@
+[2024-12-13 17:29:29] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241213_172929.log 
+[2024-12-13 17:29:30] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-13 17:29:30] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:32] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:39] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:41] [INFO   ] DateTime encontrado: 2024-12-01 00:04:00 
+[2024-12-13 17:29:42] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-13 17:29:42] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-13 17:29:42] [INFO   ] Se cargaron 195 bloqueos: 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 250301 => 220401, Inicio: 2024-12-02 04:49, Fin: 2024-12-18 14:47 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 250301 => 120601, Inicio: 2024-12-03 11:26, Fin: 2024-12-17 06:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 250301 => 020201, Inicio: 2024-12-05 07:55, Fin: 2024-12-22 11:52 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 221001 => 100401, Inicio: 2024-12-02 11:02, Fin: 2024-12-20 04:23 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 221001 => 020601, Inicio: 2024-12-01 15:43, Fin: 2024-12-24 04:24 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220901 => 060801, Inicio: 2024-12-01 05:39, Fin: 2024-12-22 01:19 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220801 => 130901, Inicio: 2024-12-03 16:52, Fin: 2024-12-15 08:30 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220801 => 060801, Inicio: 2024-12-06 09:40, Fin: 2024-12-14 19:31 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220701 => 060101, Inicio: 2024-12-01 15:39, Fin: 2024-12-23 23:41 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220701 => 010101, Inicio: 2024-12-01 11:41, Fin: 2024-12-16 16:00 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220601 => 130801, Inicio: 2024-12-03 09:17, Fin: 2024-12-21 05:25 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220501 => 220401, Inicio: 2024-12-04 20:22, Fin: 2024-12-13 07:06 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220501 => 061101, Inicio: 2024-12-03 19:05, Fin: 2024-12-21 03:12 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220501 => 021201, Inicio: 2024-12-01 18:01, Fin: 2024-12-21 03:35 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220401 => 220301, Inicio: 2024-12-03 19:12, Fin: 2024-12-13 12:39 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220401 => 010701, Inicio: 2024-12-01 14:04, Fin: 2024-12-24 17:06 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220301 => 100601, Inicio: 2024-12-07 05:45, Fin: 2024-12-21 21:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220301 => 021901, Inicio: 2024-12-03 02:54, Fin: 2024-12-15 21:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220201 => 061101, Inicio: 2024-12-05 16:45, Fin: 2024-12-23 17:44 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220201 => 020401, Inicio: 2024-12-06 08:33, Fin: 2024-12-19 03:53 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220101 => 220201, Inicio: 2024-12-05 11:53, Fin: 2024-12-13 23:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 220101 => 060701, Inicio: 2024-12-06 03:53, Fin: 2024-12-16 02:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 210801 => 081301, Inicio: 2024-12-03 23:34, Fin: 2024-12-14 03:26 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190301 => 120901, Inicio: 2024-12-06 21:43, Fin: 2024-12-22 23:40 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190301 => 021601, Inicio: 2024-12-04 17:37, Fin: 2024-12-22 19:32 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190201 => 150401, Inicio: 2024-12-03 11:41, Fin: 2024-12-18 18:47 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190201 => 021801, Inicio: 2024-12-03 04:20, Fin: 2024-12-22 04:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190101 => 250301, Inicio: 2024-12-03 16:10, Fin: 2024-12-20 16:00 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190101 => 120401, Inicio: 2024-12-05 17:40, Fin: 2024-12-23 08:21 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 190101 => 021701, Inicio: 2024-12-02 11:13, Fin: 2024-12-16 02:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150901 => 250301, Inicio: 2024-12-01 15:14, Fin: 2024-12-14 23:13 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150801 => 150901, Inicio: 2024-12-05 09:10, Fin: 2024-12-17 10:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150801 => 021601, Inicio: 2024-12-03 05:20, Fin: 2024-12-24 06:26 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150701 => 190201, Inicio: 2024-12-06 10:52, Fin: 2024-12-14 05:59 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150701 => 120101, Inicio: 2024-12-04 05:40, Fin: 2024-12-20 16:51 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150701 => 050401, Inicio: 2024-12-07 13:40, Fin: 2024-12-15 14:37 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150401 => 150801, Inicio: 2024-12-07 04:37, Fin: 2024-12-14 18:11 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150401 => 100801, Inicio: 2024-12-03 16:10, Fin: 2024-12-13 03:18 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150401 => 021201, Inicio: 2024-12-02 17:30, Fin: 2024-12-19 22:34 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150301 => 190101, Inicio: 2024-12-02 01:31, Fin: 2024-12-22 04:01 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150301 => 100201, Inicio: 2024-12-05 02:09, Fin: 2024-12-18 10:42 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150301 => 020901, Inicio: 2024-12-03 09:26, Fin: 2024-12-18 09:52 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150201 => 150701, Inicio: 2024-12-02 20:28, Fin: 2024-12-17 23:45 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150201 => 100801, Inicio: 2024-12-05 08:41, Fin: 2024-12-23 01:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 150201 => 021101, Inicio: 2024-12-04 03:29, Fin: 2024-12-20 07:59 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131201 => 131001, Inicio: 2024-12-06 06:03, Fin: 2024-12-24 18:17 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131201 => 021301, Inicio: 2024-12-04 13:17, Fin: 2024-12-15 18:14 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131101 => 131001, Inicio: 2024-12-03 18:29, Fin: 2024-12-21 21:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131101 => 060401, Inicio: 2024-12-07 23:14, Fin: 2024-12-22 06:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131001 => 220601, Inicio: 2024-12-01 05:10, Fin: 2024-12-18 04:58 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131001 => 130201, Inicio: 2024-12-01 19:26, Fin: 2024-12-20 19:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131001 => 061101, Inicio: 2024-12-05 01:07, Fin: 2024-12-18 07:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 131001 => 020801, Inicio: 2024-12-07 20:56, Fin: 2024-12-20 00:35 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130901 => 220301, Inicio: 2024-12-07 21:12, Fin: 2024-12-20 22:56 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130901 => 100701, Inicio: 2024-12-04 17:38, Fin: 2024-12-22 04:49 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130901 => 021901, Inicio: 2024-12-03 07:19, Fin: 2024-12-16 19:39 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130901 => 010501, Inicio: 2024-12-01 16:13, Fin: 2024-12-24 02:15 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130801 => 060601, Inicio: 2024-12-04 22:33, Fin: 2024-12-21 01:00 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130801 => 021301, Inicio: 2024-12-02 18:49, Fin: 2024-12-23 18:03 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130801 => 010601, Inicio: 2024-12-07 00:02, Fin: 2024-12-18 11:04 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130701 => 060101, Inicio: 2024-12-03 18:14, Fin: 2024-12-19 18:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130701 => 010301, Inicio: 2024-12-07 17:39, Fin: 2024-12-20 21:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130601 => 131201, Inicio: 2024-12-02 04:17, Fin: 2024-12-17 15:06 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130501 => 061201, Inicio: 2024-12-02 10:54, Fin: 2024-12-19 21:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130501 => 010601, Inicio: 2024-12-04 09:30, Fin: 2024-12-24 14:35 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130401 => 010601, Inicio: 2024-12-02 07:48, Fin: 2024-12-21 22:42 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130301 => 021301, Inicio: 2024-12-03 17:01, Fin: 2024-12-16 18:14 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 130201 => 020801, Inicio: 2024-12-04 21:42, Fin: 2024-12-15 08:43 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120901 => 120501, Inicio: 2024-12-07 23:10, Fin: 2024-12-15 14:48 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120801 => 100301, Inicio: 2024-12-06 06:38, Fin: 2024-12-17 11:00 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120801 => 020501, Inicio: 2024-12-05 19:23, Fin: 2024-12-21 23:01 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120701 => 090101, Inicio: 2024-12-05 07:18, Fin: 2024-12-22 07:29 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120501 => 101101, Inicio: 2024-12-07 00:03, Fin: 2024-12-14 22:01 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120501 => 090201, Inicio: 2024-12-07 07:18, Fin: 2024-12-15 07:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120501 => 021001, Inicio: 2024-12-05 03:15, Fin: 2024-12-14 07:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120401 => 150301, Inicio: 2024-12-05 13:33, Fin: 2024-12-20 17:28 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120301 => 100101, Inicio: 2024-12-01 15:36, Fin: 2024-12-17 14:04 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120301 => 020201, Inicio: 2024-12-06 08:23, Fin: 2024-12-15 10:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120101 => 150801, Inicio: 2024-12-03 02:10, Fin: 2024-12-14 20:55 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120101 => 100801, Inicio: 2024-12-05 15:18, Fin: 2024-12-17 08:41 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 120101 => 050101, Inicio: 2024-12-07 07:54, Fin: 2024-12-18 18:13 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 101101 => 120401, Inicio: 2024-12-05 03:29, Fin: 2024-12-16 02:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 101101 => 070101, Inicio: 2024-12-02 07:48, Fin: 2024-12-15 02:56 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 101001 => 150801, Inicio: 2024-12-05 16:26, Fin: 2024-12-21 02:17 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 101001 => 120701, Inicio: 2024-12-04 11:52, Fin: 2024-12-19 08:29 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 101001 => 021801, Inicio: 2024-12-06 11:06, Fin: 2024-12-24 00:00 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100901 => 150701, Inicio: 2024-12-05 20:59, Fin: 2024-12-22 13:42 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100901 => 101101, Inicio: 2024-12-06 11:11, Fin: 2024-12-16 21:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100901 => 021201, Inicio: 2024-12-02 06:39, Fin: 2024-12-13 01:12 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100801 => 021901, Inicio: 2024-12-06 21:00, Fin: 2024-12-24 08:06 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100801 => 020201, Inicio: 2024-12-01 09:37, Fin: 2024-12-19 11:28 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100701 => 150801, Inicio: 2024-12-07 06:28, Fin: 2024-12-20 18:27 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100701 => 100801, Inicio: 2024-12-01 13:25, Fin: 2024-12-16 10:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100601 => 220301, Inicio: 2024-12-03 19:01, Fin: 2024-12-17 13:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100601 => 130601, Inicio: 2024-12-03 01:44, Fin: 2024-12-15 19:26 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100601 => 100501, Inicio: 2024-12-06 17:36, Fin: 2024-12-21 00:08 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100501 => 220401, Inicio: 2024-12-01 13:58, Fin: 2024-12-17 01:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100501 => 101001, Inicio: 2024-12-05 14:05, Fin: 2024-12-24 19:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100401 => 221001, Inicio: 2024-12-05 08:08, Fin: 2024-12-22 08:38 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100401 => 021501, Inicio: 2024-12-05 10:46, Fin: 2024-12-15 21:49 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100401 => 010601, Inicio: 2024-12-01 18:22, Fin: 2024-12-22 03:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100301 => 022001, Inicio: 2024-12-03 21:05, Fin: 2024-12-19 11:51 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100201 => 131001, Inicio: 2024-12-05 13:42, Fin: 2024-12-17 11:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100201 => 100601, Inicio: 2024-12-04 16:35, Fin: 2024-12-17 17:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100201 => 021501, Inicio: 2024-12-04 04:27, Fin: 2024-12-17 21:35 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100201 => 020101, Inicio: 2024-12-02 13:56, Fin: 2024-12-23 14:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 100101 => 100201, Inicio: 2024-12-03 01:00, Fin: 2024-12-17 04:05 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 090701 => 120801, Inicio: 2024-12-01 03:43, Fin: 2024-12-14 06:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 090701 => 081301, Inicio: 2024-12-03 07:08, Fin: 2024-12-17 19:10 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 090501 => 040801, Inicio: 2024-12-01 05:26, Fin: 2024-12-15 10:47 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 090201 => 081001, Inicio: 2024-12-04 06:52, Fin: 2024-12-18 07:19 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 081301 => 050401, Inicio: 2024-12-07 21:32, Fin: 2024-12-21 21:04 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 081001 => 051001, Inicio: 2024-12-02 05:11, Fin: 2024-12-14 19:12 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 080701 => 081001, Inicio: 2024-12-01 13:17, Fin: 2024-12-22 08:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 070101 => 190101, Inicio: 2024-12-05 20:56, Fin: 2024-12-18 16:45 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 070101 => 101001, Inicio: 2024-12-03 11:22, Fin: 2024-12-20 14:03 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 070101 => 020501, Inicio: 2024-12-02 11:27, Fin: 2024-12-17 02:14 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061301 => 131001, Inicio: 2024-12-07 12:35, Fin: 2024-12-14 00:04 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061201 => 220601, Inicio: 2024-12-01 04:42, Fin: 2024-12-22 05:41 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061201 => 130501, Inicio: 2024-12-06 12:35, Fin: 2024-12-13 12:12 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061201 => 021601, Inicio: 2024-12-07 11:31, Fin: 2024-12-15 22:27 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061101 => 010601, Inicio: 2024-12-07 00:45, Fin: 2024-12-17 17:48 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 061001 => 060501, Inicio: 2024-12-04 01:50, Fin: 2024-12-20 08:42 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060801 => 220201, Inicio: 2024-12-01 17:22, Fin: 2024-12-16 17:38 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060701 => 220801, Inicio: 2024-12-03 18:44, Fin: 2024-12-24 15:30 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060701 => 130101, Inicio: 2024-12-06 11:56, Fin: 2024-12-15 23:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060601 => 220601, Inicio: 2024-12-06 16:28, Fin: 2024-12-16 14:03 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060601 => 060101, Inicio: 2024-12-05 10:52, Fin: 2024-12-24 08:28 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060501 => 220501, Inicio: 2024-12-05 00:29, Fin: 2024-12-20 12:16 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060501 => 022001, Inicio: 2024-12-06 01:53, Fin: 2024-12-14 13:17 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060501 => 020101, Inicio: 2024-12-04 12:35, Fin: 2024-12-22 15:59 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060401 => 220101, Inicio: 2024-12-05 13:10, Fin: 2024-12-16 14:34 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060401 => 010701, Inicio: 2024-12-01 14:23, Fin: 2024-12-21 19:31 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060301 => 220101, Inicio: 2024-12-07 03:57, Fin: 2024-12-15 21:39 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060301 => 021001, Inicio: 2024-12-04 12:24, Fin: 2024-12-24 06:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060201 => 250301, Inicio: 2024-12-01 10:34, Fin: 2024-12-21 18:43 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060201 => 130501, Inicio: 2024-12-03 03:22, Fin: 2024-12-16 13:30 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 060101 => 220201, Inicio: 2024-12-07 21:05, Fin: 2024-12-21 17:34 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 051001 => 120901, Inicio: 2024-12-01 16:03, Fin: 2024-12-17 11:49 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 051001 => 050901, Inicio: 2024-12-02 09:21, Fin: 2024-12-18 21:48 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 050501 => 081301, Inicio: 2024-12-03 14:32, Fin: 2024-12-23 21:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 050401 => 120801, Inicio: 2024-12-01 14:54, Fin: 2024-12-22 07:18 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 050201 => 051001, Inicio: 2024-12-04 03:57, Fin: 2024-12-17 12:35 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 040801 => 090501, Inicio: 2024-12-07 09:49, Fin: 2024-12-24 12:17 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 040801 => 030701, Inicio: 2024-12-03 18:25, Fin: 2024-12-14 21:18 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 022001 => 221001, Inicio: 2024-12-03 06:42, Fin: 2024-12-22 04:11 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 022001 => 131001, Inicio: 2024-12-06 12:16, Fin: 2024-12-20 19:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021801 => 061001, Inicio: 2024-12-04 21:14, Fin: 2024-12-19 08:24 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021601 => 220401, Inicio: 2024-12-07 20:27, Fin: 2024-12-24 22:39 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021601 => 060601, Inicio: 2024-12-07 04:28, Fin: 2024-12-22 10:41 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021501 => 220701, Inicio: 2024-12-03 17:59, Fin: 2024-12-23 20:32 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021501 => 130801, Inicio: 2024-12-01 00:52, Fin: 2024-12-13 12:36 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021501 => 100201, Inicio: 2024-12-01 09:24, Fin: 2024-12-23 04:48 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021501 => 021201, Inicio: 2024-12-07 10:43, Fin: 2024-12-17 04:31 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021501 => 010101, Inicio: 2024-12-05 17:07, Fin: 2024-12-23 20:59 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021401 => 130601, Inicio: 2024-12-06 07:20, Fin: 2024-12-23 06:54 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021401 => 100101, Inicio: 2024-12-04 03:18, Fin: 2024-12-20 07:55 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021401 => 020201, Inicio: 2024-12-03 07:03, Fin: 2024-12-22 05:28 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021301 => 100101, Inicio: 2024-12-05 17:20, Fin: 2024-12-19 04:40 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021201 => 220501, Inicio: 2024-12-05 06:26, Fin: 2024-12-14 06:50 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021201 => 130701, Inicio: 2024-12-03 03:31, Fin: 2024-12-15 09:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021201 => 021401, Inicio: 2024-12-06 15:56, Fin: 2024-12-23 14:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021101 => 021701, Inicio: 2024-12-01 13:49, Fin: 2024-12-22 02:26 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021001 => 220301, Inicio: 2024-12-06 15:36, Fin: 2024-12-15 04:22 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 021001 => 130201, Inicio: 2024-12-02 03:36, Fin: 2024-12-21 17:44 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020801 => 190201, Inicio: 2024-12-02 12:09, Fin: 2024-12-16 20:57 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020801 => 020901, Inicio: 2024-12-06 04:29, Fin: 2024-12-17 13:45 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020701 => 150701, Inicio: 2024-12-02 15:08, Fin: 2024-12-19 19:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020701 => 061001, Inicio: 2024-12-07 00:55, Fin: 2024-12-18 21:44 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020701 => 021101, Inicio: 2024-12-06 17:28, Fin: 2024-12-19 17:27 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020601 => 220301, Inicio: 2024-12-04 08:10, Fin: 2024-12-20 12:16 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020601 => 130201, Inicio: 2024-12-01 20:49, Fin: 2024-12-20 20:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020601 => 100201, Inicio: 2024-12-06 21:57, Fin: 2024-12-24 04:09 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020501 => 150401, Inicio: 2024-12-02 18:23, Fin: 2024-12-21 09:01 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020501 => 060201, Inicio: 2024-12-03 17:20, Fin: 2024-12-23 01:55 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020501 => 020401, Inicio: 2024-12-02 00:23, Fin: 2024-12-13 01:38 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020401 => 190201, Inicio: 2024-12-03 01:03, Fin: 2024-12-20 00:02 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020401 => 120801, Inicio: 2024-12-06 15:42, Fin: 2024-12-16 17:27 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020401 => 020601, Inicio: 2024-12-06 04:13, Fin: 2024-12-24 05:59 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020301 => 020401, Inicio: 2024-12-05 05:57, Fin: 2024-12-21 21:38 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020201 => 130301, Inicio: 2024-12-01 17:33, Fin: 2024-12-21 20:47 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020201 => 021301, Inicio: 2024-12-02 17:09, Fin: 2024-12-19 23:56 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020101 => 190101, Inicio: 2024-12-04 16:29, Fin: 2024-12-14 05:03 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020101 => 130101, Inicio: 2024-12-07 02:25, Fin: 2024-12-21 04:29 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 020101 => 070101, Inicio: 2024-12-02 13:16, Fin: 2024-12-13 15:43 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010701 => 220501, Inicio: 2024-12-04 05:05, Fin: 2024-12-17 09:43 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010701 => 130101, Inicio: 2024-12-07 00:53, Fin: 2024-12-21 07:13 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010701 => 021901, Inicio: 2024-12-05 12:57, Fin: 2024-12-15 01:53 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010601 => 131001, Inicio: 2024-12-02 00:07, Fin: 2024-12-15 04:31 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010501 => 131001, Inicio: 2024-12-06 08:18, Fin: 2024-12-22 22:11 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010301 => 131001, Inicio: 2024-12-01 19:16, Fin: 2024-12-22 09:37 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010201 => 220301, Inicio: 2024-12-03 01:47, Fin: 2024-12-20 16:19 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010101 => 221001, Inicio: 2024-12-01 02:25, Fin: 2024-12-14 01:07 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010101 => 130601, Inicio: 2024-12-05 19:56, Fin: 2024-12-14 07:44 
+[2024-12-13 17:29:42] [INFO   ] Bloqueo: 010101 => 022001, Inicio: 2024-12-06 16:59, Fin: 2024-12-23 11:53 
+[2024-12-13 17:29:42] [INFO   ] Iniciando carga del plan de mantenimiento desde: src/main/resources/maintenance.txt 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C017, Inicio: 2024-04-01 00:00, Fin: 2024-04-03 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C001, Inicio: 2024-04-03 00:00, Fin: 2024-04-05 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B011, Inicio: 2024-04-05 00:00, Fin: 2024-04-07 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C018, Inicio: 2024-04-07 00:00, Fin: 2024-04-09 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B001, Inicio: 2024-04-09 00:00, Fin: 2024-04-11 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C002, Inicio: 2024-04-11 00:00, Fin: 2024-04-13 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C019, Inicio: 2024-04-13 00:00, Fin: 2024-04-15 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B012, Inicio: 2024-04-15 00:00, Fin: 2024-04-17 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A001, Inicio: 2024-04-17 00:00, Fin: 2024-04-19 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C020, Inicio: 2024-04-19 00:00, Fin: 2024-04-21 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C003, Inicio: 2024-04-21 00:00, Fin: 2024-04-23 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B013, Inicio: 2024-04-23 00:00, Fin: 2024-04-25 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C021, Inicio: 2024-04-25 00:00, Fin: 2024-04-27 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B002, Inicio: 2024-04-27 00:00, Fin: 2024-04-29 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C004, Inicio: 2024-04-29 00:00, Fin: 2024-05-01 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C022, Inicio: 2024-05-01 00:00, Fin: 2024-05-03 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B014, Inicio: 2024-05-03 00:00, Fin: 2024-05-05 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A005, Inicio: 2024-05-05 00:00, Fin: 2024-05-07 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C023, Inicio: 2024-05-07 00:00, Fin: 2024-05-09 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C005, Inicio: 2024-05-09 00:00, Fin: 2024-05-11 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B015, Inicio: 2024-05-11 00:00, Fin: 2024-05-13 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C024, Inicio: 2024-05-13 00:00, Fin: 2024-05-15 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B003, Inicio: 2024-05-15 00:00, Fin: 2024-05-17 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A002, Inicio: 2024-05-17 00:00, Fin: 2024-05-19 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C011, Inicio: 2024-05-19 00:00, Fin: 2024-05-21 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C006, Inicio: 2024-05-21 00:00, Fin: 2024-05-23 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B008, Inicio: 2024-05-23 00:00, Fin: 2024-05-25 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C012, Inicio: 2024-05-25 00:00, Fin: 2024-05-27 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B004, Inicio: 2024-05-27 00:00, Fin: 2024-05-29 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C007, Inicio: 2024-05-29 00:00, Fin: 2024-05-31 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C013, Inicio: 2024-05-31 00:00, Fin: 2024-06-02 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A003, Inicio: 2024-06-02 00:00, Fin: 2024-06-04 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B005, Inicio: 2024-06-04 00:00, Fin: 2024-06-06 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C014, Inicio: 2024-06-06 00:00, Fin: 2024-06-08 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C008, Inicio: 2024-06-08 00:00, Fin: 2024-06-10 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B009, Inicio: 2024-06-10 00:00, Fin: 2024-06-12 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C015, Inicio: 2024-06-12 00:00, Fin: 2024-06-14 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A006, Inicio: 2024-06-14 00:00, Fin: 2024-06-16 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B006, Inicio: 2024-06-16 00:00, Fin: 2024-06-18 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C016, Inicio: 2024-06-18 00:00, Fin: 2024-06-20 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C009, Inicio: 2024-06-20 00:00, Fin: 2024-06-22 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: A004, Inicio: 2024-06-22 00:00, Fin: 2024-06-24 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B010, Inicio: 2024-06-24 00:00, Fin: 2024-06-26 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: C010, Inicio: 2024-06-26 00:00, Fin: 2024-06-28 23:59 
+[2024-12-13 17:29:42] [INFO   ] Mantenimiento cargado - Vehículo: B007, Inicio: 2024-06-28 00:00, Fin: 2024-06-30 23:59 
+[2024-12-13 17:29:42] [INFO   ] Carga del plan de mantenimiento completada. Total de mantenimientos: 45 
+[2024-12-13 17:29:42] [INFO   ] Comenzando carga de órdenes desde 1 archivos 
+[2024-12-13 17:29:42] [INFO   ] Cargadas 658 órdenes del archivo c.1inf54.ventas202412.txt 
+[2024-12-13 17:29:42] [INFO   ] Carga de órdenes completada. Total de órdenes cargadas: 658 
+[2024-12-13 17:29:42] [INFO   ] Cantidad total de nodos (locations): 195 
+[2024-12-13 17:29:42] [INFO   ] Número de núcleos detectados: 16 
+[2024-12-13 17:29:42] [INFO   ] Máximo de tareas concurrentes ajustado a: 32 
+[2024-12-13 17:29:42] [INFO   ] Simulación inicializada - Start Time: 2024-12-01T00:00, Last Update: 1734128982764 
+[2024-12-13 17:29:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:00 
+[2024-12-13 17:29:42] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:42] [INFO   ] Iniciando planificación: 2024-12-01T00:00 
+[2024-12-13 17:29:42] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T17:29:42.814871060"} 
+[2024-12-13 17:29:42] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:05 
+[2024-12-13 17:29:42] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 17:29:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:42] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:05:00 AM, Duración simulada: 5 minutos, Tiempo real: 01/12/2024 12:00:00 AM, Duración real: 0 segundos 
+[2024-12-13 17:29:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:05:00 AM","simulatedDuration":"5 minutos","realElapsedTime":"01/12/2024 12:00:00 AM","realDuration":"0 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:05 
+[2024-12-13 17:29:42] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-01T00:05 
+[2024-12-13 17:29:42] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:43] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:10 
+[2024-12-13 17:29:43] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:10:00 AM, Duración simulada: 10 minutos, Tiempo real: 01/12/2024 12:00:01 AM, Duración real: 1 segundo 
+[2024-12-13 17:29:43] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:10:00 AM","simulatedDuration":"10 minutos","realElapsedTime":"01/12/2024 12:00:01 AM","realDuration":"1 segundo","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:43] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:10 
+[2024-12-13 17:29:43] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:44] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:44] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:44] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:15 
+[2024-12-13 17:29:44] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:15:00 AM, Duración simulada: 15 minutos, Tiempo real: 01/12/2024 12:00:02 AM, Duración real: 2 segundos 
+[2024-12-13 17:29:44] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:15:00 AM","simulatedDuration":"15 minutos","realElapsedTime":"01/12/2024 12:00:02 AM","realDuration":"2 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:44] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:15 
+[2024-12-13 17:29:44] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:45] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:20 
+[2024-12-13 17:29:45] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:20:00 AM, Duración simulada: 20 minutos, Tiempo real: 01/12/2024 12:00:03 AM, Duración real: 3 segundos 
+[2024-12-13 17:29:45] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:20:00 AM","simulatedDuration":"20 minutos","realElapsedTime":"01/12/2024 12:00:03 AM","realDuration":"3 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:45] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:20 
+[2024-12-13 17:29:45] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:46] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:25 
+[2024-12-13 17:29:46] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:25:00 AM, Duración simulada: 25 minutos, Tiempo real: 01/12/2024 12:00:04 AM, Duración real: 4 segundos 
+[2024-12-13 17:29:46] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:25:00 AM","simulatedDuration":"25 minutos","realElapsedTime":"01/12/2024 12:00:04 AM","realDuration":"4 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:46] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:25 
+[2024-12-13 17:29:46] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:47] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:30 
+[2024-12-13 17:29:47] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:30:00 AM, Duración simulada: 30 minutos, Tiempo real: 01/12/2024 12:00:05 AM, Duración real: 5 segundos 
+[2024-12-13 17:29:47] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:30:00 AM","simulatedDuration":"30 minutos","realElapsedTime":"01/12/2024 12:00:05 AM","realDuration":"5 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:47] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:30 
+[2024-12-13 17:29:47] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:47] [INFO   ] Iniciando planificación: 2024-12-01T00:30 
+[2024-12-13 17:29:47] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":2,"message":"Procesando 2 órdenes","timestamp":"2024-12-13T17:29:47.833635240"} 
+[2024-12-13 17:29:47] [INFO   ] Órdenes disponibles: 2 
+[2024-12-13 17:29:47] [INFO   ] Orden 1 - Paquetes restantes sin asignar: 3 
+[2024-12-13 17:29:47] [INFO   ] Orden 2 - Paquetes restantes sin asignar: 10 
+[2024-12-13 17:29:48] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:35 
+[2024-12-13 17:29:48] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:35:00 AM, Duración simulada: 35 minutos, Tiempo real: 01/12/2024 12:00:06 AM, Duración real: 6 segundos 
+[2024-12-13 17:29:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:35:00 AM","simulatedDuration":"35 minutos","realElapsedTime":"01/12/2024 12:00:06 AM","realDuration":"6 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:35 
+[2024-12-13 17:29:48] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:48] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Procesando 2 órdenes","timestamp":"2024-12-13T17:29:49.340027598"} 
+[2024-12-13 17:29:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T17:29:49.341480766","routesStats":{"total":2,"completed":0}} 
+[2024-12-13 17:29:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 150101 hacia 040701 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 150101 hacia 040701 
+[2024-12-13 17:29:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:49] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 150101 hacia 030301 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 150101 hacia 030301 
+[2024-12-13 17:29:49] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 040101 hacia 040701 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 040101 hacia 040701 
+[2024-12-13 17:29:49] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 040101 hacia 030301 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 040101 hacia 030301 
+[2024-12-13 17:29:49] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 130101 hacia 040701 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 130101 hacia 040701 
+[2024-12-13 17:29:49] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 130101 hacia 030301 
+[2024-12-13 17:29:49] [INFO   ] Calculando ruta desde 130101 hacia 030301 
+[2024-12-13 17:29:49] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 17:29:49] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 17:29:49] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:40 
+[2024-12-13 17:29:49] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:40:00 AM, Duración simulada: 40 minutos, Tiempo real: 01/12/2024 12:00:07 AM, Duración real: 7 segundos 
+[2024-12-13 17:29:49] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:40:00 AM","simulatedDuration":"40 minutos","realElapsedTime":"01/12/2024 12:00:07 AM","realDuration":"7 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:49] [INFO   ] 
+Destino: 040701 
+[2024-12-13 17:29:49] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:40 
+[2024-12-13 17:29:49] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:49] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 17:29:49] [INFO   ] Detalle por almacén: 
+[2024-12-13 17:29:49] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 11 horas, 8 minutos) 
+[2024-12-13 17:29:49] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 1 horas, 14 minutos) 
+[2024-12-13 17:29:49] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 18 horas, 5 minutos) 
+[2024-12-13 17:29:49] [INFO   ] 
+Destino: 030301 
+[2024-12-13 17:29:49] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 17:29:49] [INFO   ] Detalle por almacén: 
+[2024-12-13 17:29:49] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 8 horas, 46 minutos) 
+[2024-12-13 17:29:49] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 4 horas, 40 minutos) 
+[2024-12-13 17:29:49] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 15 horas, 22 minutos) 
+[2024-12-13 17:29:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":2,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T17:29:49.828048957","routesStats":{"total":2,"completed":2}} 
+[2024-12-13 17:29:50] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:50] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:50] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:50] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:50] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:50] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:45 
+[2024-12-13 17:29:50] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:45:00 AM, Duración simulada: 45 minutos, Tiempo real: 01/12/2024 12:00:08 AM, Duración real: 8 segundos 
+[2024-12-13 17:29:50] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:45:00 AM","simulatedDuration":"45 minutos","realElapsedTime":"01/12/2024 12:00:08 AM","realDuration":"8 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:50] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:45 
+[2024-12-13 17:29:50] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:51] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:51] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:51] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:51] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:51] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:51] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:50 
+[2024-12-13 17:29:51] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:50:00 AM, Duración simulada: 50 minutos, Tiempo real: 01/12/2024 12:00:09 AM, Duración real: 9 segundos 
+[2024-12-13 17:29:51] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:50:00 AM","simulatedDuration":"50 minutos","realElapsedTime":"01/12/2024 12:00:09 AM","realDuration":"9 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:51] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:50 
+[2024-12-13 17:29:51] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:52] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T00:55 
+[2024-12-13 17:29:52] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 12:55:00 AM, Duración simulada: 55 minutos, Tiempo real: 01/12/2024 12:00:10 AM, Duración real: 10 segundos 
+[2024-12-13 17:29:52] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 12:55:00 AM","simulatedDuration":"55 minutos","realElapsedTime":"01/12/2024 12:00:10 AM","realDuration":"10 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:52] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T00:55 
+[2024-12-13 17:29:52] [INFO   ] Nuevo bloqueo activado: Origen: 021501, Destino: 130801, Inicio: 2024-12-01T00:52, Fin: 2024-12-13T12:36 
+[2024-12-13 17:29:52] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 17:29:52] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 17:29:52] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 17:29:52] [INFO   ] - Total de bloqueos activos: 1 
+[2024-12-13 17:29:52] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 17:29:52] [INFO   ] Ruta bloqueada: 021501 -> 130801 
+[2024-12-13 17:29:52] [INFO   ] Matriz de tiempo actualizada con 1 bloqueos aplicados 
+[2024-12-13 17:29:52] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Iniciando asignación de vehículos","timestamp":"2024-12-13T17:29:52.828909956"} 
+[2024-12-13 17:29:52] [INFO   ] Orden 1 asignada al almacén 040101 para entrega en 040701 
+[2024-12-13 17:29:52] [INFO   ] Orden 2 asignada al almacén 040101 para entrega en 030301 
+[2024-12-13 17:29:52] [INFO   ] 
+=== Resumen de asignación de almacenes === 
+[2024-12-13 17:29:52] [INFO   ] Órdenes asignadas: 2 
+[2024-12-13 17:29:52] [INFO   ] Órdenes no asignables: 0 
+[2024-12-13 17:29:53] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:00 
+[2024-12-13 17:29:53] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:00:00 AM, Duración simulada: 1 hora, Tiempo real: 01/12/2024 12:00:11 AM, Duración real: 11 segundos 
+[2024-12-13 17:29:53] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:00:00 AM","simulatedDuration":"1 hora","realElapsedTime":"01/12/2024 12:00:11 AM","realDuration":"11 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:53] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:00 
+[2024-12-13 17:29:53] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:53] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:54] [INFO   ] Orden 1 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 17:29:54] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 1
+Cantidad Total de la Orden: 3 paquetes
+Cantidad Asignada al Vehículo: 3 paquetes
+Código del Vehículo: A006
+Capacidad Actual del Vehículo: 3 / 90
+--------------------------- 
+[2024-12-13 17:29:54] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 3, Capacidad Total: 90, Total Registros: 1 
+[2024-12-13 17:29:54] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: A006
+Capacidad del Vehículo: 90 paquetes
+Orden a Entregar:
+  - Código de la Orden: 1
+  - Cantidad Total de la Orden: 3 paquetes
+  - Cantidad Asignada al Vehículo: 3 paquetes
+Origen: 040101 (AREQUIPA)
+Destino: 040701 (ISLAY)
+Tiempo de Inicio de Viaje: 2024-12-01 01:00:00
+Tiempo Estimado de Llegada: 2024-12-01 02:14:00
+Tiempo Límite de Entrega: 2024-12-02 00:04:00
+-------------------------Segmentos Restantes:
+ - Segmento: AREQUIPA to ISLAY, Desde: 040101, Hacia: 040701, Distancia: 0.0 km, Duración: 74 min
+ 
+[2024-12-13 17:29:54] [INFO   ] Orden 1 completamente asignada. 
+[2024-12-13 17:29:54] [INFO   ] Orden 2 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 17:29:54] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 2
+Cantidad Total de la Orden: 10 paquetes
+Cantidad Asignada al Vehículo: 10 paquetes
+Código del Vehículo: B011
+Capacidad Actual del Vehículo: 10 / 45
+--------------------------- 
+[2024-12-13 17:29:54] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 10, Capacidad Total: 45, Total Registros: 2 
+[2024-12-13 17:29:54] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: B011
+Capacidad del Vehículo: 45 paquetes
+Orden a Entregar:
+  - Código de la Orden: 2
+  - Cantidad Total de la Orden: 10 paquetes
+  - Cantidad Asignada al Vehículo: 10 paquetes
+Origen: 040101 (AREQUIPA)
+Destino: 030301 (ANTABAMBA)
+Tiempo de Inicio de Viaje: 2024-12-01 01:00:00
+Tiempo Estimado de Llegada: 2024-12-01 05:40:00
+Tiempo Límite de Entrega: 2024-12-03 00:17:00
+-------------------------Segmentos Restantes:
+ - Segmento: AREQUIPA to LA UNION, Desde: 040101, Hacia: 040801, Distancia: 0.0 km, Duración: 167 min
+ - Segmento: LA UNION to ANTABAMBA, Desde: 040801, Hacia: 030301, Distancia: 0.0 km, Duración: 113 min
+ 
+[2024-12-13 17:29:54] [INFO   ] Orden 2 completamente asignada. 
+[2024-12-13 17:29:54] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Se asignaron 2 vehículos","timestamp":"2024-12-13T17:29:54.369542274","assignedVehicles":2} 
+[2024-12-13 17:29:54] [INFO   ] Vehículo A006 programado para avería tipo 1 a las 2024-12-01T01:37 en el tramo de 040101 (AREQUIPA) a 040701 (ISLAY) 
+[2024-12-13 17:29:54] [INFO   ] Vehículo B011 programado para avería tipo 3 a las 2024-12-01T03:20 en el tramo de 040101 (AREQUIPA) a 030301 (ANTABAMBA) 
+[2024-12-13 17:29:54] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:54] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:54] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:05 
+[2024-12-13 17:29:54] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:05:00 AM, Duración simulada: 1 hora 5 minutos, Tiempo real: 01/12/2024 12:00:12 AM, Duración real: 12 segundos 
+[2024-12-13 17:29:54] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:05:00 AM","simulatedDuration":"1 hora 5 minutos","realElapsedTime":"01/12/2024 12:00:12 AM","realDuration":"12 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:54] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:05 
+[2024-12-13 17:29:54] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:54] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 5 minutos 
+[2024-12-13 17:29:54] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 5 minutos 
+[2024-12-13 17:29:55] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:10 
+[2024-12-13 17:29:55] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:10:00 AM, Duración simulada: 1 hora 10 minutos, Tiempo real: 01/12/2024 12:00:13 AM, Duración real: 13 segundos 
+[2024-12-13 17:29:55] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:10:00 AM","simulatedDuration":"1 hora 10 minutos","realElapsedTime":"01/12/2024 12:00:13 AM","realDuration":"13 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:55] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:10 
+[2024-12-13 17:29:55] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:55] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 10 minutos 
+[2024-12-13 17:29:55] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 10 minutos 
+[2024-12-13 17:29:56] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:56] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:15 
+[2024-12-13 17:29:56] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:15:00 AM, Duración simulada: 1 hora 15 minutos, Tiempo real: 01/12/2024 12:00:14 AM, Duración real: 14 segundos 
+[2024-12-13 17:29:56] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:15:00 AM","simulatedDuration":"1 hora 15 minutos","realElapsedTime":"01/12/2024 12:00:14 AM","realDuration":"14 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:56] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:15 
+[2024-12-13 17:29:56] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:56] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 15 minutos 
+[2024-12-13 17:29:56] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 15 minutos 
+[2024-12-13 17:29:57] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:57] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:57] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:57] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:57] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:57] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:20 
+[2024-12-13 17:29:57] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:20:00 AM, Duración simulada: 1 hora 20 minutos, Tiempo real: 01/12/2024 12:00:15 AM, Duración real: 15 segundos 
+[2024-12-13 17:29:57] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:20:00 AM","simulatedDuration":"1 hora 20 minutos","realElapsedTime":"01/12/2024 12:00:15 AM","realDuration":"15 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:57] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:20 
+[2024-12-13 17:29:57] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:57] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 20 minutos 
+[2024-12-13 17:29:57] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 20 minutos 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:58] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:25 
+[2024-12-13 17:29:58] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:25:00 AM, Duración simulada: 1 hora 25 minutos, Tiempo real: 01/12/2024 12:00:16 AM, Duración real: 16 segundos 
+[2024-12-13 17:29:58] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:25:00 AM","simulatedDuration":"1 hora 25 minutos","realElapsedTime":"01/12/2024 12:00:16 AM","realDuration":"16 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:58] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:25 
+[2024-12-13 17:29:58] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:58] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 25 minutos 
+[2024-12-13 17:29:58] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 25 minutos 
+[2024-12-13 17:29:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:59] [INFO   ] Iniciando planificación: 2024-12-01T01:25 
+[2024-12-13 17:29:59] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":3,"message":"Procesando 3 órdenes","timestamp":"2024-12-13T17:29:59.379465314"} 
+[2024-12-13 17:29:59] [INFO   ] Órdenes disponibles: 3 
+[2024-12-13 17:29:59] [INFO   ] Orden 3 - Paquetes restantes sin asignar: 12 
+[2024-12-13 17:29:59] [INFO   ] Orden 4 - Paquetes restantes sin asignar: 12 
+[2024-12-13 17:29:59] [INFO   ] Orden 5 - Paquetes restantes sin asignar: 16 
+[2024-12-13 17:29:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:59] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 17:29:59] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:30 
+[2024-12-13 17:29:59] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:30:00 AM, Duración simulada: 1 hora 30 minutos, Tiempo real: 01/12/2024 12:00:17 AM, Duración real: 17 segundos 
+[2024-12-13 17:29:59] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:30:00 AM","simulatedDuration":"1 hora 30 minutos","realElapsedTime":"01/12/2024 12:00:17 AM","realDuration":"17 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:29:59] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:30 
+[2024-12-13 17:29:59] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:29:59] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 30 minutos 
+[2024-12-13 17:29:59] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 30 minutos 
+[2024-12-13 17:30:00] [INFO   ] Tiempo actualizado - Current Time: 2024-12-01T01:35 
+[2024-12-13 17:30:00] [INFO   ] Resumen de simulación - Tiempo simulado: 01/12/2024 01:35:00 AM, Duración simulada: 1 hora 35 minutos, Tiempo real: 01/12/2024 12:00:18 AM, Duración real: 18 segundos 
+[2024-12-13 17:30:00] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/12/2024 12:00:00 AM","endTime":"08/12/2024 12:00:00 AM","simulatedTime":"01/12/2024 01:35:00 AM","simulatedDuration":"1 hora 35 minutos","realElapsedTime":"01/12/2024 12:00:18 AM","realDuration":"18 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 17:30:00] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-01T01:35 
+[2024-12-13 17:30:00] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 17:30:00] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to ISLAY (040701),Ubicación actual: 040101, Tiempo en tramo: 35 minutos 
+[2024-12-13 17:30:00] [INFO   ] Vehículo B011 - Velocidad: 0.00 km/h, Tramo: AREQUIPA to LA UNION (040801),Ubicación actual: 040101, Tiempo en tramo: 35 minutos 
+[2024-12-13 17:30:00] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":3,"message":"Procesando 3 órdenes","timestamp":"2024-12-13T17:30:00.881561303"} 
+[2024-12-13 17:30:00] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":3,"message":"Calculando rutas para 2 destinos","timestamp":"2024-12-13T17:30:00.882549365","routesStats":{"total":2,"completed":0}} 
+[2024-12-13 17:30:00] [INFO   ] Calculando ruta desde 150101 hacia 240101 
+[2024-12-13 17:30:00] [INFO   ] Calculando ruta desde 150101 hacia 240101 
+[2024-12-13 17:30:00] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 17:30:00] [INFO   ] Calculando ruta desde 150101 hacia 021901 
+[2024-12-13 17:30:00] [INFO   ] Calculando ruta desde 150101 hacia 021901 

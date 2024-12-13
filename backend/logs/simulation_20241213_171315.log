@@ -1,0 +1,3 @@
+[2024-12-13 17:13:15] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241213_171315.log 
+[2024-12-13 17:13:17] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-13 17:13:17] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
