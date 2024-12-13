@@ -29,7 +29,7 @@ import ModalVehiculo from './ModalVehiculo';
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
 import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
 import { useRouteWebSocket } from '@/hooks/useRouteWebSocket';
-import { blockageRoutesAtom, vehicleCurrentRoutesAtom } from '@/atoms/routeAtoms';
+import { blockageRoutesAtom, formattedRoutesAtom, routesAtom, showBlockagesRoutesAtom, showVehiclesRoutesAtom, vehicleCurrentRoutesAtom } from '@/atoms/routeAtoms';
 
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
@@ -179,6 +179,8 @@ const VehicleMap = ({ simulationStatus }) => {
   const locationRetryTimeoutRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [showBlockageRoutes,] = useAtom(showBlockagesRoutesAtom)
+  const [showVehiclesRoutes,] = useAtom(showVehiclesRoutesAtom)
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
@@ -237,7 +239,7 @@ const VehicleMap = ({ simulationStatus }) => {
         throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
       }
     } catch (err) {
-      console.error('Error al obtener las ubicaciones:', err);
+      console.log('Error al obtener las ubicaciones:', err);
       setError(createError(ErrorTypes.CONNECTION, 'No se pudieron cargar las ubicaciones de oficinas y almacenes.'));
 
       if (retryCount < maxRetries) {
@@ -414,7 +416,7 @@ const VehicleMap = ({ simulationStatus }) => {
       });
 
       //mapRef.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
-      mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+      mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       mapRef.current.dragRotate.disable();
       mapRef.current.setMaxBounds(MAP_CONFIG.BOUNDS);
 
@@ -1262,11 +1264,22 @@ const VehicleMap = ({ simulationStatus }) => {
   
   // Agregado de capa de rutas bloqueadas
   useEffect(() => {
-    if (blockageRoutes === null || blockageRoutes === undefined) return;
-  
-  
+    
     const sourceId = 'b-routes'; //blockage routes
     const layerId = 'b-routes';
+    
+    if (blockageRoutes === null || blockageRoutes === undefined || mapRef.current === null || mapRef.current === undefined) return;
+  
+    if (showBlockageRoutes === false ){
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.removeLayer(layerId); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceId)) {
+        mapRef.current.removeSource(sourceId); // Eliminar la fuente si existe
+      }
+      return
+    }
+    
   
     // Si la fuente ya existe, simplemente actualiza los datos
     if (mapRef.current.getSource(sourceId)) {
@@ -1308,15 +1321,25 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [blockageRoutes]);
+  }, [blockageRoutes, showBlockageRoutes]);
 
   // Agregado de capa de rutas actuales de vehiculos
   useEffect(() => {
-    if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined) return;
-  
     //Agregado de rutas actuales de vehiculos
-    const sourceId = 'c-routes'; //blockage routes
+    const sourceId = 'c-routes';
     const layerId = 'c-routes';
+
+    if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined || mapRef.current === null || mapRef.current === undefined) return;
+
+    if (showVehiclesRoutes === false ){
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.removeLayer(layerId); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceId)) {
+        mapRef.current.removeSource(sourceId); // Eliminar la fuente si existe
+      }
+      return
+    }
   
     // Si la fuente ya existe, simplemente actualiza los datos
     if (mapRef.current.getSource(sourceId)) {
@@ -1358,8 +1381,11 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [vehicleCurrentRoutes]);
+  }, [vehicleCurrentRoutes, showVehiclesRoutes]);
   
+  //const [showBlockageRoutes,] = useAtom(showBlockagesRoutesAtom)
+  //const [showVehiclesRoutes,] = useAtom(showVehiclesRoutesAtom)
+
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {

@@ -503,10 +503,12 @@ public class Vehicle {
         addBreakdownLog(this.getCode(), breakdownLog);
         logger.info(breakdownLog);
 
-        String temporaryUbigeo = "TEMP_" + this.getCode(); // Crear un ubigeo único para el punto de avería
-        LocationService.getInstance().addTemporaryLocation(temporaryUbigeo, breakdownPosition.getLatitude(), breakdownPosition.getLongitude());
-        this.currentLocationUbigeo = temporaryUbigeo;
-        return temporaryUbigeo;
+        if (tipoAveria != EstadoVehiculo.AVERIADO_1) {
+            String temporaryUbigeo = "TEMP_" + this.getCode(); // Crear un ubigeo único para el punto de avería
+            LocationService.getInstance().addTemporaryLocation(temporaryUbigeo, breakdownPosition.getLatitude(), breakdownPosition.getLongitude());
+            this.currentLocationUbigeo = temporaryUbigeo;
+            return temporaryUbigeo;
+        } else return null;
     }
 
     public List<RouteSegment> getAdjustedRemainingRouteSegments() {

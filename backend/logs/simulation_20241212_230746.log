@@ -1,0 +1,8 @@
+[2024-12-12 23:07:46] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241212_230746.log 
+[2024-12-12 23:07:47] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-12 23:07:47] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-12 23:07:53] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-12 23:07:53] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-12 23:07:53] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-12 23:07:53] [SEVERE ] Error en la conexión WebSocket: null 
+[2024-12-12 23:07:53] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 

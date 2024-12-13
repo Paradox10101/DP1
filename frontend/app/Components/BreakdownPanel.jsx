@@ -41,8 +41,10 @@ const StatusBadge = ({ status }) => {
   }
 };
 
-export default function BreakdownPanel() {
-  const [isOpen, setIsOpen] = useState(true);
+
+
+export default function BreakdownPanel({toggleSecondaryPanel, setToggleSecondaryPanel}) {
+  const [isOpen, setIsOpen] = useState(false);
   const [brokenVehicles, setBrokenVehicles] = useState([]);
   const [vehiclePositions] = useAtom(vehiclePositionsAtom);
   const { isOpen: isModalOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -119,12 +121,18 @@ export default function BreakdownPanel() {
     setSelectedVehicle(vehicle.properties);
     onOpen();
   };
+  
+  
 
   return (
-    <div className="fixed right-5 bottom-6 w-96">
+    <div >
       <div className="bg-white rounded-xl shadow-lg">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+
+            setIsOpen(!isOpen)
+            
+          }}
           className="w-full flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-colors duration-200 rounded-xl"
         >
           <div className="flex items-center gap-2">
@@ -135,14 +143,14 @@ export default function BreakdownPanel() {
           </div>
           <ChevronDown
             className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${
-              isOpen ? "rotate-180" : ""
+              (isOpen) ? "rotate-180" : ""
             }`}
           />
         </button>
 
         <div className={`
           overflow-hidden transition-all duration-300 ease-in-out
-          ${isOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}
+          ${(isOpen) ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}
         `}>
           <div className="p-4 space-y-3 overflow-y-auto max-h-[400px]">
             {brokenVehicles.length === 0 ? (

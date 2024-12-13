@@ -1,5 +1,6 @@
 package com.odiparpack.routing.service;
 
+import com.google.protobuf.Duration;
 import com.odiparpack.DataModel;
 import com.odiparpack.models.Location;
 import com.odiparpack.routing.model.*;
@@ -21,6 +22,8 @@ public class RouteSolver {
         this.searchParameters = main.defaultRoutingSearchParameters()
                 .toBuilder()
                 .setFirstSolutionStrategy(FirstSolutionStrategy.Value.CHRISTOFIDES)
+                //.setLocalSearchMetaheuristic(LocalSearchMetaheuristic.Value.GUIDED_LOCAL_SEARCH)
+                //.setTimeLimit(Duration.newBuilder().setSeconds(3).build())
                 .build();
     }
 

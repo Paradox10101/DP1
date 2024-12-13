@@ -102,6 +102,53 @@ public class DataLoader {
         return locations;
     }
 
+    //Carga de las ubicaciones que excluye un ubigeo seleccionado y asigna la capacidad en base a la ubicacion
+    public Map<String, Location> loadLocationsWithCapacityByRegion(String filePath, String excludedUbigeoLocation) {
+        // Costa: 150
+        // Sierra: 200
+        // Selva: 220
+        Map<String, Location> locations = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                String[] parts = line.split(",");
+                if (parts.length < 7) continue; // Asegurarse de que hay suficientes campos
+                String ubigeo = parts[0].trim();
+                String department = parts[1].trim();
+                String province = parts[2].trim();
+                double latitude = Double.parseDouble(parts[3].trim());
+                double longitude = Double.parseDouble(parts[4].trim());
+                String naturalRegion = parts[5].trim();
+                int warehouseCapacity = Integer.parseInt(parts[6].trim());
+                switch (naturalRegion) {
+                    case "COSTA":
+                        warehouseCapacity = 150;
+                        break;
+                    case "SIERRA":
+                        warehouseCapacity = 200;
+                        break;
+                    case "SELVA":
+                        warehouseCapacity = 220;
+                        break;
+                }
+
+                if(excludedUbigeoLocation.equals(ubigeo))continue;
+                Location location = new Location(ubigeo, department, province, latitude, longitude, naturalRegion, warehouseCapacity);
+                locations.put(ubigeo, location);
+
+                // Población automática de ubigeoToNameMap
+                ubigeoToNameMap.put(ubigeo, province);
+
+                // Población de nameToUbigeoMap
+                nameToUbigeoMap.put(province, ubigeo);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return locations;
+    }
+
     public List<Vehicle> loadVehicles(String filePath) {
         List<Vehicle> vehicles = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
