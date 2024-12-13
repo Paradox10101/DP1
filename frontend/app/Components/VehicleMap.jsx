@@ -154,7 +154,92 @@ const VehicleMap = ({ simulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
+
+  // Referencias agregadas para animacion
+  const currentPositionsRef = useRef(null); 
+  const startPositionsRef = useRef(null);
+  const endPositionsRef = useRef(null);
+  const animationStartRef = useRef(null);
+  const animationDuration = 1500;
+  const currentAnimationFrameRef = useRef(null);
   
+  // Función para crear un mapa { vehicleCode: { ...featureData } }
+  const featuresToMap = (geojson) => {
+    const mapFeatures = {};
+    geojson.features.forEach(feat => {
+      const id = feat.properties.vehicleCode;
+      mapFeatures[id] = feat;
+    });
+    return mapFeatures;
+  };
+  
+  const mapToFeatures = (mapData) => {
+    return {
+      type: 'FeatureCollection',
+      features: Object.values(mapData)
+    };
+  };
+  
+  // Interpolar una posición entre start y end
+  const interpolatePosition = (start, end, t) => {
+    const lng = start[0] + (end[0] - start[0]) * t;
+    const lat = start[1] + (end[1] - start[1]) * t;
+    return [lng, lat];
+  };
+  
+  const animatePositions = () => {
+    if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) return;
+  
+    const now = performance.now();
+    const elapsed = now - animationStartRef.current;
+    const t = Math.min(elapsed / animationDuration, 1);
+  
+    // Tomamos snapshots de start y end
+    const startMap = featuresToMap(startPositionsRef.current);
+    const endMap = featuresToMap(endPositionsRef.current);
+  
+    // Crear un nuevo mapa interpolado
+    const interpolatedMap = {};
+  
+    for (const id in endMap) {
+      const endFeature = endMap[id];
+      const endCoord = endFeature.geometry.coordinates;
+  
+      let startCoord = endCoord; // Por si no existe en start
+      if (startMap[id]) {
+        startCoord = startMap[id].geometry.coordinates;
+      }
+  
+      const newCoord = interpolatePosition(startCoord, endCoord, t);
+      interpolatedMap[id] = {
+        ...endFeature,
+        geometry: {
+          ...endFeature.geometry,
+          coordinates: newCoord
+        }
+      };
+    }
+  
+    const interpolatedData = mapToFeatures(interpolatedMap);
+  
+    // Actualizamos la posición actual mostrada
+    currentPositionsRef.current = interpolatedData;
+  
+    const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+    if (vehiclesSource) {
+      vehiclesSource.setData(interpolatedData);
+    }
+  
+    if (t < 1) {
+      currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
+    } else {
+      // Animación completó: la posición final es oficial
+      positionsRef.current = endPositionsRef.current;
+      currentPositionsRef.current = endPositionsRef.current;
+    }
+  };
+  
+
 
   //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions) FUERA MRD A CADA RATO ESTO
 
@@ -320,10 +405,37 @@ const VehicleMap = ({ simulationStatus }) => {
       }),
     };
     console.log('Datos del WebSocket procesados:', updatedData);
-    // Actualizar los popups usando la función existente
     updatePopups(updatedData);
-    setPositions(updatedData);
-    updateVehiclePositions(updatedData); // Utiliza la versión con throttle    
+  
+    // Si no teníamos posiciones anteriores (primer mensaje)
+    if (!positionsRef.current || !positionsRef.current.features) {
+      // No hay animación previa, simplemente establecemos las posiciones inicial y final iguales
+      positionsRef.current = updatedData;
+      currentPositionsRef.current = updatedData;
+      startPositionsRef.current = updatedData;
+      endPositionsRef.current = updatedData;
+      // Actualizamos el mapa una vez sin animación
+      const vehiclesSource = mapRef.current?.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+      if (vehiclesSource) {
+        vehiclesSource.setData(updatedData);
+      }
+      return;
+    }
+  
+    // Cancelar cualquier animación en curso
+    if (currentAnimationFrameRef.current) {
+      cancelAnimationFrame(currentAnimationFrameRef.current);
+    }
+  
+    // Si estábamos animando, partimos de la posición actual mostrada (interpolada)
+    const currentData = currentPositionsRef.current || positionsRef.current;
+  
+    startPositionsRef.current = currentData;
+    endPositionsRef.current = updatedData;
+    animationStartRef.current = performance.now();
+  
+    // Iniciar la animación
+    currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
   }, [setPositions]);
 
   // Manejador de cambios de conexión
