@@ -156,7 +156,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const lineCurrentRouteRef = useRef()
   
 
-  console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
+  //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions) FUERA MRD A CADA RATO ESTO
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
