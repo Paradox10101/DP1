@@ -5,7 +5,7 @@ import {
   simulationMetricsAtom,
   simulationErrorAtom
 } from '../atoms/simulationAtoms';
-import { webSocketService } from '../services/webSocketService';
+import { webSocketService } from '../services/websocketService';
 
 export const useWebSocketConnection = () => {
   const [isAvailable, setIsAvailable] = useAtom(serverAvailableAtom);

@@ -99,7 +99,7 @@ export default function SimulationModal() {
         setSelectedTime("");
       }
     } catch (error) {
-      console.error('Error al obtener la fecha disponible:', error);
+      console.log('Error al obtener la fecha disponible:', error);
       setAvailableDays([]);
       setAvailableTimes([]);
       setSelectedDate("");

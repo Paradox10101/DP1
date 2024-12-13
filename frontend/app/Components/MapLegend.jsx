@@ -1,6 +1,6 @@
 "use client"
 
-import { Building, Car, CarFront, AlertTriangle, Truck, Warehouse, ChevronDown, Spline } from "lucide-react";
+import { Building, Car, CarFront, AlertTriangle, Truck, Warehouse, ChevronDown, Spline, Route } from "lucide-react";
 import { useState } from "react";
 
 const IconoEstado = ({ Icono, containerClass, iconClass }) => (
@@ -54,13 +54,13 @@ export default function MapLegend({ cornerPosition = "right-6" }) {
       title: "Rutas",
       items: [
         {
-          icon: Spline,
+          icon: Route,
           containerClass: "bg-white w-8 h-8",
           label: "Recorrido actual",
           iconClass: "text-[#0000FF]"
         },
         {
-          icon: Spline,
+          icon: Route,
           containerClass: "bg-white w-8 h-8",
           label: "Ruta bloqueda",
           iconClass: "text-[#FF0000]"
