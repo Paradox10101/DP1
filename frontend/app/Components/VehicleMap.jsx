@@ -223,29 +223,57 @@ const VehicleMap = ({ simulationStatus }) => {
   };
   
   const animatePositions = () => {
-    if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) return;
+    // Inicio de la función de animación
+    console.log('--- Iniciando animatePositions ---');
   
+    // Verificar si todas las referencias necesarias están disponibles.
+    if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) {
+      console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
+      return;
+    }
+  
+    // Obtener el tiempo actual y calcular el tiempo transcurrido desde el inicio de la animación.
     const now = performance.now();
     const elapsed = now - animationStartRef.current;
-    const t = Math.min(elapsed / animationDuration, 1);
+    const t = Math.min(elapsed / animationDuration, 1); // 't' varía de 0 a 1
   
-    // Tomamos snapshots de start y end
+    console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
+    console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
+    console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
+  
+    // Convertir FeatureCollection a mapas para fácil acceso por vehicleCode.
     const startMap = featuresToMap(startPositionsRef.current);
     const endMap = featuresToMap(endPositionsRef.current);
   
-    // Crear un nuevo mapa interpolado
+    console.log('Mapa de posiciones iniciales:', startMap);
+    console.log('Mapa de posiciones finales:', endMap);
+  
+    // Crear un nuevo mapa para almacenar las posiciones interpoladas.
     const interpolatedMap = {};
   
+    // Iterar sobre cada vehículo en el mapa final para interpolar sus posiciones.
     for (const id in endMap) {
       const endFeature = endMap[id];
       const endCoord = endFeature.geometry.coordinates;
   
-      let startCoord = endCoord; // Por si no existe en start
+      // Obtener la posición de inicio del vehículo. Si no existe, asumir que no se ha movido.
+      let startCoord = endCoord; // Por si no existe en startMap
       if (startMap[id]) {
         startCoord = startMap[id].geometry.coordinates;
       }
   
+      // Log de las coordenadas de inicio y fin del vehículo.
+      console.log(`Vehículo ID: ${id}`);
+      console.log(`  Posición de inicio: [${startCoord[0]}, ${startCoord[1]}]`);
+      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);
+  
+      // Interpolar entre la posición de inicio y final usando 't'.
       const newCoord = interpolatePosition(startCoord, endCoord, t);
+  
+      // Log de la nueva coordenada interpolada.
+      console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
+  
+      // Actualizar el mapa interpolado con la nueva posición del vehículo.
       interpolatedMap[id] = {
         ...endFeature,
         geometry: {
@@ -255,24 +283,40 @@ const VehicleMap = ({ simulationStatus }) => {
       };
     }
   
+    // Convertir el mapa interpolado de vuelta a FeatureCollection.
     const interpolatedData = mapToFeatures(interpolatedMap);
+    console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
   
-    // Actualizamos la posición actual mostrada
+    // Actualizar la referencia de posiciones actuales con los datos interpolados.
     currentPositionsRef.current = interpolatedData;
+    console.log('Referencias actualizadas con datos interpolados.');
   
+    // Obtener la fuente de datos de vehículos en el mapa.
     const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
     if (vehiclesSource) {
+      // Actualizar los datos de la fuente con las posiciones interpoladas.
       vehiclesSource.setData(interpolatedData);
+      console.log('Fuente de vehículos actualizada con datos interpolados.');
+    } else {
+      console.warn('Fuente de vehículos no encontrada en el mapa.');
     }
   
+    // Determinar si la animación debe continuar o finalizar.
     if (t < 1) {
+      console.log('Animación en progreso. Solicitando el siguiente frame.');
       currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
     } else {
-      // Animación completó: la posición final es oficial
+      console.log('Animación completada.');
+      // Actualizar las referencias de posición final para futuras animaciones.
       positionsRef.current = endPositionsRef.current;
       currentPositionsRef.current = endPositionsRef.current;
+      console.log('Referencias de posición actualizadas con posiciones finales.');
     }
+  
+    // Fin de la función de animación
+    console.log('--- Finalizando animatePositions ---');
   };
+  
   
 
 
@@ -1225,13 +1269,14 @@ const VehicleMap = ({ simulationStatus }) => {
           ...locations,
           features: updatedLocations,
         };
-
+        
+        /*
         // Verificar los valores actualizados
         console.log('Datos actualizados:', updatedData.features.map(f => ({
           name: f.properties.name,
           occupiedPercentage: f.properties.occupiedPercentage
         })));
-
+        */
         if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
