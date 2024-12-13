@@ -32,12 +32,9 @@ public class SimulationRunner {
     private static ForkJoinPool computeIntensiveExecutor;
 
     private static final Logger logger = Logger.getLogger(SimulationRunner.class.getName());
-    private static final int SIMULATION_DAYS = 7;
 
     public static volatile int TIME_ADVANCEMENT_INTERVAL_MINUTES = 5; // Por defecto para semanal y colapso
     public static volatile int TIME_ADVANCEMENT_INTERVAL_SECONDS = 1; // Por defecto para diaria
-    public static volatile int SIMULATION_SPEED = 5; // Por defecto para semanal y colapso
-    private static final int PLANNING_INTERVAL_MINUTES = 15;
 
     public static ScheduledExecutorService simulationExecutorService;
     private static final int BROADCAST_INTERVAL = 1500; // ms
@@ -185,7 +182,6 @@ public class SimulationRunner {
 
     public static void runSimulation(SimulationState state) throws InterruptedException {
         AtomicBoolean isSimulationRunning = new AtomicBoolean(true);
-        Map<String, List<RouteSegment>> vehicleRoutes = new ConcurrentHashMap<>();
         final Object pauseLock = new Object();
 
         try {
@@ -198,11 +194,11 @@ public class SimulationRunner {
             PlanificadorScheduler.initialize(scheduledExecutorService);
 
             // Iniciar el planificador automático
-            PlanificadorScheduler.start(state, isSimulationRunning, vehicleRoutes);
+            PlanificadorScheduler.start(state, isSimulationRunning);
 
             // Programar tareas principales
             Future<?> timeAdvancement = scheduleTimeAdvancement(
-                    state, isSimulationRunning, vehicleRoutes);
+                    state, isSimulationRunning);
 
             // Monitoreo principal usando condition variable
             while (!state.isStopped() && isSimulationRunning.get()) {
@@ -284,8 +280,7 @@ public class SimulationRunner {
 
     private static Future<?> scheduleTimeAdvancement(
             SimulationState state,
-            AtomicBoolean isSimulationRunning,
-            Map<String, List<RouteSegment>> vehicleRoutes) {
+            AtomicBoolean isSimulationRunning) {
 
         Runnable task;
         long intervalMillis;
@@ -293,27 +288,12 @@ public class SimulationRunner {
         // Determinar si es una simulación diaria o no
         boolean isDaily = state.getSimulationType() == SimulationRouter.SimulationType.DAILY;
         intervalMillis = 1000L; // 1 segundo real
-        task = new TimeAdvancementTask(state, isSimulationRunning, vehicleRoutes, isDaily);
+        task = new TimeAdvancementTask(state, isSimulationRunning, isDaily);
 
         return scheduledExecutorService.scheduleAtFixedRate(
                 task,
                 0,
                 intervalMillis,
-                TimeUnit.MILLISECONDS
-        );
-    }
-
-    private static Future<?> schedulePlanning(
-            SimulationState state,
-            AtomicBoolean isSimulationRunning,
-            Map<String, List<RouteSegment>> vehicleRoutes) {
-
-        return scheduledExecutorService.scheduleWithFixedDelay(
-                new PlanificadorTask(state,
-                        isSimulationRunning,
-                        vehicleRoutes),
-                0,
-                PLANNING_PERIOD_SECONDS * 1000L,
                 TimeUnit.MILLISECONDS
         );
     }

@@ -26,16 +26,13 @@ public class PlanificadorTask implements Runnable {
     private boolean breakdownsScheduled = false;
     private final List<String> pendingBreakdownTypes = new ArrayList<>(Arrays.asList("1", "2", "3"));
     private final Set<String> vehiclesWithScheduledBreakdown = new HashSet<>();
-    private final Map<String, List<RouteSegment>> vehicleRoutes;
 
     private final AtomicBoolean isExecuting = new AtomicBoolean(false);
 
     public PlanificadorTask(SimulationState state,
-                            AtomicBoolean isSimulationRunning,
-                            Map<String, List<RouteSegment>> vehicleRoutes) {
+                            AtomicBoolean isSimulationRunning) {
         this.state = state;
         this.isSimulationRunning = isSimulationRunning;
-        this.vehicleRoutes = vehicleRoutes;
     }
 
     private void broadcastPlanningStatus(JsonObject planningStatus) {
@@ -59,8 +56,6 @@ public class PlanificadorTask implements Runnable {
         JsonObject planningStatus = new JsonObject(); // Para el estado de planificación
 
         try {
-            long[][] timeMatrix = state.getCurrentTimeMatrix();
-
             // Fase 1: Recopilando órdenes
             planningStatus.addProperty("phase", "collecting");
             List<Order> orders = getAvailableOrders(state.getOrders(), state.getCurrentTime());
@@ -98,7 +93,9 @@ public class PlanificadorTask implements Runnable {
             broadcastPlanningStatus(planningStatus);
 
             // Calcular las mejores rutas para cada destino
-            RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(state.getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
+            RouteService routeService = new RouteService(RouteUtils.
+                    deepCopyLocationIndices(state.getLocationIndices()),
+                    RouteUtils.deepCopyTimeMatrix(state.getCurrentTimeMatrix()));
             Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations);
 
             // Actualizar estado con rutas completadas
