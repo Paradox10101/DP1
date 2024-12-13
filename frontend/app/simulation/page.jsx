@@ -23,6 +23,7 @@ const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: f
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 const BreakdownPanel = dynamic(() => import('@/app/Components/BreakdownPanel'), { ssr: false });
 const BlockedRoutesPanel = dynamic(() => import('@/app/Components/BlockedRoutesPanel'), { ssr: false });
+const MaintenancePanel = dynamic(() => import('@/app/Components/MaintenancePanel'), { ssr: false });
 
 const page = () => {
   const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
@@ -98,6 +99,7 @@ const page = () => {
               <PlannerStatusPanel/>
               <BlockedRoutesPanel />
               <BreakdownPanel />
+              <MaintenancePanel />
             </div>
 
             

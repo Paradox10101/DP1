@@ -597,53 +597,55 @@ public class SimulationState {
     }
 
     public void updateBlockages(LocalDateTime currentTime, List<Blockage> allBlockages) {
-        logger.info("Verificando cambios en bloqueos para tiempo: " + currentTime);
+        synchronized(matrixLock) {  // Añadir lock aquí
+            logger.info("Verificando cambios en bloqueos para tiempo: " + currentTime);
 
-        boolean hasChanges = false;
+            boolean hasChanges = false;
 
-        // Verificar bloqueos expirados
-        List<Blockage> expiredBlockages = activeBlockages.stream()
-                .filter(blockage -> currentTime.isAfter(blockage.getEndTime()))
-                .collect(Collectors.toList());
+            // Verificar bloqueos expirados
+            List<Blockage> expiredBlockages = activeBlockages.stream()
+                    .filter(blockage -> currentTime.isAfter(blockage.getEndTime()))
+                    .collect(Collectors.toList());
 
-        // Verificar nuevos bloqueos que deberían activarse
-        List<Blockage> newBlockages = allBlockages.stream()
-                .filter(blockage ->
-                        !currentTime.isBefore(blockage.getStartTime()) &&
-                                currentTime.isBefore(blockage.getEndTime()) &&
-                                !activeBlockages.contains(blockage))
-                .collect(Collectors.toList());
+            // Verificar nuevos bloqueos que deberían activarse
+            List<Blockage> newBlockages = allBlockages.stream()
+                    .filter(blockage ->
+                            !currentTime.isBefore(blockage.getStartTime()) &&
+                                    currentTime.isBefore(blockage.getEndTime()) &&
+                                    !activeBlockages.contains(blockage))
+                    .collect(Collectors.toList());
 
-        // Si no hay bloqueos expirados ni nuevos, no es necesario actualizar
-        if (expiredBlockages.isEmpty() && newBlockages.isEmpty()) {
-            logger.info("No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios");
-            return;
-        }
+            // Si no hay bloqueos expirados ni nuevos, no es necesario actualizar
+            if (expiredBlockages.isEmpty() && newBlockages.isEmpty()) {
+                logger.info("No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios");
+                return;
+            }
 
-        // Proceder con las actualizaciones ya que hay cambios
-        // Remover bloqueos expirados
-        for (Blockage expiredBlockage : expiredBlockages) {
-            activeBlockages.remove(expiredBlockage);
-            hasChanges = true;
-            logger.info("Bloqueo expirado y removido: " + blockageToString(expiredBlockage));
-        }
+            // Proceder con las actualizaciones ya que hay cambios
+            // Remover bloqueos expirados
+            for (Blockage expiredBlockage : expiredBlockages) {
+                activeBlockages.remove(expiredBlockage);
+                hasChanges = true;
+                logger.info("Bloqueo expirado y removido: " + blockageToString(expiredBlockage));
+            }
 
-        // Añadir nuevos bloqueos activos
-        for (Blockage newBlockage : newBlockages) {
-            activeBlockages.add(newBlockage);
-            hasChanges = true;
-            logger.info("Nuevo bloqueo activado: " + blockageToString(newBlockage));
-        }
+            // Añadir nuevos bloqueos activos
+            for (Blockage newBlockage : newBlockages) {
+                activeBlockages.add(newBlockage);
+                hasChanges = true;
+                logger.info("Nuevo bloqueo activado: " + blockageToString(newBlockage));
+            }
 
-        // Log del resumen de cambios
-        if (hasChanges) {
-            logger.info("Resumen de actualización de bloqueos:");
-            logger.info("- Bloqueos expirados: " + expiredBlockages.size());
-            logger.info("- Nuevos bloqueos activados: " + newBlockages.size());
-            logger.info("- Total de bloqueos activos: " + activeBlockages.size());
+            // Log del resumen de cambios
+            if (hasChanges) {
+                logger.info("Resumen de actualización de bloqueos:");
+                logger.info("- Bloqueos expirados: " + expiredBlockages.size());
+                logger.info("- Nuevos bloqueos activados: " + newBlockages.size());
+                logger.info("- Total de bloqueos activos: " + activeBlockages.size());
 
-            // Actualizar la matriz de tiempo solo si hubo cambios
-            updateTimeMatrix();
+                // Actualizar la matriz de tiempo solo si hubo cambios
+                updateTimeMatrix();
+            }
         }
     }
 
@@ -1161,41 +1163,6 @@ public class SimulationState {
         }
     }
 
-    // TODO: Implementar reasignación de pedidos cuando ocurre una avería en el vehículo.
-    // Este método debería buscar vehículos vacíos y cercanos para reasignar el pedido del vehículo averiado.
-    // private void reassignOrderAfterBreakdown(Vehicle brokenVehicle, LocalDateTime currentTime) {
-    //     Order orderToReassign = brokenVehicle.getAssignedOrder();
-    //     if (orderToReassign == null) {
-    //         logger.warning("El vehículo " + brokenVehicle.getCode() + " no tiene un pedido asignado. No es necesario reasignar.");
-    //         return;
-    //     }
-    //
-    //     // Buscar vehículos vacíos y cercanos
-    //     List<Vehicle> availableVehicles = vehicles.values().stream()
-    //             .filter(v -> v.getEstado() == Vehicle.EstadoVehiculo.EN_ALMACEN
-    //                         && v.getCurrentLocationUbigeo().equals(brokenVehicle.getCurrentLocationUbigeo())
-    //                         && v.getAssignedOrder() == null)
-    //             .collect(Collectors.toList());
-    //
-    //     if (availableVehicles.isEmpty()) {
-    //         logger.warning("No hay vehículos disponibles cercanos para reasignar el pedido " + orderToReassign.getId() + " del vehículo " + brokenVehicle.getCode());
-    //         return;
-    //     }
-    //
-    //     // Seleccionar el primer vehículo disponible y reasignar el pedido
-    //     Vehicle newVehicle = availableVehicles.get(0);
-    //     newVehicle.setEstado(Vehicle.EstadoVehiculo.ORDENES_CARGADAS);
-    //     newVehicle.setAssignedOrder(orderToReassign);
-    //     newVehicle.setCurrentCapacity(orderToReassign.getQuantity());
-    //     orderToReassign.setAssignedVehicle(newVehicle);
-    //     orderToReassign.setStatus(Order.OrderStatus.FULLY_ASSIGNED);
-    //
-    //     brokenVehicle.setEstado(Vehicle.EstadoVehiculo.EN_REPARACION);
-    //     brokenVehicle.setAssignedOrder(null);
-    //     brokenVehicle.setCurrentCapacity(0);
-    //
-    //     logger.info("Pedido " + orderToReassign.getId() + " reasignado del vehículo averiado " + brokenVehicle.getCode() + " al vehículo " + newVehicle.getCode());
-    // }
 
 
     public Map<String, Double> getEficienciaPedidos() {
@@ -1203,28 +1170,6 @@ public class SimulationState {
     }
 
     public void calcularEficienciaPedido(String codigo, LocalDateTime tiempoEstimado, LocalDateTime tiempoLimite) {
-        //aqui se debe dividir el tiempo estimado entre el tiempo limite. --> todo esto para 1 pedido se guarda en 1 indice de un MAP
-        //luego se tiene que ir sumando en total
-        //Aqui al final se tiene que guardar un <integer, integer> -> el primer "int" solo indica que pedido es. Y luego el otro indica el valor de la division
-        // Asegurarnos de que tiempoLimite sea siempre mayor a tiempoEstimado
-        /*if (tiempoEstimado.isAfter(tiempoLimite)) {
-            logger.info("El tiempo estimado no puede ser después del tiempo límite.\n");
-        }*/
-
-// Calculamos la duración entre el tiempo estimado de llegada y el límite de entrega
-        //long tiempoEstimadoSegundos = Duration.between(currentTime, tiempoEstimado).getSeconds();
-        //long tiempoLimiteSegundos = Duration.between(currentTime, tiempoLimite.getSeconds());
-
-        /*double eficiencia = (double) Duration.between(currentTime, tiempoEstimado).getSeconds()
-                / (double) Duration.between(currentTime, tiempoLimite).getSeconds();*/
-
-        // Convertir ambos tiempos a minutos o segundos para hacer la división
-        //long tiempoEstimadoMinutos = tiempoEstimado.toLocalTime().toSecondOfDay();
-        //long tiempoLimiteMinutos = tiempoLimite.toLocalTime().toSecondOfDay();
-
-        // Calcular eficiencia como tiempo estimado / tiempo límite
-        //double eficiencia = (double) tiempoEstimadoMinutos / tiempoLimiteMinutos;
-        /* Aqui sugerencia: MODIFCAR LA FORMA DE CALCULAR LA EFICIENCIA PARA QUE SEA MAS FACIL --> SOLO SE DEBE DIVIDIR EL TIEMPO ESTIMADO ENTRE EL TIEMPO LIMITE */
         if (tiempoEstimado.isAfter(tiempoLimite)) {
             // Si el tiempo estimado supera el límite, la eficiencia es 0
             eficienciaPedidos.put(codigo, 0.0);
@@ -1534,7 +1479,7 @@ public class SimulationState {
         String[] destinations = destinationSet.toArray(new String[0]);
 
         // Calcular las mejores rutas para cada destino
-        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
+        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(currentTimeMatrix));
         Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
 
         // Determinar el almacén más cercano para cada vehículo
@@ -1740,6 +1685,9 @@ public class SimulationState {
                 throw new IllegalArgumentException("Ubigeo no encontrado en la matriz");
             }
 
+            // Validaciones de ubigeo e índices
+            validateUbigeosAndIndices(ubigeoInicioAveria, ubigeoPuntoAveria);
+
             int fromIndex = locationIndices.get(ubigeoInicioAveria);
             int toIndex = locationIndices.get(ubigeoPuntoAveria);
 
@@ -1748,18 +1696,27 @@ public class SimulationState {
                 throw new IllegalStateException("Índices fuera de rango en la matriz");
             }
 
-            // Expandir matriz si es necesario
-            int requiredSize = Math.max(fromIndex, toIndex) + 1;
-            if (requiredSize > currentTimeMatrix.length) {
-                expandMatrixForTemporaryNode(requiredSize);
-            }
-
             // Actualizar la matriz
             currentTimeMatrix[fromIndex][toIndex] = elapsedMinutes;
             currentTimeMatrix[toIndex][fromIndex] = elapsedMinutes;
 
+            logger.info("Nuevas dimensiones de la matriz: " + currentTimeMatrix.length + "x" + currentTimeMatrix[0].length);
+
             logger.info(String.format("Ruta temporal creada: %s (%d) -> %s (%d) minutos: %d",
                     ubigeoInicioAveria, fromIndex, ubigeoPuntoAveria, toIndex, elapsedMinutes));
+        }
+    }
+
+    private void validateUbigeosAndIndices(String ubigeo1, String ubigeo2) {
+        if (!locationIndices.containsKey(ubigeo1) || !locationIndices.containsKey(ubigeo2)) {
+            throw new IllegalArgumentException("Ubigeo no encontrado en los índices");
+        }
+
+        int index1 = locationIndices.get(ubigeo1);
+        int index2 = locationIndices.get(ubigeo2);
+
+        if (index1 >= currentTimeMatrix.length || index2 >= currentTimeMatrix.length) {
+            throw new IllegalStateException("Índices fuera de rango en la matriz");
         }
     }
 
@@ -1877,8 +1834,21 @@ public class SimulationState {
             }
 
             try {
-                // Agregar el ubigeo temporal a las listas
+                // Calcular el nuevo índice
                 int newIndex = locationUbigeos.size();
+
+                // Expandir la matriz ANTES de agregar los nuevos índices
+                int requiredSize = newIndex + 1;
+
+                logger.info("Tamaño actual de la matriz: " + currentTimeMatrix.length);
+                logger.info("Nuevo índice a agregar: " + newIndex);
+                logger.info("Tamaño requerido: " + requiredSize);
+
+                if (requiredSize > currentTimeMatrix.length) {
+                    expandMatrixForTemporaryNode(requiredSize);
+                }
+
+                // DESPUÉS de expandir, agregar el nuevo ubigeo
                 locationUbigeos.add(temporaryUbigeo);
                 locationIndices.put(temporaryUbigeo, newIndex);
                 locationNames.add(temporaryUbigeo);
@@ -2036,7 +2006,7 @@ public class SimulationState {
         String[] destinations = destinationSet.toArray(new String[0]);
 
         // Calcular las mejores rutas para cada destino
-        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(timeMatrix));
+        RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(currentTimeMatrix));
         Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
 
         // Paso 5: Determinar el almacén más cercano para cada vehículo
