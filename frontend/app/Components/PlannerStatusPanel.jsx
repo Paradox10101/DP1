@@ -184,8 +184,8 @@ const PlannerStatusPanel = () => {
   return (
     <>
       {error && <ErrorMessage message={error} />}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
-        <div className="w-72">
+      <div className="">
+        <div className="w-full">
           <Card className={`
             shadow-lg bg-white/80 backdrop-blur-md
             transform transition-all duration-300 ease-in-out
@@ -355,3 +355,6 @@ const PlannerStatusPanel = () => {
 };
 
 export default PlannerStatusPanel;
+
+//<div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
+//<div className="w-72">

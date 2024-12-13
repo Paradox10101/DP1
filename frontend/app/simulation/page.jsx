@@ -22,6 +22,7 @@ import PlannerStatusPanel from "@/app/Components/PlannerStatusPanel";
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false });
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false });
 const BreakdownPanel = dynamic(() => import('@/app/Components/BreakdownPanel'), { ssr: false });
+const BlockedRoutesPanel = dynamic(() => import('@/app/Components/BlockedRoutesPanel'), { ssr: false });
 
 const page = () => {
   const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
@@ -34,6 +35,7 @@ const page = () => {
   const { metrics } = useSimulationMetrics();
   const [showControls, setShowControls] = useState(true);
   const [showBreakdowns, setShowBreakdowns] = useState(true);
+  
 
   const toggleControls = () => {
     setShowControls(!showControls);
@@ -56,7 +58,7 @@ const page = () => {
         const data = await response.json()
         setSimulationType(data.type!==""?(data.type==="WEEKLY"?"semanal":data.type==="COLLAPSE"?"colapso":null):null)
       } catch (error) {
-        console.error('Error cargando el estado de la simulacion:', error)
+        console.log('Error cargando el estado de la simulacion:', error)
         setError('Error al cargar el estado de la simulacion')
       }
     }
@@ -91,8 +93,15 @@ const page = () => {
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />
             <SimulationPanel openReport={onOpenReport}/>
             <MapLegend cornerPosition={"top-20 right-5"} />
-            <PlannerStatusPanel/>
-            <BreakdownPanel />
+
+            <div className="fixed right-5 bottom-6 w-96 flex flex-col gap-2">
+              <PlannerStatusPanel/>
+              <BlockedRoutesPanel />
+              <BreakdownPanel />
+            </div>
+
+            
+
           
         </div>
     </>
