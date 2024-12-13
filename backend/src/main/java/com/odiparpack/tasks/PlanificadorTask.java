@@ -22,17 +22,16 @@ import static com.odiparpack.SimulationRunner.*;
 public class PlanificadorTask implements Runnable {
     private final SimulationState state;
     private final AtomicBoolean isSimulationRunning;
-    private final Map<String, List<RouteSegment>> vehicleRoutes;
     private boolean breakdownsScheduled = false;
     private final List<String> pendingBreakdownTypes = new ArrayList<>(Arrays.asList("1", "2", "3"));
     private final Set<String> vehiclesWithScheduledBreakdown = new HashSet<>();
 
+    private final AtomicBoolean isExecuting = new AtomicBoolean(false);
+
     public PlanificadorTask(SimulationState state,
-                            AtomicBoolean isSimulationRunning,
-                            Map<String, List<RouteSegment>> vehicleRoutes) {
+                            AtomicBoolean isSimulationRunning) {
         this.state = state;
         this.isSimulationRunning = isSimulationRunning;
-        this.vehicleRoutes = vehicleRoutes;
     }
 
     private void broadcastPlanningStatus(JsonObject planningStatus) {
@@ -44,6 +43,11 @@ public class PlanificadorTask implements Runnable {
     @Override
     public void run() {
         if (!isSimulationRunning.get() || state.isPaused() || state.isStopped()) {
+            return;
+        }
+
+        // Si ya está ejecutando, salimos
+        if (!isExecuting.compareAndSet(false, true)) {
             return;
         }
 
@@ -135,6 +139,8 @@ public class PlanificadorTask implements Runnable {
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en planificación", e);
+        } finally {
+            isExecuting.set(false);
         }
     }
 

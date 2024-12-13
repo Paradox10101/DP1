@@ -9,6 +9,8 @@ import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 
+import com.odiparpack.scheduler.PlanificadorScheduler;
+import com.odiparpack.tasks.PlanificadorTask;
 import spark.Spark;
 
 import java.time.LocalDate;
@@ -16,10 +18,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -221,6 +221,80 @@ public class SimulationRouter extends BaseRouter {
             response.status(200);
             this.simulationType = null;
             return createSuccessResponse("Simulación detenida.");
+        });
+
+        Spark.get("/api/v1/simulation/planning-time", (request, response) -> {
+            response.type("application/json");
+
+            try {
+                int currentPeriod = PlanificadorScheduler.getCurrentPeriod();
+                JsonObject jsonResponse = new JsonObject();
+                jsonResponse.addProperty("seconds", currentPeriod);
+
+                response.status(200);
+                return jsonResponse.toString();
+            } catch (Exception e) {
+                logger.severe("Error al obtener el período de planificación: " + e.getMessage());
+                response.status(500);
+                return createErrorResponse("Error al obtener el período de planificación: " + e.getMessage());
+            }
+        });
+
+        Spark.post("/api/v1/simulation/planning-period", (request, response) -> {
+            response.type("application/json");
+
+            try {
+                JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+                int seconds = body.get("seconds").getAsInt();
+
+                if (seconds < 3 || seconds > 20) {
+                    response.status(400);
+                    return createErrorResponse("El período debe estar entre 3 y 20 segundos");
+                }
+
+                // Usar el PlanificadorScheduler en lugar de SimulationRunner
+                PlanificadorScheduler.setPlanningPeriod(seconds);
+
+                response.status(200);
+                return createSuccessResponse("Período de planificación actualizado a " + seconds + " segundos");
+            } catch (Exception e) {
+                logger.severe("Error al actualizar período: " + e.getMessage());
+                response.status(500);
+                return createErrorResponse("Error al actualizar el período: " + e.getMessage());
+            }
+        });
+
+        Spark.post("/api/v1/simulation/execute", (request, response) -> {
+            response.type("application/json");
+
+            if (!isSimulationRunning) {
+                response.status(400);
+                return createErrorResponse("La simulación no está en ejecución.");
+            }
+
+            if (simulationState.isPaused() || simulationState.isStopped()) {
+                response.status(400);
+                return createErrorResponse("La simulación está pausada o detenida.");
+            }
+
+            try {
+                // Ejecutar sincrónicamente para capturar excepciones
+                if (PlanificadorScheduler.isTaskRunning()) {
+                    response.status(409); // Código 409 Conflict
+                    return createErrorResponse("Ya hay una tarea de planificación en ejecución");
+                }
+
+                CompletableFuture.runAsync(() -> {
+                    PlanificadorScheduler.executeManually(simulationState);
+                });
+
+                response.status(200);
+                return createSuccessResponse("Planificador ejecutado manualmente");
+            } catch (Exception e) {
+                logger.severe("Error al ejecutar planificador manualmente: " + e.getMessage());
+                response.status(500);
+                return createErrorResponse("Error al ejecutar planificador: " + e.getMessage());
+            }
         });
 
         Spark.get("/api/v1/simulation/first-available-date", (request, response) -> {

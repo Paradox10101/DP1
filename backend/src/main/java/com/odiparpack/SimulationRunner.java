@@ -4,6 +4,7 @@ import com.google.ortools.constraintsolver.*;
 import com.google.protobuf.Duration;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
+import com.odiparpack.scheduler.PlanificadorScheduler;
 import com.odiparpack.tasks.*;
 
 import java.time.*;
@@ -22,6 +23,7 @@ public class SimulationRunner {
     private static final int CORE_MULTIPLIER = 2;
     private static final int MIN_THREADS = 4;
     private static final int MAX_THREADS = 16;
+    private static volatile int PLANNING_PERIOD_SECONDS = 10; // valor por defecto 10 segundos
 
     // Pool centralizado de threads
     private static ExecutorService mainExecutorService;
@@ -95,6 +97,15 @@ public class SimulationRunner {
                 return t;
             }
         };
+    }
+
+    public static void setPlanningPeriod(int seconds) {
+        PLANNING_PERIOD_SECONDS = seconds;
+        logger.info("Período de planificación actualizado: " + seconds + " segundos");
+    }
+
+    public static int getPlanningPeriod() {
+        return PLANNING_PERIOD_SECONDS;
     }
 
     // Método para verificar el estado de los executors
@@ -182,10 +193,15 @@ public class SimulationRunner {
             scheduleWebSocketVehicleBroadcast(state, isSimulationRunning);
             scheduleWebSocketShipmentBroadcast(state, isSimulationRunning);
             scheduleWebSocketRouteBroadcast(state, isSimulationRunning);
+
+            // Inicializar el PlanificadorScheduler
+            PlanificadorScheduler.initialize(scheduledExecutorService);
+
+            // Iniciar el planificador automático
+            PlanificadorScheduler.start(state, isSimulationRunning, vehicleRoutes);
+
             // Programar tareas principales
             Future<?> timeAdvancement = scheduleTimeAdvancement(
-                    state, isSimulationRunning, vehicleRoutes);
-            Future<?> planning = schedulePlanning(
                     state, isSimulationRunning, vehicleRoutes);
 
             // Monitoreo principal usando condition variable
@@ -198,6 +214,7 @@ public class SimulationRunner {
                 Thread.sleep(100);
             }
         } finally {
+            PlanificadorScheduler.stop();
             shutdown();
         }
     }
@@ -291,10 +308,11 @@ public class SimulationRunner {
             AtomicBoolean isSimulationRunning,
             Map<String, List<RouteSegment>> vehicleRoutes) {
 
-        return scheduledExecutorService.scheduleAtFixedRate(
-                new PlanificadorTask(state, isSimulationRunning, vehicleRoutes),
+        return scheduledExecutorService.scheduleWithFixedDelay(
+                new PlanificadorTask(state,
+                        isSimulationRunning),
                 0,
-                10000, // cada 10 segundos
+                PLANNING_PERIOD_SECONDS * 1000L,
                 TimeUnit.MILLISECONDS
         );
     }
