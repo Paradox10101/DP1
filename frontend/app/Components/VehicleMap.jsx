@@ -1351,7 +1351,7 @@ const VehicleMap = ({ simulationStatus }) => {
           } else {
             throw new Error('Datos de ubicaciones no son un FeatureCollection válido');
           }
-        }*/
+        }
       } catch (error) {
         console.error('Error al actualizar ubicaciones:', error);
         setError('Error al actualizar ubicaciones en el mapa');
