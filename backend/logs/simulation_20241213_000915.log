@@ -1,0 +1,755 @@
+[2024-12-13 00:09:15] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241213_000915.log 
+[2024-12-13 00:09:16] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-13 00:09:16] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-13 00:09:20] [INFO   ] DateTime encontrado: 2024-07-01 00:53:00 
+[2024-12-13 00:09:21] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-13 00:09:21] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-13 00:09:21] [INFO   ] Se cargaron 190 bloqueos: 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 250301 => 021101, Inicio: 2024-07-05 11:47, Fin: 2024-07-14 20:34 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 221001 => 220301, Inicio: 2024-07-02 15:37, Fin: 2024-07-23 14:22 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 221001 => 021401, Inicio: 2024-07-04 11:08, Fin: 2024-07-21 18:30 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220901 => 060201, Inicio: 2024-07-05 18:15, Fin: 2024-07-24 06:32 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220801 => 220901, Inicio: 2024-07-05 00:19, Fin: 2024-07-22 02:05 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220801 => 060301, Inicio: 2024-07-06 07:08, Fin: 2024-07-16 12:35 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220701 => 061001, Inicio: 2024-07-03 14:24, Fin: 2024-07-16 14:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220701 => 020901, Inicio: 2024-07-01 21:22, Fin: 2024-07-15 05:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220601 => 130301, Inicio: 2024-07-02 18:38, Fin: 2024-07-18 13:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220601 => 021601, Inicio: 2024-07-05 06:04, Fin: 2024-07-14 02:47 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220601 => 010501, Inicio: 2024-07-07 07:35, Fin: 2024-07-14 03:29 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220501 => 130801, Inicio: 2024-07-07 22:58, Fin: 2024-07-22 15:05 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220501 => 010101, Inicio: 2024-07-02 18:11, Fin: 2024-07-15 09:20 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220401 => 131001, Inicio: 2024-07-05 09:30, Fin: 2024-07-14 13:38 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220401 => 021901, Inicio: 2024-07-06 17:56, Fin: 2024-07-14 09:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220301 => 130801, Inicio: 2024-07-05 00:29, Fin: 2024-07-19 07:16 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220301 => 061101, Inicio: 2024-07-06 13:43, Fin: 2024-07-16 18:14 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220301 => 020601, Inicio: 2024-07-05 00:58, Fin: 2024-07-16 03:21 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220201 => 220601, Inicio: 2024-07-05 21:15, Fin: 2024-07-17 18:45 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 220201 => 060101, Inicio: 2024-07-04 17:16, Fin: 2024-07-18 22:05 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 190301 => 221001, Inicio: 2024-07-05 08:58, Fin: 2024-07-22 23:00 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 190301 => 020701, Inicio: 2024-07-02 11:59, Fin: 2024-07-16 14:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 190201 => 120801, Inicio: 2024-07-07 10:03, Fin: 2024-07-19 10:49 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 190101 => 150401, Inicio: 2024-07-01 20:28, Fin: 2024-07-24 23:17 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 190101 => 020701, Inicio: 2024-07-02 01:16, Fin: 2024-07-20 09:41 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150901 => 150301, Inicio: 2024-07-02 08:59, Fin: 2024-07-20 15:36 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150901 => 100501, Inicio: 2024-07-03 17:58, Fin: 2024-07-17 23:22 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150901 => 021301, Inicio: 2024-07-04 12:21, Fin: 2024-07-20 00:49 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150801 => 131201, Inicio: 2024-07-01 12:23, Fin: 2024-07-20 06:56 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150801 => 100401, Inicio: 2024-07-06 18:34, Fin: 2024-07-13 12:18 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150801 => 021001, Inicio: 2024-07-07 15:57, Fin: 2024-07-15 06:35 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150701 => 120801, Inicio: 2024-07-07 01:44, Fin: 2024-07-21 02:04 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150701 => 100501, Inicio: 2024-07-04 16:07, Fin: 2024-07-14 14:55 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150701 => 020601, Inicio: 2024-07-04 08:17, Fin: 2024-07-19 01:56 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150301 => 101001, Inicio: 2024-07-01 02:58, Fin: 2024-07-24 02:33 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150201 => 100101, Inicio: 2024-07-04 12:22, Fin: 2024-07-23 15:43 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 150201 => 020201, Inicio: 2024-07-04 00:14, Fin: 2024-07-21 11:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 131201 => 101101, Inicio: 2024-07-04 15:05, Fin: 2024-07-20 08:45 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 131201 => 020601, Inicio: 2024-07-06 16:58, Fin: 2024-07-24 00:06 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 131101 => 220801, Inicio: 2024-07-05 05:46, Fin: 2024-07-13 13:14 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 131101 => 021701, Inicio: 2024-07-01 10:21, Fin: 2024-07-16 09:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 131101 => 010201, Inicio: 2024-07-07 09:31, Fin: 2024-07-20 15:36 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130901 => 130401, Inicio: 2024-07-05 23:03, Fin: 2024-07-23 07:26 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130901 => 061201, Inicio: 2024-07-07 08:12, Fin: 2024-07-14 13:51 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130901 => 021301, Inicio: 2024-07-01 21:48, Fin: 2024-07-18 10:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130801 => 100501, Inicio: 2024-07-02 21:23, Fin: 2024-07-19 22:36 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130801 => 060101, Inicio: 2024-07-07 07:10, Fin: 2024-07-24 07:27 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130801 => 020701, Inicio: 2024-07-05 14:12, Fin: 2024-07-18 11:50 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130701 => 021301, Inicio: 2024-07-07 02:15, Fin: 2024-07-23 05:31 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130501 => 060601, Inicio: 2024-07-06 08:15, Fin: 2024-07-16 18:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130401 => 021601, Inicio: 2024-07-01 16:36, Fin: 2024-07-14 06:55 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130301 => 221001, Inicio: 2024-07-06 12:44, Fin: 2024-07-15 13:55 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130301 => 060401, Inicio: 2024-07-03 02:29, Fin: 2024-07-14 14:55 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130201 => 060101, Inicio: 2024-07-01 21:49, Fin: 2024-07-19 21:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130201 => 010101, Inicio: 2024-07-01 17:36, Fin: 2024-07-13 01:20 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 130101 => 130701, Inicio: 2024-07-03 14:06, Fin: 2024-07-24 02:27 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120901 => 190101, Inicio: 2024-07-04 08:26, Fin: 2024-07-18 04:37 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120901 => 020501, Inicio: 2024-07-07 03:01, Fin: 2024-07-21 21:00 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120801 => 050501, Inicio: 2024-07-03 12:17, Fin: 2024-07-24 04:30 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120701 => 190101, Inicio: 2024-07-02 10:03, Fin: 2024-07-20 12:06 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120701 => 100901, Inicio: 2024-07-01 12:35, Fin: 2024-07-20 06:41 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120701 => 020701, Inicio: 2024-07-01 22:57, Fin: 2024-07-23 07:07 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120601 => 120301, Inicio: 2024-07-07 05:56, Fin: 2024-07-24 06:07 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120601 => 090101, Inicio: 2024-07-06 09:07, Fin: 2024-07-23 17:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120501 => 050101, Inicio: 2024-07-03 01:56, Fin: 2024-07-20 17:42 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120401 => 190301, Inicio: 2024-07-06 03:04, Fin: 2024-07-16 01:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120301 => 190201, Inicio: 2024-07-02 19:12, Fin: 2024-07-17 03:29 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120301 => 101101, Inicio: 2024-07-04 17:15, Fin: 2024-07-21 18:35 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120201 => 100301, Inicio: 2024-07-04 09:31, Fin: 2024-07-17 02:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 120101 => 120601, Inicio: 2024-07-03 09:52, Fin: 2024-07-17 10:23 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 101101 => 220601, Inicio: 2024-07-02 00:39, Fin: 2024-07-18 02:06 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 101101 => 100901, Inicio: 2024-07-05 23:28, Fin: 2024-07-21 15:44 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 101001 => 131001, Inicio: 2024-07-01 07:53, Fin: 2024-07-23 11:24 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 101001 => 100901, Inicio: 2024-07-02 00:57, Fin: 2024-07-16 14:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100801 => 100701, Inicio: 2024-07-04 18:35, Fin: 2024-07-24 15:12 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100701 => 220801, Inicio: 2024-07-02 15:54, Fin: 2024-07-18 17:29 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100701 => 130901, Inicio: 2024-07-01 12:21, Fin: 2024-07-20 02:47 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100701 => 100101, Inicio: 2024-07-01 00:22, Fin: 2024-07-23 05:52 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100701 => 021701, Inicio: 2024-07-06 02:24, Fin: 2024-07-17 11:17 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100701 => 010601, Inicio: 2024-07-04 10:29, Fin: 2024-07-19 17:44 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100601 => 150901, Inicio: 2024-07-04 05:34, Fin: 2024-07-18 15:42 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100601 => 061001, Inicio: 2024-07-02 02:33, Fin: 2024-07-17 08:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100501 => 130101, Inicio: 2024-07-06 12:41, Fin: 2024-07-20 16:35 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100501 => 020901, Inicio: 2024-07-05 02:11, Fin: 2024-07-18 05:44 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100401 => 020801, Inicio: 2024-07-03 06:39, Fin: 2024-07-14 20:53 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100301 => 190301, Inicio: 2024-07-01 02:29, Fin: 2024-07-19 21:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100301 => 100701, Inicio: 2024-07-01 01:30, Fin: 2024-07-18 19:09 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100301 => 021301, Inicio: 2024-07-04 08:37, Fin: 2024-07-18 20:44 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100201 => 120401, Inicio: 2024-07-02 18:20, Fin: 2024-07-16 09:46 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100201 => 020901, Inicio: 2024-07-02 20:40, Fin: 2024-07-24 09:43 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100101 => 120401, Inicio: 2024-07-01 03:27, Fin: 2024-07-16 21:33 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 100101 => 020301, Inicio: 2024-07-01 10:00, Fin: 2024-07-17 17:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 090501 => 081301, Inicio: 2024-07-07 20:23, Fin: 2024-07-19 18:13 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 090101 => 100201, Inicio: 2024-07-06 12:36, Fin: 2024-07-15 21:29 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 081301 => 090501, Inicio: 2024-07-04 09:47, Fin: 2024-07-22 13:21 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 081001 => 210801, Inicio: 2024-07-04 21:12, Fin: 2024-07-16 23:26 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 081001 => 050101, Inicio: 2024-07-02 04:11, Fin: 2024-07-22 17:02 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 070101 => 120701, Inicio: 2024-07-02 17:04, Fin: 2024-07-16 11:09 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 070101 => 100101, Inicio: 2024-07-04 02:23, Fin: 2024-07-23 10:46 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061301 => 220901, Inicio: 2024-07-07 23:59, Fin: 2024-07-19 22:10 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061201 => 220101, Inicio: 2024-07-01 22:14, Fin: 2024-07-17 12:36 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061201 => 061101, Inicio: 2024-07-03 15:40, Fin: 2024-07-14 06:40 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061201 => 020701, Inicio: 2024-07-03 05:11, Fin: 2024-07-18 17:53 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061001 => 220901, Inicio: 2024-07-02 15:18, Fin: 2024-07-21 09:24 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061001 => 130401, Inicio: 2024-07-04 23:15, Fin: 2024-07-19 12:37 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 061001 => 010101, Inicio: 2024-07-06 00:19, Fin: 2024-07-14 17:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060801 => 130501, Inicio: 2024-07-07 05:05, Fin: 2024-07-17 17:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060801 => 060101, Inicio: 2024-07-03 04:36, Fin: 2024-07-23 00:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060701 => 060601, Inicio: 2024-07-05 11:55, Fin: 2024-07-14 17:52 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060601 => 130901, Inicio: 2024-07-05 05:38, Fin: 2024-07-24 06:32 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060601 => 061101, Inicio: 2024-07-01 03:02, Fin: 2024-07-14 01:43 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060501 => 061001, Inicio: 2024-07-07 01:24, Fin: 2024-07-24 15:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060501 => 021301, Inicio: 2024-07-04 15:52, Fin: 2024-07-19 10:20 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060401 => 130501, Inicio: 2024-07-07 03:35, Fin: 2024-07-15 19:31 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060401 => 022001, Inicio: 2024-07-06 17:36, Fin: 2024-07-19 09:14 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060401 => 010101, Inicio: 2024-07-03 15:44, Fin: 2024-07-15 08:41 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060301 => 020301, Inicio: 2024-07-04 21:43, Fin: 2024-07-20 11:10 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060201 => 220201, Inicio: 2024-07-07 05:08, Fin: 2024-07-21 19:17 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060201 => 021601, Inicio: 2024-07-04 13:50, Fin: 2024-07-23 07:50 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060101 => 021101, Inicio: 2024-07-06 23:20, Fin: 2024-07-18 14:37 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 060101 => 010101, Inicio: 2024-07-03 17:35, Fin: 2024-07-16 07:49 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 051101 => 050901, Inicio: 2024-07-07 23:54, Fin: 2024-07-18 14:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 050401 => 050201, Inicio: 2024-07-01 01:08, Fin: 2024-07-19 09:51 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 050101 => 080201, Inicio: 2024-07-06 01:20, Fin: 2024-07-24 07:16 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 040801 => 080201, Inicio: 2024-07-02 01:28, Fin: 2024-07-22 10:06 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 022001 => 190101, Inicio: 2024-07-01 01:37, Fin: 2024-07-15 17:48 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 022001 => 060401, Inicio: 2024-07-02 10:38, Fin: 2024-07-20 15:56 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 022001 => 020801, Inicio: 2024-07-06 18:52, Fin: 2024-07-16 00:21 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021901 => 220201, Inicio: 2024-07-03 23:05, Fin: 2024-07-20 09:23 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021901 => 101001, Inicio: 2024-07-06 11:04, Fin: 2024-07-19 08:13 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021901 => 022001, Inicio: 2024-07-03 02:18, Fin: 2024-07-20 15:10 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021901 => 020101, Inicio: 2024-07-05 18:00, Fin: 2024-07-19 21:20 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021801 => 100701, Inicio: 2024-07-02 20:25, Fin: 2024-07-21 10:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021801 => 020201, Inicio: 2024-07-07 02:30, Fin: 2024-07-20 16:40 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021701 => 130801, Inicio: 2024-07-07 14:47, Fin: 2024-07-16 16:37 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021701 => 100701, Inicio: 2024-07-03 07:49, Fin: 2024-07-17 20:41 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021701 => 021801, Inicio: 2024-07-07 10:48, Fin: 2024-07-22 10:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021701 => 020101, Inicio: 2024-07-01 03:55, Fin: 2024-07-15 06:49 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021601 => 150301, Inicio: 2024-07-04 01:45, Fin: 2024-07-13 21:08 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021601 => 100401, Inicio: 2024-07-06 01:55, Fin: 2024-07-16 00:10 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021601 => 060101, Inicio: 2024-07-01 07:13, Fin: 2024-07-18 23:40 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021601 => 020101, Inicio: 2024-07-04 19:38, Fin: 2024-07-13 02:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021501 => 101101, Inicio: 2024-07-03 18:10, Fin: 2024-07-18 13:39 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021501 => 060301, Inicio: 2024-07-01 06:08, Fin: 2024-07-24 17:35 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021501 => 020501, Inicio: 2024-07-01 03:32, Fin: 2024-07-18 19:23 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021401 => 190101, Inicio: 2024-07-01 13:41, Fin: 2024-07-21 17:15 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021401 => 120101, Inicio: 2024-07-05 15:42, Fin: 2024-07-19 09:50 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021401 => 021601, Inicio: 2024-07-05 01:27, Fin: 2024-07-17 07:30 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021301 => 101101, Inicio: 2024-07-03 08:45, Fin: 2024-07-15 05:36 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021301 => 020401, Inicio: 2024-07-06 14:18, Fin: 2024-07-18 14:16 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021201 => 120501, Inicio: 2024-07-06 00:54, Fin: 2024-07-23 10:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021201 => 060601, Inicio: 2024-07-07 00:21, Fin: 2024-07-21 14:50 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021201 => 010101, Inicio: 2024-07-02 20:18, Fin: 2024-07-18 23:09 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021101 => 020801, Inicio: 2024-07-04 17:49, Fin: 2024-07-18 03:05 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021001 => 150701, Inicio: 2024-07-07 08:55, Fin: 2024-07-18 17:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021001 => 100901, Inicio: 2024-07-05 20:58, Fin: 2024-07-18 03:58 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 021001 => 060501, Inicio: 2024-07-05 13:32, Fin: 2024-07-13 06:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020901 => 100701, Inicio: 2024-07-07 11:17, Fin: 2024-07-23 14:55 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020901 => 060301, Inicio: 2024-07-05 20:38, Fin: 2024-07-13 23:28 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020901 => 020301, Inicio: 2024-07-02 00:20, Fin: 2024-07-18 02:47 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020801 => 131201, Inicio: 2024-07-06 09:11, Fin: 2024-07-22 11:28 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020801 => 021901, Inicio: 2024-07-06 13:36, Fin: 2024-07-15 11:21 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020701 => 130801, Inicio: 2024-07-02 11:22, Fin: 2024-07-17 03:54 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020701 => 100801, Inicio: 2024-07-04 03:23, Fin: 2024-07-21 09:38 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020701 => 022001, Inicio: 2024-07-05 09:12, Fin: 2024-07-21 17:08 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020701 => 020301, Inicio: 2024-07-04 08:45, Fin: 2024-07-21 20:11 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020601 => 101101, Inicio: 2024-07-04 23:05, Fin: 2024-07-22 22:48 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020601 => 020501, Inicio: 2024-07-01 06:36, Fin: 2024-07-14 01:47 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020501 => 130601, Inicio: 2024-07-05 03:39, Fin: 2024-07-17 12:03 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020401 => 221001, Inicio: 2024-07-06 17:23, Fin: 2024-07-24 00:01 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020401 => 131201, Inicio: 2024-07-06 10:07, Fin: 2024-07-21 01:02 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020401 => 100601, Inicio: 2024-07-03 21:46, Fin: 2024-07-14 01:13 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020301 => 100601, Inicio: 2024-07-05 05:39, Fin: 2024-07-18 21:59 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020201 => 101101, Inicio: 2024-07-05 02:13, Fin: 2024-07-15 13:51 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020101 => 131101, Inicio: 2024-07-03 04:35, Fin: 2024-07-13 18:51 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020101 => 100901, Inicio: 2024-07-05 07:30, Fin: 2024-07-20 11:42 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 020101 => 060201, Inicio: 2024-07-01 06:20, Fin: 2024-07-13 23:19 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010701 => 131101, Inicio: 2024-07-02 12:12, Fin: 2024-07-23 01:44 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010701 => 060701, Inicio: 2024-07-03 11:04, Fin: 2024-07-24 21:30 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010601 => 130401, Inicio: 2024-07-06 03:35, Fin: 2024-07-14 01:58 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010601 => 060401, Inicio: 2024-07-06 14:08, Fin: 2024-07-16 05:59 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010501 => 220801, Inicio: 2024-07-06 06:03, Fin: 2024-07-13 16:11 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010501 => 130301, Inicio: 2024-07-01 22:49, Fin: 2024-07-15 00:37 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010501 => 060101, Inicio: 2024-07-02 23:44, Fin: 2024-07-17 00:11 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010301 => 220701, Inicio: 2024-07-02 22:49, Fin: 2024-07-16 03:42 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010301 => 061301, Inicio: 2024-07-07 23:33, Fin: 2024-07-13 12:58 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010201 => 130701, Inicio: 2024-07-06 01:25, Fin: 2024-07-13 01:04 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010201 => 060401, Inicio: 2024-07-07 14:39, Fin: 2024-07-21 18:56 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010101 => 220201, Inicio: 2024-07-05 04:02, Fin: 2024-07-20 23:21 
+[2024-12-13 00:09:21] [INFO   ] Bloqueo: 010101 => 021201, Inicio: 2024-07-04 04:42, Fin: 2024-07-21 20:09 
+[2024-12-13 00:09:21] [INFO   ] Iniciando carga del plan de mantenimiento desde: src/main/resources/maintenance.txt 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C017, Inicio: 2024-04-01 00:00, Fin: 2024-04-03 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C001, Inicio: 2024-04-03 00:00, Fin: 2024-04-05 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B011, Inicio: 2024-04-05 00:00, Fin: 2024-04-07 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C018, Inicio: 2024-04-07 00:00, Fin: 2024-04-09 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B001, Inicio: 2024-04-09 00:00, Fin: 2024-04-11 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C002, Inicio: 2024-04-11 00:00, Fin: 2024-04-13 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C019, Inicio: 2024-04-13 00:00, Fin: 2024-04-15 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B012, Inicio: 2024-04-15 00:00, Fin: 2024-04-17 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A001, Inicio: 2024-04-17 00:00, Fin: 2024-04-19 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C020, Inicio: 2024-04-19 00:00, Fin: 2024-04-21 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C003, Inicio: 2024-04-21 00:00, Fin: 2024-04-23 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B013, Inicio: 2024-04-23 00:00, Fin: 2024-04-25 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C021, Inicio: 2024-04-25 00:00, Fin: 2024-04-27 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B002, Inicio: 2024-04-27 00:00, Fin: 2024-04-29 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C004, Inicio: 2024-04-29 00:00, Fin: 2024-05-01 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C022, Inicio: 2024-05-01 00:00, Fin: 2024-05-03 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B014, Inicio: 2024-05-03 00:00, Fin: 2024-05-05 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A005, Inicio: 2024-05-05 00:00, Fin: 2024-05-07 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C023, Inicio: 2024-05-07 00:00, Fin: 2024-05-09 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C005, Inicio: 2024-05-09 00:00, Fin: 2024-05-11 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B015, Inicio: 2024-05-11 00:00, Fin: 2024-05-13 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C024, Inicio: 2024-05-13 00:00, Fin: 2024-05-15 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B003, Inicio: 2024-05-15 00:00, Fin: 2024-05-17 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A002, Inicio: 2024-05-17 00:00, Fin: 2024-05-19 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C011, Inicio: 2024-05-19 00:00, Fin: 2024-05-21 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C006, Inicio: 2024-05-21 00:00, Fin: 2024-05-23 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B008, Inicio: 2024-05-23 00:00, Fin: 2024-05-25 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C012, Inicio: 2024-05-25 00:00, Fin: 2024-05-27 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B004, Inicio: 2024-05-27 00:00, Fin: 2024-05-29 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C007, Inicio: 2024-05-29 00:00, Fin: 2024-05-31 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C013, Inicio: 2024-05-31 00:00, Fin: 2024-06-02 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A003, Inicio: 2024-06-02 00:00, Fin: 2024-06-04 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B005, Inicio: 2024-06-04 00:00, Fin: 2024-06-06 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C014, Inicio: 2024-06-06 00:00, Fin: 2024-06-08 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C008, Inicio: 2024-06-08 00:00, Fin: 2024-06-10 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B009, Inicio: 2024-06-10 00:00, Fin: 2024-06-12 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C015, Inicio: 2024-06-12 00:00, Fin: 2024-06-14 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A006, Inicio: 2024-06-14 00:00, Fin: 2024-06-16 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B006, Inicio: 2024-06-16 00:00, Fin: 2024-06-18 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C016, Inicio: 2024-06-18 00:00, Fin: 2024-06-20 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C009, Inicio: 2024-06-20 00:00, Fin: 2024-06-22 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: A004, Inicio: 2024-06-22 00:00, Fin: 2024-06-24 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B010, Inicio: 2024-06-24 00:00, Fin: 2024-06-26 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: C010, Inicio: 2024-06-26 00:00, Fin: 2024-06-28 23:59 
+[2024-12-13 00:09:21] [INFO   ] Mantenimiento cargado - Vehículo: B007, Inicio: 2024-06-28 00:00, Fin: 2024-06-30 23:59 
+[2024-12-13 00:09:21] [INFO   ] Carga del plan de mantenimiento completada. Total de mantenimientos: 45 
+[2024-12-13 00:09:21] [INFO   ] Comenzando carga de órdenes desde 1 archivos 
+[2024-12-13 00:09:21] [INFO   ] Cargadas 120 órdenes del archivo c.1inf54.ventas202407.txt 
+[2024-12-13 00:09:21] [INFO   ] Carga de órdenes completada. Total de órdenes cargadas: 120 
+[2024-12-13 00:09:21] [INFO   ] Cantidad total de nodos (locations): 195 
+[2024-12-13 00:09:21] [INFO   ] Número de núcleos detectados: 16 
+[2024-12-13 00:09:21] [INFO   ] Máximo de tareas concurrentes ajustado a: 32 
+[2024-12-13 00:09:21] [INFO   ] Simulación inicializada - Start Time: 2024-07-01T00:00, Last Update: 1734066561944 
+[2024-12-13 00:09:21] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:00 
+[2024-12-13 00:09:21] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:21] [INFO   ] Iniciando planificación: 2024-07-01T00:00 
+[2024-12-13 00:09:21] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:21.998858961"} 
+[2024-12-13 00:09:22] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:22] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T00:00 
+[2024-12-13 00:09:22] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:05 
+[2024-12-13 00:09:22] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:05:00 AM, Duración simulada: 5 minutos, Tiempo real: 01/07/2024 12:00:00 AM, Duración real: 0 segundos 
+[2024-12-13 00:09:22] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:05:00 AM","simulatedDuration":"5 minutos","realElapsedTime":"01/07/2024 12:00:00 AM","realDuration":"0 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:22] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:05 
+[2024-12-13 00:09:22] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:23] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:10 
+[2024-12-13 00:09:23] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:10:00 AM, Duración simulada: 10 minutos, Tiempo real: 01/07/2024 12:00:01 AM, Duración real: 1 segundo 
+[2024-12-13 00:09:23] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:10:00 AM","simulatedDuration":"10 minutos","realElapsedTime":"01/07/2024 12:00:01 AM","realDuration":"1 segundo","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:23] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:10 
+[2024-12-13 00:09:23] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:24] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:15 
+[2024-12-13 00:09:24] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:15:00 AM, Duración simulada: 15 minutos, Tiempo real: 01/07/2024 12:00:02 AM, Duración real: 2 segundos 
+[2024-12-13 00:09:24] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:15:00 AM","simulatedDuration":"15 minutos","realElapsedTime":"01/07/2024 12:00:02 AM","realDuration":"2 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:24] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:15 
+[2024-12-13 00:09:24] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:25] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:20 
+[2024-12-13 00:09:25] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:20:00 AM, Duración simulada: 20 minutos, Tiempo real: 01/07/2024 12:00:03 AM, Duración real: 3 segundos 
+[2024-12-13 00:09:25] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:20:00 AM","simulatedDuration":"20 minutos","realElapsedTime":"01/07/2024 12:00:03 AM","realDuration":"3 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:25] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:20 
+[2024-12-13 00:09:25] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:25] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:25] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:25] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:25] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:25] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:25 
+[2024-12-13 00:09:26] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:25:00 AM, Duración simulada: 25 minutos, Tiempo real: 01/07/2024 12:00:04 AM, Duración real: 4 segundos 
+[2024-12-13 00:09:26] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:25:00 AM","simulatedDuration":"25 minutos","realElapsedTime":"01/07/2024 12:00:04 AM","realDuration":"4 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:26] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:25 
+[2024-12-13 00:09:26] [INFO   ] Nuevo bloqueo activado: Origen: 100701, Destino: 100101, Inicio: 2024-07-01T00:22, Fin: 2024-07-23T05:52 
+[2024-12-13 00:09:26] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:26] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:26] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:26] [INFO   ] - Total de bloqueos activos: 1 
+[2024-12-13 00:09:26] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:26] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:26] [INFO   ] Matriz de tiempo actualizada con 1 bloqueos aplicados 
+[2024-12-13 00:09:26] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:27] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:30 
+[2024-12-13 00:09:27] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:30:00 AM, Duración simulada: 30 minutos, Tiempo real: 01/07/2024 12:00:05 AM, Duración real: 5 segundos 
+[2024-12-13 00:09:27] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:30:00 AM","simulatedDuration":"30 minutos","realElapsedTime":"01/07/2024 12:00:05 AM","realDuration":"5 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:27] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:30 
+[2024-12-13 00:09:27] [INFO   ] Iniciando planificación: 2024-07-01T00:30 
+[2024-12-13 00:09:27] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:27] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:27.014222326"} 
+[2024-12-13 00:09:27] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:27] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T00:30 
+[2024-12-13 00:09:28] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:35 
+[2024-12-13 00:09:28] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:35:00 AM, Duración simulada: 35 minutos, Tiempo real: 01/07/2024 12:00:06 AM, Duración real: 6 segundos 
+[2024-12-13 00:09:28] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:35:00 AM","simulatedDuration":"35 minutos","realElapsedTime":"01/07/2024 12:00:06 AM","realDuration":"6 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:28] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:35 
+[2024-12-13 00:09:28] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:29] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:40 
+[2024-12-13 00:09:29] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:40:00 AM, Duración simulada: 40 minutos, Tiempo real: 01/07/2024 12:00:07 AM, Duración real: 7 segundos 
+[2024-12-13 00:09:29] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:40:00 AM","simulatedDuration":"40 minutos","realElapsedTime":"01/07/2024 12:00:07 AM","realDuration":"7 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:29] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:40 
+[2024-12-13 00:09:29] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:30] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:45 
+[2024-12-13 00:09:30] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:45:00 AM, Duración simulada: 45 minutos, Tiempo real: 01/07/2024 12:00:08 AM, Duración real: 8 segundos 
+[2024-12-13 00:09:30] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:45:00 AM","simulatedDuration":"45 minutos","realElapsedTime":"01/07/2024 12:00:08 AM","realDuration":"8 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:30] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:45 
+[2024-12-13 00:09:30] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:31] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:50 
+[2024-12-13 00:09:31] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:50:00 AM, Duración simulada: 50 minutos, Tiempo real: 01/07/2024 12:00:09 AM, Duración real: 9 segundos 
+[2024-12-13 00:09:31] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:50:00 AM","simulatedDuration":"50 minutos","realElapsedTime":"01/07/2024 12:00:09 AM","realDuration":"9 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:31] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:50 
+[2024-12-13 00:09:31] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:32] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T00:55 
+[2024-12-13 00:09:32] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 12:55:00 AM, Duración simulada: 55 minutos, Tiempo real: 01/07/2024 12:00:10 AM, Duración real: 10 segundos 
+[2024-12-13 00:09:32] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 12:55:00 AM","simulatedDuration":"55 minutos","realElapsedTime":"01/07/2024 12:00:10 AM","realDuration":"10 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:32] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T00:55 
+[2024-12-13 00:09:32] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:32] [INFO   ] Iniciando planificación: 2024-07-01T00:55 
+[2024-12-13 00:09:32] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":1,"message":"Procesando 1 órdenes","timestamp":"2024-12-13T00:09:32.017291444"} 
+[2024-12-13 00:09:32] [INFO   ] Órdenes disponibles: 1 
+[2024-12-13 00:09:32] [INFO   ] Orden 1 - Paquetes restantes sin asignar: 6 
+[2024-12-13 00:09:33] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:00 
+[2024-12-13 00:09:33] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:00:00 AM, Duración simulada: 1 hora, Tiempo real: 01/07/2024 12:00:11 AM, Duración real: 11 segundos 
+[2024-12-13 00:09:33] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:00:00 AM","simulatedDuration":"1 hora","realElapsedTime":"01/07/2024 12:00:11 AM","realDuration":"11 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:33] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:00 
+[2024-12-13 00:09:33] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:34] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:05 
+[2024-12-13 00:09:34] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:05:00 AM, Duración simulada: 1 hora 5 minutos, Tiempo real: 01/07/2024 12:00:12 AM, Duración real: 12 segundos 
+[2024-12-13 00:09:34] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:05:00 AM","simulatedDuration":"1 hora 5 minutos","realElapsedTime":"01/07/2024 12:00:12 AM","realDuration":"12 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:34] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:05 
+[2024-12-13 00:09:34] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:34] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Procesando 1 órdenes","timestamp":"2024-12-13T00:09:34.022665007"} 
+[2024-12-13 00:09:34] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Calculando rutas para 1 destinos","timestamp":"2024-12-13T00:09:34.024193782","routesStats":{"total":1,"completed":0}} 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 150101 hacia 021701 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 150101 hacia 021701 
+[2024-12-13 00:09:34] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 040101 hacia 021701 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 040101 hacia 021701 
+[2024-12-13 00:09:34] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 130101 hacia 021701 
+[2024-12-13 00:09:34] [INFO   ] Calculando ruta desde 130101 hacia 021701 
+[2024-12-13 00:09:34] [INFO   ] Ruta calculada exitosamente 
+[2024-12-13 00:09:34] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 00:09:34] [INFO   ] 
+Destino: 021701 
+[2024-12-13 00:09:34] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 00:09:34] [INFO   ] Detalle por almacén: 
+[2024-12-13 00:09:34] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 3 horas, 44 minutos) 
+[2024-12-13 00:09:34] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 14 horas, 47 minutos) 
+[2024-12-13 00:09:34] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 3 horas, 33 minutos) 
+[2024-12-13 00:09:34] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Calculando rutas para 1 destinos","timestamp":"2024-12-13T00:09:34.647135468","routesStats":{"total":1,"completed":1}} 
+[2024-12-13 00:09:35] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:10 
+[2024-12-13 00:09:35] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:10:00 AM, Duración simulada: 1 hora 10 minutos, Tiempo real: 01/07/2024 12:00:13 AM, Duración real: 13 segundos 
+[2024-12-13 00:09:35] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:10:00 AM","simulatedDuration":"1 hora 10 minutos","realElapsedTime":"01/07/2024 12:00:13 AM","realDuration":"13 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:35] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:10 
+[2024-12-13 00:09:35] [INFO   ] Nuevo bloqueo activado: Origen: 050401, Destino: 050201, Inicio: 2024-07-01T01:08, Fin: 2024-07-19T09:51 
+[2024-12-13 00:09:35] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:35] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:35] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:35] [INFO   ] - Total de bloqueos activos: 2 
+[2024-12-13 00:09:35] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:35] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:35] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:35] [INFO   ] Matriz de tiempo actualizada con 2 bloqueos aplicados 
+[2024-12-13 00:09:36] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:15 
+[2024-12-13 00:09:36] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:15:00 AM, Duración simulada: 1 hora 15 minutos, Tiempo real: 01/07/2024 12:00:14 AM, Duración real: 14 segundos 
+[2024-12-13 00:09:36] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:15:00 AM","simulatedDuration":"1 hora 15 minutos","realElapsedTime":"01/07/2024 12:00:14 AM","realDuration":"14 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:36] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:15 
+[2024-12-13 00:09:36] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:37] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:20 
+[2024-12-13 00:09:37] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:20:00 AM, Duración simulada: 1 hora 20 minutos, Tiempo real: 01/07/2024 12:00:15 AM, Duración real: 15 segundos 
+[2024-12-13 00:09:37] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:20:00 AM","simulatedDuration":"1 hora 20 minutos","realElapsedTime":"01/07/2024 12:00:15 AM","realDuration":"15 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:37] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:20 
+[2024-12-13 00:09:37] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:37] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Iniciando asignación de vehículos","timestamp":"2024-12-13T00:09:37.656294726"} 
+[2024-12-13 00:09:37] [INFO   ] Orden 1 asignada al almacén 130101 para entrega en 021701 
+[2024-12-13 00:09:37] [INFO   ] 
+=== Resumen de asignación de almacenes === 
+[2024-12-13 00:09:37] [INFO   ] Órdenes asignadas: 1 
+[2024-12-13 00:09:37] [INFO   ] Órdenes no asignables: 0 
+[2024-12-13 00:09:38] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:25 
+[2024-12-13 00:09:38] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:25:00 AM, Duración simulada: 1 hora 25 minutos, Tiempo real: 01/07/2024 12:00:16 AM, Duración real: 16 segundos 
+[2024-12-13 00:09:38] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:25:00 AM","simulatedDuration":"1 hora 25 minutos","realElapsedTime":"01/07/2024 12:00:16 AM","realDuration":"16 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:38] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:25 
+[2024-12-13 00:09:38] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:39] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:30 
+[2024-12-13 00:09:39] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:30:00 AM, Duración simulada: 1 hora 30 minutos, Tiempo real: 01/07/2024 12:00:17 AM, Duración real: 17 segundos 
+[2024-12-13 00:09:39] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:30:00 AM","simulatedDuration":"1 hora 30 minutos","realElapsedTime":"01/07/2024 12:00:17 AM","realDuration":"17 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:39] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:30 
+[2024-12-13 00:09:39] [INFO   ] Nuevo bloqueo activado: Origen: 100301, Destino: 100701, Inicio: 2024-07-01T01:30, Fin: 2024-07-18T19:09 
+[2024-12-13 00:09:39] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:39] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:39] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:39] [INFO   ] - Total de bloqueos activos: 3 
+[2024-12-13 00:09:39] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:39] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:39] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:39] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:09:39] [INFO   ] Matriz de tiempo actualizada con 3 bloqueos aplicados 
+[2024-12-13 00:09:39] [INFO   ] Orden 1 actualizada a estado: FULLY_ASSIGNED 
+[2024-12-13 00:09:39] [INFO   ] 
+--- Asignación Completa ---
+Código de la Orden: 1
+Cantidad Total de la Orden: 6 paquetes
+Cantidad Asignada al Vehículo: 6 paquetes
+Código del Vehículo: A005
+Capacidad Actual del Vehículo: 6 / 90
+--------------------------- 
+[2024-12-13 00:09:39] [INFO   ] Actualizando métricas de capacidad: Capacidad Usada: 6, Capacidad Total: 90, Total Registros: 1 
+[2024-12-13 00:09:39] [INFO   ] 
+--- Inicio de Viaje ---
+Código del Vehículo: A005
+Capacidad del Vehículo: 90 paquetes
+Orden a Entregar:
+  - Código de la Orden: 1
+  - Cantidad Total de la Orden: 6 paquetes
+  - Cantidad Asignada al Vehículo: 6 paquetes
+Origen: 130101 (TRUJILLO)
+Destino: 021701 (RECUAY)
+Tiempo de Inicio de Viaje: 2024-07-01 01:30:00
+Tiempo Estimado de Llegada: 2024-07-01 05:03:00
+Tiempo Límite de Entrega: 2024-07-02 00:53:00
+-------------------------Segmentos Restantes:
+ - Segmento: TRUJILLO to RECUAY, Desde: 130101, Hacia: 021701, Distancia: 0.0 km, Duración: 213 min
+ 
+[2024-12-13 00:09:39] [INFO   ] Orden 1 completamente asignada. 
+[2024-12-13 00:09:39] [INFO   ] Mensaje JSON para WebSocket: {"phase":"assigning","message":"Se asignaron 1 vehículos","timestamp":"2024-12-13T00:09:39.710731453","assignedVehicles":1} 
+[2024-12-13 00:09:39] [INFO   ] Vehículo A005 programado para avería tipo 1 a las 2024-07-01T03:16 en el tramo de 130101 (TRUJILLO) a 021701 (RECUAY) 
+[2024-12-13 00:09:40] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:35 
+[2024-12-13 00:09:40] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:35:00 AM, Duración simulada: 1 hora 35 minutos, Tiempo real: 01/07/2024 12:00:18 AM, Duración real: 18 segundos 
+[2024-12-13 00:09:40] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:35:00 AM","simulatedDuration":"1 hora 35 minutos","realElapsedTime":"01/07/2024 12:00:18 AM","realDuration":"18 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:40] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:35 
+[2024-12-13 00:09:40] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:40] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 5 minutos 
+[2024-12-13 00:09:41] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:40 
+[2024-12-13 00:09:41] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:40:00 AM, Duración simulada: 1 hora 40 minutos, Tiempo real: 01/07/2024 12:00:19 AM, Duración real: 19 segundos 
+[2024-12-13 00:09:41] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:40:00 AM","simulatedDuration":"1 hora 40 minutos","realElapsedTime":"01/07/2024 12:00:19 AM","realDuration":"19 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:41] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:40 
+[2024-12-13 00:09:41] [INFO   ] Nuevo bloqueo activado: Origen: 022001, Destino: 190101, Inicio: 2024-07-01T01:37, Fin: 2024-07-15T17:48 
+[2024-12-13 00:09:41] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:41] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:41] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:41] [INFO   ] - Total de bloqueos activos: 4 
+[2024-12-13 00:09:41] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:41] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:41] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:41] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:09:41] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:09:41] [INFO   ] Matriz de tiempo actualizada con 4 bloqueos aplicados 
+[2024-12-13 00:09:41] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 10 minutos 
+[2024-12-13 00:09:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:41] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:41] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:09:42] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:45 
+[2024-12-13 00:09:42] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:45:00 AM, Duración simulada: 1 hora 45 minutos, Tiempo real: 01/07/2024 12:00:20 AM, Duración real: 20 segundos 
+[2024-12-13 00:09:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:45:00 AM","simulatedDuration":"1 hora 45 minutos","realElapsedTime":"01/07/2024 12:00:20 AM","realDuration":"20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:45 
+[2024-12-13 00:09:42] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:42] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 15 minutos 
+[2024-12-13 00:09:43] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:50 
+[2024-12-13 00:09:43] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:50:00 AM, Duración simulada: 1 hora 50 minutos, Tiempo real: 01/07/2024 12:00:21 AM, Duración real: 21 segundos 
+[2024-12-13 00:09:43] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:50:00 AM","simulatedDuration":"1 hora 50 minutos","realElapsedTime":"01/07/2024 12:00:21 AM","realDuration":"21 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:43] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:50 
+[2024-12-13 00:09:43] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:43] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 20 minutos 
+[2024-12-13 00:09:44] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T01:55 
+[2024-12-13 00:09:44] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 01:55:00 AM, Duración simulada: 1 hora 55 minutos, Tiempo real: 01/07/2024 12:00:22 AM, Duración real: 22 segundos 
+[2024-12-13 00:09:44] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 01:55:00 AM","simulatedDuration":"1 hora 55 minutos","realElapsedTime":"01/07/2024 12:00:22 AM","realDuration":"22 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:44] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T01:55 
+[2024-12-13 00:09:44] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:44] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 25 minutos 
+[2024-12-13 00:09:44] [INFO   ] Iniciando planificación: 2024-07-01T01:55 
+[2024-12-13 00:09:44] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:44.721310302"} 
+[2024-12-13 00:09:44] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:44] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T01:55 
+[2024-12-13 00:09:45] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:00 
+[2024-12-13 00:09:45] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:00:00 AM, Duración simulada: 2 horas, Tiempo real: 01/07/2024 12:00:23 AM, Duración real: 23 segundos 
+[2024-12-13 00:09:45] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:00:00 AM","simulatedDuration":"2 horas","realElapsedTime":"01/07/2024 12:00:23 AM","realDuration":"23 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:45] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:00 
+[2024-12-13 00:09:45] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:45] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 30 minutos 
+[2024-12-13 00:09:46] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:05 
+[2024-12-13 00:09:46] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:05:00 AM, Duración simulada: 2 horas 5 minutos, Tiempo real: 01/07/2024 12:00:24 AM, Duración real: 24 segundos 
+[2024-12-13 00:09:46] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:05:00 AM","simulatedDuration":"2 horas 5 minutos","realElapsedTime":"01/07/2024 12:00:24 AM","realDuration":"24 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:46] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:05 
+[2024-12-13 00:09:46] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:46] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 35 minutos 
+[2024-12-13 00:09:47] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:10 
+[2024-12-13 00:09:47] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:10:00 AM, Duración simulada: 2 horas 10 minutos, Tiempo real: 01/07/2024 12:00:25 AM, Duración real: 25 segundos 
+[2024-12-13 00:09:47] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:10:00 AM","simulatedDuration":"2 horas 10 minutos","realElapsedTime":"01/07/2024 12:00:25 AM","realDuration":"25 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:47] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:10 
+[2024-12-13 00:09:47] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:47] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 40 minutos 
+[2024-12-13 00:09:48] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:15 
+[2024-12-13 00:09:48] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:15:00 AM, Duración simulada: 2 horas 15 minutos, Tiempo real: 01/07/2024 12:00:26 AM, Duración real: 26 segundos 
+[2024-12-13 00:09:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:15:00 AM","simulatedDuration":"2 horas 15 minutos","realElapsedTime":"01/07/2024 12:00:26 AM","realDuration":"26 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:15 
+[2024-12-13 00:09:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:48] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 45 minutos 
+[2024-12-13 00:09:48] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:20 
+[2024-12-13 00:09:48] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:20:00 AM, Duración simulada: 2 horas 20 minutos, Tiempo real: 01/07/2024 12:00:26 AM, Duración real: 26 segundos 
+[2024-12-13 00:09:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:20:00 AM","simulatedDuration":"2 horas 20 minutos","realElapsedTime":"01/07/2024 12:00:26 AM","realDuration":"26 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:20 
+[2024-12-13 00:09:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:48] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 50 minutos 
+[2024-12-13 00:09:49] [INFO   ] Iniciando planificación: 2024-07-01T02:20 
+[2024-12-13 00:09:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:49.160712597"} 
+[2024-12-13 00:09:49] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:49] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T02:20 
+[2024-12-13 00:09:49] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:25 
+[2024-12-13 00:09:49] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:25:00 AM, Duración simulada: 2 horas 25 minutos, Tiempo real: 01/07/2024 12:00:27 AM, Duración real: 27 segundos 
+[2024-12-13 00:09:49] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:25:00 AM","simulatedDuration":"2 horas 25 minutos","realElapsedTime":"01/07/2024 12:00:27 AM","realDuration":"27 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:49] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:25 
+[2024-12-13 00:09:49] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:49] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 55 minutos 
+[2024-12-13 00:09:50] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:30 
+[2024-12-13 00:09:50] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:30:00 AM, Duración simulada: 2 horas 30 minutos, Tiempo real: 01/07/2024 12:00:28 AM, Duración real: 28 segundos 
+[2024-12-13 00:09:50] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:30:00 AM","simulatedDuration":"2 horas 30 minutos","realElapsedTime":"01/07/2024 12:00:28 AM","realDuration":"28 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:50] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:30 
+[2024-12-13 00:09:50] [INFO   ] Nuevo bloqueo activado: Origen: 100301, Destino: 190301, Inicio: 2024-07-01T02:29, Fin: 2024-07-19T21:03 
+[2024-12-13 00:09:50] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:50] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:50] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:50] [INFO   ] - Total de bloqueos activos: 5 
+[2024-12-13 00:09:50] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:50] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:50] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:50] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:09:50] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:09:50] [INFO   ] Ruta bloqueada: 100301 -> 190301 
+[2024-12-13 00:09:50] [INFO   ] Matriz de tiempo actualizada con 5 bloqueos aplicados 
+[2024-12-13 00:09:50] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 60 minutos 
+[2024-12-13 00:09:51] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:35 
+[2024-12-13 00:09:51] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:35:00 AM, Duración simulada: 2 horas 35 minutos, Tiempo real: 01/07/2024 12:00:29 AM, Duración real: 29 segundos 
+[2024-12-13 00:09:51] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:35:00 AM","simulatedDuration":"2 horas 35 minutos","realElapsedTime":"01/07/2024 12:00:29 AM","realDuration":"29 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:51] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:35 
+[2024-12-13 00:09:51] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:51] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 65 minutos 
+[2024-12-13 00:09:52] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:40 
+[2024-12-13 00:09:52] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:40:00 AM, Duración simulada: 2 horas 40 minutos, Tiempo real: 01/07/2024 12:00:30 AM, Duración real: 30 segundos 
+[2024-12-13 00:09:52] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:40:00 AM","simulatedDuration":"2 horas 40 minutos","realElapsedTime":"01/07/2024 12:00:30 AM","realDuration":"30 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:52] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:40 
+[2024-12-13 00:09:52] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:52] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 70 minutos 
+[2024-12-13 00:09:53] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:45 
+[2024-12-13 00:09:53] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:45:00 AM, Duración simulada: 2 horas 45 minutos, Tiempo real: 01/07/2024 12:00:31 AM, Duración real: 31 segundos 
+[2024-12-13 00:09:53] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:45:00 AM","simulatedDuration":"2 horas 45 minutos","realElapsedTime":"01/07/2024 12:00:31 AM","realDuration":"31 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:53] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:45 
+[2024-12-13 00:09:53] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:53] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 75 minutos 
+[2024-12-13 00:09:54] [INFO   ] Iniciando planificación: 2024-07-01T02:45 
+[2024-12-13 00:09:54] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:54.175514048"} 
+[2024-12-13 00:09:54] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:54] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T02:45 
+[2024-12-13 00:09:54] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:50 
+[2024-12-13 00:09:54] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:50:00 AM, Duración simulada: 2 horas 50 minutos, Tiempo real: 01/07/2024 12:00:32 AM, Duración real: 32 segundos 
+[2024-12-13 00:09:54] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:50:00 AM","simulatedDuration":"2 horas 50 minutos","realElapsedTime":"01/07/2024 12:00:32 AM","realDuration":"32 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:54] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:50 
+[2024-12-13 00:09:54] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:54] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 80 minutos 
+[2024-12-13 00:09:55] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T02:55 
+[2024-12-13 00:09:55] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 02:55:00 AM, Duración simulada: 2 horas 55 minutos, Tiempo real: 01/07/2024 12:00:33 AM, Duración real: 33 segundos 
+[2024-12-13 00:09:55] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 02:55:00 AM","simulatedDuration":"2 horas 55 minutos","realElapsedTime":"01/07/2024 12:00:33 AM","realDuration":"33 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:55] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T02:55 
+[2024-12-13 00:09:55] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:55] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 85 minutos 
+[2024-12-13 00:09:56] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:00 
+[2024-12-13 00:09:56] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:00:00 AM, Duración simulada: 3 horas, Tiempo real: 01/07/2024 12:00:34 AM, Duración real: 34 segundos 
+[2024-12-13 00:09:56] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:00:00 AM","simulatedDuration":"3 horas","realElapsedTime":"01/07/2024 12:00:34 AM","realDuration":"34 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:56] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:00 
+[2024-12-13 00:09:56] [INFO   ] Nuevo bloqueo activado: Origen: 150301, Destino: 101001, Inicio: 2024-07-01T02:58, Fin: 2024-07-24T02:33 
+[2024-12-13 00:09:56] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:56] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:56] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:56] [INFO   ] - Total de bloqueos activos: 6 
+[2024-12-13 00:09:56] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 100301 -> 190301 
+[2024-12-13 00:09:56] [INFO   ] Ruta bloqueada: 150301 -> 101001 
+[2024-12-13 00:09:56] [INFO   ] Matriz de tiempo actualizada con 6 bloqueos aplicados 
+[2024-12-13 00:09:56] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 90 minutos 
+[2024-12-13 00:09:57] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:05 
+[2024-12-13 00:09:57] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:05:00 AM, Duración simulada: 3 horas 5 minutos, Tiempo real: 01/07/2024 12:00:35 AM, Duración real: 35 segundos 
+[2024-12-13 00:09:57] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:05:00 AM","simulatedDuration":"3 horas 5 minutos","realElapsedTime":"01/07/2024 12:00:35 AM","realDuration":"35 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:57] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:05 
+[2024-12-13 00:09:57] [INFO   ] Nuevo bloqueo activado: Origen: 060601, Destino: 061101, Inicio: 2024-07-01T03:02, Fin: 2024-07-14T01:43 
+[2024-12-13 00:09:57] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:09:57] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:09:57] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:09:57] [INFO   ] - Total de bloqueos activos: 7 
+[2024-12-13 00:09:57] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 100301 -> 190301 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 150301 -> 101001 
+[2024-12-13 00:09:57] [INFO   ] Ruta bloqueada: 060601 -> 061101 
+[2024-12-13 00:09:57] [INFO   ] Matriz de tiempo actualizada con 7 bloqueos aplicados 
+[2024-12-13 00:09:57] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 95 minutos 
+[2024-12-13 00:09:58] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:10 
+[2024-12-13 00:09:58] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:10:00 AM, Duración simulada: 3 horas 10 minutos, Tiempo real: 01/07/2024 12:00:36 AM, Duración real: 36 segundos 
+[2024-12-13 00:09:58] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:10:00 AM","simulatedDuration":"3 horas 10 minutos","realElapsedTime":"01/07/2024 12:00:36 AM","realDuration":"36 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:58] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:10 
+[2024-12-13 00:09:58] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:58] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 100 minutos 
+[2024-12-13 00:09:59] [INFO   ] Iniciando planificación: 2024-07-01T03:10 
+[2024-12-13 00:09:59] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:09:59.180077064"} 
+[2024-12-13 00:09:59] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:09:59] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T03:10 
+[2024-12-13 00:09:59] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:15 
+[2024-12-13 00:09:59] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:15:00 AM, Duración simulada: 3 horas 15 minutos, Tiempo real: 01/07/2024 12:00:37 AM, Duración real: 37 segundos 
+[2024-12-13 00:09:59] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:15:00 AM","simulatedDuration":"3 horas 15 minutos","realElapsedTime":"01/07/2024 12:00:37 AM","realDuration":"37 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:09:59] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:15 
+[2024-12-13 00:09:59] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:09:59] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to RECUAY (021701),Ubicación actual: 130101, Tiempo en tramo: 105 minutos 
+[2024-12-13 00:10:00] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:20 
+[2024-12-13 00:10:00] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:20:00 AM, Duración simulada: 3 horas 20 minutos, Tiempo real: 01/07/2024 12:00:38 AM, Duración real: 38 segundos 
+[2024-12-13 00:10:00] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:20:00 AM","simulatedDuration":"3 horas 20 minutos","realElapsedTime":"01/07/2024 12:00:38 AM","realDuration":"38 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:00] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:20 
+[2024-12-13 00:10:00] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:10:00] [INFO   ] Vehículo A005 ha sufrido una avería tipo AVERIADO_1 en el tramo 1: TRUJILLO to RECUAY. Tiempo transcurrido en el tramo: 110 minutos. 
+[2024-12-13 00:10:00] [INFO   ] Vehículo A005 ha sufrido una avería tipo AVERIADO_1 en 130101. Estará detenido hasta 2024-07-01T07:20. 
+[2024-12-13 00:10:00] [INFO   ] Vehículo A005 ha sufrido una avería tipo 1 a las 2024-07-01T03:20 en el tramo de 130101 a 021701 
+[2024-12-13 00:10:00] [INFO   ] Vehículo A005 ha estado averiado durante 0 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:10:01] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:25 
+[2024-12-13 00:10:01] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:25:00 AM, Duración simulada: 3 horas 25 minutos, Tiempo real: 01/07/2024 12:00:39 AM, Duración real: 39 segundos 
+[2024-12-13 00:10:01] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:25:00 AM","simulatedDuration":"3 horas 25 minutos","realElapsedTime":"01/07/2024 12:00:39 AM","realDuration":"39 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:01] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:25 
+[2024-12-13 00:10:01] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:10:01] [INFO   ] Vehículo A005 ha estado averiado durante 5 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:10:02] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:30 
+[2024-12-13 00:10:02] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:30:00 AM, Duración simulada: 3 horas 30 minutos, Tiempo real: 01/07/2024 12:00:40 AM, Duración real: 40 segundos 
+[2024-12-13 00:10:02] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:30:00 AM","simulatedDuration":"3 horas 30 minutos","realElapsedTime":"01/07/2024 12:00:40 AM","realDuration":"40 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:02] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:30 
+[2024-12-13 00:10:02] [INFO   ] Nuevo bloqueo activado: Origen: 100101, Destino: 120401, Inicio: 2024-07-01T03:27, Fin: 2024-07-16T21:33 
+[2024-12-13 00:10:02] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:10:02] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:10:02] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:10:02] [INFO   ] - Total de bloqueos activos: 8 
+[2024-12-13 00:10:02] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 100301 -> 190301 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 150301 -> 101001 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 060601 -> 061101 
+[2024-12-13 00:10:02] [INFO   ] Ruta bloqueada: 100101 -> 120401 
+[2024-12-13 00:10:02] [INFO   ] Matriz de tiempo actualizada con 8 bloqueos aplicados 
+[2024-12-13 00:10:02] [INFO   ] Vehículo A005 ha estado averiado durante 10 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:10:03] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:35 
+[2024-12-13 00:10:03] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:35:00 AM, Duración simulada: 3 horas 35 minutos, Tiempo real: 01/07/2024 12:00:41 AM, Duración real: 41 segundos 
+[2024-12-13 00:10:03] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:35:00 AM","simulatedDuration":"3 horas 35 minutos","realElapsedTime":"01/07/2024 12:00:41 AM","realDuration":"41 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:03] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:35 
+[2024-12-13 00:10:03] [INFO   ] Nuevo bloqueo activado: Origen: 021501, Destino: 020501, Inicio: 2024-07-01T03:32, Fin: 2024-07-18T19:23 
+[2024-12-13 00:10:03] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:10:03] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:10:03] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:10:03] [INFO   ] - Total de bloqueos activos: 9 
+[2024-12-13 00:10:03] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 022001 -> 190101 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 100301 -> 190301 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 150301 -> 101001 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 060601 -> 061101 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 100101 -> 120401 
+[2024-12-13 00:10:03] [INFO   ] Ruta bloqueada: 021501 -> 020501 
+[2024-12-13 00:10:03] [INFO   ] Matriz de tiempo actualizada con 9 bloqueos aplicados 
+[2024-12-13 00:10:03] [INFO   ] Vehículo A005 ha estado averiado durante 15 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:10:04] [INFO   ] Iniciando planificación: 2024-07-01T03:35 
+[2024-12-13 00:10:04] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:10:04.186529351"} 
+[2024-12-13 00:10:04] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:10:04] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T03:35 
+[2024-12-13 00:10:04] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:40 
+[2024-12-13 00:10:04] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:40:00 AM, Duración simulada: 3 horas 40 minutos, Tiempo real: 01/07/2024 12:00:42 AM, Duración real: 42 segundos 
+[2024-12-13 00:10:04] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:40:00 AM","simulatedDuration":"3 horas 40 minutos","realElapsedTime":"01/07/2024 12:00:42 AM","realDuration":"42 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:04] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:40 
+[2024-12-13 00:10:04] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:10:04] [INFO   ] Vehículo A005 ha estado averiado durante 20 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:10:05] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:45 
+[2024-12-13 00:10:05] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:45:00 AM, Duración simulada: 3 horas 45 minutos, Tiempo real: 01/07/2024 12:00:43 AM, Duración real: 43 segundos 
+[2024-12-13 00:10:05] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:45:00 AM","simulatedDuration":"3 horas 45 minutos","realElapsedTime":"01/07/2024 12:00:43 AM","realDuration":"43 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:10:05] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:45 
+[2024-12-13 00:10:05] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:10:05] [INFO   ] Vehículo A005 ha estado averiado durante 25 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:17:42] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:50 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:50:00 AM, Duración simulada: 3 horas 50 minutos, Tiempo real: 01/07/2024 12:08:20 AM, Duración real: 8 minutos 20 segundos 
+[2024-12-13 00:17:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:50:00 AM","simulatedDuration":"3 horas 50 minutos","realElapsedTime":"01/07/2024 12:08:20 AM","realDuration":"8 minutos 20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Iniciando planificación: 2024-07-01T03:50 
+[2024-12-13 00:17:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:50 
+[2024-12-13 00:17:42] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-13T00:17:42.915660962"} 
+[2024-12-13 00:17:42] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 00:17:42] [INFO   ] Órdenes disponibles: 0 
+[2024-12-13 00:17:42] [INFO   ] Vehículo A005 ha estado averiado durante 30 minutos desde que ocurrió la avería inicialmente. 
+[2024-12-13 00:17:42] [INFO   ] No hay órdenes disponibles para planificar en: 2024-07-01T03:50 
+[2024-12-13 00:17:42] [INFO   ] Tiempo actualizado - Current Time: 2024-07-01T03:55 
+[2024-12-13 00:17:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Resumen de simulación - Tiempo simulado: 01/07/2024 03:55:00 AM, Duración simulada: 3 horas 55 minutos, Tiempo real: 01/07/2024 12:08:20 AM, Duración real: 8 minutos 20 segundos 
+[2024-12-13 00:17:42] [SEVERE ] Error en la conexión WebSocket: null 
+[2024-12-13 00:17:42] [SEVERE ] Error en la conexión WebSocket: null 
+[2024-12-13 00:17:42] [SEVERE ] Error en la conexión WebSocket: null 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"01/07/2024 03:55:00 AM","simulatedDuration":"3 horas 55 minutos","realElapsedTime":"01/07/2024 12:08:20 AM","realDuration":"8 minutos 20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 00:17:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-01T03:55 
+[2024-12-13 00:17:42] [INFO   ] Nuevo bloqueo activado: Origen: 021701, Destino: 020101, Inicio: 2024-07-01T03:55, Fin: 2024-07-15T06:49 
+[2024-12-13 00:17:42] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-13 00:17:42] [INFO   ] Resumen de actualización de bloqueos: 
+[2024-12-13 00:17:42] [INFO   ] - Bloqueos expirados: 0 
+[2024-12-13 00:17:42] [INFO   ] - Nuevos bloqueos activados: 1 
+[2024-12-13 00:17:42] [INFO   ] - Total de bloqueos activos: 10 
+[2024-12-13 00:17:42] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
+[2024-12-13 00:17:42] [INFO   ] Ruta bloqueada: 100701 -> 100101 
+[2024-12-13 00:17:42] [INFO   ] Ruta bloqueada: 050401 -> 050201 
+[2024-12-13 00:17:42] [INFO   ] Ruta bloqueada: 100301 -> 100701 
+[2024-12-13 00:17:42] [INFO   ] Ruta bloqueada: 022001 -> 190101 
