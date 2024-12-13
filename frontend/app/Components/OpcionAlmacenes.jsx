@@ -132,7 +132,7 @@ export default function OpcionAlmacenes() {
   const isSearching = searchInput.length > 0;
 
   const Row = ({ index, style }) => {
-    const location = filteredLocations[index];
+    const location = filteredLocations.filter((feature) => !feature.ubigeo.startsWith("TEMP"))[index];
     return (
       <div style={style}
       onMouseDown={() => {
@@ -208,7 +208,7 @@ export default function OpcionAlmacenes() {
           </div>
 
           <div className="text-right text-sm text-[#939393]">
-            Cantidad de almacenes: {filteredLocations.length}
+            Cantidad de almacenes: {filteredLocations.filter((feature) => !feature.ubigeo.startsWith("TEMP")).length}
           </div>
 
           <CapacidadTotalAlmacenes />
@@ -221,7 +221,7 @@ export default function OpcionAlmacenes() {
                 {({ height, width }) => (
                   <List
                     height={height}
-                    itemCount={filteredLocations.length}
+                    itemCount={filteredLocations.filter((feature) => !feature.ubigeo.startsWith("TEMP")).length}
                     itemSize={200}
                     width={width}
                     className="scroll-area"

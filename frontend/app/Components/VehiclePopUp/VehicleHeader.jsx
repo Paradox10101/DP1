@@ -9,16 +9,22 @@ const getStatusColor = (status) => {
     
     // Vehículo en mantenimiento
     "EN_MANTENIMIENTO": "#7B15FA",
-    "EN_REPARACION": "#7B15FA",
+    
+    //Vehiculo en reparacion
+    "EN_REPARACION": "#7f1b81",
 
     // Vehículo en espera
     'LISTO_PARA_RETORNO': "#7B15FA",
     'EN_ESPERA_EN_OFICINA': "#7B15FA",
-    'EN_REEMPLAZO': "#7B15FA",
+    
+    // Vehículo en reemplazo
+    'EN_REEMPLAZO': "#1b6c81",
 
     // Vehículo en tránsito
     'EN_TRANSITO_ORDEN': "#284BCC",
-    'HACIA_ALMACEN': "#284BCC",
+    
+    // Vehiculo hacia almacen
+    'HACIA_ALMACEN': "#608272",
     
     // Averías por severidad
     'AVERIADO_1': "#FFD700", // Amarillo - Avería leve
@@ -62,15 +68,21 @@ const getStatusText = (status) => {
 
     // Vehiculo en mantenimiento
     "EN_MANTENIMIENTO": 'En mantenimiento',
+    
+    // Vehiculo en reparacion
     "EN_REPARACION": 'En reparación',
 
     // Vehículo en espera
-    'LISTO_PARA_RETORNO': 'Por retornar',
+    'LISTO_PARA_RETORNO': 'En espera',
     'EN_ESPERA_EN_OFICINA': 'En Espera',
+    
+    // Vehiculo en retorno
     'EN_REEMPLAZO': 'En Reemplazo',
 
     // Vehiculo en transito
-    'EN_TRANSITO_ORDEN': 'En Tránsito',
+    'EN_TRANSITO_ORDEN': 'Atendiendo orden',
+    
+    // Vehiculo hacia almacen
     'HACIA_ALMACEN': 'Hacia almacén',
 
 

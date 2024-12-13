@@ -2,7 +2,7 @@ import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, M
 import { ChevronDown, Filter, Map, SearchX, X } from "lucide-react";
 import { useAtom } from "jotai";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { vehiclePositionsAtom, loadingAtom } from "../atoms";
+import { vehiclePositionsAtom, loadingAtom, vehiclePositionsListAtom } from "../atoms";
 import BarraProgreso from "./BarraProgreso";
 import CardVehiculo from "@/app/Components/CardVehiculo";
 import { useWebSocket } from "../../hooks/useWebSocket"; // WebSocket hook
@@ -14,7 +14,7 @@ import BreakdownModal from "./VehiclePopUp/BreakdownModal";
 
 export default function OpcionVehiculos() {
   
-  const vehiculos = useAtom(vehiclePositionsAtom);
+  const vehiculos = useAtom(vehiclePositionsListAtom);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [searchInput, setSearchInput] = useState("");
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(null);
@@ -145,11 +145,11 @@ const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
       case "ORDENES_CARGADAS":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                  En Almacén
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                En Almacén
+            </div>
+        );
       case "AVERIADO_1":
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-yellow-100 text-black-600 font-medium">
@@ -169,11 +169,11 @@ const StatusBadge = ({ status }) => {
           </div>
         );
       case "EN_MANTENIMIENTO":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                  En Mantenimiento
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#2174a4] text-[#9dc4db]">
+                En Mantenimiento
+            </div>
+        );
       case "EN_ESPERA_EN_OFICINA":
       case "LISTO_PARA_RETORNO":
         return (
