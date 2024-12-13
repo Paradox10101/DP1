@@ -30635,3 +30635,102 @@ Duración del Viaje: 390 minutos
 [2024-12-13 12:24:13] [INFO   ] - Total de bloqueos activos: 143 
 [2024-12-13 12:24:13] [INFO   ] Actualizando matriz de tiempo basada en bloqueos activos 
 [2024-12-13 12:24:13] [SEVERE ] Error en actualización de tiempo 
+[2024-12-13 12:24:14] [INFO   ] Iniciando planificación: 2024-07-06T03:35 
+[2024-12-13 12:24:14] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":1,"message":"Procesando 1 órdenes","timestamp":"2024-12-13T12:24:14.194151800"} 
+[2024-12-13 12:24:14] [INFO   ] Órdenes disponibles: 1 
+[2024-12-13 12:24:14] [INFO   ] Orden 84 - Paquetes restantes sin asignar: 6 
+[2024-12-13 12:24:14] [INFO   ] Tiempo actualizado - Current Time: 2024-07-06T03:40 
+[2024-12-13 12:24:14] [INFO   ] Resumen de simulación - Tiempo simulado: 06/07/2024 03:40:00 AM, Duración simulada: 5 días 3 horas 40 minutos, Tiempo real: 01/07/2024 12:24:43 AM, Duración real: 24 minutos 43 segundos 
+[2024-12-13 12:24:14] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"06/07/2024 03:40:00 AM","simulatedDuration":"5 días 3 horas 40 minutos","realElapsedTime":"01/07/2024 12:24:43 AM","realDuration":"24 minutos 43 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:24:14] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-06T03:40 
+[2024-12-13 12:24:14] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:24:14] [INFO   ] Vehículo A001 aún en espera. Tiempo transcurrido: 10 minutos 
+[2024-12-13 12:24:14] [INFO   ] Vehículo A002 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 85 minutos 
+[2024-12-13 12:24:14] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to GRAN CHIMU (131101),Ubicación actual: 130101, Tiempo en tramo: 30 minutos 
+[2024-12-13 12:24:14] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 140 minutos 
+[2024-12-13 12:24:14] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: RODRIGUEZ DE MENDOZA to CELENDIN (060301),Ubicación actual: 010601, Tiempo en tramo: 90 minutos 
+[2024-12-13 12:24:14] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: LA UNION to AREQUIPA (040101),Ubicación actual: 040801, Tiempo en tramo: 130 minutos 
+[2024-12-13 12:24:14] [INFO   ] 
+--- Vehículo Llegada A Destino ---
+Código del Vehículo: B011
+Capacidad del Vehículo: 45 paquetes
+Tipo de Viaje: Hacia Almacén
+Origen: AREQUIPA
+Destino (Almacén): AREQUIPA
+Tiempo de Partida: 2024-07-06 00:10:00
+Tiempo de Llegada: 2024-07-06 03:40:00
+Duración del Viaje: 210 minutos
+-------------------------- 
+[2024-12-13 12:24:14] [INFO   ] Ubicacion actual actualizada del vehiculo B011 a: 040101 (AREQUIPA). 
+[2024-12-13 12:24:14] [INFO   ] Estado del vehiculo B011 actualizado a: EN ALMACEN - AREQUIPA (040101) 
+[2024-12-13 12:24:14] [INFO   ] 
+--- Vehículo Llegada A Destino ---
+Código del Vehículo: B013
+Capacidad del Vehículo: 45 paquetes
+Tipo de Viaje: Entrega de Orden
+Orden Entregada:
+  - Código de la Orden: 79
+  - Cantidad Total de la Orden: 13 paquetes
+  - Cantidad Asignada al Vehículo: 13 paquetes
+Origen: 040101
+Destino: MOHO
+  - Ubigeo: 210901
+  - Nombre: MOHO
+Tiempo Límite de Entrega: 2024-07-07 22:06:00
+Tiempo de Partida: 2024-07-05 22:45:00
+Tiempo de Llegada: 2024-07-06 03:40:00
+Duración del Viaje: 295 minutos
+-------------------------- 
+[2024-12-13 12:24:14] [INFO   ] Almacén 210901: Capacidad total: 200, Capacidad anterior: 200, Nueva capacidad: 187 
+[2024-12-13 12:24:14] [INFO   ] Broadcasting occupancy update: {"type":"occupancy_update","ubigeo":"210901","occupiedPercentage":6.5,"totalOccupancy":0.19,"warehouseCount":60,"timestamp":1734110654323} 
+[2024-12-13 12:24:14] [INFO   ] Vehículo B013 ha liberado 13 paquetes. Capacidad actual: 0 paquetes. 
+[2024-12-13 12:24:14] [INFO   ] Orden 79 actualizada a estado: PENDING_PICKUP 
+[2024-12-13 12:24:14] [INFO   ] Vehículo B013 entrega 13 paquetes de la orden 79. 
+[2024-12-13 12:24:14] [INFO   ] Orden 79 completamente entregada y cambiada a estado PENDING_PICKUP a las 2024-07-06T03:40:00 
+[2024-12-13 12:24:14] [INFO   ] Vehículo B013 comienza periodo de espera de 1 hora en 210901 
+[2024-12-13 12:24:14] [INFO   ] Vehículo B014 - Velocidad: 0.00 km/h, Tramo: CAYLLOMA to ESPINAR (080801),Ubicación actual: 040501, Tiempo en tramo: 10 minutos 
+[2024-12-13 12:24:15] [INFO   ] Tiempo actualizado - Current Time: 2024-07-06T03:45 
+[2024-12-13 12:24:15] [INFO   ] Resumen de simulación - Tiempo simulado: 06/07/2024 03:45:00 AM, Duración simulada: 5 días 3 horas 45 minutos, Tiempo real: 01/07/2024 12:24:44 AM, Duración real: 24 minutos 44 segundos 
+[2024-12-13 12:24:15] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"06/07/2024 03:45:00 AM","simulatedDuration":"5 días 3 horas 45 minutos","realElapsedTime":"01/07/2024 12:24:44 AM","realDuration":"24 minutos 44 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:24:15] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-06T03:45 
+[2024-12-13 12:24:15] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:24:15] [INFO   ] Vehículo A001 aún en espera. Tiempo transcurrido: 15 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo A002 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 90 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to GRAN CHIMU (131101),Ubicación actual: 130101, Tiempo en tramo: 35 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo B008 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to CHICLAYO (140101),Ubicación actual: 130101, Tiempo en tramo: 145 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo C011 - Velocidad: 0.00 km/h, Tramo: RODRIGUEZ DE MENDOZA to CELENDIN (060301),Ubicación actual: 010601, Tiempo en tramo: 95 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: LA UNION to AREQUIPA (040101),Ubicación actual: 040801, Tiempo en tramo: 135 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo B013 aún en espera. Tiempo transcurrido: 5 minutos 
+[2024-12-13 12:24:15] [INFO   ] Vehículo B014 - Velocidad: 0.00 km/h, Tramo: CAYLLOMA to ESPINAR (080801),Ubicación actual: 040501, Tiempo en tramo: 15 minutos 
+[2024-12-13 12:24:15] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Procesando 1 órdenes","timestamp":"2024-12-13T12:24:15.704215600"} 
+[2024-12-13 12:24:15] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Calculando rutas para 1 destinos","timestamp":"2024-12-13T12:24:15.704215600","routesStats":{"total":1,"completed":0}} 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 150101 hacia 080101 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 150101 hacia 080101 
+[2024-12-13 12:24:15] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 040101 hacia 080101 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 040101 hacia 080101 
+[2024-12-13 12:24:15] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 130101 hacia 080101 
+[2024-12-13 12:24:15] [INFO   ] Calculando ruta desde 130101 hacia 080101 
+[2024-12-13 12:24:15] [WARNING] OR-Tools no encontró solución, utilizando Dijkstra como fallback 
+[2024-12-13 12:24:15] [INFO   ] 
+=== RESUMEN DE RUTAS POR DESTINO === 
+[2024-12-13 12:24:15] [INFO   ] 
+Destino: 080101 
+[2024-12-13 12:24:15] [INFO   ] Rutas exitosas: 3/3 
+[2024-12-13 12:24:15] [INFO   ] Detalle por almacén: 
+[2024-12-13 12:24:15] [INFO   ] - 150101: ÉXITO (Tiempo: 0 días, 9 horas, 33 minutos) 
+[2024-12-13 12:24:15] [INFO   ] - 040101: ÉXITO (Tiempo: 0 días, 5 horas, 40 minutos) 
+[2024-12-13 12:24:15] [INFO   ] - 130101: ÉXITO (Tiempo: 0 días, 16 horas, 3 minutos) 
+[2024-12-13 12:24:15] [INFO   ] Mensaje JSON para WebSocket: {"phase":"routing","availableOrders":1,"message":"Calculando rutas para 1 destinos","timestamp":"2024-12-13T12:24:15.769938300","routesStats":{"total":1,"completed":1}} 
+[2024-12-13 12:24:16] [INFO   ] Tiempo actualizado - Current Time: 2024-07-06T03:50 
+[2024-12-13 12:24:16] [INFO   ] Resumen de simulación - Tiempo simulado: 06/07/2024 03:50:00 AM, Duración simulada: 5 días 3 horas 50 minutos, Tiempo real: 01/07/2024 12:24:45 AM, Duración real: 24 minutos 45 segundos 
+[2024-12-13 12:24:16] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"01/07/2024 12:00:00 AM","endTime":"08/07/2024 12:00:00 AM","simulatedTime":"06/07/2024 03:50:00 AM","simulatedDuration":"5 días 3 horas 50 minutos","realElapsedTime":"01/07/2024 12:24:45 AM","realDuration":"24 minutos 45 segundos","isPaused":false,"isStopped":false} 
+[2024-12-13 12:24:16] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-07-06T03:50 
+[2024-12-13 12:24:16] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-13 12:24:16] [INFO   ] Vehículo A001 aún en espera. Tiempo transcurrido: 20 minutos 
+[2024-12-13 12:24:16] [INFO   ] Vehículo A002 - Velocidad: 0.00 km/h, Tramo: LIMA to OYON (150901),Ubicación actual: 150101, Tiempo en tramo: 95 minutos 
+[2024-12-13 12:24:16] [INFO   ] Vehículo A005 - Velocidad: 0.00 km/h, Tramo: TRUJILLO to GRAN CHIMU (131101),Ubicación actual: 130101, Tiempo en tramo: 40 minutos 
+[2024-12-13 12:24:16] [INFO   ] Vehículo A006 - Velocidad: 0.00 km/h, Tramo: LA UNION to AREQUIPA (040101),Ubicación actual: 040801, Tiempo en tramo: 140 minutos 
+[2024-12-13 12:24:16] [INFO   ] Vehículo B013 aún en espera. Tiempo transcurrido: 10 minutos 
+[2024-12-13 12:24:16] [INFO   ] Vehículo B014 - Velocidad: 0.00 km/h, Tramo: CAYLLOMA to ESPINAR (080801),Ubicación actual: 040501, Tiempo en tramo: 20 minutos 
