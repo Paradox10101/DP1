@@ -9,7 +9,7 @@ import {
   vehiclePositionsAtom,
   loadingAtom
 } from '../atoms';
-import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
+import { performanceMetricsAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useVehicleAnimation } from '../../hooks/useVehicleAnimation';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -18,8 +18,8 @@ import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
 import { locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
-import { Truck, CarFront, Car, AlertTriangle } from 'lucide-react'; // Asegúrate de que estos íconos están importados
-import IconoEstado, { VEHICLE_CAPACITIES } from './IconoEstado';
+import { Truck, CarFront, Car, AlertTriangle, Building, Warehouse } from 'lucide-react'; // Asegúrate de que estos íconos están importados
+import IconoEstado from './IconoEstado';
 import { renderToStaticMarkup } from 'react-dom/server';
 import throttle from 'lodash/throttle';
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
@@ -27,8 +27,6 @@ import ModalVehiculo from './ModalVehiculo';
 
 // 1. Primero, importa el átomo de ubicaciones filtradas
 import { filteredLocationsAtom } from '../../atoms/locationAtoms';
-import Dashboard from './Dashboard';
-import CollapseDashboard from './CollapseDashboard';
 import { useShipmentWebSocket } from '@/hooks/useShipmentWebSocket';
 import { useRouteWebSocket } from '@/hooks/useRouteWebSocket';
 import { blockageRoutesAtom, formattedRoutesAtom, routesAtom, showBlockagesRoutesAtom, showVehiclesRoutesAtom, vehicleCurrentRoutesAtom } from '@/atoms/routeAtoms';
@@ -37,6 +35,25 @@ import { blockageRoutesAtom, formattedRoutesAtom, routesAtom, showBlockagesRoute
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
+
+
+  const getSvgWithLucideIcon = (IconComponent, bgColor) => {
+    const svgString = renderToStaticMarkup(
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+        <circle 
+          cx="20" 
+          cy="20" 
+          r="20" 
+          fill={bgColor}
+        />
+        <g transform="translate(8, 8)">
+          <IconComponent color="#FFFFFF" size={24} />
+        </g>
+      </svg>
+    );
+    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+  };
+
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
@@ -57,6 +74,19 @@ const getSvgString = (IconComponent, bgColor) => {
     </svg>
   );
   return `data:image/svg+xml;base64,${btoa(svgString)}`;
+};
+
+// Añadir después de getSvgString y antes de getVehicleColor
+const getOfficeIconSvg = (occupiedPercentage) => {
+  let bgColor;
+  if (occupiedPercentage >= 81) {
+    bgColor = '#F97316';
+  } else if (occupiedPercentage >= 41) {
+    bgColor = '#EAB308';
+  } else {
+    bgColor = '#22C55E';
+  }
+  return getSvgString(Building, bgColor);
 };
 
 
@@ -156,13 +186,13 @@ const VehicleMap = ({ simulationStatus }) => {
   const lineCurrentRouteRef = useRef()
   
 
-  //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions) FUERA MRD A CADA RATO ESTO
+  //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
 
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
   const locationsUltimo = useAtomValue(filteredLocationsAtom);
 
-  //console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
+  console.log("LISTADO DE LOCACIONES ENCONTRADAS BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:"+ JSON.stringify(locationsUltimo, null, 2));
   // Función auxiliar para crear mensajes de error
   const createError = (type, customMessage = null) => ({
     ...ERROR_MESSAGES[type],
@@ -191,12 +221,16 @@ const VehicleMap = ({ simulationStatus }) => {
 
         // Actualizar las fuentes por separado
         if (mapRef.current) {
-          const officesSource = mapRef.current.getSource('offices');
-          const warehousesSource = mapRef.current.getSource('warehouses');
+          //const officesSource = mapRef.current.getSource('offices');
+          //const warehousesSource = mapRef.current.getSource('warehouses');
+          const officesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.OFFICES.id);
+          const warehousesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.WAREHOUSES.id);
           
           if (officesSource) officesSource.setData(offices);
           if (warehousesSource) warehousesSource.setData(warehouses);
         }
+        console.log("OFFICESSSSSSSSSSSSSSSSSSS: ", offices);
+        console.log("DATAAAAAAAAAAAAAAAAAAAAAAAAAA: ", data);
         
         setLocations(data); // Mantener el estado completo si es necesario
         setError(null);
@@ -431,6 +465,26 @@ const VehicleMap = ({ simulationStatus }) => {
           { type: 'alert-triangle-icon', component: AlertTriangle },
         ];
 
+        // Cargar imágenes de oficinas con diferentes niveles de ocupación
+        const occupancyLevels = [
+          { level: 0, name: 'office-icon-0' },
+          { level: 41, name: 'office-icon-41' },
+          { level: 81, name: 'office-icon-81' }
+        ];
+
+        occupancyLevels.forEach(({ level, name }) => {
+          if (!mapRef.current.hasImage(name)) {
+            const svgString = getOfficeIconSvg(level);
+            const image = new Image();
+            image.src = svgString;
+            image.onload = () => {
+              if (!mapRef.current.hasImage(name)) {
+                mapRef.current.addImage(name, image);
+              }
+            };
+          }
+        });
+
         const colors = {
           green: '#08CA57',
           yellow: '#FFC107',
@@ -461,6 +515,14 @@ const VehicleMap = ({ simulationStatus }) => {
             await loadCustomImage(imageConfig.id, imageConfig.url);
           }
         }
+
+        /*mapRef.current.addSource(MAP_CONFIG.SOURCES.OFFICES.id, {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        });*/
 
         // Configurar la fuente de vehículos
         if (!mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id)) {
@@ -558,9 +620,26 @@ const VehicleMap = ({ simulationStatus }) => {
             source: 'offices',
             filter: ['!', ['has', 'point_count']],
             layout: {
-              ...LAYER_STYLES.locations.offices.layout,
-              'icon-allow-overlap': false,
-              'icon-ignore-placement': false,
+              'icon-image': [
+                'case',
+                ['>=', ['get', 'occupiedPercentage'], 81],
+                'office-icon-81',
+                ['>=', ['get', 'occupiedPercentage'], 41],
+                'office-icon-41',
+                'office-icon-0'
+              ],
+              'icon-size': 0.8,
+              'icon-allow-overlap': true,
+              'text-field': ['get', 'name'],
+              'text-font': ['Open Sans Regular'],
+              'text-size': 10,
+              'text-offset': [0, 1.5],
+              'text-anchor': 'top',
+            },
+            paint: {
+              'text-color': '#000000',
+              'text-halo-color': '#FFFFFF',
+              'text-halo-width': 1,
             }
           });
         }
