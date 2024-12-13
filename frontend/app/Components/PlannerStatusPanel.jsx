@@ -189,7 +189,7 @@ const PlannerStatusPanel = () => {
           <Card className={`
             shadow-lg bg-white/80 backdrop-blur-md
             transform transition-all duration-300 ease-in-out
-            ${isExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-95'}
+            ${isExpanded ? 'translate-y-0 opacity-100' : ' opacity-95'}
           `}>
             {/* Botón de toggle */}
             <button
