@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Modal, 
   ModalContent, 
@@ -66,6 +66,11 @@ const BreakdownModal = ({ isOpen, onClose, vehicleCode, onSuccess }) => {
       onClose();
     }
   };
+
+  useEffect(()=>{
+    if(!loading)
+      setError(false);
+  },[vehicleCode])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">

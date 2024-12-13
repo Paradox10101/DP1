@@ -52,7 +52,7 @@ const PlannerStatusPanel = () => {
           setSelectedPeriod(data.seconds);
         }
       } catch (error) {
-        console.error('Error al obtener el período inicial:', error);
+        console.log('Error al obtener el período inicial:', error);
       }
     };
 
