@@ -3,6 +3,8 @@ import { atom } from 'jotai';
 // Átomo para almacenar las ubicaciones base
 export const locationsAtom = atom(null);
 
+export const followLocationAtom = atom(null);
+
 // Átomo para almacenar los porcentajes de ocupación actualizados por WebSocket
 export const occupancyUpdatesAtom = atom({});
 

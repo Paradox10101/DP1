@@ -9,6 +9,7 @@ import { useWebSocket } from "../../hooks/useWebSocket"; // WebSocket hook
 import { FixedSizeList as List } from 'react-window';
 import ModalVehiculo from "./ModalVehiculo";
 import AutoSizer from 'react-virtualized-auto-sizer';
+import BreakdownModal from "./VehiclePopUp/BreakdownModal";
 
 
 export default function OpcionVehiculos() {
@@ -22,6 +23,8 @@ export default function OpcionVehiculos() {
   const [loadingFilters, setLoadingFilters] = useState(true);
   const [statusesVehicle, setStatusesVehicle] = useState(null);
   const [vehicleTypes, setVehicleTypes] = useState([]);
+  const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
+  const [vehicleCodeSelected, setVehicleCodeSelected] = useState(null);
   const initialFilterStateRef = useRef(
       {
       vehicleType: "",
@@ -132,6 +135,12 @@ useEffect(() => {
 }, [vehiculos, vehiclesFilter, filteredVehiculosArray]);
 
 
+const handleBreakdownSuccess = () => {
+// Aquí puedes actualizar el estado del vehículo o recargar los datos
+
+
+};
+
 const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
@@ -224,7 +233,7 @@ const StatusBadge = ({ status }) => {
         }}
       >
 
-        <CardVehiculo vehiculo={vehicle.properties} RenderStatus={StatusBadge} key={vehicle.properties.vehicleCode}/>
+        <CardVehiculo vehiculo={vehicle.properties} RenderStatus={StatusBadge} key={vehicle.properties.vehicleCode} coordinates={vehicle.geometry.coordinates} setIsBreakdownModalOpen={setIsBreakdownModalOpen} setVehicleCodeSelected={setVehicleCodeSelected}/>
       </div>
     )
   }
@@ -314,7 +323,7 @@ const StatusBadge = ({ status }) => {
                       <List
                         height={height}
                         itemCount={filteredVehicles.length}
-                        itemSize={180}
+                        itemSize={220}
                         width={width}
                         className="scroll-area"
                       >
@@ -509,7 +518,14 @@ const StatusBadge = ({ status }) => {
                       </ModalFooter>
                   </ModalContent>
                 </Modal>
+                
             )}
+            <BreakdownModal 
+              isOpen={isBreakdownModalOpen}
+              onClose={() => setIsBreakdownModalOpen(false)}
+              vehicleCode={vehicleCodeSelected}
+              onSuccess={handleBreakdownSuccess}
+            />
         </div>  
   );
 }

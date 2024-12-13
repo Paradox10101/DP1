@@ -16,7 +16,7 @@ import { useWebSocket } from '../../hooks/useWebSocket';
 import { MAP_CONFIG, LAYER_STYLES, POPUP_CONFIG } from '../../config/mapConfig';
 import ErrorDisplay from '../Components/ErrorDisplay';
 import { errorAtom, ErrorTypes, ERROR_MESSAGES } from '@/atoms/errorAtoms';
-import { locationsAtom } from '../../atoms/locationAtoms';
+import { followLocationAtom, locationsAtom } from '../../atoms/locationAtoms';
 import { AlmacenPopUp, OficinaPopUp, VehiculoPopUp } from './PopUps';
 import { Truck, CarFront, Car, AlertTriangle, Building, Warehouse } from 'lucide-react'; // Asegúrate de que estos íconos están importados
 import IconoEstado from './IconoEstado';
@@ -184,6 +184,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const positionsRef = useRef();
   const locoRef = useRef();
   const lineCurrentRouteRef = useRef()
+  const [followLocation, setFollowLocation] = useAtom(followLocationAtom)
   
 
   //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
@@ -1383,8 +1384,23 @@ const VehicleMap = ({ simulationStatus }) => {
     }
   }, [vehicleCurrentRoutes, showVehiclesRoutes]);
   
-  //const [showBlockageRoutes,] = useAtom(showBlockagesRoutesAtom)
-  //const [showVehiclesRoutes,] = useAtom(showVehiclesRoutesAtom)
+
+  
+  useEffect(()=>{
+    if (mapRef.current) { // Verifica si el mapa existe
+    
+    if(followLocation!=null){
+      mapRef.current.flyTo({
+        center: followLocation, // Coordenadas de destino
+        zoom: 9, // Nivel de zoom deseado (ajusta según necesidad)
+        speed: 2, // Velocidad del vuelo (opcional)
+        curve: 1, // Curva del vuelo (opcional)
+        easing: (t) => t, // Efecto de suavizado (opcional)
+      });
+      setFollowLocation(null)
+    }
+    }
+  }, [followLocation])
 
 
   // Añadir eventos a la capa de vehículos
