@@ -100,6 +100,7 @@ export const filteredLocationsAtom = atom((get) => {
     if (!locations) return null;
     if (!searchQuery) return locations;
 
+    console.log("OBJETIVO: ELIMINAR PUNTOS DE AVERIA", locations)
     return locations.filter(location => searchLocation(location, searchQuery));
   } catch (error) {
     console.error('Error filtrando ubicaciones:', error);
