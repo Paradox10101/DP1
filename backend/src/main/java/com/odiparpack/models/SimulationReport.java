@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 
 public class SimulationReport {
     private double capacidadEfectiva;
+    private double capacidadEfectivaOficina;
+
     private int pedidosAtendidos;
     private double eficienciaRutas;
     private double promedioPedidos;
@@ -29,6 +31,7 @@ public class SimulationReport {
     public SimulationReport(SimulationState state) {
         // Cálculo real de capacidad efectiva
         this.capacidadEfectiva = calculateCapacidadEfectiva(state);
+        this.capacidadEfectivaOficina = calculateCapacidadEfectivaOficina(state);
 
         // Cálculo de otros atributos
         this.pedidosAtendidos = calculatePedidosAtendidos(state);
@@ -52,6 +55,11 @@ public class SimulationReport {
         // <- SE SACA LA CAPACIDAD ACTUAL PARA SACAR LA
         // "CAPACIDAD ACTUAL PROMEDIO" (HISTORIAL)
         return state.calculateAverageCapacity() * 100; // Usar el promedio acumulado
+    }
+
+    // Nuevo método para calcular la capacidad efectiva de oficinas
+    private double calculateCapacidadEfectivaOficina(SimulationState state) {
+        return state.getAverageWarehouseEffectiveCapacity();
     }
 
     // Métodos para calcular los atributos restantes (actualmente hardcodeados)

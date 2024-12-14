@@ -7,7 +7,8 @@ import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom
+  loadingAtom,
+  vehiclePositionsListAtom
 } from '../atoms';
 import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -37,23 +38,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
 
-
-  const getSvgWithLucideIcon = (IconComponent, bgColor) => {
-    const svgString = renderToStaticMarkup(
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-        <circle 
-          cx="20" 
-          cy="20" 
-          r="20" 
-          fill={bgColor}
-        />
-        <g transform="translate(8, 8)">
-          <IconComponent color="#FFFFFF" size={24} />
-        </g>
-      </svg>
-    );
-    return `data:image/svg+xml;base64,${btoa(svgString)}`;
-  };
 
 
 // Función para generar el SVG con fondo de color personalizado
@@ -112,11 +96,11 @@ const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
       case "ORDENES_CARGADAS":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                  En Almacén
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                En Almacén
+            </div>
+        );
       case "AVERIADO_1":
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-yellow-100 text-black-600 font-medium">
@@ -136,25 +120,41 @@ const StatusBadge = ({ status }) => {
           </div>
         );
       case "EN_MANTENIMIENTO":
-      case "EN_REPARACION":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                  En Mantenimiento
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#2174a4] text-[#9dc4db]">
+                En Mantenimiento
+            </div>
+        );
       case "EN_ESPERA_EN_OFICINA":
       case "LISTO_PARA_RETORNO":
-      case "EN_REEMPLAZO":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                 En Espera
             </div>
         );
       case "EN_TRANSITO_ORDEN":
-      case "HACIA_ALMACEN":
+      
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-            En Tránsito
+            Atendiendo orden
+          </div>
+        );
+      case "HACIA_ALMACEN":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#608272] text-[#f1f1f1]">
+            Hacia almacén
+          </div>
+        );
+      case "EN_REEMPLAZO":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
+            En Reemplazo
+          </div>
+        );
+      case "EN_REPARACION":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
+            En Reparación
           </div>
         );
       default:
@@ -172,6 +172,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const mapRef = useRef(null);
   const popupsRef = useRef({});
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
+  const [vehiclePositionsList, setVehiclePositionsList] = useAtom(vehiclePositionsListAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
@@ -224,11 +225,11 @@ const VehicleMap = ({ simulationStatus }) => {
   
   const animatePositions = () => {
     // Inicio de la función de animación
-    console.log('--- Iniciando animatePositions ---');
+    //console.log('--- Iniciando animatePositions ---');
   
     // Verificar si todas las referencias necesarias están disponibles.
     if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) {
-      console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
+      //console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
       return;
     }
   
@@ -237,16 +238,16 @@ const VehicleMap = ({ simulationStatus }) => {
     const elapsed = now - animationStartRef.current;
     const t = Math.min(elapsed / animationDuration, 1); // 't' varía de 0 a 1
   
-    console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
-    console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
-    console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
+    //console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
+    //console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
+    //console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
   
     // Convertir FeatureCollection a mapas para fácil acceso por vehicleCode.
     const startMap = featuresToMap(startPositionsRef.current);
     const endMap = featuresToMap(endPositionsRef.current);
   
-    console.log('Mapa de posiciones iniciales:', startMap);
-    console.log('Mapa de posiciones finales:', endMap);
+    //console.log('Mapa de posiciones iniciales:', startMap);
+    //console.log('Mapa de posiciones finales:', endMap);
   
     // Crear un nuevo mapa para almacenar las posiciones interpoladas.
     const interpolatedMap = {};
@@ -263,15 +264,15 @@ const VehicleMap = ({ simulationStatus }) => {
       }
   
       // Log de las coordenadas de inicio y fin del vehículo.
-      console.log(`Vehículo ID: ${id}`);
+      /*console.log(`Vehículo ID: ${id}`);
       console.log(`  Posición de inicio: [${startCoord[0]}, ${startCoord[1]}]`);
-      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);
+      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);*/
   
       // Interpolar entre la posición de inicio y final usando 't'.
       const newCoord = interpolatePosition(startCoord, endCoord, t);
   
       // Log de la nueva coordenada interpolada.
-      console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
+      //console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
   
       // Actualizar el mapa interpolado con la nueva posición del vehículo.
       interpolatedMap[id] = {
@@ -285,36 +286,36 @@ const VehicleMap = ({ simulationStatus }) => {
   
     // Convertir el mapa interpolado de vuelta a FeatureCollection.
     const interpolatedData = mapToFeatures(interpolatedMap);
-    console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
+    //console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
   
     // Actualizar la referencia de posiciones actuales con los datos interpolados.
     currentPositionsRef.current = interpolatedData;
-    console.log('Referencias actualizadas con datos interpolados.');
+    //console.log('Referencias actualizadas con datos interpolados.');
   
     // Obtener la fuente de datos de vehículos en el mapa.
     const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
     if (vehiclesSource) {
       // Actualizar los datos de la fuente con las posiciones interpoladas.
       vehiclesSource.setData(interpolatedData);
-      console.log('Fuente de vehículos actualizada con datos interpolados.');
+      //console.log('Fuente de vehículos actualizada con datos interpolados.');
     } else {
-      console.warn('Fuente de vehículos no encontrada en el mapa.');
+      //console.warn('Fuente de vehículos no encontrada en el mapa.');
     }
   
     // Determinar si la animación debe continuar o finalizar.
     if (t < 1) {
-      console.log('Animación en progreso. Solicitando el siguiente frame.');
+      //console.log('Animación en progreso. Solicitando el siguiente frame.');
       currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
     } else {
-      console.log('Animación completada.');
+      //console.log('Animación completada.');
       // Actualizar las referencias de posición final para futuras animaciones.
       positionsRef.current = endPositionsRef.current;
       currentPositionsRef.current = endPositionsRef.current;
-      console.log('Referencias de posición actualizadas con posiciones finales.');
+      //console.log('Referencias de posición actualizadas con posiciones finales.');
     }
   
     // Fin de la función de animación
-    console.log('--- Finalizando animatePositions ---');
+    //console.log('--- Finalizando animatePositions ---');
   };
   
   
@@ -493,6 +494,8 @@ const VehicleMap = ({ simulationStatus }) => {
     };
     console.log('Datos del WebSocket procesados:', updatedData);
     updatePopups(updatedData);
+    setPositions(updatedData);
+    //updateVehiclePositions(updatedData);
   
     // Si no teníamos posiciones anteriores (primer mensaje)
     if (!positionsRef.current || !positionsRef.current.features) {
@@ -526,7 +529,8 @@ const VehicleMap = ({ simulationStatus }) => {
   
     // Iniciar la animación
     currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
-  }, [setPositions]);
+    setVehiclePositionsList(updatedData);
+  }, [setPositions, setVehiclePositionsList]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
@@ -1356,7 +1360,7 @@ const VehicleMap = ({ simulationStatus }) => {
           }
         }
       } catch (error) {
-        console.error('Error al actualizar ubicaciones:', error);
+        console.log('Error al actualizar ubicaciones:', error);
         setError('Error al actualizar ubicaciones en el mapa');
       }
     };
@@ -1667,8 +1671,8 @@ const VehicleMap = ({ simulationStatus }) => {
       mapRef.current.flyTo({
         center: followLocation, // Coordenadas de destino
         zoom: 9, // Nivel de zoom deseado (ajusta según necesidad)
-        speed: 2, // Velocidad del vuelo (opcional)
-        curve: 1, // Curva del vuelo (opcional)
+        speed: 4, // Velocidad del vuelo (opcional)
+        //curve: 1, // Curva del vuelo (opcional)
         easing: (t) => t, // Efecto de suavizado (opcional)
       });
       setFollowLocation(null)
@@ -1697,6 +1701,8 @@ const VehicleMap = ({ simulationStatus }) => {
       if (mapRef.current.getSource(sourceIdBlockedRoutes)) {
         mapRef.current.removeSource(sourceIdBlockedRoutes); // Eliminar la fuente si existe
       }
+    }
+    else{
       
     }
     

@@ -61,7 +61,8 @@ export default function ModalVehiculo({vehicle}){
                 }
                 const data = await response.json();
                 const officeCities = data.features
-                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)) // Filtra los no excluidos
+                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)&&
+                    !feature.properties.ubigeo.startsWith("TEMP")) // Filtra los no excluidos
                     .map((feature) => feature.properties.name) // Extrae los nombres
                     .sort((a, b) => a.localeCompare(b));
                 const warehouseCities = data.features
@@ -236,7 +237,7 @@ export default function ModalVehiculo({vehicle}){
                 <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full" >
                     {vehicle&&vehicle.currentRoute&&vehicle.currentRoute.length>1?
                     vehicle.currentRoute.map((location, index) => (
-                        <Fragment key={index}>
+                        <div key={index} className="flex flex-row gap-2">
                             {index!==0&&
                                 <div className="flex flex-col justify-center mx-3 px-2">
                                     <ArrowRight key={"arrow-"+index}/>
@@ -290,7 +291,7 @@ export default function ModalVehiculo({vehicle}){
                                 }
                             </div>
                             }
-                        </Fragment>
+                        </div>
                     )
                     )
                     :

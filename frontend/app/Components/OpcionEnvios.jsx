@@ -10,7 +10,7 @@ import { FixedSizeList as List } from 'react-window';
 import ModalEnvios from "./ModalEnvios";
 import ModalRutaVehiculoEnvio from "./ModalRutaVehiculoEnvio";
 import {parseDate, getLocalTimeZone} from "@internationalized/date";
-
+import ShipmentStats from "./ShipmentStats";
 
 
 export default function OpcionEnvios() {
@@ -55,7 +55,9 @@ export default function OpcionEnvios() {
                 }
                 const data = await response.json();
                 const officeCities = data.features
-                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)) // Filtra los no excluidos
+                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)&& // Excluye los ubigeos específicos
+                    !feature.properties.ubigeo.startsWith("TEMP") // Excluye los ubigeos temporales
+                ) // Filtra los no excluidos
                     .map((feature) => feature.properties.name) // Extrae los nombres
                     .sort((a, b) => a.localeCompare(b));
                 const warehouseCities = data.features
@@ -274,6 +276,9 @@ export default function OpcionEnvios() {
                     <div className="text-right text-sm text-[#939393]">
                         Cantidad de envíos: {shipmentsCount}
                     </div>
+
+                    <ShipmentStats/>
+
                     <div className="h-full w-full">
                         {!hasSearchResults && isSearching ? (
                             <NoResultsMessage />

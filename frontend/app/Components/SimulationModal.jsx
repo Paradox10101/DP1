@@ -171,6 +171,7 @@ export default function SimulationModal() {
           setSimulationType(selectedType); // Guardar el tipo de simulación
           setSimulationStatus('running');
           setIsOpen(false);
+          window.dispatchEvent(new Event('newSimulation'));
         }
       } catch (error) {
         console.error('Error starting simulation:', error);

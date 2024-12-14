@@ -1,7 +1,6 @@
 package com.odiparpack.models;
 
 import com.google.gson.*;
-import com.google.ortools.constraintsolver.*;
 import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.SimulationRouter;
@@ -20,11 +19,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
-import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static java.lang.Math.abs;
 
 public class SimulationState {
@@ -84,6 +81,8 @@ public class SimulationState {
     private int averiasTipo1 = 0;
     private int averiasTipo2 = 0;
     private int averiasTipo3 = 0;
+    private double totalCapacidadEfectivaOficina = 0.0;
+    private int contadorMedicionesOficina = 0;
 
     private Duration collapseThresholdDuration = null;
 
@@ -1111,7 +1110,7 @@ public class SimulationState {
 
             // Procesar vehículos que necesitan reemplazo por averia
             if (!vehiclesNeedingReplacement.isEmpty()) {
-                procesarProcesoReemplazo(vehiclesNeedingReplacement);
+                procesarReemplazo(vehiclesNeedingReplacement);
             }
 
             // Vehiculos necesitan ruta de regreso a almacen mas cercano
@@ -1233,11 +1232,13 @@ public class SimulationState {
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
-        totalOrdersCount2++;
+        //totalOrdersCount2++;
     }
 
     public int getTotalOrdersCount2(){
-        return totalOrdersCount2;
+        return (int) orders.stream()
+                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED)
+                .count();
     }
 
     public void guardarPedidosDiarios() {
@@ -1259,6 +1260,39 @@ public class SimulationState {
     }
     public List<Integer> getOrderbyDays(){
         return orderbyDays;
+    }
+
+    // Método para actualizar la capacidad efectiva de oficinas
+    public void updateWarehouseEffectiveCapacity() {
+        double totalCapacidadUsada = 0;
+        double totalCapacidadMaxima = 0;
+
+        for (Map.Entry<String, Location> entry : locations.entrySet()) {
+            String ubigeo = entry.getKey();
+            Location location = entry.getValue();
+            int maxCapacity = location.getWarehouseCapacity();
+
+            if (maxCapacity > 0) {
+                int currentCapacity = warehouseManager.getCurrentCapacity(ubigeo);
+                totalCapacidadUsada += maxCapacity - currentCapacity;
+                totalCapacidadMaxima += maxCapacity;
+            }
+        }
+
+        if (totalCapacidadMaxima > 0) {
+            double capacidadEfectiva = (totalCapacidadUsada / totalCapacidadMaxima) * 100;
+            totalCapacidadEfectivaOficina += capacidadEfectiva;
+            contadorMedicionesOficina++;
+            logger.info("Capacidad efectiva de oficinas actual: " + capacidadEfectiva + "%");
+        }
+    }
+
+    // Método para obtener el promedio acumulado
+    public double getAverageWarehouseEffectiveCapacity() {
+        if (contadorMedicionesOficina == 0) {
+            return 0.0;
+        }
+        return totalCapacidadEfectivaOficina / contadorMedicionesOficina;
     }
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
@@ -1321,56 +1355,15 @@ public class SimulationState {
         }
     }
 
-    private void procesarProcesoReemplazo(List<Vehicle> brokenVehicles) {
-        CompletableFuture.runAsync(() -> iniciarProcesoReemplazoAveriados(brokenVehicles),
-                SimulationRunner.getComputeIntensiveExecutor());
-    }
-
-    public static List<List<RouteRequest>> groupRoutesWithoutRepetitions(List<RouteRequest> allRoutes) {
-        List<List<RouteRequest>> groups = new ArrayList<>();
-        Set<String> processedRoutes = new HashSet<>();
-
-        // Filtrar rutas duplicadas
-        List<RouteRequest> uniqueRoutes = allRoutes.stream()
-                .filter(route -> {
-                    String key = buildRouteKey(route.start, route.end);
-                    if (processedRoutes.contains(key)) {
-                        return false;
-                    } else {
-                        processedRoutes.add(key);
-                        return true;
+    private void procesarReemplazo(List<Vehicle> brokenVehicles) {
+        CompletableFuture.runAsync(() -> {
+                    try {
+                        iniciarProcesoReemplazoAveriados(brokenVehicles);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                })
-                .collect(Collectors.toList());
-
-        Set<String> usedOrigins = new HashSet<>();
-        Set<String> usedDestinations = new HashSet<>();
-
-        List<RouteRequest> currentGroup = new ArrayList<>();
-
-        for (RouteRequest route : uniqueRoutes) {
-            if (!usedOrigins.contains(route.start) && !usedDestinations.contains(route.end)) {
-                currentGroup.add(route);
-                usedOrigins.add(route.start);
-                usedDestinations.add(route.end);
-            } else {
-                // Si el origen o destino ya están usados, iniciar un nuevo grupo
-                if (!currentGroup.isEmpty()) {
-                    groups.add(new ArrayList<>(currentGroup));
-                }
-                currentGroup.clear();
-                usedOrigins.clear();
-                usedDestinations.clear();
-                // Añadir la ruta actual al nuevo grupo
-                currentGroup.add(route);
-                usedOrigins.add(route.start);
-                usedDestinations.add(route.end);
-            }
-        }
-        if (!currentGroup.isEmpty()) {
-            groups.add(currentGroup);
-        }
-        return groups;
+                },
+                SimulationRunner.getComputeIntensiveExecutor());
     }
 
     private void extendMatrixForDummy(int dummyIndex, int originalIndex) {
@@ -1470,7 +1463,7 @@ public class SimulationState {
     }
 
 
-    private void iniciarProcesoReemplazoAveriados(List<Vehicle> brokenVehicles) {
+    private void iniciarProcesoReemplazoAveriados(List<Vehicle> brokenVehicles) throws InterruptedException {
         // Obtener destinos únicos de las órdenes
         Set<String> destinationSet = new HashSet<>();
         for (Vehicle vehicle : brokenVehicles) {
@@ -1480,7 +1473,7 @@ public class SimulationState {
 
         // Calcular las mejores rutas para cada destino
         RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(currentTimeMatrix));
-        Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
+        Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations, false);
 
         // Determinar el almacén más cercano para cada vehículo
         for (Vehicle vehicle : brokenVehicles) {
@@ -1591,7 +1584,13 @@ public class SimulationState {
     }
 
     private void procesarProcesoRegresoAlmacen(List<Vehicle> vehiclesNeedingNewRoutes) {
-        new Thread(() -> initiateReturnToWarehouseProcess(vehiclesNeedingNewRoutes)).start();
+        new Thread(() -> {
+            try {
+                initiateReturnToWarehouseProcess(vehiclesNeedingNewRoutes);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     private void checkAndUpdateMaintenanceStatus(Vehicle vehicle) {
@@ -1906,6 +1905,10 @@ public class SimulationState {
         return requestGroups;
     }
 
+    public WarehouseManager getWarehouseManager() {
+        return this.warehouseManager;
+    }
+
     public enum LocationType {
         ORIGIN,
         DESTINATION
@@ -1997,7 +2000,7 @@ public class SimulationState {
         return vehicleAssignmentsPerOrder;
     }
 
-    private void initiateReturnToWarehouseProcess(List<Vehicle> vehicles) {
+    private void initiateReturnToWarehouseProcess(List<Vehicle> vehicles) throws InterruptedException {
         // Obtener destinos únicos de las oficinas
         Set<String> destinationSet = new HashSet<>();
         for (Vehicle vehicle : vehicles) {
@@ -2007,7 +2010,7 @@ public class SimulationState {
 
         // Calcular las mejores rutas para cada destino
         RouteService routeService = new RouteService(RouteUtils.deepCopyLocationIndices(getLocationIndices()), RouteUtils.deepCopyTimeMatrix(currentTimeMatrix));
-        Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations);
+        Map<String, Route> bestRoutes = routeService.findBestRoutes(getAlmacenesPrincipales(), destinations, false);
 
         // Paso 5: Determinar el almacén más cercano para cada vehículo
         for (Vehicle vehicle : vehicles) {
@@ -2064,9 +2067,10 @@ public class SimulationState {
         for (Order order : orders) {
             if (order.getStatus() == Order.OrderStatus.PENDING_PICKUP) {
                 if (order.isReadyForDelivery(currentTime)) {
-                    order.setDelivered(currentTime);
+                    order.setDelivered(currentTime);// Aqui se marca como ENTREGADO
                     // Incrementar la capacidad del almacén de destino cuando el pedido se marca como entregado
                     warehouseManager.increaseCapacity(order.getDestinationUbigeo(), order.getQuantity());
+                    //totalOrdersCount2++;
                 }
             }
         }
