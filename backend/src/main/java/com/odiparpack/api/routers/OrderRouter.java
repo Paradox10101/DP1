@@ -9,13 +9,12 @@ import com.odiparpack.models.*;
 import com.odiparpack.services.LocationService;
 import spark.Spark;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -180,6 +179,86 @@ public class OrderRouter extends BaseRouter {
                 response.status(400);
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("error", "Error en la carga masiva: " + e.getMessage());
+                return jsonResponse;
+            }
+        });
+
+        // Endpoint para obtener métricas de órdenes cargadas
+        Spark.get("/api/v1/orders/metrics", (request, response) -> {
+            response.type("application/json");
+            JsonObject jsonResponse = new JsonObject();
+
+            try {
+                List<Order> orders = OrderRegistry.getAllOrders();
+
+                // Filtrar órdenes que fueron cargadas por el sistema (bulk upload)
+                List<Order> uploadedOrders = orders.stream()
+                        .filter(order -> "SYSTEM".equals(order.getClientId()))
+                        .collect(Collectors.toList());
+
+                if (uploadedOrders.isEmpty()) {
+                    jsonResponse.addProperty("success", true);
+                    jsonResponse.addProperty("count", 0);
+                    jsonResponse.addProperty("firstOrder", "");
+                    jsonResponse.addProperty("lastOrder", "");
+                    return jsonResponse;
+                }
+
+                // Encontrar primera y última orden por fecha de registro
+                Order firstOrder = uploadedOrders.stream()
+                        .min(Comparator.comparing(Order::getOrderTime))
+                        .orElse(null);
+
+                Order lastOrder = uploadedOrders.stream()
+                        .max(Comparator.comparing(Order::getOrderTime))
+                        .orElse(null);
+
+                // Calcular fechas disponibles
+                Set<LocalDate> availableDates = uploadedOrders.stream()
+                        .map(order -> order.getOrderTime().toLocalDate())
+                        .collect(Collectors.toSet());
+
+                // Obtener horas disponibles del primer día
+                List<LocalTime> availableTimes = uploadedOrders.stream()
+                        .filter(order -> order.getOrderTime().toLocalDate().equals(firstOrder.getOrderTime().toLocalDate()))
+                        .map(order -> order.getOrderTime().toLocalTime())
+                        .sorted()
+                        .collect(Collectors.toList());
+
+                // Construir respuesta
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("count", uploadedOrders.size());
+
+                if (firstOrder != null) {
+                    jsonResponse.addProperty("firstOrder", firstOrder.getOrderTime().toString());
+                    jsonResponse.addProperty("firstOrderCode", firstOrder.getOrderCode());
+                }
+
+                if (lastOrder != null) {
+                    jsonResponse.addProperty("lastOrder", lastOrder.getOrderTime().toString());
+                    jsonResponse.addProperty("lastOrderCode", lastOrder.getOrderCode());
+                }
+
+                // Agregar array de fechas disponibles
+                JsonArray datesArray = new JsonArray();
+                availableDates.stream()
+                        .sorted()
+                        .forEach(date -> datesArray.add(date.toString()));
+                jsonResponse.add("availableDates", datesArray);
+
+                // Agregar array de horas disponibles del primer día
+                JsonArray timesArray = new JsonArray();
+                availableTimes.forEach(time -> timesArray.add(time.toString()));
+                jsonResponse.add("availableTimes", timesArray);
+
+                response.status(200);
+                return jsonResponse;
+
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error fetching order metrics", e);
+                response.status(500);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Error al obtener métricas: " + e.getMessage());
                 return jsonResponse;
             }
         });

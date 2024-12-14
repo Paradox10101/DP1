@@ -47,6 +47,14 @@ const configColumns = {
     { key: "fechaInicio", header: "Inicio" },
     { key: "fechaFin", header: "Fin" },
     { key: "status", header: "Estado" }
+  ],
+  shipment: [
+    { key: "dia", header: "Día" },
+    { key: "hora", header: "Hora" },
+    { key: "origen", header: "Origen" },
+    { key: "destino", header: "Destino" },
+    { key: "cantidad", header: "Cantidad" },
+    { key: "status", header: "Estado" }
   ]
 };
 
@@ -55,6 +63,21 @@ const parseContent = (item, type) => {
   const content = item.content;
   
   switch(type) {
+    case 'shipment': {
+      // Formato: "DD HH:MM, ****** => XXXXXX, N"
+      const match = content.match(/^(\d{2})\s+(\d{2}:\d{2}),\s*(\*{6})\s*=>\s*(\d{6}),\s*(\d+)$/);
+      if (match) {
+        const [, dia, hora, origen, destino, cantidad] = match;
+        return {
+          dia,
+          hora,
+          origen,
+          destino,
+          cantidad
+        };
+      }
+      return {};
+    }
     case 'vehiculos': {
       const [codigo, tipo, capacidad, ubigeoVehiculo] = content.split(',');
       return {

@@ -80,15 +80,18 @@ public class SimulationRouter extends BaseRouter {
                 JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
                 String typeStr = body.get("type").getAsString(); // 'semanal', 'colapso', 'diaria'
 
+                // Verificar si se usa órdenes cargadas
+                boolean useUploadedOrders = body.has("useUploadedOrders") &&
+                        body.get("useUploadedOrders").getAsBoolean();
+
                 // Usar el enum para manejar el tipo de simulación
                 SimulationType simulationType = SimulationType.fromString(typeStr);
-
                 this.simulationType = simulationType;
 
                 LocalDateTime startDateTime;
                 LocalDateTime endDateTime = null;
 
-                if (simulationType == SimulationType.DAILY) {
+                if (simulationType == SimulationType.DAILY || useUploadedOrders) {
                     // Obtener las órdenes registradas
                     List<Order> registeredOrders = OrderRegistry.getAllOrders().stream()
                             .filter(order -> order.getStatus() == Order.OrderStatus.REGISTERED)
@@ -140,13 +143,13 @@ public class SimulationRouter extends BaseRouter {
                     // Reiniciar el estado si estaba apagado
                     if (simulationState.isStopped()) {
                         System.out.println("Simulacion anterior detectada, reseteando estado.");
-                        simulationController.resetSimulationState(startDateTime, endDateTime, simulationType);
+                        simulationController.resetSimulationState(startDateTime, endDateTime, simulationType, useUploadedOrders);
                         // Resetear las capacidades de los almacenes
                         simulationState.getWarehouseManager().resetCapacities();
                     }
                 } else {
                     logger.info("Intentando inicializar simulacion.");
-                    simulationController.initializeSimulation(startDateTime, endDateTime, simulationType);
+                    simulationController.initializeSimulation(startDateTime, endDateTime, simulationType, useUploadedOrders);
                     // Resetear las capacidades de los almacenes para la nueva simulación
                     simulationState.getWarehouseManager().resetCapacities();
                 }
@@ -219,10 +222,12 @@ public class SimulationRouter extends BaseRouter {
             isSimulationRunning = false;
             isShutdown = true;
 
-            if (simulationType == SimulationType.DAILY) {
+            // Limpiar registro de órdenes al detener la simulación
+            OrderRegistry.clearOrders();
+            /*if (simulationType == SimulationType.DAILY) {
                 // Limpiar registro de órdenes al detener la simulación
                 OrderRegistry.clearOrders();
-            }
+            }*/
 
             response.status(200);
             this.simulationType = null;

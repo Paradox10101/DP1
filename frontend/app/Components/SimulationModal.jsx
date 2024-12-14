@@ -5,7 +5,11 @@ import {
   ModalBody, 
   Button, 
   Select, 
-  SelectItem
+  SelectItem,
+  Tabs,
+  Tab,
+  Card,
+  CardBody
 } from "@nextui-org/react";
 import { useState, useMemo, useEffect } from "react";
 import { simulationStatusAtom, simulationTypeAtom, showSimulationModalAtom } from "@/atoms/simulationAtoms";
@@ -19,7 +23,15 @@ export default function SimulationModal() {
   const [selectedTime, setSelectedTime] = useState("");
   const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
   const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
+  const [selectedTab, setSelectedTab] = useState("preset");
   
+  // Estados para órdenes cargadas
+  const [uploadedOrders, setUploadedOrders] = useState({
+    count: 0,
+    firstOrder: null,
+    lastOrder: null
+  });
+
   const [availableDays, setAvailableDays] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [firstAvailableDateTime, setFirstAvailableDateTime] = useState(null);
@@ -28,18 +40,69 @@ export default function SimulationModal() {
     ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
     : process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  // Efecto para cargar información de órdenes subidas (simulado)
+  useEffect(() => {
+    const fetchOrderMetrics = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/orders/metrics`);
+        const data = await response.json();
+        
+        if (data.success) {
+          // Actualizar estados con la información recibida
+          setUploadedOrders({
+            count: data.count,
+            firstOrder: data.firstOrder ? new Date(data.firstOrder) : null,
+            lastOrder: data.lastOrder ? new Date(data.lastOrder) : null,
+            firstOrderCode: data.firstOrderCode,
+            lastOrderCode: data.lastOrderCode
+          });
+  
+          // Actualizar fechas disponibles
+          if (data.availableDates) {
+            setAvailableDays(data.availableDates);
+          }
+  
+          // Actualizar horas disponibles
+          if (data.availableTimes) {
+            setAvailableTimes(data.availableTimes.map(time => {
+              const [hour, minute] = time.split(':');
+              const hourNum = parseInt(hour);
+              const ampm = hourNum >= 12 ? 'PM' : 'AM';
+              const hour12 = hourNum % 12 || 12;
+              return `${hour12}:${minute} ${ampm}`;
+            }));
+          }
+  
+          // Establecer primera fecha/hora disponible
+          if (data.firstOrder) {
+            setFirstAvailableDateTime({
+              date: data.availableDates[0],
+              time: data.availableTimes[0]
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching order metrics:', error);
+      }
+    };
+  
+    if (selectedTab === "uploaded") {
+      fetchOrderMetrics();
+    }
+  }, [selectedTab, API_BASE_URL]);
+
   // Generar opciones de mes-año
   const monthOptions = useMemo(() => {
     const months = [];
-    const startDate = new Date(2024, 6); // Junio 2024
-    const endDate = new Date(2026, 11);   // Noviembre 2026
+    const startDate = new Date(2024, 6);
+    const endDate = new Date(2026, 11);
 
     while (startDate <= endDate) {
       const monthYear = startDate.toLocaleDateString('es', { 
         month: 'long', 
         year: 'numeric' 
       });
-      const value = startDate.toISOString().split('T')[0].substring(0, 7); // YYYY-MM
+      const value = startDate.toISOString().split('T')[0].substring(0, 7);
       months.push({ value, label: monthYear });
       startDate.setMonth(startDate.getMonth() + 1);
     }
@@ -107,6 +170,7 @@ export default function SimulationModal() {
     }
   };
 
+
   // Función para generar las horas disponibles
   const generateTimeOptions = (startTime) => {
     // Convertir la hora inicial a formato de 24 horas
@@ -148,37 +212,151 @@ export default function SimulationModal() {
   };
 
   const handleStart = async () => {
-    if (selectedType && selectedDate && selectedTime) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/simulation/start`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            type: selectedType,
-            startDate: selectedDate,
-            startTime: selectedTime
-          })
-        });
-  
-        if (!response.ok) {
-          // Manejar error
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to start simulation');
-        } else {
-          // Simulación iniciada exitosamente
-          setSimulationType(selectedType); // Guardar el tipo de simulación
-          setSimulationStatus('running');
-          setIsOpen(false);
-          window.dispatchEvent(new Event('newSimulation'));
+    const payload = selectedTab === "preset" 
+      ? {
+          type: selectedType,
+          startDate: selectedDate,
+          startTime: selectedTime
         }
-      } catch (error) {
-        console.error('Error starting simulation:', error);
-        // Manejar error (por ejemplo, mostrar una notificación)
+      : {
+          type: selectedType,
+          useUploadedOrders: true
+        };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/simulation/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to start simulation');
+      } else {
+        setSimulationType(selectedType);
+        setSimulationStatus('running');
+        setIsOpen(false);
+        window.dispatchEvent(new Event('newSimulation'));
       }
+    } catch (error) {
+      console.error('Error starting simulation:', error);
     }
   };
+
+  const renderPresetTab = () => (
+    <div className="flex flex-col gap-6">
+      <Select
+        label="Tipo"
+        placeholder="Selecciona el tipo de simulación"
+        selectedKeys={selectedType ? [selectedType] : []}
+        onChange={(e) => setSelectedType(e.target.value)}
+      >
+        <SelectItem key="semanal" value="semanal">Semanal</SelectItem>
+        <SelectItem key="colapso" value="colapso">Hasta colapso</SelectItem>
+      </Select>
+
+      <div className="flex gap-2">
+        <Select
+          label="Mes"
+          placeholder="Selecciona el mes"
+          className="flex-1"
+          selectedKeys={selectedMonth ? [selectedMonth] : []}
+          onChange={(e) => handleMonthChange(e.target.value)}
+        >
+          {monthOptions.map(({value, label}) => (
+            <SelectItem key={value} value={value}>
+              {label}
+            </SelectItem>
+          ))}
+        </Select>
+
+        <Select
+          label="Día"
+          placeholder="Selecciona el día"
+          className="flex-1"
+          selectedKeys={selectedDate ? [selectedDate] : []}
+          onChange={(e) => handleDateChange(e.target.value)}
+          isDisabled={!selectedMonth || availableDays.length === 0}
+        >
+          {availableDays.map((day) => {
+            const [year, month, date] = day.split('-').map(Number);
+            const dateObj = new Date(year, month - 1, date);
+            return (
+              <SelectItem key={day} value={day}>
+                {dateObj.toLocaleDateString('es', { weekday: 'short', day: 'numeric' })}
+              </SelectItem>
+            );
+          })}
+        </Select>
+      </div>
+
+      <Select
+        label="Hora"
+        placeholder="Selecciona la hora"
+        selectedKeys={selectedTime ? [selectedTime] : []}
+        onChange={(e) => setSelectedTime(e.target.value)}
+        isDisabled={!selectedDate || availableTimes.length === 0}
+      >
+        {availableTimes.map((time) => (
+          <SelectItem key={time} value={time}>
+            {time}
+          </SelectItem>
+        ))}
+      </Select>
+    </div>
+  );
+
+  const renderUploadedTab = () => (
+    <div className="flex flex-col gap-6">
+      <Select
+        label="Tipo"
+        placeholder="Selecciona el tipo de simulación"
+        selectedKeys={selectedType ? [selectedType] : []}
+        onChange={(e) => setSelectedType(e.target.value)}
+      >
+        <SelectItem key="semanal" value="semanal">Semanal</SelectItem>
+        <SelectItem key="colapso" value="colapso">Hasta colapso</SelectItem>
+      </Select>
+
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between">
+              <span className="text-default-500">Órdenes cargadas:</span>
+              <span className="font-semibold">{uploadedOrders.count}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-default-500">Primera orden:</span>
+              <span className="font-semibold">
+                {uploadedOrders.firstOrder?.toLocaleDateString('es', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-default-500">Última orden:</span>
+              <span className="font-semibold">
+                {uploadedOrders.lastOrder?.toLocaleDateString('es', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
 
   return (
     <Modal 
@@ -198,64 +376,17 @@ export default function SimulationModal() {
           </div>
         </ModalHeader>
         <ModalBody className="gap-6 py-6">
-          <Select
-            label="Tipo"
-            placeholder="Selecciona el tipo de simulación"
-            selectedKeys={selectedType ? [selectedType] : []}
-            onChange={(e) => setSelectedType(e.target.value)}
+          <Tabs 
+            selectedKey={selectedTab}
+            onSelectionChange={setSelectedTab}
           >
-            <SelectItem key="semanal" value="semanal">Semanal</SelectItem>
-            <SelectItem key="colapso" value="colapso">Hasta colapso</SelectItem>
-          </Select>
-
-          <div className="flex gap-2">
-            <Select
-              label="Mes"
-              placeholder="Selecciona el mes"
-              className="flex-1"
-              selectedKeys={selectedMonth ? [selectedMonth] : []}
-              onChange={(e) => handleMonthChange(e.target.value)}
-            >
-              {monthOptions.map(({value, label}) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </Select>
-
-            <Select
-              label="Día"
-              placeholder="Selecciona el día"
-              className="flex-1"
-              selectedKeys={selectedDate ? [selectedDate] : []}
-              onChange={(e) => handleDateChange(e.target.value)}
-              isDisabled={!selectedMonth || availableDays.length === 0}
-            >
-              {availableDays.map((day) => {
-                const [year, month, date] = day.split('-').map(Number);
-                const dateObj = new Date(year, month - 1, date);
-                return (
-                  <SelectItem key={day} value={day}>
-                    {dateObj.toLocaleDateString('es', { weekday: 'short', day: 'numeric' })}
-                  </SelectItem>
-                );
-              })}
-            </Select>
-          </div>
-
-          <Select
-            label="Hora"
-            placeholder="Selecciona la hora"
-            selectedKeys={selectedTime ? [selectedTime] : []}
-            onChange={(e) => setSelectedTime(e.target.value)}
-            isDisabled={!selectedDate || availableTimes.length === 0}
-          >
-            {availableTimes.map((time) => (
-              <SelectItem key={time} value={time}>
-                {time}
-              </SelectItem>
-            ))}
-          </Select>
+            <Tab key="preset" title="Fecha predeterminada">
+              {renderPresetTab()}
+            </Tab>
+            <Tab key="uploaded" title="Órdenes cargadas">
+              {renderUploadedTab()}
+            </Tab>
+          </Tabs>
 
           <div className="flex justify-between gap-2 pt-4">
             <Button 
@@ -270,7 +401,11 @@ export default function SimulationModal() {
               color="primary" 
               className="flex-1"
               onClick={handleStart}
-              disabled={!selectedType || !selectedDate || !selectedTime}
+              disabled={
+                !selectedType || 
+                (selectedTab === "preset" && (!selectedDate || !selectedTime)) ||
+                (selectedTab === "uploaded" && !uploadedOrders.count)
+              }
             >
               Iniciar
             </Button>

@@ -133,6 +133,32 @@ const formatGuideConfigs = {
       "Las fechas deben ser válidas para el año en curso",
       "Las horas deben estar entre 00:00 y 23:59"
     ]
+  },
+  shipment: {
+    structure: {
+      format: "DD HH:MM, ****** => UBIGEO, CANTIDAD",
+      fields: [
+        { label: "DD", desc: "día del mes (01-31)" },
+        { label: "HH:MM", desc: "hora y minuto del registro" },
+        { label: "******", desc: "ubigeo origen (6 asteriscos)" },
+        { label: "=>", desc: "separador de dirección" },
+        { label: "UBIGEO", desc: "ubigeo destino (6 dígitos)" },
+        { label: "CANTIDAD", desc: "cantidad de paquetes (número positivo)" }
+      ]
+    },
+    examples: [
+      "01 00:01, ****** => 190201, 2",
+      "01 00:09, ****** => 120301, 10",
+      "01 00:13, ****** => 061301, 6"
+    ],
+    validations: [
+      "El archivo debe tener extensión .txt",
+      "El día debe estar entre 01 y 31",
+      "La hora debe estar en formato 24 horas (00:00 - 23:59)",
+      "El ubigeo destino debe tener 6 dígitos",
+      "La cantidad debe ser un número entero positivo",
+      "La línea debe seguir exactamente el formato especificado"
+    ]
   }
 };
 

@@ -144,9 +144,12 @@ public class SimulationController {
         });
     }
 
-    public void initializeSimulation(LocalDateTime startDateTime, LocalDateTime endDateTime, SimulationRouter.SimulationType type) {
+    public void initializeSimulation(LocalDateTime startDateTime,
+                                     LocalDateTime endDateTime,
+                                     SimulationRouter.SimulationType type,
+                                     boolean useUploadedOrders) {
         try {
-            this.simulationState = initializeSimulationState(startDateTime, endDateTime, type);
+            this.simulationState = initializeSimulationState(startDateTime, endDateTime, type, useUploadedOrders);
 
             // Actualizar los routers
             routers.forEach(router -> {
@@ -170,13 +173,13 @@ public class SimulationController {
     }
 
     public void resetSimulationState(LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                     SimulationRouter.SimulationType type) {
+                                     SimulationRouter.SimulationType type, boolean useUploadedOrders) {
         if (simulationExecutor != null && !simulationExecutor.isShutdown()) {
             simulationExecutor.shutdownNow();
         }
 
         simulationExecutor = null;
-        SimulationState newState = createNewSimulationState(startDateTime, endDateTime, type);
+        SimulationState newState = createNewSimulationState(startDateTime, endDateTime, type, useUploadedOrders);
         this.simulationState = newState;
 
         // Actualizar los routers
@@ -189,9 +192,12 @@ public class SimulationController {
         });
     }
 
-    private SimulationState createNewSimulationState(LocalDateTime startDateTime, LocalDateTime endDateTime, SimulationRouter.SimulationType type) {
+    private SimulationState createNewSimulationState(LocalDateTime startDateTime,
+                                                     LocalDateTime endDateTime,
+                                                     SimulationRouter.SimulationType type,
+                                                     boolean useUploadedOrders) {
         try {
-            return initializeSimulationState(startDateTime, endDateTime, type);
+            return initializeSimulationState(startDateTime, endDateTime, type, useUploadedOrders);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create new SimulationState", e);
         }

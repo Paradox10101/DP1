@@ -1,6 +1,11 @@
+// useShipmentUpload.js
 import { useState } from 'react';
 
-export const useFileUpload = () => {
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
+  : process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export const useShipmentUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [validationErrors, setValidationErrors] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -8,21 +13,26 @@ export const useFileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [previewData, setPreviewData] = useState([]);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [fileYearMonth, setFileYearMonth] = useState(null);
 
-  const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
-    : process.env.NEXT_PUBLIC_API_BASE_URL;
+  // Función para extraer año y mes del nombre del archivo
+  const extractYearMonthFromFilename = (filename) => {
+    const match = filename.match(/ventas(\d{4})(\d{2})\.txt$/i);
+    if (match) {
+      const [, year, month] = match;
+      return { year: parseInt(year), month: parseInt(month) };
+    }
+    return null;
+  };
 
   const validateFile = (file) => {
     const errors = [];
     
-    const validExtensions = ['.csv', '.txt'];
-    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-    if (!validExtensions.includes(fileExtension)) {
-      errors.push('El archivo debe tener extensión .csv o .txt');
+    if (!file.name.endsWith('.txt')) {
+      errors.push('El archivo debe tener extensión .txt');
     }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       errors.push('El archivo excede el tamaño máximo permitido (10MB)');
     }
@@ -30,89 +40,47 @@ export const useFileUpload = () => {
     return errors;
   };
 
-  const formatDateTime = (time) => {
-    const today = new Date();
-    const [hours, minutes] = time.split(':');
+  const validateShipmentLine = (line) => {
+    const regex = /^(\d{2})\s+(\d{2}):(\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/;
+    const match = line.trim().match(regex);
     
-    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+    if (!match) return false;
     
-    return {
-      dateFormatted: date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      }),
-      timeFormatted: date.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      }),
-      isoDate: date.toISOString()
-    };
+    const [, day, hour, minute, destinationUbigeo, quantity] = match;
+    
+    const dayNum = parseInt(day);
+    if (dayNum < 1 || dayNum > 31) return false;
+    
+    const hourNum = parseInt(hour);
+    if (hourNum < 0 || hourNum > 23) return false;
+    
+    const minuteNum = parseInt(minute);
+    if (minuteNum < 0 || minuteNum > 59) return false;
+    
+    if (!/^\d{6}$/.test(destinationUbigeo)) return false;
+    
+    const quantityNum = parseInt(quantity);
+    if (quantityNum <= 0) return false;
+    
+    return true;
   };
 
   const parseFileContent = async (file) => {
     try {
       const text = await file.text();
       const lines = text.split('\n')
-        .filter(line => line.trim())
-        .filter(line => line.trim().startsWith('01'));
+        .filter(line => line.trim());
       
       return lines.map((line, index) => {
-        try {
-          // Nuevo regex que solo considera tiempo, ubigeo destino y cantidad
-          const regex = /^(\d{2})\s+(\d{2}:\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/;
-          const match = line.trim().match(regex);
-
-          if (!match) {
-            return {
-              id: index,
-              raw: line,
-              hasError: true,
-              errorMessage: 'Formato de línea inválido',
-              date: '-',
-              time: '-',
-              destinationUbigeo: '-',
-              quantity: '-',
-              status: 'error'
-            };
-          }
-
-          const [, , time, destinationUbigeo, quantity] = match;
-          const { dateFormatted, timeFormatted, isoDate } = formatDateTime(time);
-
-          const hasError = parseInt(quantity) <= 0;
-
-          return {
-            id: index,
-            date: dateFormatted,
-            time: timeFormatted,
-            destinationUbigeo,
-            quantity: parseInt(quantity),
-            hasError,
-            errorMessage: hasError ? 'Datos inválidos' : null,
-            status: hasError ? 'error' : 'valid',
-            rawTime: time,
-            isoDate
-          };
-        } catch (error) {
-          return {
-            id: index,
-            raw: line,
-            hasError: true,
-            errorMessage: 'Error al procesar la línea',
-            date: '-',
-            time: '-',
-            destinationUbigeo: '-',
-            quantity: '-',
-            status: 'error'
-          };
-        }
-      }).sort((a, b) => {
-        if (a.rawTime && b.rawTime) {
-          return a.rawTime.localeCompare(b.rawTime);
-        }
-        return 0;
+        const isValid = validateShipmentLine(line.trim());
+        
+        return {
+          id: index,
+          content: line.trim(),
+          hasError: !isValid,
+          errorMessage: isValid ? null : 'Formato de línea inválido',
+          type: 'shipment'
+        };
       });
     } catch (error) {
       console.error('Error parsing file:', error);
@@ -122,6 +90,11 @@ export const useFileUpload = () => {
 
   const handleFileSelect = (file) => {
     const errors = validateFile(file);
+    
+    // Intentar extraer año y mes del nombre del archivo
+    const yearMonth = extractYearMonthFromFilename(file.name);
+    setFileYearMonth(yearMonth);
+    
     setValidationErrors(errors.length > 0 ? errors : null);
     setSelectedFile(file);
     setUploadStatus(null);
@@ -136,7 +109,7 @@ export const useFileUpload = () => {
     try {
       const parsedData = await parseFileContent(selectedFile);
       if (parsedData.length === 0) {
-        setValidationErrors(['No se encontraron registros para el día 01 en el archivo.']);
+        setValidationErrors(['No se encontraron registros válidos en el archivo.']);
         return;
       }
       setPreviewData(parsedData);
@@ -151,6 +124,42 @@ export const useFileUpload = () => {
     setPreviewData([]);
   };
 
+  // Función auxiliar para convertir el formato de línea a formato del backend
+  const convertToBackendFormat = (line) => {
+    const match = line.match(/^(\d{2})\s+(\d{2}):(\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/);
+    if (!match) return null;
+
+    const [, day, hour, minute, destinationUbigeo, quantity] = match;
+    
+    let year, month;
+
+    // Si tenemos año y mes del nombre del archivo, usarlos
+    if (fileYearMonth) {
+      year = fileYearMonth.year;
+      month = fileYearMonth.month;
+    } else {
+      // Si no, usar fecha actual
+      const now = new Date();
+      year = now.getFullYear();
+      month = now.getMonth() + 1;
+    }
+    
+    // Crear fecha ISO
+    const isoDate = new Date(
+      year,
+      month - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute)
+    ).toISOString();
+
+    return {
+      isoDate,
+      destinationUbigeo,
+      quantity: parseInt(quantity)
+    };
+  };
+
   const handleConfirmUpload = async () => {
     if (!selectedFile || !previewData.length) return;
 
@@ -158,10 +167,10 @@ export const useFileUpload = () => {
     setUploadProgress(0);
 
     try {
-      const validRecords = previewData.filter(record => !record.hasError).map(record => ({
-        ...record,
-        date: record.isoDate
-      }));
+      const validRecords = previewData
+        .filter(record => !record.hasError)
+        .map(record => convertToBackendFormat(record.content))
+        .filter(record => record !== null);
 
       if (validRecords.length === 0) {
         throw new Error('No hay registros válidos para procesar');
@@ -181,7 +190,11 @@ export const useFileUpload = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            validRecords: validRecords
+            validRecords,
+            uploadType: fileYearMonth ? 'historical' : 'current',
+            yearMonth: fileYearMonth ? 
+              `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` : 
+              null
           })
         });
 
@@ -189,18 +202,17 @@ export const useFileUpload = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Error al cargar el archivo');
+          throw new Error(errorData.error || 'Error al cargar el archivo');
         }
 
         const result = await response.json();
-        setUploadProgress(100);
-
-        if (result.failedRecords?.length > 0) {
-          setUploadStatus(result.successfulRecords?.length > 0 ? 'partial' : 'error');
-        } else {
-          setUploadStatus('success');
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Error en el procesamiento del archivo');
         }
 
+        setUploadProgress(100);
+        setUploadStatus(result.failedRecords?.length > 0 ? 'partial' : 'success');
         setIsPreviewMode(false);
         return result;
       } catch (error) {
@@ -225,6 +237,7 @@ export const useFileUpload = () => {
     setUploadProgress(0);
     setPreviewData([]);
     setIsPreviewMode(false);
+    setFileYearMonth(null);
   };
 
   return {
