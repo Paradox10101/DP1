@@ -83,6 +83,13 @@ const DailyOperationsPage = () => {
         />
         <SimulationPanel openReport={onOpen} />
         <MapLegend cornerPosition={"top-20 right-5"} />
+
+        <div className="fixed right-5 bottom-6 w-96 flex flex-col gap-2">
+          <PlannerStatusPanel/>
+          <BlockedRoutesPanel />
+          <BreakdownPanel />
+          <MaintenancePanel />
+        </div>
       </div>
     </>
   )

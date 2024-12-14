@@ -39,23 +39,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'; // Optional: Local development fallback
 
 
-  const getSvgWithLucideIcon = (IconComponent, bgColor) => {
-    const svgString = renderToStaticMarkup(
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-        <circle 
-          cx="20" 
-          cy="20" 
-          r="20" 
-          fill={bgColor}
-        />
-        <g transform="translate(8, 8)">
-          <IconComponent color="#FFFFFF" size={24} />
-        </g>
-      </svg>
-    );
-    return `data:image/svg+xml;base64,${btoa(svgString)}`;
-  };
-
 
 // Función para generar el SVG con fondo de color personalizado
 const getSvgString = (IconComponent, bgColor) => {
@@ -242,11 +225,11 @@ const VehicleMap = ({ simulationStatus }) => {
   
   const animatePositions = () => {
     // Inicio de la función de animación
-    console.log('--- Iniciando animatePositions ---');
+    //console.log('--- Iniciando animatePositions ---');
   
     // Verificar si todas las referencias necesarias están disponibles.
     if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) {
-      console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
+      //console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
       return;
     }
   
@@ -255,16 +238,16 @@ const VehicleMap = ({ simulationStatus }) => {
     const elapsed = now - animationStartRef.current;
     const t = Math.min(elapsed / animationDuration, 1); // 't' varía de 0 a 1
   
-    console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
-    console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
-    console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
+    //console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
+    //console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
+    //console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
   
     // Convertir FeatureCollection a mapas para fácil acceso por vehicleCode.
     const startMap = featuresToMap(startPositionsRef.current);
     const endMap = featuresToMap(endPositionsRef.current);
   
-    console.log('Mapa de posiciones iniciales:', startMap);
-    console.log('Mapa de posiciones finales:', endMap);
+    //console.log('Mapa de posiciones iniciales:', startMap);
+    //console.log('Mapa de posiciones finales:', endMap);
   
     // Crear un nuevo mapa para almacenar las posiciones interpoladas.
     const interpolatedMap = {};
@@ -281,15 +264,15 @@ const VehicleMap = ({ simulationStatus }) => {
       }
   
       // Log de las coordenadas de inicio y fin del vehículo.
-      console.log(`Vehículo ID: ${id}`);
+      /*console.log(`Vehículo ID: ${id}`);
       console.log(`  Posición de inicio: [${startCoord[0]}, ${startCoord[1]}]`);
-      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);
+      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);*/
   
       // Interpolar entre la posición de inicio y final usando 't'.
       const newCoord = interpolatePosition(startCoord, endCoord, t);
   
       // Log de la nueva coordenada interpolada.
-      console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
+      //console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
   
       // Actualizar el mapa interpolado con la nueva posición del vehículo.
       interpolatedMap[id] = {
@@ -303,36 +286,36 @@ const VehicleMap = ({ simulationStatus }) => {
   
     // Convertir el mapa interpolado de vuelta a FeatureCollection.
     const interpolatedData = mapToFeatures(interpolatedMap);
-    console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
+    //console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
   
     // Actualizar la referencia de posiciones actuales con los datos interpolados.
     currentPositionsRef.current = interpolatedData;
-    console.log('Referencias actualizadas con datos interpolados.');
+    //console.log('Referencias actualizadas con datos interpolados.');
   
     // Obtener la fuente de datos de vehículos en el mapa.
     const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
     if (vehiclesSource) {
       // Actualizar los datos de la fuente con las posiciones interpoladas.
       vehiclesSource.setData(interpolatedData);
-      console.log('Fuente de vehículos actualizada con datos interpolados.');
+      //console.log('Fuente de vehículos actualizada con datos interpolados.');
     } else {
-      console.warn('Fuente de vehículos no encontrada en el mapa.');
+      //console.warn('Fuente de vehículos no encontrada en el mapa.');
     }
   
     // Determinar si la animación debe continuar o finalizar.
     if (t < 1) {
-      console.log('Animación en progreso. Solicitando el siguiente frame.');
+      //console.log('Animación en progreso. Solicitando el siguiente frame.');
       currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
     } else {
-      console.log('Animación completada.');
+      //console.log('Animación completada.');
       // Actualizar las referencias de posición final para futuras animaciones.
       positionsRef.current = endPositionsRef.current;
       currentPositionsRef.current = endPositionsRef.current;
-      console.log('Referencias de posición actualizadas con posiciones finales.');
+      //console.log('Referencias de posición actualizadas con posiciones finales.');
     }
   
     // Fin de la función de animación
-    console.log('--- Finalizando animatePositions ---');
+    //console.log('--- Finalizando animatePositions ---');
   };
   
   
@@ -511,6 +494,8 @@ const VehicleMap = ({ simulationStatus }) => {
     };
     console.log('Datos del WebSocket procesados:', updatedData);
     updatePopups(updatedData);
+    setPositions(updatedData);
+    //updateVehiclePositions(updatedData);
   
     // Si no teníamos posiciones anteriores (primer mensaje)
     if (!positionsRef.current || !positionsRef.current.features) {
