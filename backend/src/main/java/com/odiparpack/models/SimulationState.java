@@ -887,13 +887,19 @@ public class SimulationState {
                         .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
                         .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
             }
-            else{
+            else if(order.getArrivedToOfficeTime()!=null){
                 Duration timeElapsed = Duration.between(order.getOrderTime(), order.getArrivedToOfficeTime()).abs();
-                Duration timeRemaining = Duration.between(order.getArrivedToOfficeTime(), order.getDueTime());
+                Duration timeRemaining = Duration.between(order.getArrivedToOfficeTime(), order.getDueTime()).abs();
                 builder.append("\"timeElapsedDays\":").append(Math.abs(timeElapsed.toDays())).append(",")
                         .append("\"timeElapsedHours\":").append(Math.abs(timeElapsed.toHours() % 24)).append(",")
                         .append("\"timeRemainingDays\":").append(Math.abs(timeRemaining.toDays())).append(",")
                         .append("\"timeRemainingHours\":").append(Math.abs(timeRemaining.toHours() % 24));
+            }
+            else{
+                builder.append("\"timeElapsedDays\":").append(0).append(",")
+                        .append("\"timeElapsedHours\":").append(0).append(",")
+                        .append("\"timeRemainingDays\":").append(0).append(",")
+                        .append("\"timeRemainingHours\":").append(0);
             }
         } else {
             Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime).abs();
