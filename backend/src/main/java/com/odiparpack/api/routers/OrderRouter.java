@@ -95,7 +95,7 @@ public class OrderRouter extends BaseRouter {
             }
         });
 
-        Spark.get("/api/v1/orders", (request, response) -> {
+        /*Spark.get("/api/v1/orders", (request, response) -> {
             response.type("application/json");
 
             try {
@@ -139,7 +139,7 @@ public class OrderRouter extends BaseRouter {
                 errorResponse.addProperty("error", "Error al obtener los pedidos: " + e.getMessage());
                 return errorResponse;
             }
-        });
+        });*/
 
         Spark.post("/api/v1/orders/bulk-upload", (request, response) -> {
             response.type("application/json");
@@ -159,7 +159,6 @@ public class OrderRouter extends BaseRouter {
                 for (JsonElement elem : records) {
                     try {
                         JsonObject record = elem.getAsJsonObject();
-                        String clientId = record.get("clientId").getAsString();
 
                         // Parse order datetime
                         String dateTimeStr = record.get("isoDate").getAsString();
@@ -167,7 +166,6 @@ public class OrderRouter extends BaseRouter {
                                 .toLocalDateTime();
 
                         // Obtener información de ubicación
-                        String originUbigeo = record.get("originUbigeo").getAsString();
                         String destinationUbigeo = record.get("destinationUbigeo").getAsString();
                         int quantity = record.get("quantity").getAsInt();
 
@@ -181,12 +179,12 @@ public class OrderRouter extends BaseRouter {
                         // Crear orden
                         Order order = new Order(
                                 OrderRegistry.getNextId(),
-                                originUbigeo,
+                                "******", // origen fijo con asteriscos
                                 destinationUbigeo,
                                 quantity,
                                 orderDateTime,
                                 dueTime,
-                                clientId
+                                "SYSTEM" // clientId por defecto
                         );
 
                         // Generar y establecer código de orden

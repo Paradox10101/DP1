@@ -60,7 +60,8 @@ export const useFileUpload = () => {
       
       return lines.map((line, index) => {
         try {
-          const regex = /^(\d{2})\s+(\d{2}:\d{2}),\s*(\d{6})\s*=>\s*(\d{6}),\s*(\d+),\s*(\d+)$/;
+          // Nuevo regex que solo considera tiempo, ubigeo destino y cantidad
+          const regex = /^(\d{2})\s+(\d{2}:\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/;
           const match = line.trim().match(regex);
 
           if (!match) {
@@ -71,15 +72,13 @@ export const useFileUpload = () => {
               errorMessage: 'Formato de línea inválido',
               date: '-',
               time: '-',
-              originUbigeo: '-',
               destinationUbigeo: '-',
               quantity: '-',
-              clientId: '-',
               status: 'error'
             };
           }
 
-          const [, , time, originUbigeo, destinationUbigeo, quantity, clientId] = match;
+          const [, , time, destinationUbigeo, quantity] = match;
           const { dateFormatted, timeFormatted, isoDate } = formatDateTime(time);
 
           const hasError = parseInt(quantity) <= 0;
@@ -88,10 +87,8 @@ export const useFileUpload = () => {
             id: index,
             date: dateFormatted,
             time: timeFormatted,
-            originUbigeo,
             destinationUbigeo,
             quantity: parseInt(quantity),
-            clientId,
             hasError,
             errorMessage: hasError ? 'Datos inválidos' : null,
             status: hasError ? 'error' : 'valid',
@@ -106,10 +103,8 @@ export const useFileUpload = () => {
             errorMessage: 'Error al procesar la línea',
             date: '-',
             time: '-',
-            originUbigeo: '-',
             destinationUbigeo: '-',
             quantity: '-',
-            clientId: '-',
             status: 'error'
           };
         }
@@ -179,7 +174,6 @@ export const useFileUpload = () => {
         });
       }, 500);
 
-      // Fixed fetch request with proper await and error handling
       try {
         const response = await fetch(`${API_BASE_URL}/orders/bulk-upload`, {
           method: 'POST',

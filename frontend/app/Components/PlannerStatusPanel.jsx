@@ -59,35 +59,18 @@ const PlannerStatusPanel = () => {
     fetchInitialPeriod();
   }, []);
 
-  // Efecto para limpiar el mensaje de error después de 3 segundos
-  useEffect(() => {
-    if (error) {
-      const timeout = setTimeout(() => {
-        setError(null);
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [error]);
-
+  // Efecto para actualizar el estado local solo cuando hay cambios reales
   useEffect(() => {
     if (planningStatus) {
-      if (clearTimeoutRef.current) {
-        clearTimeout(clearTimeoutRef.current);
-      }
+      // Actualizamos el estado local solo si hay un cambio real en el estado
       setLocalPlanningStatus(planningStatus);
       setPrevPhase(planningStatus.phase);
-
-      clearTimeoutRef.current = setTimeout(() => {
-        setLocalPlanningStatus(null);
-        setPrevPhase(null);
-      }, 3000);
     }
-
-    return () => {
-      if (clearTimeoutRef.current) {
-        clearTimeout(clearTimeoutRef.current);
-      }
-    };
+    // Solo limpiamos el estado si explícitamente recibimos un indicador de finalización
+    else if (planningStatus === null && localPlanningStatus?.phase !== 'completed') {
+      setLocalPlanningStatus(null);
+      setPrevPhase(null);
+    }
   }, [planningStatus]);
 
   const periods = [
@@ -355,6 +338,3 @@ const PlannerStatusPanel = () => {
 };
 
 export default PlannerStatusPanel;
-
-//<div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
-//<div className="w-72">

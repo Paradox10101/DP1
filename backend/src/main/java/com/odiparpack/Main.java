@@ -22,7 +22,7 @@ public class Main {
     public static List<String> locationUbigeos;
     public static Map<String, Location> locations;
 
-    static {
+    /*static {
         try {
             // Configurar el formato de los logs
             SimpleFormatter formatter = new SimpleFormatter() {
@@ -73,6 +73,28 @@ public class Main {
             logger.info("Sistema de logs iniciado. Archivo de logs: " + logFileName);
 
         } catch (IOException e) {
+            System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }*/
+
+    static {
+        try {
+            // Configurar el logger raíz
+            Logger rootLogger = Logger.getLogger("");
+
+            // Deshabilitar todos los logs
+            rootLogger.setLevel(Level.OFF);
+
+            // Remover todos los manejadores existentes
+            Handler[] handlers = rootLogger.getHandlers();
+            for (Handler handler : handlers) {
+                rootLogger.removeHandler(handler);
+            }
+
+            logger.info("Sistema de logs deshabilitado."); // Este log no se mostrará
+
+        } catch (Exception e) {
             System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
             e.printStackTrace();
         }

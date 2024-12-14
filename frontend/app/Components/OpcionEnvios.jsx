@@ -10,7 +10,7 @@ import { FixedSizeList as List } from 'react-window';
 import ModalEnvios from "./ModalEnvios";
 import ModalRutaVehiculoEnvio from "./ModalRutaVehiculoEnvio";
 import {parseDate, getLocalTimeZone} from "@internationalized/date";
-
+import ShipmentStats from "./ShipmentStats";
 
 
 export default function OpcionEnvios() {
@@ -277,6 +277,9 @@ export default function OpcionEnvios() {
                     <div className="text-right text-sm text-[#939393]">
                         Cantidad de envíos: {shipmentsCount}
                     </div>
+
+                    <ShipmentStats/>
+
                     <div className="h-full w-full">
                         {!hasSearchResults && isSearching ? (
                             <NoResultsMessage />

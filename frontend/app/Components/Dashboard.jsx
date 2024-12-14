@@ -112,6 +112,7 @@ const doughnutOptions = {
 // Tooltips definitions
 const tooltips = {
   capacidadEfectiva: "Promedio acumulado del porcentaje de capacidad utilizada por los vehículos durante el transporte de pedidos.",
+  capacidadEfectivaOficina: "Promedio acumulado del porcentaje de capacidad utilizada en los almacenes durante la simulación.",
   pedidosAtendidos: "Número total de pedidos que han sido procesados y atendidos durante la simulación.",
   eficienciaRutas: "Medida de la eficiencia en la planificación de rutas, calculada como la relación entre el tiempo diferencial del tiempo estimado y del tiempo límite de entrega.",
   promedioPedidos: "Promedio diario de pedidos procesados durante toda la simulación.",
@@ -258,6 +259,11 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
             trend="up"
           />
           <MetricCard
+            title="Capacidad Efectiva Oficinas"
+            value={`${data?.capacidadEfectivaOficina?.toFixed(1)}%`}
+            tooltip={tooltips.capacidadEfectivaOficina}
+          />
+          <MetricCard
             title="Pedidos Atendidos"
             value={data.pedidosAtendidos}
             tooltip={tooltips.pedidosAtendidos}
@@ -266,11 +272,6 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
             title="Eficiencia de Rutas"
             value={`${data.eficienciaRutas.toFixed(1)}%`}
             tooltip={tooltips.eficienciaRutas}
-          />
-          <MetricCard
-            title="Promedio Diario"
-            value={data.promedioPedidos.toFixed(0)}
-            tooltip={tooltips.promedioPedidos}
           />
         </div>
 

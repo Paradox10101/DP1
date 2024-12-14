@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class OrderRegistry {
     private static final Map<Integer, Order> orders = new ConcurrentHashMap<>();
@@ -29,21 +28,6 @@ public class OrderRegistry {
      */
     public static List<Order> getAllOrders() {
         return new ArrayList<>(orders.values());
-    }
-
-    /**
-     * Obtiene todas las órdenes de un cliente específico
-     * @param clientId ID del cliente
-     * @return Lista de órdenes del cliente
-     */
-    public static List<Order> getOrdersByClientId(String clientId) {
-        if (clientId == null || clientId.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        return orders.values().stream()
-                .filter(order -> clientId.equals(order.getClientId()))
-                .collect(Collectors.toList());
     }
 
     /**
