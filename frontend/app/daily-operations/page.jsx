@@ -16,6 +16,10 @@ import {
   simulationTypeAtom
 } from '@/atoms/simulationAtoms'
 import { useDisclosure } from '@nextui-org/react'
+import PlannerStatusPanel from '../Components/PlannerStatusPanel'
+import BlockedRoutesPanel from '../Components/BlockedRoutesPanel'
+import BreakdownPanel from '../Components/BreakdownPanel'
+import MaintenancePanel from '../Components/MaintenancePanel'
 
 const VehicleMap = dynamic(() => import('@/app/Components/VehicleMap'), { ssr: false })
 const PerformanceMetrics = dynamic(() => import('@/app/Components/PerformanceMetrics'), { ssr: false })
