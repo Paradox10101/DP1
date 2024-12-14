@@ -6,6 +6,7 @@ export const locationsAtom = atom(null);
 export const followLocationAtom = atom(null);
 
 // Átomo para almacenar los porcentajes de ocupación actualizados por WebSocket
+// Inicialmente vacío, sin datos, lo que implica ocupación en 0.
 export const occupancyUpdatesAtom = atom({});
 
 // Átomo para el query de búsqueda inmediato (lo que el usuario escribe)
@@ -42,7 +43,7 @@ export const warehouseStatsAtom = atom((get) => {
     return {
       currentPackages: stats.currentPackages + currentPackages,
       maxCapacity: stats.maxCapacity + capacity,
-      totalOccupancy: stats.maxCapacity > 0 
+      totalOccupancy: (stats.maxCapacity + capacity) > 0 
         ? ((stats.currentPackages + currentPackages) / (stats.maxCapacity + capacity)) * 100 
         : 0
     };
@@ -61,6 +62,11 @@ export const formattedLocationsAtom = atom((get) => {
     const ubigeo = properties.ubigeo;
     const update = occupancyUpdates[ubigeo];
 
+    // Si no hay actualizaciones del WebSocket para este ubigeo, se fuerza a 0%
+    const occupiedPercentage = update
+      ? update.occupiedPercentage
+      : 0; 
+
     return {
       type: properties.type,
       province: properties.province,
@@ -70,8 +76,8 @@ export const formattedLocationsAtom = atom((get) => {
       latitude: feature.geometry.coordinates[1],
       longitude: feature.geometry.coordinates[0],
       capacity: properties.capacity,
-      occupiedPercentage: update ? update.occupiedPercentage : (properties.occupiedPercentage || 0),
-      shipments: properties?.message?properties.message:[]
+      occupiedPercentage: occupiedPercentage,
+      shipments: properties?.message ? properties.message : []
     };
   });
 });
@@ -100,7 +106,6 @@ export const filteredLocationsAtom = atom((get) => {
     if (!locations) return null;
     if (!searchQuery) return locations;
 
-    console.log("OBJETIVO: ELIMINAR PUNTOS DE AVERIA", locations)
     return locations.filter(location => searchLocation(location, searchQuery));
   } catch (error) {
     console.error('Error filtrando ubicaciones:', error);

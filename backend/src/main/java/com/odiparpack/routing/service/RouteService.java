@@ -1,12 +1,13 @@
 package com.odiparpack.routing.service;
 
-import com.odiparpack.models.Location;
+import com.google.gson.JsonObject;
 import com.odiparpack.routing.model.Route;
 import com.odiparpack.routing.summary.RoutingSummary;
+import com.odiparpack.tasks.PlanificadorTask;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class RouteService {
@@ -35,14 +36,43 @@ public class RouteService {
         return route;
     }
 
-    public Map<String, Route> findBestRoutes(String[] warehouses, String[] destinations) {
+    public Map<String, Route> findBestRoutes(String[] warehouses, String[] destinations, boolean isPlanner) throws InterruptedException {
         Map<String, Route> bestRoutes = new HashMap<>();
         RoutingSummary summary = new RoutingSummary();
 
+        int totalRoutes = warehouses.length * destinations.length;
+        int batchSize = 10;
+        int completedRoutes = 0;
+
+        // Base delay para un total aproximado de 10 segundos
+        long baseDelay = (10 * 1000) / totalRoutes;
+        Random random = new Random();
+
         for (String warehouse : warehouses) {
             for (String destination : destinations) {
+                // Añadir variación aleatoria de ±20% al tiempo de cálculo
+                long variableDelay = baseDelay + (long)(baseDelay * (random.nextDouble() * 0.4 - 0.2));
+                Thread.sleep(variableDelay);
+
                 Route route = calculateRoute(warehouse, destination);
                 processBestRoute(route, destination, bestRoutes, summary);
+
+                if (isPlanner) {
+                    completedRoutes++;
+                    if (completedRoutes % batchSize == 0 || completedRoutes == totalRoutes) {
+                        JsonObject routesStats = new JsonObject();
+                        routesStats.addProperty("total", totalRoutes);
+                        routesStats.addProperty("completed", completedRoutes);
+
+                        JsonObject planningStatus = new JsonObject();
+                        planningStatus.add("routesStats", routesStats);
+                        planningStatus.addProperty("phase", "routing");
+                        planningStatus.addProperty("message",
+                                String.format("Calculadas %d de %d rutas", completedRoutes, totalRoutes));
+
+                        PlanificadorTask.broadcastPlanningStatus(planningStatus);
+                    }
+                }
             }
         }
 

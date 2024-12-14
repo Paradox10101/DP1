@@ -71,4 +71,20 @@ public class WarehouseManager {
     public int getCurrentCapacity(String ubigeo) {
         return currentCapacities.getOrDefault(ubigeo, 0);
     }
+
+    public void resetCapacities() {
+        synchronized (this) {
+            // Restaurar todas las capacidades a sus valores iniciales
+            for (Map.Entry<String, Integer> entry : warehouseCapacities.entrySet()) {
+                String ubigeo = entry.getKey();
+                int initialCapacity = entry.getValue();
+                currentCapacities.put(ubigeo, initialCapacity);
+
+                // Actualizar el porcentaje de ocupación a 0%
+                WarehouseOccupancyWebSocketHandler.broadcastOccupancyUpdate(ubigeo, 0.0);
+                logger.info(String.format("Almacén %s: Capacidad reseteada a valor inicial: %d",
+                        ubigeo, initialCapacity));
+            }
+        }
+    }
 }

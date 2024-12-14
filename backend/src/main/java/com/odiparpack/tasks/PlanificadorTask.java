@@ -35,7 +35,7 @@ public class PlanificadorTask implements Runnable {
         this.isSimulationRunning = isSimulationRunning;
     }
 
-    private void broadcastPlanningStatus(JsonObject planningStatus) {
+    public static void broadcastPlanningStatus(JsonObject planningStatus) {
         // Agregar timestamp
         planningStatus.addProperty("timestamp", LocalDateTime.now().toString());
         SimulationMetricsWebSocketHandler.broadcastSimulationMetrics(planningStatus);
@@ -83,28 +83,32 @@ public class PlanificadorTask implements Runnable {
                 destinationSet.add(order.getDestinationUbigeo());
             }
             String[] destinations = destinationSet.toArray(new String[0]);
+            int totalDestinations = destinations.length;
+            int totalWarehouses = state.getAlmacenesPrincipales().length;
+            int totalRoutesToCalculate = totalDestinations * totalWarehouses;
 
             // Crear objeto para estadísticas de rutas
             JsonObject routesStats = new JsonObject();
-            routesStats.addProperty("total", destinations.length);
+            routesStats.addProperty("total", totalRoutesToCalculate);
             routesStats.addProperty("completed", 0);
             planningStatus.add("routesStats", routesStats);
-            planningStatus.addProperty("message", "Calculando rutas para " + destinations.length + " destinos");
+            planningStatus.addProperty("message", "Calculando " + totalRoutesToCalculate + " rutas posibles para " + totalDestinations + " destinos");
             broadcastPlanningStatus(planningStatus);
 
             // Calcular las mejores rutas para cada destino
             RouteService routeService = new RouteService(RouteUtils.
                     deepCopyLocationIndices(state.getLocationIndices()),
                     RouteUtils.deepCopyTimeMatrix(state.getCurrentTimeMatrix()));
-            Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations);
+            Map<String, Route> bestRoutes = routeService.findBestRoutes(state.getAlmacenesPrincipales(), destinations, true );
 
-            // Actualizar estado con rutas completadas
-            routesStats.addProperty("completed", bestRoutes.size());
+            // Actualizar estado final mostrando las rutas óptimas seleccionadas
+            planningStatus.addProperty("message", "Se seleccionaron las " + bestRoutes.size() + " mejores rutas de " + totalRoutesToCalculate + " rutas calculadas");
+            routesStats.addProperty("completed", totalRoutesToCalculate); // Marcamos como completado el cálculo total
             planningStatus.add("routesStats", routesStats);
             broadcastPlanningStatus(planningStatus);
 
-            // Delay de 3 segundos después del cálculo de rutas
-            Thread.sleep(3000);
+            // Delay de 2 segundos después del cálculo de rutas
+            Thread.sleep(2000);
 
             // Fase 3: Asignando vehículos
             planningStatus = new JsonObject();
@@ -132,14 +136,38 @@ public class PlanificadorTask implements Runnable {
                 if (state.getSimulationType() == SimulationRouter.SimulationType.WEEKLY && !breakdownsScheduled) {
                     scheduleBreakdowns(assignments, state);
                 }
+
+                // Enviar mensaje de completado exitoso
+                JsonObject completionStatus = new JsonObject();
+                completionStatus.addProperty("phase", "completed");
+                completionStatus.addProperty("status", "success");
+                completionStatus.addProperty("message", "Planificación completada exitosamente");
+                completionStatus.addProperty("assignedOrders", ordenesAsignables.size());
+                completionStatus.addProperty("assignedVehicles", assignments.size());
+                broadcastPlanningStatus(completionStatus);
             } else {
                 planningStatus.addProperty("assignedVehicles", 0);
                 planningStatus.addProperty("message", "No hay órdenes asignables para procesar");
                 broadcastPlanningStatus(planningStatus);
                 logger.warning("No hay órdenes asignables para procesar");
+
+                // Enviar mensaje de completado sin asignaciones
+                JsonObject completionStatus = new JsonObject();
+                completionStatus.addProperty("phase", "completed");
+                completionStatus.addProperty("status", "success");
+                completionStatus.addProperty("message", "Planificación completada - No hubo órdenes para asignar");
+                completionStatus.addProperty("assignedOrders", 0);
+                completionStatus.addProperty("assignedVehicles", 0);
+                broadcastPlanningStatus(completionStatus);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error en planificación", e);
+            // Enviar mensaje de error
+            JsonObject errorStatus = new JsonObject();
+            errorStatus.addProperty("phase", "completed");
+            errorStatus.addProperty("status", "error");
+            errorStatus.addProperty("message", "Error en la planificación: " + e.getMessage());
+            broadcastPlanningStatus(errorStatus);
         } finally {
             isExecuting.set(false);
         }

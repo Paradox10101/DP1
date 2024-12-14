@@ -10,7 +10,6 @@ import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ModalOficina from './ModalOficina'
 import ModalAlmacen from './ModalAlmacen'
-import { useShipmentWebSocket } from "@/hooks/useShipmentWebSocket";
 
 export default function OpcionAlmacenes() {
   useWarehouseWebSocket();
@@ -24,7 +23,6 @@ export default function OpcionAlmacenes() {
   const [storageTypes, setStorageTypes] = useState(null);
   const [loadingFilters, setLoadingFilters] = useState(true);
   const [filteredLocations, setFilteredLocations] = useState([]);
-  const [vehicleTypes, setVehicleTypes] = useState([])
   
   const initialFilterStateRef = useRef(
       {
@@ -32,6 +30,7 @@ export default function OpcionAlmacenes() {
       department: "",
       minQuantity: 0,
       maxQuantity: null,
+      occoccupiedPercentage: 0,
       }
   )
   const [locationsFilter, setLocationsFilter] = useState(initialFilterStateRef.current);

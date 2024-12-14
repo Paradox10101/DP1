@@ -139,15 +139,16 @@ public class SimulationRouter extends BaseRouter {
                 if (simulationState != null) {
                     // Reiniciar el estado si estaba apagado
                     if (simulationState.isStopped()) {
+                        System.out.println("Simulacion anterior detectada, reseteando estado.");
                         simulationController.resetSimulationState(startDateTime, endDateTime, simulationType);
-                        // Asegurarnos de que los endpoints usen el estado reiniciado
-                        //this.simulationState = simulationController.getSimulationState();
+                        // Resetear las capacidades de los almacenes
+                        simulationState.getWarehouseManager().resetCapacities();
                     }
                 } else {
                     logger.info("Intentando inicializar simulacion.");
                     simulationController.initializeSimulation(startDateTime, endDateTime, simulationType);
-                    // Asegurarnos de que los endpoints usen el estado reiniciado
-                    //this.simulationState = simulationController.getSimulationState();
+                    // Resetear las capacidades de los almacenes para la nueva simulación
+                    simulationState.getWarehouseManager().resetCapacities();
                 }
 
                 startSimulation();
