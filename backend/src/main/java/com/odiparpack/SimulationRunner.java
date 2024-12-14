@@ -5,6 +5,7 @@ import com.google.protobuf.Duration;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.models.*;
 import com.odiparpack.scheduler.PlanificadorScheduler;
+import com.odiparpack.services.LocationService;
 import com.odiparpack.tasks.*;
 
 import java.time.*;
@@ -322,8 +323,18 @@ public class SimulationRunner {
     }
 
     private static boolean isOrderAvailable(Order order, LocalDateTime currentTime) {
-        // Primero verificar que no esté en estado completado o en transito
-        if (order.getStatus() == Order.OrderStatus.DELIVERED || order.getStatus() == Order.OrderStatus.IN_TRANSIT) {
+        // Verificar si el ubigeo destino existe en las locations
+        LocationService locationService = LocationService.getInstance();
+        if (locationService.getLocation(order.getDestinationUbigeo()) == null) {
+            // Si el ubigeo no existe, marcar la orden como INVALID
+            order.setStatus(Order.OrderStatus.INVALID);
+            logger.warning("Orden " + order.getId() + " marcada como INVALID - ubigeo destino no válido: " + order.getDestinationUbigeo());
+            return false;
+        }
+
+        // Verificar que no esté en estado completado o en transito
+        if (order.getStatus() == Order.OrderStatus.DELIVERED ||
+                order.getStatus() == Order.OrderStatus.IN_TRANSIT) {
             return false;
         }
 
