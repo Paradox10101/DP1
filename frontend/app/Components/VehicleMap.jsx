@@ -196,7 +196,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const startPositionsRef = useRef(null);
   const endPositionsRef = useRef(null);
   const animationStartRef = useRef(null);
-  const animationDuration = 1500;
+  const animationDuration = 1800;
   const currentAnimationFrameRef = useRef(null);
   
   // Función para crear un mapa { vehicleCode: { ...featureData } }
@@ -518,7 +518,7 @@ const VehicleMap = ({ simulationStatus }) => {
       cancelAnimationFrame(currentAnimationFrameRef.current);
     }
 
-    setPositions(updatedData);
+    //setPositions(updatedData);
   
     // Si estábamos animando, partimos de la posición actual mostrada (interpolada)
     const currentData = currentPositionsRef.current || positionsRef.current;
