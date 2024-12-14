@@ -109,6 +109,10 @@ public class SimulationRouter extends BaseRouter {
 
                     // La fecha de fin se calculará en initializeSimulationState
                     logger.info("Iniciando simulación diaria desde: " + startDateTime);
+
+                    if (simulationType == SimulationType.WEEKLY) {
+                        endDateTime = startDateTime.plusDays(simulationType.getDays());
+                    }
                 } else {
                     // Para otros tipos, usar fechas del request
                     String startDateStr = body.get("startDate").getAsString();
