@@ -70,7 +70,8 @@ export const useSimulationMetrics = () => {
             if (data.phase) {
                 setPlanningStatus(prevStatus => ({
                     ...prevStatus,
-                    ...data
+                    ...data,
+                    isActive: data.phase !== 'completed'
                 }));
                 setError(null);
                 return;

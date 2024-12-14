@@ -120,9 +120,6 @@ public class PlanificadorTask implements Runnable {
             OrderAssignmentService assignmentService = new OrderAssignmentService();
             List<Order> ordenesAsignables = assignmentService.assignWarehousesToOrders(orders, bestRoutes);
 
-            // Delay de 1.5 segundos antes de la asignación final
-            Thread.sleep(1500);
-
             if (!ordenesAsignables.isEmpty()) {
                 VehicleAssignmentService vehicleAssignmentService = new VehicleAssignmentService(state);
                 List<VehicleAssignment> assignments = vehicleAssignmentService.assignOrdersToVehicles(ordenesAsignables, state.getVehicles(), bestRoutes);
@@ -131,6 +128,9 @@ public class PlanificadorTask implements Runnable {
                 planningStatus.addProperty("assignedVehicles", assignments.size());
                 planningStatus.addProperty("message", "Se asignaron " + assignments.size() + " vehículos");
                 broadcastPlanningStatus(planningStatus);
+
+                // Delay de 1.5 segundos antes de la asignación final
+                Thread.sleep(1500);
 
                 // Programar averías después de la primera planificación en simulación semanal
                 if (state.getSimulationType() == SimulationRouter.SimulationType.WEEKLY && !breakdownsScheduled) {
