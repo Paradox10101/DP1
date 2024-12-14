@@ -15,7 +15,8 @@ public class Order {
         PARTIALLY_ASSIGNED,
         PENDING_PICKUP,
         PARTIALLY_ARRIVED,
-        DELIVERED
+        DELIVERED,
+        INVALID
     }
 
     private int id;
