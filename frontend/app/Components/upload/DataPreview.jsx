@@ -13,11 +13,107 @@ import {
 } from "@nextui-org/react";
 import { AlertTriangle } from 'lucide-react';
 
+const configColumns = {
+  vehiculos: [
+    { key: "codigo", header: "Código" },
+    { key: "tipo", header: "Tipo" },
+    { key: "capacidad", header: "Capacidad" },
+    { key: "ubigeo", header: "Ubigeo" },
+    { key: "status", header: "Estado" }
+  ],
+  ubicaciones: [
+    { key: "ubigeo", header: "Ubigeo" },
+    { key: "departamento", header: "Departamento" },
+    { key: "provincia", header: "Provincia" },
+    { key: "latitud", header: "Latitud" },
+    { key: "longitud", header: "Longitud" },
+    { key: "region", header: "Región" },
+    { key: "capacidad", header: "Capacidad" },
+    { key: "status", header: "Estado" }
+  ],
+  tramos: [
+    { key: "origen", header: "Ubigeo Origen" },
+    { key: "destino", header: "Ubigeo Destino" },
+    { key: "status", header: "Estado" }
+  ],
+  mantenimientos: [
+    { key: "fecha", header: "Fecha" },
+    { key: "vehiculo", header: "Código Vehículo" },
+    { key: "status", header: "Estado" }
+  ],
+  bloqueos: [
+    { key: "origen", header: "Ubigeo Origen" },
+    { key: "destino", header: "Ubigeo Destino" },
+    { key: "fechaInicio", header: "Inicio" },
+    { key: "fechaFin", header: "Fin" },
+    { key: "status", header: "Estado" }
+  ]
+};
+
+// Función para parsear el contenido según el tipo
+const parseContent = (item, type) => {
+  const content = item.content;
+  
+  switch(type) {
+    case 'vehiculos': {
+      const [codigo, tipo, capacidad, ubigeoVehiculo] = content.split(',');
+      return {
+        codigo,
+        tipo,
+        capacidad,
+        ubigeo: ubigeoVehiculo
+      };
+    }
+    case 'ubicaciones': {
+      const [ubigeoLoc, dpto, prov, lat, lon, reg, cap] = content.split(',');
+      return {
+        ubigeo: ubigeoLoc,
+        departamento: dpto,
+        provincia: prov,
+        latitud: lat,
+        longitud: lon,
+        region: reg,
+        capacidad: cap
+      };
+    }
+    case 'tramos': {
+      const [origenTramo, destinoTramo] = content.split('=>').map(s => s.trim());
+      return {
+        origen: origenTramo,
+        destino: destinoTramo
+      };
+    }
+    case 'mantenimientos': {
+      const [fechaMant, vehiculoMant] = content.split(':');
+      return {
+        fecha: fechaMant,
+        vehiculo: vehiculoMant
+      };
+    }
+    case 'bloqueos': {
+      const [rutaBloqueo, periodoBloqueo] = content.split(';');
+      const [origenBloqueo, destinoBloqueo] = rutaBloqueo.split('=>').map(s => s.trim());
+      const [inicioBloqueo, finBloqueo] = periodoBloqueo.split('==');
+      const [fechaInicioBloqueo, horaInicioBloqueo] = inicioBloqueo.split(',');
+      const [fechaFinBloqueo, horaFinBloqueo] = finBloqueo.split(',');
+      return {
+        origen: origenBloqueo,
+        destino: destinoBloqueo,
+        fechaInicio: `${fechaInicioBloqueo} ${horaInicioBloqueo}`,
+        fechaFin: `${fechaFinBloqueo} ${horaFinBloqueo}`
+      };
+    }
+    default:
+      return { content };
+  }
+};
+
 export const DataPreview = ({
   data,
   onConfirm,
   onCancel,
-  isLoading
+  isLoading,
+  type = 'vehiculos'
 }) => {
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 10;
@@ -31,32 +127,22 @@ export const DataPreview = ({
   }, [page, data]);
 
   const renderCell = React.useCallback((item, columnKey) => {
-    const cellValue = item[columnKey];
-
-    // Personaliza el renderizado según el tipo de columna
-    switch (columnKey) {
-      case "date":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{item.date}</p>
-            <p className="text-bold text-tiny text-default-400">{item.time}</p>
-          </div>
-        );
-      case "status":
-        return (
-          <Chip
-            className="capitalize"
-            color={item.hasError ? "danger" : "success"}
-            size="sm"
-            variant="flat"
-          >
-            {item.hasError ? "Error" : "Válido"}
-          </Chip>
-        );
-      default:
-        return cellValue;
+    if (columnKey === 'status') {
+      return (
+        <Chip
+          className="capitalize"
+          color={item.hasError ? "danger" : "success"}
+          size="sm"
+          variant="flat"
+        >
+          {item.hasError ? "Error" : "Válido"}
+        </Chip>
+      );
     }
-  }, []);
+
+    const parsedContent = parseContent(item, type);
+    return parsedContent[columnKey] || '';
+  }, [type]);
 
   return (
     <div className="space-y-6">
@@ -143,12 +229,9 @@ export const DataPreview = ({
           }}
         >
           <TableHeader>
-            <TableColumn key="date">Fecha y Hora</TableColumn>
-            <TableColumn key="originUbigeo">Origen</TableColumn>
-            <TableColumn key="destinationUbigeo">Destino</TableColumn>
-            <TableColumn key="quantity">Cantidad</TableColumn>
-            <TableColumn key="clientId">ID Cliente</TableColumn>
-            <TableColumn key="status">Estado</TableColumn>
+            {configColumns[type].map(column => (
+              <TableColumn key={column.key}>{column.header}</TableColumn>
+            ))}
           </TableHeader>
           <TableBody items={items}>
             {(item) => (

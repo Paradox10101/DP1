@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class VehicleAssignmentService {
     private static final Logger logger = Logger.getLogger(VehicleAssignmentService.class.getName());
     private final SimulationState state;
-    int unassignedOrdersCount = 0;
+    //int unassignedOrdersCount = 0;
 
     public VehicleAssignmentService(SimulationState state) {
         this.state = state;
@@ -27,11 +27,11 @@ public class VehicleAssignmentService {
     public List<VehicleAssignment> assignOrdersToVehicles(List<Order> orders, List<Vehicle> vehicles, Map<String, Route> routes) {
         List<VehicleAssignment> assignments = new ArrayList<>();
 
-        // Contar órdenes sin asignar
+        /*// Contar órdenes sin asignar
         unassignedOrdersCount = (int) orders.stream()
                 .filter(o -> o.getStatus() == Order.OrderStatus.REGISTERED ||
                         o.getStatus() == Order.OrderStatus.PARTIALLY_ASSIGNED)
-                .count();
+                .count();*/
 
         for (Order order : orders) {
             if (!isOrderEligibleForAssignment(order)) {
@@ -73,9 +73,9 @@ public class VehicleAssignmentService {
             if (shouldCreateNewVehicle(order, route, state.getCurrentTime())) {
                 Vehicle newVehicle = createNewVehicle(order.getOriginUbigeo(), unassignedPackages);
                 availableVehicles.add(newVehicle);
-                logger.info("Nuevo vehículo con código '" + newVehicle.getCode() +
+                logger.info("Vehículo con código '" + newVehicle.getCode() +
                         "' para la orden " + order.getId() + " debido a restricciones de tiempo");
-                unassignedOrdersCount--;
+                //unassignedOrdersCount--;
             } else {
                 logger.info("No hay vehículos disponibles en " + order.getOriginUbigeo() +
                         " para la orden " + order.getId());
@@ -96,7 +96,7 @@ public class VehicleAssignmentService {
     }
 
     private boolean shouldCreateNewVehicle(Order order, Route route, LocalDateTime currentTime) {
-        // Generar un límite aleatorio entre 400 y 480
+        /*// Generar un límite aleatorio entre 400 y 480
         int randomLimit = 400 + (int)(Math.random() * 81); // 81 porque 280-200+1 = 81 posibles números
 
         // Si hay más órdenes sin asignar que el límite, crear vehículo sin importar el tiempo
@@ -104,7 +104,7 @@ public class VehicleAssignmentService {
             logger.info("Creando vehículo debido a que hay más de " + randomLimit +
                     " órdenes sin asignar (actual: " + unassignedOrdersCount + ")");
             return true;
-        }
+        }*/
 
         // Si hay menos órdenes que el límite aleatorio, verificar el criterio de tiempo
         long timeUntilDue = Duration.between(currentTime, order.getDueTime()).toMinutes();

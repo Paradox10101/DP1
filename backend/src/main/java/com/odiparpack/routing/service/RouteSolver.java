@@ -1,12 +1,8 @@
 package com.odiparpack.routing.service;
 
-import com.google.protobuf.Duration;
-import com.odiparpack.DataModel;
-import com.odiparpack.models.Location;
 import com.odiparpack.routing.model.*;
 import com.google.ortools.constraintsolver.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -53,8 +49,8 @@ public class RouteSolver {
 
         // Fallback a Dijkstra
         logger.warning("OR-Tools no encontró solución, utilizando Dijkstra como fallback");
-        DijkstraRouter dijkstraRouter = new DijkstraRouter(timeMatrix);
-        return dijkstraRouter.findRoute(startIndex, endIndex);
+        LocalSearchRouter localSearchRouter = new LocalSearchRouter(timeMatrix);
+        return localSearchRouter.findRoute(startIndex, endIndex);
     }
 
     private static class RoutingSetup {

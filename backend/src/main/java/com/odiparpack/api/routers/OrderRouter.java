@@ -95,52 +95,6 @@ public class OrderRouter extends BaseRouter {
             }
         });
 
-        /*Spark.get("/api/v1/orders", (request, response) -> {
-            response.type("application/json");
-
-            try {
-                String clientId = request.queryParams("clientId");
-                List<Order> orders;
-
-                if (clientId != null && !clientId.isEmpty()) {
-                    // Si se proporciona un clientId, filtrar por cliente
-                    orders = OrderRegistry.getOrdersByClientId(clientId);
-                } else {
-                    // Si no, obtener todas las órdenes
-                    orders = OrderRegistry.getAllOrders();
-                }
-
-                JsonArray ordersArray = new JsonArray();
-                for (Order order : orders) {
-                    JsonObject orderJson = new JsonObject();
-                    orderJson.addProperty("id", order.getId());
-                    orderJson.addProperty("orderCode", order.getOrderCode());
-                    orderJson.addProperty("clientId", order.getClientId());
-                    orderJson.addProperty("originUbigeo", order.getOriginUbigeo());
-                    orderJson.addProperty("destinationUbigeo", order.getDestinationUbigeo());
-                    orderJson.addProperty("quantity", order.getQuantity());
-                    orderJson.addProperty("orderDateTime", order.getOrderTime().toString());
-                    orderJson.addProperty("dueDateTime", order.getDueTime().toString());
-                    orderJson.addProperty("status", order.getStatus().toString());
-                    ordersArray.add(orderJson);
-                }
-
-                JsonObject jsonResponse = new JsonObject();
-                jsonResponse.addProperty("success", true);
-                jsonResponse.add("orders", ordersArray);
-
-                return jsonResponse;
-
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error retrieving orders", e);
-                response.status(500);
-                JsonObject errorResponse = new JsonObject();
-                errorResponse.addProperty("success", false);
-                errorResponse.addProperty("error", "Error al obtener los pedidos: " + e.getMessage());
-                return errorResponse;
-            }
-        });*/
-
         Spark.post("/api/v1/orders/bulk-upload", (request, response) -> {
             response.type("application/json");
             JsonObject jsonResponse = new JsonObject();

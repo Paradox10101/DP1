@@ -1,14 +1,20 @@
 package com.odiparpack.api.routers;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.odiparpack.models.Position;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.models.Vehicle;
 import spark.Spark;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+
+import static com.odiparpack.Main.logger;
 
 public class VehicleRouter extends BaseRouter {
     public VehicleRouter() {
@@ -55,6 +61,93 @@ public class VehicleRouter extends BaseRouter {
             }
 
             return toJson(logs);
+        });
+
+        // Ruta para carga masiva de vehículos
+        Spark.post("/api/v1/config/vehiculos/upload", (request, response) -> {
+            response.type("application/json");
+            JsonObject jsonResponse = new JsonObject();
+            List<String> successfulRecords = new ArrayList<>();
+            List<String> failedRecords = new ArrayList<>();
+
+            try {
+                JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+                JsonArray records = body.getAsJsonArray("records");
+
+                for (JsonElement elem : records) {
+                    try {
+                        JsonObject record = elem.getAsJsonObject();
+                        String content = record.get("content").getAsString();
+
+                        // Parsear el contenido (formato: CODIGO,TIPO,CAPACIDAD,UBIGEO)
+                        String[] parts = content.split(",");
+                        if (parts.length != 4) {
+                            throw new IllegalArgumentException("Formato inválido");
+                        }
+
+                        String code = parts[0].trim();
+                        String type = parts[1].trim();
+                        int capacity = Integer.parseInt(parts[2].trim());
+                        String ubigeo = parts[3].trim();
+
+                        // Validaciones
+                        if (!code.matches("[A-C]\\d{3}")) {
+                            throw new IllegalArgumentException("Código inválido");
+                        }
+                        if (!type.matches("[A-C]")) {
+                            throw new IllegalArgumentException("Tipo inválido");
+                        }
+                        if (capacity <= 0) {
+                            throw new IllegalArgumentException("Capacidad inválida");
+                        }
+                        if (!ubigeo.matches("\\d{6}")) {
+                            throw new IllegalArgumentException("Ubigeo inválido");
+                        }
+
+                        // Verificar que el código comience con el tipo
+                        if (!code.startsWith(type)) {
+                            throw new IllegalArgumentException("El código debe empezar con el tipo de vehículo");
+                        }
+
+                        // Crear y registrar el vehículo
+                        Vehicle vehicle = new Vehicle(
+                                code,
+                                type,
+                                capacity,
+                                ubigeo
+                        );
+                        successfulRecords.add(code);
+
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Error processing vehicle record", e);
+                        failedRecords.add(elem.toString() + " - Error: " + e.getMessage());
+                    }
+                }
+
+                // Preparar respuesta
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("totalProcessed", records.size());
+                jsonResponse.addProperty("successfulCount", successfulRecords.size());
+                jsonResponse.addProperty("failedCount", failedRecords.size());
+
+                JsonArray successfulArray = new JsonArray();
+                successfulRecords.forEach(successfulArray::add);
+                jsonResponse.add("successfulRecords", successfulArray);
+
+                JsonArray failedArray = new JsonArray();
+                failedRecords.forEach(failedArray::add);
+                jsonResponse.add("failedRecords", failedArray);
+
+                response.status(200);
+                return jsonResponse;
+
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error processing vehicles bulk upload", e);
+                response.status(400);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Error en la carga masiva: " + e.getMessage());
+                return jsonResponse;
+            }
         });
     }
 

@@ -8,19 +8,11 @@ import java.util.*;
 
 import static com.odiparpack.Main.*;
 
-public class DijkstraRouter {
+public class LocalSearchRouter {
     private final long[][] timeMatrix;
 
-    public DijkstraRouter(long[][] timeMatrix) {
+    public LocalSearchRouter(long[][] timeMatrix) {
         this.timeMatrix = timeMatrix;
-    }
-
-    private Map<String, Integer> initializeLocationIndices(List<Location> locations) {
-        Map<String, Integer> indices = new HashMap<>();
-        for (int i = 0; i < locations.size(); i++) {
-            indices.put(locations.get(i).getUbigeo(), i);
-        }
-        return indices;
     }
 
     public Route findRoute(Integer startIndex, Integer endIndex) {
@@ -34,7 +26,7 @@ public class DijkstraRouter {
             return createEmptyRoute(startUbigeo, endUbigeo);
         }
 
-        DijkstraResult result = executeDijkstraAlgorithm(n, startIndex, endIndex);
+        LocalSearchResult result = executeDijkstraAlgorithm(n, startIndex, endIndex);
 
         if (result.distances[endIndex] == Long.MAX_VALUE) {
             logger.warning("No se encontró ruta entre " + startUbigeo + " y " + endUbigeo);
@@ -44,7 +36,7 @@ public class DijkstraRouter {
         return buildRoute(result, startUbigeo, endUbigeo, endIndex);
     }
 
-    private DijkstraResult executeDijkstraAlgorithm(int n, int startIdx, int endIdx) {
+    private LocalSearchResult executeDijkstraAlgorithm(int n, int startIdx, int endIdx) {
         /*System.out.println("\n=== Iniciando Dijkstra ===");
         System.out.println("Nodos totales: " + n);
         System.out.println("Índice inicio: " + startIdx);
@@ -89,7 +81,7 @@ public class DijkstraRouter {
 
         // Mostrar distancia al nodo final después de cada iteración
         //System.out.println("Distancia actual al nodo final: " + distances[endIdx]);
-        return new DijkstraResult(distances, previous);
+        return new LocalSearchResult(distances, previous);
     }
 
     private int findMinimumDistanceNode(long[] distances, boolean[] visited) {
@@ -119,7 +111,7 @@ public class DijkstraRouter {
         }
     }
 
-    private Route buildRoute(DijkstraResult result, String startUbigeo, String endUbigeo, int endIdx) {
+    private Route buildRoute(LocalSearchResult result, String startUbigeo, String endUbigeo, int endIdx) {
         List<RouteSegment> segments = new ArrayList<>();
         List<Integer> pathIndices = reconstructPath(result.previous, endIdx);
 
@@ -152,11 +144,11 @@ public class DijkstraRouter {
         return new Route(Collections.emptyList(), 0, false, startUbigeo, endUbigeo);
     }
 
-    private static class DijkstraResult {
+    private static class LocalSearchResult {
         final long[] distances;
         final int[] previous;
 
-        DijkstraResult(long[] distances, int[] previous) {
+        LocalSearchResult(long[] distances, int[] previous) {
             this.distances = distances;
             this.previous = previous;
         }

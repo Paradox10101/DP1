@@ -1,6 +1,7 @@
 package com.odiparpack.models;
 
 import com.odiparpack.DataLoader;
+import com.odiparpack.Utils;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.services.LocationService;
 
@@ -1160,7 +1161,10 @@ public class Vehicle {
         status.setCurrentSegmentUbigeo(segment.getToUbigeo());
         status.setSegmentStartTime(currentTime);
         status.setEstimatedArrivalTime(currentTime.plusMinutes(segment.getDurationMinutes()));
-        status.setCurrentSpeed(segment.getDistance() / (segment.getDurationMinutes() / 60.0));
+        LocationService locationService = LocationService.getInstance();
+        String fromRegion = locationService.getLocation(segment.getFromUbigeo()).getNaturalRegion();
+        String toRegion = locationService.getLocation(segment.getToUbigeo()).getNaturalRegion();
+        status.setCurrentSpeed(Utils.getAverageSpeed(fromRegion, toRegion));
         currentLocationUbigeo = segment.getFromUbigeo();
     }
 

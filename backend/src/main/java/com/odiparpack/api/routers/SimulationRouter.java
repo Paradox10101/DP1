@@ -219,6 +219,11 @@ public class SimulationRouter extends BaseRouter {
             isSimulationRunning = false;
             isShutdown = true;
 
+            if (simulationType == SimulationType.DAILY) {
+                // Limpiar registro de órdenes al detener la simulación
+                OrderRegistry.clearOrders();
+            }
+
             response.status(200);
             this.simulationType = null;
             return createSuccessResponse("Simulación detenida.");
