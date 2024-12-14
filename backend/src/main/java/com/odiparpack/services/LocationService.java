@@ -42,13 +42,14 @@ public class LocationService {
         return locations;
     }
 
-    public void addTemporaryLocation(String ubigeo, double latitude, double longitude) {
+    public void addTemporaryLocation(String ubigeo, double latitude, double longitude, String region) {
         Location location = new Location();
         location.setUbigeo(ubigeo);
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         location.setDepartment("Temporal");
         location.setProvince("Punto de Avería");
+        location.setNaturalRegion(region);
         locations.put(ubigeo, location);
         SimulationState.locations.put(ubigeo, location);
     }

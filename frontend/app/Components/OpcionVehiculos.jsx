@@ -11,6 +11,8 @@ import ModalVehiculo from "./ModalVehiculo";
 import AutoSizer from 'react-virtualized-auto-sizer';
 import BreakdownModal from "./VehiclePopUp/BreakdownModal";
 import CapacidadTotalVehiculos from "./CapacidadTotalVehiculos";
+import { initialVehicleCountAtom } from "../../atoms/vehicleCountAtom";
+
 
 export default function OpcionVehiculos() {
   
@@ -33,7 +35,7 @@ export default function OpcionVehiculos() {
       status: null
       }
   )
-  const [initialVehicleCount, setInitialVehicleCount] = useState(0);
+  const [initialVehicleCount, setInitialVehicleCount] = useAtom(initialVehicleCountAtom);
   const hasSetInitialCount = useRef(false);
 
 
@@ -47,11 +49,11 @@ export default function OpcionVehiculos() {
   );
 
   useEffect(() => {
-    if (filteredVehicles.length > 0 && !hasSetInitialCount.current) {
+    if (filteredVehicles.length > 0 && !hasSetInitialCount.current && initialVehicleCount === 0) {
       setInitialVehicleCount(filteredVehicles.length);
       hasSetInitialCount.current = true;
     }
-  }, [filteredVehicles]); 
+  }, [filteredVehicles, initialVehicleCount, setInitialVehicleCount]);
 
   // Calculate total used and max capacity
   const capacidadUsadaTotal = filteredVehicles.reduce(
