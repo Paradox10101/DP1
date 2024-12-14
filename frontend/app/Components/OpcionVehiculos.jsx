@@ -10,7 +10,7 @@ import { FixedSizeList as List } from 'react-window';
 import ModalVehiculo from "./ModalVehiculo";
 import AutoSizer from 'react-virtualized-auto-sizer';
 import BreakdownModal from "./VehiclePopUp/BreakdownModal";
-
+import CapacidadTotalVehiculos from "./CapacidadTotalVehiculos";
 
 export default function OpcionVehiculos() {
   
@@ -33,6 +33,10 @@ export default function OpcionVehiculos() {
       status: null
       }
   )
+  const [initialVehicleCount, setInitialVehicleCount] = useState(0);
+  const hasSetInitialCount = useRef(false);
+
+
   const [vehiclesFilter, setVehiclesFilter] = useState(initialFilterStateRef.current);
   // Ensure vehiculos is an array to avoid TypeError
   const vehiculosArray = vehiculos[0] && vehiculos[0]?.features && Array.isArray(vehiculos[0].features) ? vehiculos[0].features : [];
@@ -41,6 +45,13 @@ export default function OpcionVehiculos() {
   const filteredVehiculosArray = vehiculosArray.filter((vehiculo) =>
     vehiculo.properties.vehicleCode.toLowerCase().includes(searchInput.toLowerCase())
   );
+
+  useEffect(() => {
+    if (filteredVehicles.length > 0 && !hasSetInitialCount.current) {
+      setInitialVehicleCount(filteredVehicles.length);
+      hasSetInitialCount.current = true;
+    }
+  }, [filteredVehicles]); 
 
   // Calculate total used and max capacity
   const capacidadUsadaTotal = filteredVehicles.reduce(
@@ -298,10 +309,15 @@ const StatusBadge = ({ status }) => {
           </div>
 
           <div className="text-right pequenno text-[#939393]">
-            Cantidad de vehículos: {filteredVehicles.length}
+            Cantidad de vehículos: {initialVehicleCount}
           </div>
 
-          <div className="flex flex-col gap-2">
+          <CapacidadTotalVehiculos 
+            capacidadUsadaTotal={capacidadUsadaTotal}
+            capacidadTotalMaxima={capacidadTotalMaxima}
+           />
+
+          {/* <div className="flex flex-col gap-2">
             <div className="pequenno_bold text-center">Capacidad Total de los Vehículos</div>
             <div className="flex flex-col gap-1">
               <BarraProgreso porcentaje={(capacidadUsadaTotal / capacidadTotalMaxima) * 100} />
@@ -313,7 +329,8 @@ const StatusBadge = ({ status }) => {
                 <div className="pequenno">Máximo: {capacidadTotalMaxima}</div>
               </div>
             </div>
-          </div>
+          </div> */}
+          
           <div className="h-3/4 w-full ">
                 {!hasSearchResults && isSearching ? (
                   <NoResultsMessage />
