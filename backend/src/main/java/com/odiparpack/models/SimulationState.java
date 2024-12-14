@@ -1935,7 +1935,10 @@ public class SimulationState {
         groupedVehicles.computeIfAbsent(routeKey, k -> new ArrayList<>()).add(vehicle);
     }
 
-    private void assignReplacementVehicle(Vehicle replacementVehicle, Vehicle brokenVehicle, List<RouteSegment> routeToBreakdown, LocalDateTime currentTime) {
+    private void assignReplacementVehicle(Vehicle replacementVehicle,
+                                          Vehicle brokenVehicle,
+                                          List<RouteSegment> routeToBreakdown,
+                                          LocalDateTime currentTime) {
         // Imprimir los segmentos de la ruta antes de asignarla
         logger.info("Asignando ruta al vehículo de reemplazo: " + replacementVehicle.getCode());
         if (routeToBreakdown != null && !routeToBreakdown.isEmpty()) {
@@ -1950,43 +1953,28 @@ public class SimulationState {
             logger.warning("No se encontraron segmentos de ruta para asignar al vehículo de reemplazo.");
         }
 
+        logger.info(String.format("Vehiculo a ser reemplazado: %s", brokenVehicle.getCode()));
         // Asignar la ruta desde el almacén al punto de avería
+        logger.info(String.format("Intentando asignar ruta al vehículo %s", replacementVehicle.getCode()));
         replacementVehicle.setRoute(routeToBreakdown);
+        logger.info("Ruta asignada exitosamente");
+
+        logger.info(String.format("Iniciando journey to breakdown. Tiempo actual: %s, Ubicación avería: %s",
+                currentTime, brokenVehicle.getCurrentLocationUbigeo()));
         replacementVehicle.startJourneyToBreakdown(currentTime, brokenVehicle.getCurrentLocationUbigeo());
+        logger.info("Journey to breakdown iniciado exitosamente");
+
         replacementVehicle.setEstado(Vehicle.EstadoVehiculo.EN_REEMPLAZO);
         replacementVehicle.setAvailable(false);
 
         // Almacenar una referencia al vehículo averiado que está siendo reemplazado
+        logger.info(String.format("Almacenando referencia del vehículo averiado %s en el vehículo de reemplazo %s",
+                brokenVehicle.getCode(), replacementVehicle.getCode()));
         replacementVehicle.setBrokenVehicleBeingReplaced(brokenVehicle);
+        logger.info("Referencia almacenada exitosamente");
 
         // Registrar la asignación
         logger.info(String.format("Vehículo %s iniciará ruta de reemplazo hacia el punto de avería del vehículo %s.", replacementVehicle.getCode(), brokenVehicle.getCode()));
-    }
-
-    private void assignReplacementVehiclesAtWarehouse(List<Vehicle> brokenVehiclesAtWarehouse) {
-        // Lista para los vehículos cuyo proceso de reemplazo falló
-        List<Vehicle> vehiclesFailedToReplace = new ArrayList<>();
-
-        for (Vehicle brokenVehicle : brokenVehiclesAtWarehouse) {
-            String warehouseUbigeo = brokenVehicle.getCurrentLocationUbigeo();
-            logger.info(String.format("El vehículo averiado %s se encuentra en el almacén %s. Asignando vehículo directamente.", brokenVehicle.getCode(), warehouseUbigeo));
-
-            Vehicle replacementVehicle = getAvailableVehicleAtWarehouse(warehouseUbigeo, brokenVehicle);
-
-            if (replacementVehicle != null) {
-                // Asignar vehículo de reemplazo sin necesidad de ruta
-                assignReplacementVehicleAtSameLocation(replacementVehicle, brokenVehicle, getCurrentTime());
-                logger.info(String.format("Vehículo %s asignado para reemplazar al vehículo averiado %s en el almacén %s.", replacementVehicle.getCode(), brokenVehicle.getCode(), warehouseUbigeo));
-            } else {
-                logger.warning(String.format("No hay vehículos disponibles en el almacén %s para reemplazar al vehículo %s.", warehouseUbigeo, brokenVehicle.getCode()));
-                vehiclesFailedToReplace.add(brokenVehicle);
-            }
-        }
-
-        // Resetear el indicador para los vehículos que no pudieron ser reemplazados
-        for (Vehicle vehicle : vehiclesFailedToReplace) {
-            vehicle.setReplacementProcessInitiated(false);
-        }
     }
 
     private void assignReplacementVehicleAtSameLocation(Vehicle replacementVehicle, Vehicle brokenVehicle, LocalDateTime currentTime) {

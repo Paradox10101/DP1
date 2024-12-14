@@ -505,8 +505,10 @@ public class Vehicle {
         logger.info(breakdownLog);
 
         if (tipoAveria != EstadoVehiculo.AVERIADO_1) {
+            LocationService locationService = LocationService.getInstance();
             String temporaryUbigeo = "TEMP_" + this.getCode(); // Crear un ubigeo único para el punto de avería
-            LocationService.getInstance().addTemporaryLocation(temporaryUbigeo, breakdownPosition.getLatitude(), breakdownPosition.getLongitude());
+            String tempRegion = locationService.getLocation(getCurrentLocationUbigeo()).getNaturalRegion();
+            LocationService.getInstance().addTemporaryLocation(temporaryUbigeo, breakdownPosition.getLatitude(), breakdownPosition.getLongitude(), tempRegion);
             this.currentLocationUbigeo = temporaryUbigeo;
             return temporaryUbigeo;
         } else return null;
