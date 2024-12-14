@@ -42,7 +42,6 @@ export const formattedShipmentsAtom = atom((get) => {
       quantityVehicles: order.quantityVehicles,
       timeRemainingDays: order?.timeRemainingDays?order.timeRemainingDays:0,
       timeRemainingHours: order?.timeRemainingHours?order.timeRemainingHours:0,
-
       vehicles: feature.vehicles
     };
   });

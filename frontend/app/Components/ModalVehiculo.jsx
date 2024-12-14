@@ -2,7 +2,7 @@ import { Button, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigg
 import { AlertTriangle, ArrowRight, Building, Calendar, Car, CarFront, Check, ChevronDown, Circle, CircleAlert, CircleAlertIcon, Clock, Eye, Filter, Flag, Gauge, Globe, MapPin, Package, Truck, Warehouse, X } from "lucide-react"
 import BarraProgreso from "./BarraProgreso"
 import IconoEstado from "./IconoEstado"
-import { Fragment, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import { parseDate } from "@internationalized/date"
@@ -554,26 +554,29 @@ export default function ModalVehiculo({vehicle}){
                                             Fecha de registro desde:
                                         </div>
                                         <div className="w-full flex flex-row justify-between gap-2">
-                                        <DatePicker
-                                        className={`w-full`}
-                                        value={shipmentsFilter.fromDate 
-                                            ? parseDate(shipmentsFilter.fromDate instanceof Date 
-                                                ? shipmentsFilter.fromDate.toISOString().split('T')[0] // Solo la fecha sin la hora
-                                                : shipmentsFilter.fromDate)
-                                            : null}
-                                        onChange={(date) => {
-                                            if (date) {
-                                            // Crear una nueva fecha en UTC con la hora a las 00:00
-                                            const updatedDate = new Date(date);
-                                            updatedDate.setUTCHours(0, 0, 0, 0); // Establecer la hora a las 00:00 en UTC
-
-                                            // Actualizar fromDate con la nueva fecha en UTC
-                                            setShipmentsFilter((prev) => ({
-                                                ...prev,
-                                                fromDate: updatedDate,
-                                            }));
+                                        <input
+                                            type="date"
+                                            className="w-full"
+                                            value={
+                                                shipmentsFilter.fromDate 
+                                                    ? shipmentsFilter.fromDate instanceof Date 
+                                                        ? shipmentsFilter.fromDate.toISOString().split('T')[0] // Solo la fecha sin la hora
+                                                        : shipmentsFilter.fromDate
+                                                    : ""
                                             }
-                                        }}
+                                            onChange={(e) => {
+                                                if (e.target.value) {
+                                                    // Crear una nueva fecha en UTC con la hora a las 00:00
+                                                    const updatedDate = new Date(e.target.value);
+                                                    updatedDate.setUTCHours(0, 0, 0, 0); // Establecer la hora a las 00:00 en UTC
+
+                                                    // Actualizar fromDate con la nueva fecha en UTC
+                                                    setShipmentsFilter((prev) => ({
+                                                        ...prev,
+                                                        fromDate: updatedDate,
+                                                    }));
+                                                }
+                                            }}
                                         />
 
                                         <Input
@@ -610,23 +613,30 @@ export default function ModalVehiculo({vehicle}){
                                             Fecha hasta:
                                         </div>
                                         <div className="w-full flex flex-row justify-between gap-2">
-                                        <DatePicker
-                                    className={`w-full`} // Reducir opacidad si fromDate es null
-                                    value={shipmentsFilter.toDate 
-                                        ? parseDate(shipmentsFilter.toDate instanceof Date 
-                                            ? shipmentsFilter.toDate.toISOString().split('T')[0] // Solo la fecha sin la hora
-                                            : shipmentsFilter.toDate)
-                                        : null}
-                                    //isDisabled={!shipmentsFilter.fromDate} // Deshabilitar si fromDate es null
-                                    onChange={(date) => {
-                                        if (date) {
-                                        // Si se selecciona una fecha, establecerla con hora 00:00
-                                        const updatedDate = new Date(date);
-                                        updatedDate.setUTCHours(0, 0, 0, 0); // Hora 00:00 en UTC para evitar problemas de zona horaria
-                                        setShipmentsFilter((prev) => ({ ...prev, toDate: updatedDate }));
-                                        }
-                                    }}
-                                    />
+                                        <input
+                                            type="date"
+                                            className="w-full"
+                                            value={
+                                                shipmentsFilter.toDate 
+                                                    ? shipmentsFilter.toDate instanceof Date 
+                                                        ? shipmentsFilter.toDate.toISOString().split('T')[0] // Solo la fecha sin la hora
+                                                        : shipmentsFilter.toDate
+                                                    : ""
+                                            }
+                                            onChange={(e) => {
+                                                if (e.target.value) {
+                                                    // Crear una nueva fecha en UTC con la hora a las 00:00
+                                                    const updatedDate = new Date(e.target.value);
+                                                    updatedDate.setUTCHours(0, 0, 0, 0); // Establecer la hora a las 00:00 en UTC
+
+                                                    // Actualizar toDate con la nueva fecha en UTC
+                                                    setShipmentsFilter((prev) => ({
+                                                        ...prev,
+                                                        toDate: updatedDate,
+                                                    }));
+                                                }
+                                            }}
+                                        />
 
                                     <Input
                                     type="time"

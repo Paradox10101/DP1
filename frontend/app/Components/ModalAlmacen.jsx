@@ -380,26 +380,27 @@ export default function ModalAlmacen({ warehouse }) {
                                                     Fecha desde:
                                                 </div>
                                                 <div className="w-full flex flex-row justify-between gap-2">
-                                                <DatePicker
-                                                className={`w-full`}
-                                                value={shipmentsFilter.fromDate 
-                                                    ? parseDate(shipmentsFilter.fromDate instanceof Date 
-                                                        ? shipmentsFilter.fromDate.toISOString().split('T')[0] // Solo la fecha sin la hora
-                                                        : shipmentsFilter.fromDate)
-                                                    : null}
-                                                onChange={(date) => {
-                                                    if (date) {
-                                                    // Crear una nueva fecha en UTC con la hora a las 00:00
-                                                    const updatedDate = new Date(date);
-                                                    updatedDate.setUTCHours(0, 0, 0, 0); // Establecer la hora a las 00:00 en UTC
-
-                                                    // Actualizar fromDate con la nueva fecha en UTC
-                                                    setShipmentsFilter((prev) => ({
-                                                        ...prev,
-                                                        fromDate: updatedDate,
-                                                    }));
+                                                <input
+                                                    type="date"
+                                                    className="w-full"
+                                                    value={
+                                                        shipmentsFilter.fromDate
+                                                            ? shipmentsFilter.fromDate instanceof Date
+                                                                ? shipmentsFilter.fromDate.toISOString().split('T')[0] // Convertir la fecha a formato 'YYYY-MM-DD'
+                                                                : shipmentsFilter.fromDate
+                                                            : ""
                                                     }
-                                                }}
+                                                    onChange={(e) => {
+                                                        if (e.target.value) {
+                                                            // Si se selecciona una fecha, establecerla con hora 00:00
+                                                            const updatedDate = new Date(e.target.value);
+                                                            updatedDate.setUTCHours(0, 0, 0, 0); // Establecer hora 00:00 en UTC
+                                                            setShipmentsFilter((prev) => ({
+                                                                ...prev,
+                                                                fromDate: updatedDate,
+                                                            }));
+                                                        }
+                                                    }}
                                                 />
 
                                                 <Input
@@ -436,24 +437,29 @@ export default function ModalAlmacen({ warehouse }) {
                                                     Fecha hasta:
                                                 </div>
                                                 <div className="w-full flex flex-row justify-between gap-2">
-                                                <DatePicker
-                                            className={`w-full`} // Reducir opacidad si fromDate es null
-                                            value={shipmentsFilter.toDate 
-                                                ? parseDate(shipmentsFilter.toDate instanceof Date 
-                                                    ? shipmentsFilter.toDate.toISOString().split('T')[0] // Solo la fecha sin la hora
-                                                    : shipmentsFilter.toDate)
-                                                : null}
-                                            //isDisabled={!shipmentsFilter.fromDate} // Deshabilitar si fromDate es null
-                                            onChange={(date) => {
-                                                if (date) {
-                                                // Si se selecciona una fecha, establecerla con hora 00:00
-                                                const updatedDate = new Date(date);
-                                                updatedDate.setUTCHours(0, 0, 0, 0); // Hora 00:00 en UTC para evitar problemas de zona horaria
-                                                setShipmentsFilter((prev) => ({ ...prev, toDate: updatedDate }));
-                                                }
-                                            }}
-                                            />
-
+                                                <input
+                                                    type="date"
+                                                    className="w-full" // Puedes añadir clases personalizadas aquí
+                                                    value={
+                                                        shipmentsFilter.toDate
+                                                            ? shipmentsFilter.toDate instanceof Date
+                                                                ? shipmentsFilter.toDate.toISOString().split('T')[0] // Convertir la fecha a formato 'YYYY-MM-DD'
+                                                                : shipmentsFilter.toDate
+                                                            : ""
+                                                    }
+                                                    onChange={(e) => {
+                                                        if (e.target.value) {
+                                                            // Si se selecciona una fecha, establecerla con hora 00:00
+                                                            const updatedDate = new Date(e.target.value);
+                                                            updatedDate.setUTCHours(0, 0, 0, 0); // Establecer la hora a 00:00 UTC
+                                                            setShipmentsFilter((prev) => ({
+                                                                ...prev,
+                                                                toDate: updatedDate,
+                                                            }));
+                                                        }
+                                                    }}
+                                                    disabled={!shipmentsFilter.fromDate} // Deshabilitar si fromDate es null
+                                                />
                                             <Input
                                             type="time"
                                             value={shipmentsFilter.toDate
