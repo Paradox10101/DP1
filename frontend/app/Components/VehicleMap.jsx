@@ -7,7 +7,8 @@ import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom
+  loadingAtom,
+  vehiclePositionsListAtom
 } from '../atoms';
 import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -112,11 +113,11 @@ const StatusBadge = ({ status }) => {
   switch (status) {
       case "EN_ALMACEN":
       case "ORDENES_CARGADAS":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
-                  En Almacén
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#DEA71A] text-[#F9DF9B]">
+                En Almacén
+            </div>
+        );
       case "AVERIADO_1":
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-yellow-100 text-black-600 font-medium">
@@ -136,25 +137,41 @@ const StatusBadge = ({ status }) => {
           </div>
         );
       case "EN_MANTENIMIENTO":
-      case "EN_REPARACION":
-          return (
-              <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
-                  En Mantenimiento
-              </div>
-          );
+        return (
+            <div className="pequenno border rounded-xl w-[140px] text-center bg-[#2174a4] text-[#9dc4db]">
+                En Mantenimiento
+            </div>
+        );
       case "EN_ESPERA_EN_OFICINA":
       case "LISTO_PARA_RETORNO":
-      case "EN_REEMPLAZO":
         return (
             <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7B15FA] text-[#D0B0F8]">
                 En Espera
             </div>
         );
       case "EN_TRANSITO_ORDEN":
-      case "HACIA_ALMACEN":
+      
         return (
           <div className="pequenno border rounded-xl w-[140px] text-center bg-[#284BCC] text-[#BECCFF]">
-            En Tránsito
+            Atendiendo orden
+          </div>
+        );
+      case "HACIA_ALMACEN":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#608272] text-[#f1f1f1]">
+            Hacia almacén
+          </div>
+        );
+      case "EN_REEMPLAZO":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#1b6c81] text-[#BECCFF]">
+            En Reemplazo
+          </div>
+        );
+      case "EN_REPARACION":
+        return (
+          <div className="pequenno border rounded-xl w-[140px] text-center bg-[#7f1b81] text-[#bda6c3]">
+            En Reparación
           </div>
         );
       default:
@@ -172,6 +189,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const mapRef = useRef(null);
   const popupsRef = useRef({});
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
+  const [vehiclePositionsList, setVehiclePositionsList] = useAtom(vehiclePositionsListAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
@@ -189,7 +207,136 @@ const VehicleMap = ({ simulationStatus }) => {
   const lineCurrentRouteRef = useRef()
   const [followLocation, setFollowLocation] = useAtom(followLocationAtom)
   const [simulationType,] = useAtom(simulationTypeAtom);
+
+  // Referencias agregadas para animacion
+  const currentPositionsRef = useRef(null); 
+  const startPositionsRef = useRef(null);
+  const endPositionsRef = useRef(null);
+  const animationStartRef = useRef(null);
+  const animationDuration = 1500;
+  const currentAnimationFrameRef = useRef(null);
   
+  // Función para crear un mapa { vehicleCode: { ...featureData } }
+  const featuresToMap = (geojson) => {
+    const mapFeatures = {};
+    geojson.features.forEach(feat => {
+      const id = feat.properties.vehicleCode;
+      mapFeatures[id] = feat;
+    });
+    return mapFeatures;
+  };
+  
+  const mapToFeatures = (mapData) => {
+    return {
+      type: 'FeatureCollection',
+      features: Object.values(mapData)
+    };
+  };
+  
+  // Interpolar una posición entre start y end
+  const interpolatePosition = (start, end, t) => {
+    const lng = start[0] + (end[0] - start[0]) * t;
+    const lat = start[1] + (end[1] - start[1]) * t;
+    return [lng, lat];
+  };
+  
+  const animatePositions = () => {
+    // Inicio de la función de animación
+    console.log('--- Iniciando animatePositions ---');
+  
+    // Verificar si todas las referencias necesarias están disponibles.
+    if (!mapRef.current || !startPositionsRef.current || !endPositionsRef.current || !animationStartRef.current) {
+      console.log('Faltan referencias necesarias. Saliendo de animatePositions.');
+      return;
+    }
+  
+    // Obtener el tiempo actual y calcular el tiempo transcurrido desde el inicio de la animación.
+    const now = performance.now();
+    const elapsed = now - animationStartRef.current;
+    const t = Math.min(elapsed / animationDuration, 1); // 't' varía de 0 a 1
+  
+    console.log(`Tiempo actual: ${now.toFixed(2)} ms`);
+    console.log(`Tiempo transcurrido: ${elapsed.toFixed(2)} ms`);
+    console.log(`Factor de interpolación (t): ${t.toFixed(4)}`);
+  
+    // Convertir FeatureCollection a mapas para fácil acceso por vehicleCode.
+    const startMap = featuresToMap(startPositionsRef.current);
+    const endMap = featuresToMap(endPositionsRef.current);
+  
+    console.log('Mapa de posiciones iniciales:', startMap);
+    console.log('Mapa de posiciones finales:', endMap);
+  
+    // Crear un nuevo mapa para almacenar las posiciones interpoladas.
+    const interpolatedMap = {};
+  
+    // Iterar sobre cada vehículo en el mapa final para interpolar sus posiciones.
+    for (const id in endMap) {
+      const endFeature = endMap[id];
+      const endCoord = endFeature.geometry.coordinates;
+  
+      // Obtener la posición de inicio del vehículo. Si no existe, asumir que no se ha movido.
+      let startCoord = endCoord; // Por si no existe en startMap
+      if (startMap[id]) {
+        startCoord = startMap[id].geometry.coordinates;
+      }
+  
+      // Log de las coordenadas de inicio y fin del vehículo.
+      console.log(`Vehículo ID: ${id}`);
+      console.log(`  Posición de inicio: [${startCoord[0]}, ${startCoord[1]}]`);
+      console.log(`  Posición final: [${endCoord[0]}, ${endCoord[1]}]`);
+  
+      // Interpolar entre la posición de inicio y final usando 't'.
+      const newCoord = interpolatePosition(startCoord, endCoord, t);
+  
+      // Log de la nueva coordenada interpolada.
+      console.log(`  Nueva coordenada interpolada: [${newCoord[0]}, ${newCoord[1]}]`);
+  
+      // Actualizar el mapa interpolado con la nueva posición del vehículo.
+      interpolatedMap[id] = {
+        ...endFeature,
+        geometry: {
+          ...endFeature.geometry,
+          coordinates: newCoord
+        }
+      };
+    }
+  
+    // Convertir el mapa interpolado de vuelta a FeatureCollection.
+    const interpolatedData = mapToFeatures(interpolatedMap);
+    console.log('Datos interpolados antes de actualizar el mapa:', interpolatedData);
+  
+    // Actualizar la referencia de posiciones actuales con los datos interpolados.
+    currentPositionsRef.current = interpolatedData;
+    console.log('Referencias actualizadas con datos interpolados.');
+  
+    // Obtener la fuente de datos de vehículos en el mapa.
+    const vehiclesSource = mapRef.current.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+    if (vehiclesSource) {
+      // Actualizar los datos de la fuente con las posiciones interpoladas.
+      vehiclesSource.setData(interpolatedData);
+      console.log('Fuente de vehículos actualizada con datos interpolados.');
+    } else {
+      console.warn('Fuente de vehículos no encontrada en el mapa.');
+    }
+  
+    // Determinar si la animación debe continuar o finalizar.
+    if (t < 1) {
+      console.log('Animación en progreso. Solicitando el siguiente frame.');
+      currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
+    } else {
+      console.log('Animación completada.');
+      // Actualizar las referencias de posición final para futuras animaciones.
+      positionsRef.current = endPositionsRef.current;
+      currentPositionsRef.current = endPositionsRef.current;
+      console.log('Referencias de posición actualizadas con posiciones finales.');
+    }
+  
+    // Fin de la función de animación
+    console.log('--- Finalizando animatePositions ---');
+  };
+  
+  
+
 
   //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
 
@@ -213,15 +360,19 @@ const VehicleMap = ({ simulationStatus }) => {
       }
       const data = await response.json();
       if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+
+        const filteredFeatures = data.features.filter(feature => 
+          !feature.properties.ubigeo?.startsWith('TEMP_')
+        );
         // Separar features por tipo
         const offices = {
           type: 'FeatureCollection',
-          features: data.features.filter(f => f.properties.type === 'office')
+          features: filteredFeatures.filter(f => f.properties.type === 'office')
         };
         
         const warehouses = {
           type: 'FeatureCollection',
-          features: data.features.filter(f => f.properties.type === 'warehouse')
+          features: filteredFeatures.filter(f => f.properties.type === 'warehouse')
         };
 
         // Actualizar las fuentes por separado
@@ -359,11 +510,39 @@ const VehicleMap = ({ simulationStatus }) => {
       }),
     };
     console.log('Datos del WebSocket procesados:', updatedData);
-    // Actualizar los popups usando la función existente
     updatePopups(updatedData);
-    setPositions(updatedData);
-    updateVehiclePositions(updatedData); // Utiliza la versión con throttle    
-  }, [setPositions]);
+  
+    // Si no teníamos posiciones anteriores (primer mensaje)
+    if (!positionsRef.current || !positionsRef.current.features) {
+      // No hay animación previa, simplemente establecemos las posiciones inicial y final iguales
+      positionsRef.current = updatedData;
+      currentPositionsRef.current = updatedData;
+      startPositionsRef.current = updatedData;
+      endPositionsRef.current = updatedData;
+      // Actualizamos el mapa una vez sin animación
+      const vehiclesSource = mapRef.current?.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
+      if (vehiclesSource) {
+        vehiclesSource.setData(updatedData);
+      }
+      return;
+    }
+  
+    // Cancelar cualquier animación en curso
+    if (currentAnimationFrameRef.current) {
+      cancelAnimationFrame(currentAnimationFrameRef.current);
+    }
+  
+    // Si estábamos animando, partimos de la posición actual mostrada (interpolada)
+    const currentData = currentPositionsRef.current || positionsRef.current;
+  
+    startPositionsRef.current = currentData;
+    endPositionsRef.current = updatedData;
+    animationStartRef.current = performance.now();
+  
+    // Iniciar la animación
+    currentAnimationFrameRef.current = requestAnimationFrame(animatePositions);
+    setVehiclePositionsList(updatedData);
+  }, [setPositions, setVehiclePositionsList]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {
@@ -1084,42 +1263,98 @@ const VehicleMap = ({ simulationStatus }) => {
         return;
       }
       try {
-        // Obtener las ubicaciones filtradas del átomo
-        const updatedLocations = locations.features.map((location) => {
-          if (location.properties.type === 'office') {
-            // Buscar la ubicación correspondiente en el WebSocket
-            const updatedLocation = locationsUltimo.find(
-              (loc) =>
-                loc.ubigeo === location.properties.ubigeo &&
-                loc.type === location.properties.type
-            );
 
-            // Si se encuentra, actualizar el porcentaje ocupado
-            if (updatedLocation) {
-              return {
-                ...location,
-                properties: {
-                  ...location.properties,
-                  // Convertir a número y redondear a 2 decimales
-                  occupiedPercentage: Math.round(Number(updatedLocation.occupiedPercentage)),
-                },
-              };
-            }
+        const filteredLocations = locations.features.filter(feature => 
+          !feature.properties.ubigeo?.startsWith('TEMP_')
+        );
+        // Separar primero las ubicaciones por tipo
+        const warehouseLocations = filteredLocations.filter(f => f.properties.type === 'warehouse');
+        const officeLocations = filteredLocations.filter(f => f.properties.type === 'office');
+
+        // Actualizar solo las oficinas con la información del WebSocket
+        const updatedOfficeLocations = officeLocations.map((location) => {
+          const updatedLocation = locationsUltimo.find(
+            (loc) =>
+              loc.ubigeo === location.properties.ubigeo &&
+              loc.type === location.properties.type &&
+              !loc.ubigeo?.startsWith('TEMP_')
+          );
+
+          if (updatedLocation) {
+            return {
+              ...location,
+              properties: {
+                ...location.properties,
+                occupiedPercentage: Math.round(Number(updatedLocation.occupiedPercentage)),
+              },
+            };
           }
           return location;
         });
 
-        const updatedData = {
+        // Crear las colecciones de características separadas
+        const offices = {
+          type: 'FeatureCollection',
+          features: updatedOfficeLocations
+        };
+        
+        const warehouses = {
+          type: 'FeatureCollection',
+          features: warehouseLocations // Usar los almacenes sin modificar
+        };
+
+        // Verificar los valores actualizados
+        console.log('Oficinas actualizadas:', updatedOfficeLocations.map(f => ({
+          name: f.properties.name,
+          occupiedPercentage: f.properties.occupiedPercentage
+        })));
+        
+        console.log('Almacenes:', warehouseLocations.map(f => ({
+          name: f.properties.name
+        })));
+
+        // Actualizar o crear fuente de oficinas (con clustering)
+        if (!mapRef.current.getSource('offices')) {
+          mapRef.current.addSource('offices', {
+            type: 'geojson',
+            data: offices,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
+        } else {
+          mapRef.current.getSource('offices').setData(offices);
+        }
+
+        // Actualizar o crear fuente de almacenes (sin clustering)
+        if (!mapRef.current.getSource('warehouses')) {
+          mapRef.current.addSource('warehouses', {
+            type: 'geojson',
+            data: warehouses
+          });
+        } else {
+          mapRef.current.getSource('warehouses').setData(warehouses);
+        }
+
+        // Solo añadir las capas si no existen
+        await addLocationLayers();
+        if (mapRef.current.getLayer('unclustered-warehouses')) {
+          // Esto moverá la capa de almacenes al frente de todo
+          mapRef.current.moveLayer('unclustered-warehouses');
+        }
+
+        /*const updatedData = {
           ...locations,
           features: updatedLocations,
         };
-
+        
+        /*
         // Verificar los valores actualizados
         console.log('Datos actualizados:', updatedData.features.map(f => ({
           name: f.properties.name,
           occupiedPercentage: f.properties.occupiedPercentage
         })));
-
+        */
         if (!mapRef.current.getSource('locations')) {
           mapRef.current.addSource('locations', {
             type: 'geojson',
@@ -1137,7 +1372,7 @@ const VehicleMap = ({ simulationStatus }) => {
           }
         }
       } catch (error) {
-        console.error('Error al actualizar ubicaciones:', error);
+        console.log('Error al actualizar ubicaciones:', error);
         setError('Error al actualizar ubicaciones en el mapa');
       }
     };
@@ -1154,7 +1389,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.addLayer({
           id: 'clusters',
           type: 'circle',
-          source: 'locations',
+          source: 'offices',
           filter: ['has', 'point_count'],
           paint: {
             'circle-color': '#08CA57', // Verde
@@ -1200,7 +1435,7 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.addLayer({
           id: 'cluster-count',
           type: 'symbol',
-          source: 'locations',
+          source: 'offices',
           filter: ['has', 'point_count'],
           layout: {
             'text-field': '{point_count_abbreviated}',
@@ -1214,47 +1449,14 @@ const VehicleMap = ({ simulationStatus }) => {
           },
         });
       }
-
-      // Capas para ubicaciones no agrupadas (almacenes y oficinas)
-      if (!mapRef.current.getLayer('unclustered-warehouses')) {
-        mapRef.current.addLayer({
-          id: 'unclustered-warehouses',
-          type: 'symbol',
-          source: 'locations',
-          filter: ['all', ['==', ['get', 'type'], 'warehouse'], ['!', ['has', 'point_count']]],
-          layout: {
-            'icon-image': 'warehouse-icon',
-            'icon-size': 0.8,
-            'icon-allow-overlap': true, // Permitir solapamiento para asegurar que se puedan hacer clic
-            'text-field': ['get', 'name'],
-            'text-font': ['Open Sans Bold'],
-            'text-size': 12,
-            'text-offset': [0, 1.5],
-            'text-anchor': 'top',
-          },
-          paint: {
-            'text-color': '#000000',
-            'text-halo-color': '#FFFFFF',
-            'text-halo-width': 1,
-          },
-        });
-
-        // Añadir eventos de clic y cursor para almacenes
-        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
-        mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
-          mapRef.current.getCanvas().style.cursor = 'pointer';
-        });
-        mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
-          mapRef.current.getCanvas().style.cursor = '';
-        });
-      }
+      
 
       if (!mapRef.current.getLayer('unclustered-offices')) {
         mapRef.current.addLayer({
           id: 'unclustered-offices',
           type: 'symbol',
-          source: 'locations',
-          filter: ['all', ['==', ['get', 'type'], 'office'], ['!', ['has', 'point_count']]],
+          source: 'offices',
+          filter: ['!', ['has', 'point_count']],
           layout: {
             'icon-image': [
               'let',
@@ -1290,6 +1492,44 @@ const VehicleMap = ({ simulationStatus }) => {
           mapRef.current.getCanvas().style.cursor = '';
         });
       }
+
+      // Capas para ubicaciones no agrupadas (almacenes y oficinas)
+      if (!mapRef.current.getLayer('unclustered-warehouses')) {
+        mapRef.current.addLayer({
+          id: 'unclustered-warehouses',
+          type: 'symbol',
+          source: 'warehouses',
+          layout: {
+            'icon-image': 'warehouse-icon',
+            'icon-size': 0.8,
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'text-field': ['get', 'name'],
+            'text-font': ['Open Sans Bold'],
+            'text-size': 12,
+            'text-offset': [0, 1.5],
+            'text-anchor': 'top',
+            'text-allow-overlap': true,
+            'text-ignore-placement': true
+          },
+          paint: {
+            'text-color': '#000000',
+            'text-halo-color': '#FFFFFF',
+            'text-halo-width': 1,
+          },
+        });
+
+        // Añadir eventos de clic y cursor para almacenes
+        mapRef.current.on('click', 'unclustered-warehouses', handleLocationClick);
+        mapRef.current.on('mouseenter', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = 'pointer';
+        });
+        mapRef.current.on('mouseleave', 'unclustered-warehouses', () => {
+          mapRef.current.getCanvas().style.cursor = '';
+        });
+      }
+
+
     } catch (error) {
       console.error('Error al agregar capas de ubicaciones:', error);
       setError('Error al agregar capas de ubicaciones');
@@ -1443,8 +1683,8 @@ const VehicleMap = ({ simulationStatus }) => {
       mapRef.current.flyTo({
         center: followLocation, // Coordenadas de destino
         zoom: 9, // Nivel de zoom deseado (ajusta según necesidad)
-        speed: 2, // Velocidad del vuelo (opcional)
-        curve: 1, // Curva del vuelo (opcional)
+        speed: 4, // Velocidad del vuelo (opcional)
+        //curve: 1, // Curva del vuelo (opcional)
         easing: (t) => t, // Efecto de suavizado (opcional)
       });
       setFollowLocation(null)
@@ -1473,6 +1713,8 @@ const VehicleMap = ({ simulationStatus }) => {
       if (mapRef.current.getSource(sourceIdBlockedRoutes)) {
         mapRef.current.removeSource(sourceIdBlockedRoutes); // Eliminar la fuente si existe
       }
+    }
+    else{
       
     }
     

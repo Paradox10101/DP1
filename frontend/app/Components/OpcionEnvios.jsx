@@ -55,7 +55,9 @@ export default function OpcionEnvios() {
                 }
                 const data = await response.json();
                 const officeCities = data.features
-                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)) // Filtra los no excluidos
+                    .filter((feature) => !["150101", "040101", "130101"].includes(feature.properties.ubigeo)&& // Excluye los ubigeos específicos
+                    !feature.properties.ubigeo.startsWith("TEMP") // Excluye los ubigeos temporales
+                ) // Filtra los no excluidos
                     .map((feature) => feature.properties.name) // Extrae los nombres
                     .sort((a, b) => a.localeCompare(b));
                 const warehouseCities = data.features
