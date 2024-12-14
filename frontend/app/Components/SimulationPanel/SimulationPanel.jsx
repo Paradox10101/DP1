@@ -14,9 +14,9 @@ import { showControlsAtom } from "@/atoms/simulationAtoms";
 import { useAtom } from "jotai";
 import { PanelRightOpen } from "lucide-react";
 
-const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), {
+/*const ClockContainer = dynamic(() => import('@/app/Components/ClockContainer'), {
   ssr: false
-});
+});*/
 
 export default function SimulationPanel({openReport}) {
   const [simulationType] = useAtom(simulationTypeAtom);  
@@ -43,7 +43,7 @@ export default function SimulationPanel({openReport}) {
         }`}
       >
         <div className="flex flex-col h-full">
-          <Header ClockContainer={ClockContainer} />
+          <Header /> {/* Elimina la prop ClockContainer aquí */}
           <div className="flex flex-col gap-4 p-4 flex-1">
             <Navigation tipoSimulacion={simulationType}/>
             
@@ -52,7 +52,6 @@ export default function SimulationPanel({openReport}) {
                 <OpcionSimulacion
                   tipoSimulacion={simulationType}
                   openReport={openReport}
-                  
                 />
               </Tab>
               
