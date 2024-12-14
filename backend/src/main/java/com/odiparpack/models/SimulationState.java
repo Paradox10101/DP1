@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.Utils.calculateDistance;
 import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static java.lang.Math.abs;
 
@@ -887,10 +888,12 @@ public class SimulationState {
                         .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
             }
             else{
-                builder.append("\"timeElapsedDays\":").append(0).append(",")
-                        .append("\"timeElapsedHours\":").append(0).append(",")
-                        .append("\"timeRemainingDays\":").append(0).append(",")
-                        .append("\"timeRemainingHours\":").append(0);
+                Duration timeElapsed = Duration.between(order.getOrderTime(), order.getArrivedToOfficeTime());
+                Duration timeRemaining = Duration.between(order.getArrivedToOfficeTime(), order.getDueTime());
+                builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
+                        .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                        .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                        .append("\"timeRemainingHours\":").append(timeRemaining.toHours());
             }
         } else {
             Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime);
@@ -973,7 +976,7 @@ public class SimulationState {
                                                 .append("\"destinationCity\":\"").append(getValidatedProvince(routeSegment.getToUbigeo())).append("\",")
                                                 .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
                                                 .append("\"status\":\"").append(attendedOrder || traveled ? "TRAVELED" : inTravel ? "IN_TRAVEL" : "NO_TRAVELED").append("\",")
-                                                .append("\"distance\":").append(routeSegment.getDistance())
+                                                .append("\"distance\":").append(calculateDistance(locations.get(routeSegment.getFromUbigeo()).getLatitude(), locations.get(routeSegment.getFromUbigeo()).getLongitude(), locations.get(routeSegment.getToUbigeo()).getLatitude(), locations.get(routeSegment.getToUbigeo()).getLongitude()))
                                                 .append("}");
                                         firstRoute = false;
                                         inTravel = false;
@@ -2063,6 +2066,9 @@ public class SimulationState {
     public void updateOrderStatuses() {
         for (Order order : orders) {
             if (order.getStatus() == Order.OrderStatus.PENDING_PICKUP) {
+                if(order.isReadyForPickUp(currentTime)){
+                    order.setArrivedToOfficeTime(currentTime);
+                }
                 if (order.isReadyForDelivery(currentTime)) {
                     order.setDelivered(currentTime);
                     // Incrementar la capacidad del almacén de destino cuando el pedido se marca como entregado
