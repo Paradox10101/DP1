@@ -34,7 +34,7 @@ const MetricsDisplay = () => {
     },
     {
       icon: Clock,
-      label: "Tiempo simulado",
+      label: "Fecha simulado",
       value: metrics.simulatedTime,
       category: 'time'
     },
@@ -46,8 +46,8 @@ const MetricsDisplay = () => {
     },
     {
       icon: Clock,
-      label: "Tiempo real en simulación",
-      value: metrics.realElapsedTime,
+      label: "Fecha Actual",
+      value: new Date().toLocaleString('es-ES'),
       category: 'time'
     },
     {

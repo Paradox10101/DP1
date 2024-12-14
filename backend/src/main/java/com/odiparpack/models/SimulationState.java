@@ -22,6 +22,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.Utils.calculateDistance;
+import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static java.lang.Math.abs;
 
 public class SimulationState {
@@ -81,6 +83,8 @@ public class SimulationState {
     private int averiasTipo1 = 0;
     private int averiasTipo2 = 0;
     private int averiasTipo3 = 0;
+    private double totalCapacidadEfectivaOficina = 0.0;
+    private int contadorMedicionesOficina = 0;
 
     private Duration collapseThresholdDuration = null;
 
@@ -884,10 +888,12 @@ public class SimulationState {
                         .append("\"timeRemainingHours\":").append(timeRemaining.toHours() % 24);
             }
             else{
-                builder.append("\"timeElapsedDays\":").append(0).append(",")
-                        .append("\"timeElapsedHours\":").append(0).append(",")
-                        .append("\"timeRemainingDays\":").append(0).append(",")
-                        .append("\"timeRemainingHours\":").append(0);
+                Duration timeElapsed = Duration.between(order.getOrderTime(), order.getArrivedToOfficeTime());
+                Duration timeRemaining = Duration.between(order.getArrivedToOfficeTime(), order.getDueTime());
+                builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
+                        .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")
+                        .append("\"timeRemainingDays\":").append(timeRemaining.toDays()).append(",")
+                        .append("\"timeRemainingHours\":").append(timeRemaining.toHours());
             }
         } else {
             Duration timeElapsed = Duration.between(order.getOrderTime(), currentTime);
@@ -970,7 +976,7 @@ public class SimulationState {
                                                 .append("\"destinationCity\":\"").append(getValidatedProvince(routeSegment.getToUbigeo())).append("\",")
                                                 .append("\"durationMinutes\":").append(routeSegment.getDurationMinutes()).append(",")
                                                 .append("\"status\":\"").append(attendedOrder || traveled ? "TRAVELED" : inTravel ? "IN_TRAVEL" : "NO_TRAVELED").append("\",")
-                                                .append("\"distance\":").append(routeSegment.getDistance())
+                                                .append("\"distance\":").append(calculateDistance(locations.get(routeSegment.getFromUbigeo()).getLatitude(), locations.get(routeSegment.getFromUbigeo()).getLongitude(), locations.get(routeSegment.getToUbigeo()).getLatitude(), locations.get(routeSegment.getToUbigeo()).getLongitude()))
                                                 .append("}");
                                         firstRoute = false;
                                         inTravel = false;
@@ -1230,11 +1236,13 @@ public class SimulationState {
     //Metodo que se llama cada vez que se asigna un pedido a un vehículo
     public void assignOrdersCount(){
         currentDayOrders++;
-        totalOrdersCount2++;
+        //totalOrdersCount2++;
     }
 
     public int getTotalOrdersCount2(){
-        return totalOrdersCount2;
+        return (int) orders.stream()
+                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED)
+                .count();
     }
 
     public void guardarPedidosDiarios() {
@@ -1256,6 +1264,39 @@ public class SimulationState {
     }
     public List<Integer> getOrderbyDays(){
         return orderbyDays;
+    }
+
+    // Método para actualizar la capacidad efectiva de oficinas
+    public void updateWarehouseEffectiveCapacity() {
+        double totalCapacidadUsada = 0;
+        double totalCapacidadMaxima = 0;
+
+        for (Map.Entry<String, Location> entry : locations.entrySet()) {
+            String ubigeo = entry.getKey();
+            Location location = entry.getValue();
+            int maxCapacity = location.getWarehouseCapacity();
+
+            if (maxCapacity > 0) {
+                int currentCapacity = warehouseManager.getCurrentCapacity(ubigeo);
+                totalCapacidadUsada += maxCapacity - currentCapacity;
+                totalCapacidadMaxima += maxCapacity;
+            }
+        }
+
+        if (totalCapacidadMaxima > 0) {
+            double capacidadEfectiva = (totalCapacidadUsada / totalCapacidadMaxima) * 100;
+            totalCapacidadEfectivaOficina += capacidadEfectiva;
+            contadorMedicionesOficina++;
+            logger.info("Capacidad efectiva de oficinas actual: " + capacidadEfectiva + "%");
+        }
+    }
+
+    // Método para obtener el promedio acumulado
+    public double getAverageWarehouseEffectiveCapacity() {
+        if (contadorMedicionesOficina == 0) {
+            return 0.0;
+        }
+        return totalCapacidadEfectivaOficina / contadorMedicionesOficina;
     }
 
     // Método para actualizar la métrica de capacidad efectiva acumulada
@@ -2029,10 +2070,14 @@ public class SimulationState {
     public void updateOrderStatuses() {
         for (Order order : orders) {
             if (order.getStatus() == Order.OrderStatus.PENDING_PICKUP) {
+                if(order.isReadyForPickUp(currentTime)){
+                    order.setArrivedToOfficeTime(currentTime);
+                }
                 if (order.isReadyForDelivery(currentTime)) {
-                    order.setDelivered(currentTime);
+                    order.setDelivered(currentTime);// Aqui se marca como ENTREGADO
                     // Incrementar la capacidad del almacén de destino cuando el pedido se marca como entregado
                     warehouseManager.increaseCapacity(order.getDestinationUbigeo(), order.getQuantity());
+                    //totalOrdersCount2++;
                 }
             }
         }

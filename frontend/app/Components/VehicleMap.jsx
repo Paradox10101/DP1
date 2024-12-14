@@ -196,7 +196,7 @@ const VehicleMap = ({ simulationStatus }) => {
   const startPositionsRef = useRef(null);
   const endPositionsRef = useRef(null);
   const animationStartRef = useRef(null);
-  const animationDuration = 1500;
+  const animationDuration = 1800;
   const currentAnimationFrameRef = useRef(null);
   
   // Función para crear un mapa { vehicleCode: { ...featureData } }
@@ -508,6 +508,7 @@ const VehicleMap = ({ simulationStatus }) => {
       const vehiclesSource = mapRef.current?.getSource(MAP_CONFIG.SOURCES.VEHICLES.id);
       if (vehiclesSource) {
         vehiclesSource.setData(updatedData);
+        
       }
       return;
     }
@@ -516,6 +517,8 @@ const VehicleMap = ({ simulationStatus }) => {
     if (currentAnimationFrameRef.current) {
       cancelAnimationFrame(currentAnimationFrameRef.current);
     }
+
+    //setPositions(updatedData);
   
     // Si estábamos animando, partimos de la posición actual mostrada (interpolada)
     const currentData = currentPositionsRef.current || positionsRef.current;
@@ -1328,9 +1331,9 @@ const VehicleMap = ({ simulationStatus }) => {
           mapRef.current.moveLayer('unclustered-warehouses');
         }
 
-        /*const updatedData = {
+        const updatedData = {
           ...locations,
-          features: updatedLocations,
+          features: [...updatedOfficeLocations, ...warehouseLocations]
         };
         
         /*

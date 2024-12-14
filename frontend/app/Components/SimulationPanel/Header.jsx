@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/react";
 import { showControlsAtom } from "@/atoms/simulationAtoms";
 import { useAtom } from "jotai";
 
-const Header = ({ ClockContainer }) => {
+const Header = () => {
   const [showControls, setShowControls] = useAtom(showControlsAtom);
   
   const toggleControls = () => setShowControls(!showControls);
@@ -33,7 +33,6 @@ const Header = ({ ClockContainer }) => {
           </span>
         </Button>
       </div>
-      <ClockContainer />
     </div>
   );
 };

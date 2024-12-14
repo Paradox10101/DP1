@@ -30,6 +30,7 @@ public class Order {
     private int assignedPackages;
     private int deliveredPackages;
     private String orderCode;
+    public LocalDateTime arrivedToOfficeTime = null;
 
     public LocalDateTime getPendingPickupStartTime() {
         return pendingPickupStartTime;
@@ -70,6 +71,14 @@ public class Order {
     public LocalDateTime getDueTime() { return dueTime; }
     public void setDueTime(LocalDateTime dueTime) { this.dueTime = dueTime; }
     public String getClientId() { return clientId; }
+
+    public LocalDateTime getArrivedToOfficeTime() {
+        return arrivedToOfficeTime;
+    }
+
+    public void setArrivedToOfficeTime(LocalDateTime arrivedToOfficeTime) {
+        this.arrivedToOfficeTime = arrivedToOfficeTime;
+    }
 
     public OrderStatus getStatus() {
         return status;
@@ -170,6 +179,11 @@ public class Order {
         return this.status == OrderStatus.PENDING_PICKUP &&
                 currentTime.isAfter(this.pendingPickupStartTime.plus(PICKUP_DURATION));
     }
+
+    public boolean isReadyForPickUp(LocalDateTime currentTime) {
+        return this.status == OrderStatus.PENDING_PICKUP &&
+                arrivedToOfficeTime == null;
+    }
     
     public String getDestinationCity() {
         LocationService locationService = LocationService.getInstance();
@@ -182,6 +196,7 @@ public class Order {
 
     public void setDelivered(LocalDateTime currentSimulationTime) {
         this.status = OrderStatus.DELIVERED;
+
         logger.info("Orden " + getId() + " marcada como DELIVERED a las " + currentSimulationTime);
     }
 

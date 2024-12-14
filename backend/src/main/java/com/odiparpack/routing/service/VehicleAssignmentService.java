@@ -277,6 +277,7 @@ public class VehicleAssignmentService {
             state.guardarCiudadDestino(order.getDestinationCity());
             state.registrarParadaEnAlmacen(order.getOriginUbigeo());
             state.asignarPedidoAlmacenCount(order.getDestinationUbigeo());
+            state.updateWarehouseEffectiveCapacity();
         }
     }
 
