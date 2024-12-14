@@ -322,6 +322,12 @@ public class SimulationRunner {
     }
 
     private static boolean isOrderAvailable(Order order, LocalDateTime currentTime) {
+        // Primero verificar que no esté en estado completado o en transito
+        if (order.getStatus() == Order.OrderStatus.DELIVERED || order.getStatus() == Order.OrderStatus.IN_TRANSIT) {
+            return false;
+        }
+
+        // Luego verificar los estados válidos y el tiempo
         return (order.getStatus() == Order.OrderStatus.REGISTERED
                 || order.getStatus() == Order.OrderStatus.PARTIALLY_ASSIGNED
                 || order.getStatus() == Order.OrderStatus.PARTIALLY_ARRIVED)
