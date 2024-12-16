@@ -9,7 +9,7 @@
         </config>
         <ContributedStateBase type="JavaLanguageRuntime">
           <config>
-            <option name="homePath" value="/opt/jdk-20.0.2" />
+            <option name="homePath" value="/usr/local/jdk-20" />
             <option name="javaVersionString" value="20" />
           </config>
         </ContributedStateBase>

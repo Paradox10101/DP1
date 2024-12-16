@@ -949,7 +949,7 @@ public class Vehicle {
         route = null;
         this.setListoParaRegresarAlmacen(false);
 
-        if (estado == EstadoVehiculo.HACIA_ALMACEN ) {
+        if (estado == EstadoVehiculo.HACIA_ALMACEN) {
             estado = EstadoVehiculo.EN_ALMACEN;
             logger.info(String.format("Estado del vehiculo %s actualizado a: EN ALMACEN - %s (%s)",
                     getCode(),
