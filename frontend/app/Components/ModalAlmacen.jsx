@@ -171,7 +171,7 @@ export default function ModalAlmacen({ warehouse }) {
         );
     };
 
-    return (
+    return (warehouse&&
         <div className="flex flex-col gap-6">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-col gap-2">
