@@ -26,60 +26,73 @@ public class OrderRouter extends BaseRouter {
     public void setupRoutes() {
         Spark.post("/api/v1/orders/register", (request, response) -> {
             response.type("application/json");
+            JsonObject jsonResponse = new JsonObject();
+            List<String> successfulRecords = new ArrayList<>();
+            List<String> failedRecords = new ArrayList<>();
 
             try {
                 // Parse request body
                 JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
-
-                // Extract client information
-                String firstName = body.get("firstName").getAsString();
-                String lastName = body.get("lastName").getAsString();
-                String phone = body.get("phone").getAsString();
-                String email = body.has("email") ? body.get("email").getAsString() : null;
-
-                // Extract order information
-                String originUbigeo = body.get("originUbigeo").getAsString();
-                String destinationUbigeo = body.get("destinationUbigeo").getAsString();
-                int quantity = body.get("quantity").getAsInt();
-
-                // Parse order datetime with timezone handling
-                String dateTimeStr = body.get("orderDateTime").getAsString();
-                LocalDateTime orderDateTime = ZonedDateTime.parse(dateTimeStr)
-                        .toLocalDateTime();
-
-                // Process client
-                Client client = ClientRegistry.findOrCreateClient(firstName, lastName, phone, email);
-
-                // Calculate due time
                 DataLoader dataLoader = new DataLoader();
                 LocationService locationService = LocationService.getInstance();
-                LocalDateTime dueTime = dataLoader.calculateDueDate(orderDateTime, destinationUbigeo, locationService.getAllLocations());
 
-                // Create order
-                Order order = new Order(
-                        OrderRegistry.getNextId(),
-                        originUbigeo,
-                        destinationUbigeo,
-                        quantity,
-                        orderDateTime,
-                        dueTime,
-                        client.getClientId()
-                );
+                try {
+                    // Parse order datetime
+                    String dateTimeStr = body.get("orderDateTime").getAsString();
+                    LocalDateTime orderDateTime = ZonedDateTime.parse(dateTimeStr)
+                            .toLocalDateTime();
 
-                // Generate and set order code
-                String orderCode = String.format("ORD%07d", order.getId());
-                order.setOrderCode(orderCode);
-                order.setStatus(Order.OrderStatus.REGISTERED);
+                    // Get location information
+                    String destinationUbigeo = body.get("destinationUbigeo").getAsString();
+                    int quantity = body.get("quantity").getAsInt();
 
-                // Register the order
-                OrderRegistry.addOrder(order);
+                    // Calculate delivery date
+                    LocalDateTime dueTime = dataLoader.calculateDueDate(
+                            orderDateTime,
+                            destinationUbigeo,
+                            locationService.getAllLocations()
+                    );
+
+                    // Create order
+                    Order order = new Order(
+                            OrderRegistry.getNextId(),
+                            "******", // fixed origin with asterisks
+                            destinationUbigeo,
+                            quantity,
+                            orderDateTime,
+                            dueTime,
+                            "SYSTEM" // default clientId
+                    );
+
+                    // Generate and set order code
+                    String orderCode = String.format("ORD%07d", order.getId());
+                    order.setOrderCode(orderCode);
+                    order.setStatus(Order.OrderStatus.REGISTERED);
+
+                    // Register the order
+                    OrderRegistry.addOrder(order);
+
+                    // Add to successful records
+                    successfulRecords.add(orderCode);
+
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Error processing order", e);
+                    failedRecords.add(body.toString() + " - Error: " + e.getMessage());
+                }
 
                 // Prepare response
-                JsonObject jsonResponse = new JsonObject();
                 jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("orderCode", order.getOrderCode());
-                jsonResponse.addProperty("clientCode", client.getClientId());
-                jsonResponse.addProperty("estimatedDeliveryDate", dueTime.toString());
+                jsonResponse.addProperty("totalProcessed", 1);
+                jsonResponse.addProperty("successfulCount", successfulRecords.size());
+                jsonResponse.addProperty("failedCount", failedRecords.size());
+
+                JsonArray successfulArray = new JsonArray();
+                successfulRecords.forEach(successfulArray::add);
+                jsonResponse.add("successfulRecords", successfulArray);
+
+                JsonArray failedArray = new JsonArray();
+                failedRecords.forEach(failedArray::add);
+                jsonResponse.add("failedRecords", failedArray);
 
                 response.status(200);
                 return jsonResponse;
@@ -87,10 +100,9 @@ public class OrderRouter extends BaseRouter {
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error processing order registration", e);
                 response.status(400);
-                JsonObject errorResponse = new JsonObject();
-                errorResponse.addProperty("success", false);
-                errorResponse.addProperty("error", "Error al registrar el pedido: " + e.getMessage());
-                return errorResponse;
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Error al registrar el pedido: " + e.getMessage());
+                return jsonResponse;
             }
         });
 
@@ -113,13 +125,20 @@ public class OrderRouter extends BaseRouter {
                     try {
                         JsonObject record = elem.getAsJsonObject();
 
+                        // Obtener información de ubicación
+                        String destinationUbigeo = record.get("destinationUbigeo").getAsString();
+
+                        // Validar si el ubigeo existe
+                        Location destinationLocation = locationService.getLocation(destinationUbigeo);
+                        if (destinationLocation == null) {
+                            throw new IllegalArgumentException("Ubigeo destino no encontrado: " + destinationUbigeo);
+                        }
+
                         // Parse order datetime
                         String dateTimeStr = record.get("isoDate").getAsString();
                         LocalDateTime orderDateTime = ZonedDateTime.parse(dateTimeStr)
                                 .toLocalDateTime();
 
-                        // Obtener información de ubicación
-                        String destinationUbigeo = record.get("destinationUbigeo").getAsString();
                         int quantity = record.get("quantity").getAsInt();
 
                         // Calcular fecha de entrega

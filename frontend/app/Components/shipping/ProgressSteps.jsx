@@ -1,35 +1,30 @@
-import { User, Package, Truck } from 'lucide-react';
+import { Package, Truck } from 'lucide-react';
 
 const steps = [
   {
-    icon: <User className="w-6 h-6" />,
-    label: "Información del cliente",
-    step: 1
-  },
-  {
     icon: <Package className="w-6 h-6" />,
     label: "Detalles del paquete",
-    step: 2
+    step: 1
   },
   {
     icon: <Truck className="w-6 h-6" />,
     label: "Confirmación",
-    step: 3
+    step: 2
   }
 ];
 
 export const ProgressSteps = ({ currentStep }) => (
   <div className="flex justify-between items-center mb-12 relative">
     {steps.map((step, index) => (
-      <div 
-        key={step.label} 
+      <div
+        key={step.label}
         className="flex-1 flex flex-col items-center relative"
       >
-        <div 
+        <div
           className={`
             w-12 h-12 rounded-full flex items-center justify-center relative z-10
-            ${step.step === currentStep 
-              ? 'bg-blue-600 text-white' 
+            ${step.step === currentStep
+              ? 'bg-blue-600 text-white'
               : 'bg-gray-200 text-gray-500'}
           `}
         >
@@ -43,3 +38,5 @@ export const ProgressSteps = ({ currentStep }) => (
     ))}
   </div>
 );
+
+export default ProgressSteps;

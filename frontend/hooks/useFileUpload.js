@@ -144,14 +144,20 @@ export const useShipmentUpload = () => {
       month = now.getMonth() + 1;
     }
     
-    // Crear fecha ISO
-    const isoDate = new Date(
+    const localDate = new Date(
       year,
       month - 1,
       parseInt(day),
       parseInt(hour),
       parseInt(minute)
-    ).toISOString();
+    );
+    
+    // Construir manualmente el string ISO manteniendo la hora local
+    const isoDate = localDate.getFullYear() + '-' +
+      String(localDate.getMonth() + 1).padStart(2, '0') + '-' +
+      String(localDate.getDate()).padStart(2, '0') + 'T' +
+      String(localDate.getHours()).padStart(2, '0') + ':' +
+      String(localDate.getMinutes()).padStart(2, '0') + ':00.000-05:00';
 
     return {
       isoDate,
@@ -181,7 +187,16 @@ export const useShipmentUpload = () => {
           if (prev >= 95) return 95;
           return prev + Math.random() * 10;
         });
-      }, 500);
+      }, 500);  
+      
+      // Log de datos antes del envío
+      console.log('Datos a enviar al backend:', {
+        validRecords,
+        uploadType: fileYearMonth ? 'historical' : 'current',
+        yearMonth: fileYearMonth ? 
+          `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` : 
+          null
+      });
 
       try {
         const response = await fetch(`${API_BASE_URL}/orders/bulk-upload`, {

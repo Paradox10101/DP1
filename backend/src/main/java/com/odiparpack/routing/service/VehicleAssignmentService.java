@@ -96,19 +96,27 @@ public class VehicleAssignmentService {
     }
 
     private boolean shouldCreateNewVehicle(Order order, Route route, LocalDateTime currentTime) {
-        /*// Generar un límite aleatorio entre 400 y 480
-        int randomLimit = 400 + (int)(Math.random() * 81); // 81 porque 280-200+1 = 81 posibles números
+        // Calculamos el tiempo simulado
+        Duration simulatedDuration = Duration.between(state.getSimulationStartTime(), currentTime);
 
-        // Si hay más órdenes sin asignar que el límite, crear vehículo sin importar el tiempo
-        if (unassignedOrdersCount > randomLimit) {
-            logger.info("Creando vehículo debido a que hay más de " + randomLimit +
-                    " órdenes sin asignar (actual: " + unassignedOrdersCount + ")");
-            return true;
-        }*/
+        // 1. Si el tiempo simulado es menor a 2 semanas (14 días), procedemos normalmente
+        if (simulatedDuration.toDays() < 14) {
+            long timeUntilDue = Duration.between(currentTime, order.getDueTime()).toMinutes();
+            long safetyMargin = Math.round(route.getTotalDuration() * 0.5);
+            return timeUntilDue <= (route.getTotalDuration() + safetyMargin);
+        }
 
-        // Si hay menos órdenes que el límite aleatorio, verificar el criterio de tiempo
+        // 2. Si ya pasamos los 14 días, verificamos contra el umbral existente
+        Duration collapseThreshold = state.getCollapseThresholdDuration();
+        if (collapseThreshold != null && simulatedDuration.compareTo(collapseThreshold) >= 0) {
+            logger.info("No se creará nuevo vehículo porque se superó el umbral de colapso de " +
+                    collapseThreshold.toDays() + " días");
+            return false;
+        }
+
+        // 3. Si estamos entre los 14 días y el umbral (o el umbral aún no se ha establecido),
+        // usamos la lógica normal
         long timeUntilDue = Duration.between(currentTime, order.getDueTime()).toMinutes();
-        // Si el tiempo estimado de llegada excede el dueTime o está muy cerca
         long safetyMargin = Math.round(route.getTotalDuration() * 0.5);
         return timeUntilDue <= (route.getTotalDuration() + safetyMargin);
     }

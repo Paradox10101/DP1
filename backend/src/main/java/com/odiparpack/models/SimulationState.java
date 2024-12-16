@@ -86,6 +86,10 @@ public class SimulationState {
     private double totalCapacidadEfectivaOficina = 0.0;
     private int contadorMedicionesOficina = 0;
 
+    public Duration getCollapseThresholdDuration() {
+        return collapseThresholdDuration;
+    }
+
     private Duration collapseThresholdDuration = null;
 
     public List<LocalDateTime> obtenerTiempos(){
