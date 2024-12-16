@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { blockageRoutes, blockageRoutesAtom, routesAtom, vehicleCurrentRoutesAtom } from '../atoms/routeAtoms';
+import { errorAtom } from '@/atoms/errorAtoms';
 
 const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
   ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD}/routes`
@@ -13,7 +14,7 @@ export const useRouteWebSocket = () => {
   const websocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const isUnmountedRef = useRef(false); // Para evitar reconexiones después del desmontaje
-
+  const [error, setError] = useAtom(errorAtom);
   const handleMessage = useCallback(
     (event) => {
       try {
@@ -82,6 +83,7 @@ export const useRouteWebSocket = () => {
   }, []);
 
   useEffect(() => {
+    if(error)return;
     connect();
 
     return () => {
@@ -93,7 +95,7 @@ export const useRouteWebSocket = () => {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, [connect]);
+  }, [connect, error]);
 
   return { sendMessage };
 };

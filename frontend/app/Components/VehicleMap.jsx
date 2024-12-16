@@ -168,7 +168,7 @@ const StatusBadge = ({ status }) => {
 const VehicleMap = ({ simulationStatus }) => {
   useShipmentWebSocket();
   useRouteWebSocket();
-  useWarehouseWebSocket();  
+  useWarehouseWebSocket();
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -193,11 +193,6 @@ const VehicleMap = ({ simulationStatus }) => {
   const [simulationType,] = useAtom(simulationTypeAtom);
 
   //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
-
-  
-    
-  
-    
   
   
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];

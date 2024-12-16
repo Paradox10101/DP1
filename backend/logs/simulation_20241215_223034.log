@@ -1,0 +1,17 @@
+[2024-12-15 22:30:34] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241215_223034.log 
+[2024-12-15 22:30:35] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-15 22:30:35] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-15 22:30:37] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:45] [INFO   ] DateTime encontrado: 2024-07-01 00:53:00 
+[2024-12-15 22:30:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:49] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:55] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 22:30:55] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
