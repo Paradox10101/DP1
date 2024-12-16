@@ -141,14 +141,14 @@ export default function ModalOficina({office}){
 
 
     useEffect(()=>{
-        if(shipments!=null)
+        if(shipments!=null && office)
             setShipmentsPerOffice(shipments.filter(shipment => shipment.destinationCity === office.province))
     }, [shipments])
 
 
     const Row = ({ index, style }) => {
         const shipment = filteredShipments[index];
-        return (
+        return (office&&
             <div key={shipment.code} style={style} className="grid grid-cols-8 w-full items-center p-1 border-b-3">
                 <div className="text-center col-span-1 pequenno">{shipment.orderCode}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
@@ -176,7 +176,7 @@ export default function ModalOficina({office}){
         );
     };
 
-    return (
+    return (office&&
         <div className="flex flex-col gap-6">
             <div className="flex flex-row justify-between">
                 <div className="flex flex-col gap-2">
