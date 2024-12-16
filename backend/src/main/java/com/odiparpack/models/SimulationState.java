@@ -34,7 +34,7 @@ public class SimulationState {
     private WarehouseManager warehouseManager;
     private Map<Integer, List<VehicleAssignment>> vehicleAssignmentsPerOrder = new HashMap<>();
     private final Object matrixLock = new Object();
-    private static final String[] almacenesPrincipales = {"150101", "040101", "130101"}; // Lima, Arequipa, Trujillo
+    public static final String[] almacenesPrincipales = {"150101", "040101", "130101"}; // Lima, Arequipa, Trujillo
 
     private static RouteCache routeCache;
     private static List<Blockage> activeBlockages;

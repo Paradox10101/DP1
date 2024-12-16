@@ -7,8 +7,7 @@ import { createRoot } from 'react-dom/client';
 import maplibregl from 'maplibre-gl';
 import {
   vehiclePositionsAtom,
-  loadingAtom,
-  vehiclePositionsListAtom
+  loadingAtom
 } from '../atoms';
 import { performanceMetricsAtom, simulationTypeAtom } from '@/atoms/simulationAtoms';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -173,7 +172,6 @@ const VehicleMap = ({ simulationStatus }) => {
   const mapRef = useRef(null);
   const popupsRef = useRef({});
   const [positions, setPositions] = useAtom(vehiclePositionsAtom);
-  const [vehiclePositionsList, setVehiclePositionsList] = useAtom(vehiclePositionsListAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
@@ -368,8 +366,7 @@ const VehicleMap = ({ simulationStatus }) => {
     updatePopups(updatedData);
     setPositions(updatedData);
     updateVehiclePositions(updatedData);
-    setVehiclePositionsList(updatedData);
-  }, [setPositions, setVehiclePositionsList]);
+  }, [setPositions]);
 
   // Manejador de cambios de conexión
   const handleConnectionChange = useCallback((status) => {

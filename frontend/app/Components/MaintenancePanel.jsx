@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { vehiclePositionsAtom, vehiclePositionsListAtom } from '../atoms';
+import { vehiclePositionsAtom } from '../atoms';
 import { ChevronDown, AlertTriangle, Calendar, MapPin, Truck, CarFront, Car } from 'lucide-react';
 import { format } from 'date-fns';
 import { Modal, ModalContent, ModalHeader, ModalBody, useDisclosure } from '@nextui-org/react';
@@ -38,7 +38,7 @@ const StatusBadge = ({ status }) => {
 export default function MaintenancePanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [maintenanceVehicles, setMaintenanceVehicles] = useState([]);
-  const [vehiclePositions] = useAtom(vehiclePositionsListAtom);
+  const [vehiclePositions] = useAtom(vehiclePositionsAtom);
   const { isOpen: isModalOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [tiempos, setTiempos] = useState({ inicio: new Date() });
