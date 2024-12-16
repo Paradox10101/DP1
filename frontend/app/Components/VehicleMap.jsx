@@ -972,7 +972,7 @@ const VehicleMap = ({ simulationStatus }) => {
       // 4. Buscar la ubicación actualizada en el átomo de locations      
 
       if (!locationActualizada) {
-        console.error(`No se encontró la ubicación actualizada para ubigeo: ${ubigeo}`);
+        console.log(`No se encontró la ubicación actualizada para ubigeo: ${ubigeo}`);
         return;
       }
       //alert("OFICINA ENCONTRADA:"+ JSON.stringify(locationActualizada, null, 2));//
