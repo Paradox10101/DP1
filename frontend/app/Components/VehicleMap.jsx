@@ -164,10 +164,11 @@ const StatusBadge = ({ status }) => {
   }
 };
 
+
 const VehicleMap = ({ simulationStatus }) => {
   useShipmentWebSocket();
   useRouteWebSocket();
-  useWarehouseWebSocket();
+  useWarehouseWebSocket();  
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const popupsRef = useRef({});
@@ -193,6 +194,12 @@ const VehicleMap = ({ simulationStatus }) => {
 
   //console.log("LAS POSICIONES ENCONTRADAS SON: ", positions)
 
+  
+    
+  
+    
+  
+  
   const vehiculosArray = positions && positions.features && Array.isArray(positions.features) ? positions.features : [];
   // 2. Usa el átomo para obtener las ubicaciones filtradas
   const locationsUltimo = useAtomValue(filteredLocationsAtom);
@@ -691,7 +698,6 @@ const VehicleMap = ({ simulationStatus }) => {
         mapRef.current.on('mouseleave', MAP_CONFIG.LAYERS.VEHICLES.CIRCLE, () => {
           mapRef.current.getCanvas().style.cursor = '';
         });
-
 
         setMapLoaded(true);
       });
@@ -1408,6 +1414,7 @@ const VehicleMap = ({ simulationStatus }) => {
     
   
     // Si la fuente ya existe, simplemente actualiza los datos
+    if(!blockageRoutes?.features)return;
     if (mapRef.current.getSource(sourceId)) {
       const source = mapRef.current.getSource(sourceId);
       source.setData({
@@ -1475,7 +1482,7 @@ const VehicleMap = ({ simulationStatus }) => {
       }
       return
     }
-  
+    if(!vehicleCurrentRoutes?.features)return;
     // Si la fuente ya existe, simplemente actualiza los datos
     if (mapRef.current.getSource(sourceId)) {
       const source = mapRef.current.getSource(sourceId);

@@ -18,14 +18,15 @@ export const useRouteWebSocket = () => {
     (event) => {
       try {
         const data = JSON.parse(event.data);
-        setBlockageRoutes({
+        setBlockageRoutes((prev)=>({
+          ...prev,
           type: "FeatureCollection",
-          features: data.features.filter(feature => feature.properties.routeType === "blockage")
-        });
-        setVehicleCurrentRoutesAtom({
-          type: "FeatureCollection",
-          features: data.features.filter(feature => feature.properties.routeType === "vRoute")
-        });
+          features: data?.features?data.features.filter(feature => feature.properties.routeType === "blockage"):[]
+        }));
+        setVehicleCurrentRoutesAtom((prev)=>({
+          ...prev,
+          features: data?.features?data.features.filter(feature => feature.properties.routeType === "vRoute"):[]
+        }));
       } catch (error) {
         console.log('Error procesando el mensaje de WebSocket:', error);
       }
