@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 export default function RegisterShipment() {
   const router = useRouter();
-  const TOTAL_STEPS = 2; // Reduced to 2 steps
+  const TOTAL_STEPS = 2;
   const [currentStep, setCurrentStep] = useState(1);
   const [formState, setFormState] = useState({
     packageDetails: null,
@@ -24,7 +24,6 @@ export default function RegisterShipment() {
   const [showError, setShowError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderData, setOrderData] = useState({ orderCode: '' });
 
@@ -42,8 +41,6 @@ export default function RegisterShipment() {
 
   const submitOrder = async () => {
     try {
-      const orderDateTime = formState.confirmation.orderDateTime;
-      
       const response = await fetch(`${API_BASE_URL}/orders/register`, {
         method: 'POST',
         headers: {
@@ -52,9 +49,15 @@ export default function RegisterShipment() {
         body: JSON.stringify({
           destinationUbigeo: formState.packageDetails.destinationCity,
           quantity: parseInt(formState.packageDetails.quantity),
-          orderDateTime: orderDateTime instanceof Date ? 
-            orderDateTime.toISOString() : 
-            new Date(orderDateTime).toISOString()
+          orderDateTime: new Intl.DateTimeFormat('sv-SE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          }).format(new Date()).replace(' ', 'T') + '.000Z'
         })
       });
   
@@ -137,7 +140,6 @@ export default function RegisterShipment() {
           <PackageDetailsForm
             onDataChange={(data) => handleDataChange('packageDetails', data)}
             initialData={formState.packageDetails}
-            hideOriginCity={true} // Add this prop to hide origin city field
           />
         );
       case 2:
@@ -145,7 +147,6 @@ export default function RegisterShipment() {
           <ConfirmationStep
             formData={formState}
             onDataChange={(data) => handleDataChange('confirmation', data)}
-            hideClientInfo={true} // Add this prop to hide client information
           />
         );
       default:

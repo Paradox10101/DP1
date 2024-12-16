@@ -1,6 +1,4 @@
-'use client'
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Package, MapPin } from 'lucide-react';
 import { Select, SelectItem } from "@nextui-org/select";
 import { Spinner } from "@nextui-org/react";
@@ -13,8 +11,6 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
 
   const [formData, setFormData] = useState({
     quantity: safeInitialData?.quantity ?? '',
-    originCity: safeInitialData?.originCity ?? '',
-    originCityName: safeInitialData?.originCityName ?? '',
     destinationCity: safeInitialData?.destinationCity ?? '',
     destinationCityName: safeInitialData?.destinationCityName ?? ''
   });
@@ -25,6 +21,7 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [locationsData, setLocationsData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -34,7 +31,6 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
         const data = await locationService.fetchLocations();
         setLocationsData(data);
         
-        // Convertir el objeto de ubicaciones en un array de ciudades
         const citiesArray = Object.entries(data).map(([ubigeo, location]) => ({
           id: ubigeo,
           name: location.province
@@ -52,12 +48,17 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
     fetchLocations();
   }, []);
 
+  // Filtrado de ciudades basado en la búsqueda
+  const filteredCities = useMemo(() => {
+    return cities.filter((city) =>
+      city.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [cities, searchQuery]);
+
   const validateField = (name, value) => {
     switch (name) {
       case 'quantity':
         return !validateQuantity(value) ? 'La cantidad debe ser un número mayor a 0' : '';
-      case 'originCity':
-        return !value ? 'Debe seleccionar una ciudad de origen' : '';
       case 'destinationCity':
         return !value ? 'Debe seleccionar una ciudad de destino' : '';
       default:
@@ -67,51 +68,45 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target || e;
-    setFormData((prev) => {
-      const newFormData = {
-        ...prev,
-        [name]: value,
-      };
-      return newFormData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
 
     if (touched[name]) {
-      setErrors((prev) => ({
+      setErrors(prev => ({
         ...prev,
         [name]: validateField(name, value),
       }));
     }
   };
 
-  const handleSelectChange = (name) => (value) => {
+  const handleSelectChange = (value) => {
     const ubigeo = Array.from(value)[0];
     const selectedCity = cities.find(city => city.id === ubigeo);
     
     if (selectedCity) {
-      setFormData((prev) => {
-        const newFormData = {
-          ...prev,
-          [`${name}`]: ubigeo,
-          [`${name}Name`]: selectedCity.name
-        };
-        return newFormData;
-      });
+      setFormData(prev => ({
+        ...prev,
+        destinationCity: ubigeo,
+        destinationCityName: selectedCity.name
+      }));
 
-      if (touched[name]) {
-        setErrors((prev) => ({
+      if (touched.destinationCity) {
+        setErrors(prev => ({
           ...prev,
-          [name]: validateField(name, ubigeo),
+          destinationCity: validateField('destinationCity', ubigeo),
         }));
       }
     }
   };
 
   const handleBlur = (name) => {
-    setTouched((prev) => ({
+    setTouched(prev => ({
       ...prev,
       [name]: true,
     }));
-    setErrors((prev) => ({
+    setErrors(prev => ({
       ...prev,
       [name]: validateField(name, formData[name]),
     }));
@@ -121,7 +116,6 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
     const hasErrors = Object.values(errors).some((error) => error !== '');
     const isComplete = Boolean(
       formData.quantity && 
-      formData.originCity && 
       formData.destinationCity
     );
 
@@ -170,54 +164,32 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
         min="1"
       />
 
-      <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Ciudad de origen<span className="text-red-500">*</span>
-          </label>
-          <Select
-            isRequired
-            variant="bordered"
-            placeholder="Selecciona la ciudad de origen"
-            selectedKeys={formData.originCity ? [formData.originCity] : []}
-            className="w-full"
-            onSelectionChange={(keys) => handleSelectChange('originCity')(keys)}
-            onBlur={() => handleBlur('originCity')}
-            errorMessage={touched.originCity ? errors.originCity : ''}
-            isInvalid={touched.originCity && errors.originCity ? true : false}
-            startContent={<MapPin className="text-gray-400 h-5 w-5" />}
-          >
-            {cities.map((city) => (
-              <SelectItem key={city.id} value={city.id}>
-                {city.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Ciudad de destino<span className="text-red-500">*</span>
-          </label>
-          <Select
-            isRequired
-            variant="bordered"
-            placeholder="Selecciona la ciudad de destino"
-            selectedKeys={formData.destinationCity ? [formData.destinationCity] : []}
-            className="w-full"
-            onSelectionChange={(keys) => handleSelectChange('destinationCity')(keys)}
-            onBlur={() => handleBlur('destinationCity')}
-            errorMessage={touched.destinationCity ? errors.destinationCity : ''}
-            isInvalid={touched.destinationCity && errors.destinationCity ? true : false}
-            startContent={<MapPin className="text-gray-400 h-5 w-5" />}
-          >
-            {cities.map((city) => (
-              <SelectItem key={city.id} value={city.id}>
-                {city.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-gray-700">
+          Ciudad de destino<span className="text-red-500">*</span>
+        </label>
+        <Select
+          isRequired
+          variant="bordered"
+          placeholder="Selecciona la ciudad de destino"
+          selectedKeys={formData.destinationCity ? [formData.destinationCity] : []}
+          className="w-full"
+          onSelectionChange={handleSelectChange}
+          onBlur={() => handleBlur('destinationCity')}
+          errorMessage={touched.destinationCity ? errors.destinationCity : ''}
+          isInvalid={touched.destinationCity && errors.destinationCity ? true : false}
+          startContent={<MapPin className="text-gray-400 h-5 w-5" />}
+          onSearchChange={setSearchQuery}
+          items={filteredCities}
+          filterValue={searchQuery}
+          isFilterable={true}
+        >
+          {(city) => (
+            <SelectItem key={city.id} value={city.id}>
+              {city.name}
+            </SelectItem>
+          )}
+        </Select>
       </div>
     </div>
   );
