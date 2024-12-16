@@ -6,10 +6,6 @@ export const vehiclePositionsAtom = atom({
     features: [],
   });
 
-export const vehiclePositionsListAtom = atom({
-  type: 'FeatureCollection',
-  features: [],
-});
 
 // Átomo para el estado de carga
 export const loadingAtom = atom('idle');

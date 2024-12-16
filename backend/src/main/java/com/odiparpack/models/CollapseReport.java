@@ -132,7 +132,10 @@ public class CollapseReport {
                 camionData.put("paquetes", assignment.getAssignedQuantity() + " paquetes");
 
                 // Cambiar formato de fecha a ISO_LOCAL_DATE_TIME
-                LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
+                //LocalDateTime estimatedDeliveryTime = assignment.getEstimatedDeliveryTime();
+                LocalDateTime estimatedDeliveryTime = calculateFechaEstimada(order.getOrderTime(),
+                        assignment.getRouteSegments());
+
                 camionData.put("fechaEntregaEstimada", Optional.ofNullable(estimatedDeliveryTime)
                         .map(time -> time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                         .orElse("Fecha no disponible"));
@@ -180,6 +183,27 @@ public class CollapseReport {
         }
 
         return camionesAsignados;
+    }
+
+    // Nueva función para calcular la fecha estimada
+    private LocalDateTime calculateFechaEstimada(LocalDateTime orderTime, List<RouteSegment> routeSegments) {
+        if (orderTime == null || routeSegments == null || routeSegments.isEmpty()) {
+            logger.warning("Datos insuficientes para calcular la fecha estimada");
+            return null;
+        }
+
+        try {
+            // Sumar todos los minutos de duración de los segmentos
+            long totalMinutes = routeSegments.stream()
+                    .mapToLong(segment -> segment.getDurationMinutes())
+                    .sum();
+
+            // Agregar los minutos totales a la fecha inicial del pedido
+            return orderTime.plusMinutes(totalMinutes);
+        } catch (Exception e) {
+            logger.warning("Error al calcular la fecha estimada: " + e.getMessage());
+            return null;
+        }
     }
 
     // Método para convertir el reporte a JSON

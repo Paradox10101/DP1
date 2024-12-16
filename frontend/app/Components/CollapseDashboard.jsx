@@ -16,11 +16,24 @@ const formatDate = (dateString) => {
   return `${date.toLocaleDateString()} - ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${suffix}`;
 };
 
-export default function CollapseDashboard() {
+export default function CollapseDashboard({ tiempos }) {
   const [data, setData] = useState(null); // Datos del pedido seleccionado
   const [loading, setLoading] = useState(false); // Estado de carga para el reporte de colapso
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(""); // Pedido seleccionado en el combo box
   const [pedidos, setPedidos] = useState([]); // Lista de todos los pedidos disponibles
+
+  // Mantener la función formatDateTime igual que en Dashboard
+  const formatDateTime = (date) => {
+    if (!date) return '';
+    return date.toLocaleString('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
   // Petición para obtener la lista de pedidos disponibles
   useEffect(() => {
@@ -251,6 +264,39 @@ export default function CollapseDashboard() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+       {/* Agregar la sección de Periodo */}
+      <div className="mb-6">
+        {tiempos && (
+          <div className="flex items-center gap-3 py-2 text-sm">
+            <span className="text-gray-500 font-medium">Periodo</span>
+            <div className="flex items-center gap-2">
+              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                {formatDateTime(tiempos.inicio)}
+              </span>
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 16 16" 
+                fill="none" 
+                className="text-gray-400"
+              >
+                <path 
+                  d="M3 8h10M10 5l3 3-3 3" 
+                  stroke="currentColor" 
+                  strokeWidth="1.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                {formatDateTime(tiempos.fin)}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Contenido existente */}
       <div className="mb-4">
         {renderPedidoDropdown()}
       </div>

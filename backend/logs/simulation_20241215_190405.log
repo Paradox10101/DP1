@@ -1,0 +1,65 @@
+[2024-12-15 19:04:05] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241215_190405.log 
+[2024-12-15 19:04:07] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-15 19:04:07] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-15 19:05:20] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:20] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:20] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:20] [SEVERE ] Error en la conexión WebSocket: null 
+[2024-12-15 19:05:20] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:20] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:26] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:26] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:30] [INFO   ] DateTime encontrado: 2024-12-01 00:04:00 
+[2024-12-15 19:05:31] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:31] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:36] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:36] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:38] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:38] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:41] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:47] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:47] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:52] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:52] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:52] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:52] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:52] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:52] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:52] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:52] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:53] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:53] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:53] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:05:53] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:05:58] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:05:58] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:00] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:00] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:00] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:13] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:18] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:18] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:18] [INFO   ] Iniciando simulación diaria desde: 2024-12-01T06:01 
+[2024-12-15 19:06:18] [INFO   ] Configurada tiempo de avance de simulación: 5 
+[2024-12-15 19:06:18] [INFO   ] Intentando inicializar simulacion. 
+[2024-12-15 19:06:23] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:23] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:29] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:29] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:35] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:35] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:41] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:46] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:52] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 19:06:52] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 

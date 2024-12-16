@@ -90,7 +90,7 @@ export default function BlockedRoutesPanel({toggleSecondaryPanel, setToggleSecon
                   <Switch isSelected={showBlockageRoutes} onValueChange={setShowBlockageRoutes}>{(showBlockageRoutes?"Ocultar":"Visualizar") +" rutas bloquedas"}</Switch>
                   <Switch isSelected={showVehiclesRoutes} onValueChange={setShowVehiclesRoutes}>{(showVehiclesRoutes?"Ocultar":"Visualizar") +" rutas recorridas"}</Switch>
             </div>
-            {blockageRoutes === undefined ||blockageRoutes === null ||  blockageRoutes.features.length === 0 ? (
+            {blockageRoutes === undefined ||blockageRoutes === null ||  !blockageRoutes?.features || blockageRoutes.features.length === 0 ? (
               <p className="text-gray-500 text-sm">No hay rutas bloqueadas</p>
             ) : (
               <div className='w-full h-full flex flex-col gap-4'>

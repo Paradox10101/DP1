@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { shipmentsAtom } from '../atoms/shipmentAtoms';
+import { errorAtom } from '@/atoms/errorAtoms';
 
 const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
   ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD}/shipments`
@@ -11,7 +12,7 @@ export const useShipmentWebSocket = () => {
   const websocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const isUnmountedRef = useRef(false); // Para evitar reconexiones después del desmontaje
-
+  const [error, setError] = useAtom(errorAtom);
   const handleMessage = useCallback(
     (event) => {
       try {
@@ -72,6 +73,7 @@ export const useShipmentWebSocket = () => {
   }, []);
 
   useEffect(() => {
+    if(error)return;
     connect();
 
     return () => {
@@ -83,7 +85,7 @@ export const useShipmentWebSocket = () => {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, [connect]);
+  }, [connect, error]);
 
   return { sendMessage };
 };
