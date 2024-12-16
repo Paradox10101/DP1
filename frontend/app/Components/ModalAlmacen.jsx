@@ -140,13 +140,13 @@ export default function ModalAlmacen({ warehouse }) {
     
 
     useEffect(() => {
-        if (shipments != null)
+        if (shipments != null && warehouse)
             setShipmentsPerWarehouse(shipments.filter(shipment => shipment.originCity === warehouse.province));
     }, [shipments]);
 
     const Row = ({ index, style }) => {
         const shipment = filteredShipments[index];
-        return (
+        return (warehouse&&
             <div key={shipment.code} style={style} className="grid grid-cols-8 w-full items-center p-1 border-b-3">
                 <div className="text-center col-span-1 pequenno">{shipment.orderCode}</div>
                 <div className="text-center col-span-1 pequenno">{shipment.quantity}</div>
