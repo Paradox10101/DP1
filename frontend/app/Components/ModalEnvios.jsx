@@ -93,10 +93,10 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                 <div className="flex flex-col gap-2 text-center">
                     <div className="flex flex-row gap-1">
                         <Clock size={16} />
-                        <div className="regular">Tiempo restante</div>
+                        <div className="regular">Tiempo de atención</div>
                     </div>
                     <div className="regular_bold">
-                        {shipment.timeRemainingDays + "d " + shipment.timeRemainingHours + "h"}
+                        {shipment.timeElapsedDays + "d " + shipment.timeElapsedHours + "h"}
                     </div>
                 </div>
             </div>

@@ -1383,7 +1383,17 @@ const VehicleMap = ({ simulationStatus }) => {
     
     const sourceId = 'b-routes'; //blockage routes
     const layerId = 'b-routes';
-    
+
+    if(simulationStatus==='stopped'){
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.removeLayer(layerId); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceId)) {
+        mapRef.current.removeSource(sourceId); // Eliminar la fuente si existe
+      }
+      return;
+    }
+
     if (blockageRoutes === null || blockageRoutes === undefined || mapRef.current === null || mapRef.current === undefined || !mapLoaded) return;
   
     if (showBlockageRoutes === false ){
@@ -1437,13 +1447,22 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [blockageRoutes, showBlockageRoutes, mapLoaded]);
+  }, [blockageRoutes, showBlockageRoutes, mapLoaded, simulationStatus]);
 
   // Agregado de capa de rutas actuales de vehiculos
   useEffect(() => {
     //Agregado de rutas actuales de vehiculos
     const sourceId = 'c-routes';
     const layerId = 'c-routes';
+    if(simulationStatus==='stopped'){
+      if (mapRef.current.getLayer(layerId)) {
+        mapRef.current.removeLayer(layerId); // Eliminar la capa si existe
+      }
+      if (mapRef.current.getSource(sourceId)) {
+        mapRef.current.removeSource(sourceId); // Eliminar la fuente si existe
+      }
+      return;
+    }
 
     if (vehicleCurrentRoutes === null || vehicleCurrentRoutes === undefined || mapRef.current === null || mapRef.current === undefined || !mapLoaded) return;
 
@@ -1497,7 +1516,7 @@ const VehicleMap = ({ simulationStatus }) => {
         }
       });
     }
-  }, [vehicleCurrentRoutes, showVehiclesRoutes, mapLoaded]);
+  }, [vehicleCurrentRoutes, showVehiclesRoutes, mapLoaded, simulationStatus]);
   
 
   
@@ -1516,36 +1535,6 @@ const VehicleMap = ({ simulationStatus }) => {
     }
     }
   }, [followLocation, mapLoaded])
-
-
-  useEffect(()=>{
-    const sourceIdCurrentRoutes = 'c-routes';
-    const layerIdCurrentRoutes = 'c-routes';
-
-    const sourceIdBlockedRoutes = 'b-routes'; //blockage routes
-    const layerIdBlockedRoutes = 'b-routes';
-    
-    if(simulationStatus==='stopped'){
-      if (mapRef.current.getLayer(layerIdCurrentRoutes)) {
-        mapRef.current.removeLayer(layerIdCurrentRoutes); // Eliminar la capa si existe
-      }
-      if (mapRef.current.getSource(sourceIdCurrentRoutes)) {
-        mapRef.current.removeSource(sourceIdCurrentRoutes); // Eliminar la fuente si existe
-      }
-      if (mapRef.current.getLayer(layerIdBlockedRoutes)) {
-        mapRef.current.removeLayer(layerIdBlockedRoutes); // Eliminar la capa si existe
-      }
-      if (mapRef.current.getSource(sourceIdBlockedRoutes)) {
-        mapRef.current.removeSource(sourceIdBlockedRoutes); // Eliminar la fuente si existe
-      }
-    }
-    else{
-      
-    }
-    
-
-    
-  }, [simulationStatus])
 
   // Añadir eventos a la capa de vehículos
   const addVehicleLayerEvents = () => {
