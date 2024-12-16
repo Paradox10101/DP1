@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { occupancyUpdatesAtom, totalStatsAtom } from '../atoms/locationAtoms';
+import { errorAtom } from '@/atoms/errorAtoms';
 
 const WEBSOCKET_URL = process.env.NODE_ENV === 'production'
   ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL_PROD}/occupancy`
@@ -11,7 +12,7 @@ export const useWarehouseWebSocket = () => {
   const setTotalStats = useSetAtom(totalStatsAtom);
   const wsRef = useRef(null); // Usamos una referencia para manejar la instancia del WebSocket
   const reconnectTimeoutRef = useRef(null); // Para manejar el timeout de reconexión
-
+  const [error, setError] = useAtom(errorAtom);
   const handleMessage = useCallback(
     (event) => {
       console.log('WebSocket Occupancy message received:', event.data);
@@ -90,6 +91,7 @@ export const useWarehouseWebSocket = () => {
   }, [connect]);
 
   useEffect(() => {
+    if(error)return;
     connect();
 
     return () => {
@@ -100,7 +102,7 @@ export const useWarehouseWebSocket = () => {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, [connect, reconnect]);
+  }, [connect, reconnect, error]);
 
   return null; // Este hook no tiene UI, solo maneja lógica
 };
