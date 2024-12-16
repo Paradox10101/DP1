@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ReportRouter extends BaseRouter {
     private static final Logger logger = Logger.getLogger(ReportRouter.class.getName());
@@ -60,10 +61,16 @@ public class ReportRouter extends BaseRouter {
                     return gson.toJson(Collections.singletonMap("error", "Simulación no ha sido inicializada."));
                 }
 
-                List<Order> orders = simulationState.getOrders();
+                //List<Order> orders = simulationState.getOrders();
+                // Obtener solo los códigos de pedido en lugar de los pedidos completos
+                List<String> orderCodes = simulationState.getOrders()
+                        .stream()
+                        .map(Order::getOrderCode)
+                        .limit(600) // Limitar a 600 pedidos
+                        .collect(Collectors.toList());
 
                 // Convertir la lista de pedidos a JSON
-                String reportJson = gson.toJson(orders);
+                String reportJson = gson.toJson(orderCodes);
 
                 response.status(200); // OK
                 return reportJson;
