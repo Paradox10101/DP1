@@ -1,0 +1,168 @@
+[2024-12-14 16:11:04] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241214_161104.log 
+[2024-12-14 16:11:05] [INFO   ] Ubicaciones cargadas: 195 
+[2024-12-14 16:11:05] [INFO   ] Servidor de simulación iniciado en el puerto 4567 
+[2024-12-14 16:11:10] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:11:10] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:11:10] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 16:16:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:16:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 16:16:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:15] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:16:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:16] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:21:16] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:16] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 16:21:16] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:16] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:21:16] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:21:22] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:22] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 16:26:22] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:22] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 16:26:22] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:22] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:26:22] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:28] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:28] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:26:28] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:27] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:31:27] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:27] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 16:31:27] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:27] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 16:31:27] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:33] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:33] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:31:33] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 16:32:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:37] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300005/300000 ms 
+[2024-12-14 18:22:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:37] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 18:22:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:37] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 18:22:37] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 18:22:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300003/300000 ms 
+[2024-12-14 19:05:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 19:05:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 19:05:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:05:43] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:29] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 19:46:29] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:29] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 19:46:29] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:29] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300005/300000 ms 
+[2024-12-14 19:46:29] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:35] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:35] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 19:46:35] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:28] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 20:30:28] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:28] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 20:30:28] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:28] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 20:30:28] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:34] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:34] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:30:34] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:41] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:47] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:47] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 20:32:47] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:38:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300007/300000 ms 
+[2024-12-14 21:38:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:38:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 21:38:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:38:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300005/300000 ms 
+[2024-12-14 21:38:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:39:05] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:39:05] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 21:39:05] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:29:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-14 22:29:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:29:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300003/300000 ms 
+[2024-12-14 22:29:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:29:59] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 22:29:59] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:30:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:30:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 22:30:11] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:34] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300005/300000 ms 
+[2024-12-14 23:09:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:34] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-14 23:09:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:34] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 23:09:34] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:09:40] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300008/300000 ms 
+[2024-12-14 23:35:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-14 23:35:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:10] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300007/300000 ms 
+[2024-12-14 23:35:10] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-14 23:35:16] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:48] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 00:31:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:48] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 00:31:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:48] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300004/300000 ms 
+[2024-12-15 00:31:48] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:54] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:54] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 00:31:54] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:12] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 01:12:12] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:12] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300004/300000 ms 
+[2024-12-15 01:12:12] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:12] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 01:12:12] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:18] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:18] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:12:18] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:31] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300008/300000 ms 
+[2024-12-15 01:38:31] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:31] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-15 01:38:31] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:31] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-15 01:38:31] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:37] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:37] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 01:38:37] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:46] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300002/300000 ms 
+[2024-12-15 02:33:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:46] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 02:33:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:46] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300003/300000 ms 
+[2024-12-15 02:33:46] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:52] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:52] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:33:52] [INFO   ] Nueva conexión WebSocket establecida: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:58:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300001/300000 ms 
+[2024-12-15 02:58:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:58:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-15 02:58:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 
+[2024-12-15 02:58:32] [SEVERE ] Error en la conexión WebSocket: java.util.concurrent.TimeoutException: Idle timeout expired: 300000/300000 ms 
+[2024-12-15 02:58:32] [INFO   ] Conexión WebSocket cerrada: /0:0:0:0:0:0:0:1 

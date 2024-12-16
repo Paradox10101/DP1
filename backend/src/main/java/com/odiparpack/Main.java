@@ -22,7 +22,7 @@ public class Main {
     public static List<String> locationUbigeos;
     public static Map<String, Location> locations;
 
-    static {
+    /*static {
         try {
             // Configurar el formato de los logs
             SimpleFormatter formatter = new SimpleFormatter() {
@@ -77,8 +77,8 @@ public class Main {
             e.printStackTrace();
         }
     }
-
-    /*static {
+*/
+    static {
         try {
             // Configurar el logger raíz
             Logger rootLogger = Logger.getLogger("");
@@ -98,7 +98,7 @@ public class Main {
             System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
             e.printStackTrace();
         }
-    }*/
+    }
 
     public static com.odiparpack.models.SimulationState initializeSimulationState(LocalDateTime startDateTime,
                                                                                   LocalDateTime endDateTime,

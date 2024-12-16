@@ -949,23 +949,6 @@ public class Vehicle {
         route = null;
         this.setListoParaRegresarAlmacen(false);
 
-        if(Arrays.asList(SimulationState.almacenesPrincipales).contains(currentLocationUbigeo)){
-            estado = EstadoVehiculo.EN_ALMACEN;
-            logger.info(String.format("Estado del vehiculo %s actualizado a: EN ALMACEN - %s (%s)",
-                    getCode(),
-                    locations.get(getCurrentLocationUbigeo()).getProvince(),
-                    getCurrentLocationUbigeo()));
-
-        }
-        else{
-            estado = EstadoVehiculo.EN_ESPERA_EN_OFICINA;
-            logger.info(String.format("Estado del vehiculo %s actualizado a: EN ESPERA EN OFICINA - %s (%s)",
-                    getCode(),
-                    locations.get(getCurrentLocationUbigeo()).getProvince(),
-                    getCurrentLocationUbigeo()));
-        }
-
-        /*
         if (estado == EstadoVehiculo.HACIA_ALMACEN) {
             estado = EstadoVehiculo.EN_ALMACEN;
             logger.info(String.format("Estado del vehiculo %s actualizado a: EN ALMACEN - %s (%s)",
@@ -975,7 +958,6 @@ public class Vehicle {
         } else if (estado == EstadoVehiculo.EN_TRANSITO_ORDEN) {
             estado = EstadoVehiculo.EN_ESPERA_EN_OFICINA;
         }
-        */
 
         //this.setAvailable(true);
     }

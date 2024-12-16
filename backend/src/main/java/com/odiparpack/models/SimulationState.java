@@ -2016,7 +2016,11 @@ public class SimulationState {
             Route route = bestRoutes.get(currentUbigeo);
 
             if (route != null) {
-                route.inverse();
+                // Solo invertimos la ruta si el origen es un almacén principal
+                if (isWarehouse(route.getStartUbigeo())) {
+                    route.inverse();
+                }
+
                 boolean assigned = assignVehicleToWarehouse(vehicle, route.getEndUbigeo(), route.getSegments());
                 if (!assigned) {
                     vehicle.setRouteBeingCalculated(false);
@@ -2026,6 +2030,15 @@ public class SimulationState {
                 vehicle.setRouteBeingCalculated(false);
             }
         }
+    }
+
+    private boolean isWarehouse(String ubigeo) {
+        for (String almacen : getAlmacenesPrincipales()) {
+            if (almacen.equals(ubigeo)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean assignVehicleToWarehouse(Vehicle vehicle, String warehouseUbigeo, List<RouteSegment> route) {
