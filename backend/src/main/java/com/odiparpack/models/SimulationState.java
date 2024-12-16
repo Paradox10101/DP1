@@ -691,8 +691,7 @@ public class SimulationState {
             List<Order> ordersInPeriod = orders.stream()
                     .filter(order -> {
                         LocalDateTime orderTime = order.getOrderTime();
-                        return (orderTime.isAfter(initialDate) || orderTime.isEqual(initialDate)) &&
-                                (orderTime.isBefore(endDate) || orderTime.isEqual(endDate));
+                        return (orderTime.isBefore(endDate) || orderTime.isEqual(endDate));
                     })
                     .collect(Collectors.toList());
 

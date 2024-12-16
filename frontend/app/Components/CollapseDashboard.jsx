@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { FaDownload, FaWarehouse, FaBuilding, FaTruck } from "react-icons/fa";
+import { useEffect, useMemo, useState } from "react";
+import { FaDownload, FaWarehouse, FaBuilding, FaTruck, FaInfoCircle } from "react-icons/fa";
 
 // Definir las URLs de la API y WebSocket basadas en el entorno
 const API_BASE_URL = process.env.NODE_ENV === 'production'
@@ -21,6 +21,7 @@ export default function CollapseDashboard({ tiempos }) {
   const [loading, setLoading] = useState(false); // Estado de carga para el reporte de colapso
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(""); // Pedido seleccionado en el combo box
   const [pedidos, setPedidos] = useState([]); // Lista de todos los pedidos disponibles
+  const [error, setError] = useState(null);
 
   // Mantener la función formatDateTime igual que en Dashboard
   const formatDateTime = (date) => {
@@ -37,57 +38,71 @@ export default function CollapseDashboard({ tiempos }) {
 
   // Petición para obtener la lista de pedidos disponibles
   useEffect(() => {
-  let isMounted = true; // Añadir un flag
-
-  const fetchPedidos = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/simulation/list_pedidos`);
-      if (response.ok && isMounted) {
-        const result = await response.json();
-        setPedidos(result);
-      } else {
-        console.log('Error al obtener la lista de pedidos: ', response.statusText);
+    let isMounted = true; // Añadir un flag
+    setLoading(true);
+    const fetchPedidos = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/simulation/list_pedidos`);
+        if (response.ok && isMounted) {
+          const result = await response.json(); //Aqui ahora se obtiene el codigo de los pedidos
+          setPedidos(result);
+          // Solo seleccionar automáticamente si no hay pedido seleccionado
+          if (result.length > 0 && !pedidoSeleccionado) {
+            setPedidoSeleccionado(result[0]);
+          }
+        } else {
+          console.log('Error al obtener la lista de pedidos: ', response.statusText);
+        }
+      } catch (error) {
+        console.log('Error fetching pedidos:', error);
+      } finally {
+          if (isMounted) setLoading(false);
       }
-    } catch (error) {
-      console.log('Error fetching pedidos:', error);
-    }
-  };
-  fetchPedidos();
+    };
+    fetchPedidos();
 
-  return () => {
-    isMounted = false; // Desmontar flag
-  };
-}, []);
+    return () => {
+      isMounted = false; // Desmontar flag
+    };
+  }, []);
 
   // Petición para obtener los datos específicos de colapso cuando hay un pedido seleccionado
   useEffect(() => {
-  if (pedidoSeleccionado !== "") {
-    let isMounted = true;
-    const fetchCollapseData = async () => {
-      
-      setLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/simulation/collapse_report/${pedidoSeleccionado}`);
-        if (response.ok && isMounted) {
-          const result = await response.json();
+  if (!pedidoSeleccionado){
+    setLoading(false)
+    return;
+  }
+  let isMounted = true;
+  
+  const fetchCollapseData = async () => {      
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/simulation/collapse_report/${pedidoSeleccionado}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (isMounted) {
           setData(result);
-        } else {
-          console.log('Error al obtener los datos de colapso: ', response.statusText);
+          setLoading(false);
         }
-      } catch (error) {
-        console.log('Error fetching collapse data:', error);
-      } finally {
+      } else {
+        console.log('Error al obtener los datos de colapso: ', response.statusText);
+      }
+    } catch (error) {
+      console.log('Error fetching collapse data:', error);
+      if (isMounted) {
+        setError(error.message);
         setLoading(false);
       }
-    };
-    fetchCollapseData();
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchCollapseData();
 
-    return () => {
-      isMounted = false;
-    };
-  } else {
-    setData(null);
-  }
+  return () => {
+    isMounted = false;
+  };
+  
 }, [pedidoSeleccionado]);
 
   // Descargar el reporte en CSV
@@ -132,9 +147,9 @@ export default function CollapseDashboard({ tiempos }) {
         className="border rounded-lg p-2"
       >
         <option value="">Seleccione un pedido</option>
-        {pedidos.map((pedido) => (
-          <option key={pedido.orderCode} value={pedido.orderCode}>
-            {pedido.orderCode}
+        {pedidos.map((codigo) => (
+          <option key={codigo} value={codigo}>
+            {codigo}
           </option>
         ))}
       </select>
@@ -262,6 +277,9 @@ export default function CollapseDashboard({ tiempos }) {
     </div>
   );
 
+  const MemoizedVehicleRoutes = useMemo(() => renderVehicleRoutes(), [data]);
+  const MemoizedCollapseReport = useMemo(() => renderCollapseReport(), [data]);
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
        {/* Agregar la sección de Periodo */}
@@ -296,13 +314,53 @@ export default function CollapseDashboard({ tiempos }) {
         )}
       </div>
 
-      {/* Contenido existente */}
-      <div className="mb-4">
-        {renderPedidoDropdown()}
-      </div>
-      {renderLegend()}
-      {pedidoSeleccionado ? (loading ? <div>Loading...</div> : renderCollapseReport()) : renderCollapseReport()}
-      {renderVehicleRoutes()}
+      {/* Dropdown siempre visible si hay pedidos */}
+      {pedidos.length > 0 && (
+        <div className="mb-4">
+          <select
+            value={pedidoSeleccionado}
+            onChange={(e) => setPedidoSeleccionado(e.target.value)}
+            className="border rounded-lg p-2"
+            disabled={loading}
+          >
+            <option value="">Seleccione un pedido</option>
+            {pedidos.map((codigo) => (
+              <option key={codigo} value={codigo}>
+                {codigo}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Estado de carga */}
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="text-gray-600 mb-2">Cargando datos...</div>
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-red-600 flex items-center gap-2">
+            <FaInfoCircle />
+            {error}
+          </div>
+        </div>
+      ) : data ? (
+        <>
+          {renderLegend()}
+          {renderCollapseReport()}
+          {renderVehicleRoutes()}
+        </>
+      ) : (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-600">
+            Seleccione un pedido para ver los detalles
+          </div>
+        </div>
+      )}
     </div>
   );
 }
