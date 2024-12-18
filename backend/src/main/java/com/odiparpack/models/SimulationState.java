@@ -203,16 +203,16 @@ public class SimulationState {
             Duration simulatedDuration = Duration.between(simulationStartTime, currentTime);
 
             // 1. Si el tiempo simulado es menor a 2 semanas (14 días), no colapsar.
-            if (simulatedDuration.toDays() < 14) {
+            /*if (simulatedDuration.toDays() < 14) {
                 return false;
-            }
+            }*/
 
             // 2. Si ya pasamos de 2 semanas, verificamos si ya tenemos umbral. Si no, lo generamos.
             if (collapseThresholdDuration == null) {
                 // Generamos un número aleatorio entre 0 y 14 días adicionales
                 Random rand = new Random();
                 long extraDays = rand.nextInt(15); // 0 a 14 días extra
-                collapseThresholdDuration = Duration.ofDays(14 + extraDays);
+                collapseThresholdDuration = Duration.ofDays(0);
                 logger.info("Umbral de colapso definido: " + collapseThresholdDuration.toDays() + " días desde el inicio.");
             }
 
@@ -1241,7 +1241,8 @@ public class SimulationState {
 
     public int getTotalOrdersCount2(){
         return (int) orders.stream()
-                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED)
+                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED 
+                        || order.getStatus() == Order.OrderStatus.PENDING_PICKUP)
                 .count();
     }
 

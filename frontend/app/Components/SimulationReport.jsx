@@ -3,6 +3,7 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import CollapseDashboard from "./CollapseDashboard";
 import Dashboard from "./Dashboard";
 import { useEffect, useState } from "react";
+import ColapsoAlert from "./CollapseAlert";
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -11,6 +12,8 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 export default function SimulationReport({simulationType, isOpen, onOpenChange}){
     const [tiempos, setTiempos] = useState(null);
     const [showCollapse, setShowCollapse] = useState(false);
+    const [showDetailedReport, setShowDetailedReport] = useState(false);
+
 
     useEffect(() => {
         const fetchTiempos = async () => {
@@ -48,8 +51,9 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
             isDismissable={false}
             blur="true"
             scrollBehavior="normal"
+            className={simulationType === 'colapso' && !showDetailedReport ? 'max-w-md' : ''}
         >
-            <ModalContent className="h-[800px] min-w-[900px] overflow-y-auto">
+            <ModalContent className={simulationType === 'colapso' && !showDetailedReport ? '' : 'h-[800px] min-w-[900px] overflow-y-auto'}>
                 <ModalHeader className="flex flex-col gap-4">
                     {/* Primera fila: Botón de regreso (si es necesario) */}
                     {showCollapse && (
@@ -85,7 +89,7 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
                             {"Reporte de Simulación " + capitalize(simulationType)}
                         </div>
                         <div className="flex-1 flex justify-end">
-                            {simulationType === 'semanal' && !showCollapse && (
+                            {(simulationType === 'semanal' || simulationType === 'diaria' || (simulationType === 'colapso' && showDetailedReport)) && !showCollapse && (
                                 <button 
                                     onClick={() => setShowCollapse(true)}
                                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -113,21 +117,21 @@ export default function SimulationReport({simulationType, isOpen, onOpenChange})
                     </div>
                 </ModalHeader>
                 <ModalBody>
-                    {simulationType === 'semanal' ? (
-                        showCollapse ? (
-                            <CollapseDashboard 
-                                tiempos={tiempos} 
-                            />
-                        ) : (
-                            <Dashboard 
-                                onClose={onOpenChange} 
-                                tiempos={tiempos}
-                            />
-                        )
-                    ) : simulationType === 'colapso' ? (
-                        <CollapseDashboard tiempos={tiempos} />
+                    {simulationType === 'colapso' && !showDetailedReport ? (
+                        <ColapsoAlert onShowReport={() => setShowDetailedReport(true)} />
                     ) : (
-                        <></>
+                        <>
+                            {showCollapse ? (
+                                <CollapseDashboard 
+                                    tiempos={tiempos} 
+                                />
+                            ) : (
+                                <Dashboard 
+                                    onClose={onOpenChange} 
+                                    tiempos={tiempos}
+                                />
+                            )}
+                        </>
                     )}
                 </ModalBody>
             </ModalContent>
