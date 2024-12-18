@@ -13,19 +13,21 @@ import BreakdownPanel from "../Components/BreakdownPanel"
 import MaintenancePanel from "../Components/MaintenancePanel"
 import DailyOperationsModal from "../Components/daily-operations/DailyOperationsModal";
 import SimulationReport from "../Components/SimulationReport"
+import { useSimulationDiariaInit } from '../../hooks/useSimulationDiariaInit';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
   : process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const DailyOperationsPage = () => {
-  const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
-  const [error, setError] = useAtom(simulationErrorAtom);
+  //const [simulationStatus, setSimulationStatus] = useAtom(simulationStatusAtom);
+  //const [error, setError] = useAtom(simulationErrorAtom);
   const [performanceMetrics] = useAtom(performanceMetricsAtom);
   const [, setShowModal] = useAtom(showSimulationModalAtom);
-  const [simulationType, setSimulationType] = useAtom(simulationTypeAtom);
+  const [, setSimulationType] = useAtom(simulationTypeAtom);
   
   // Estados para controlar los modales
+  const { simulationStatus, simulationType, error } = useSimulationDiariaInit();
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure();
   const [reportShown, setReportShown] = useState(false);
@@ -72,6 +74,8 @@ const DailyOperationsPage = () => {
     }
   }, [simulationStatus]);
 
+  
+
   return (
     <>
       {/* Modal inicial - solo se muestra al cargar la página si no hay simulación */}
@@ -96,7 +100,6 @@ const DailyOperationsPage = () => {
         <PerformanceMetrics metrics={performanceMetrics} />
         <VehicleMap
           simulationStatus={simulationStatus}
-          setSimulationStatus={setSimulationStatus}
         />
         <SimulationPanel openReport={onOpenReport} />
         <MapLegend cornerPosition={"top-20 right-5"} />

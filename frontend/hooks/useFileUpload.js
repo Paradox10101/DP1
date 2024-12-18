@@ -41,21 +41,25 @@ export const useShipmentUpload = () => {
   };
 
   const validateShipmentLine = (line) => {
-    const regex = /^(\d{2})\s+(\d{2}):(\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/;
+    const regex = /^(?:(\d{2}|\bdd\b)\s+(?:(\d{2}:\d{2})|(?:\bhh:mm\b))),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)(?:\s+\d+)?$/;
     const match = line.trim().match(regex);
     
     if (!match) return false;
     
-    const [, day, hour, minute, destinationUbigeo, quantity] = match;
+    const [, day, timeStr, destinationUbigeo, quantity] = match;
     
-    const dayNum = parseInt(day);
-    if (dayNum < 1 || dayNum > 31) return false;
+    // Si no es "dd", validar el día
+    if (day !== 'dd') {
+      const dayNum = parseInt(day);
+      if (dayNum < 1 || dayNum > 31) return false;
+    }
     
-    const hourNum = parseInt(hour);
-    if (hourNum < 0 || hourNum > 23) return false;
-    
-    const minuteNum = parseInt(minute);
-    if (minuteNum < 0 || minuteNum > 59) return false;
+    // Si no es "hh:mm", validar la hora
+    if (timeStr && timeStr !== 'hh:mm') {
+      const [hour, minute] = timeStr.split(':').map(Number);
+      if (hour < 0 || hour > 23) return false;
+      if (minute < 0 || minute > 59) return false;
+    }
     
     if (!/^\d{6}$/.test(destinationUbigeo)) return false;
     
@@ -125,79 +129,128 @@ export const useShipmentUpload = () => {
   };
 
   // Función auxiliar para convertir el formato de línea a formato del backend
+  const getCurrentTimeValues = () => {
+    const now = new Date();
+    return {
+      day: String(now.getDate()).padStart(2, '0'),
+      time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+    };
+  };
+  
   const convertToBackendFormat = (line) => {
-    const match = line.match(/^(\d{2})\s+(\d{2}):(\d{2}),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)$/);
-    if (!match) return null;
-
-    const [, day, hour, minute, destinationUbigeo, quantity] = match;
+    // Log para debugging
+    console.log('Procesando línea:', line);
+  
+    const regex = /^(?:(\d{2}|\bdd\b)\s+(?:(\d{2}:\d{2})|(?:\bhh:mm\b))),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)(?:\s+\d+)?$/;
+    const match = line.match(regex);
+    
+    if (!match) {
+      console.log('No match encontrado para la línea');
+      return null;
+    }
+    
+    // Log del match para debugging
+    console.log('Match encontrado:', match);
+    
+    const [fullMatch, day, timeStr, destinationUbigeo, quantity] = match;
+    const currentTime = getCurrentTimeValues();
+    
+    console.log('Valores extraídos:', { day, timeStr, destinationUbigeo, quantity });
+    
+    // Determinar día y hora
+    const finalDay = day === 'dd' ? currentTime.day : day;
+    const finalTime = (timeStr === 'hh:mm' || !timeStr) ? currentTime.time : timeStr;
     
     let year, month;
-
-    // Si tenemos año y mes del nombre del archivo, usarlos
     if (fileYearMonth) {
       year = fileYearMonth.year;
       month = fileYearMonth.month;
     } else {
-      // Si no, usar fecha actual
       const now = new Date();
       year = now.getFullYear();
       month = now.getMonth() + 1;
     }
+  
+    // Extraer hora y minuto del tiempo final
+    let hours = 0, minutes = 0;
+    if (finalTime && finalTime.includes(':')) {
+      [hours, minutes] = finalTime.split(':').map(Number);
+    } else {
+      // Si no hay tiempo válido, usar tiempo actual
+      const now = new Date();
+      hours = now.getHours();
+      minutes = now.getMinutes();
+    }
     
+    // Log de los valores de tiempo
+    console.log('Valores de tiempo:', { finalDay, hours, minutes });
+  
+    // Crear la fecha con timezone America/Lima (-05:00)
     const localDate = new Date(
       year,
       month - 1,
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute)
+      parseInt(finalDay),
+      hours,
+      minutes
     );
-    
-    // Construir manualmente el string ISO manteniendo la hora local
-    const isoDate = localDate.getFullYear() + '-' +
-      String(localDate.getMonth() + 1).padStart(2, '0') + '-' +
-      String(localDate.getDate()).padStart(2, '0') + 'T' +
-      String(localDate.getHours()).padStart(2, '0') + ':' +
-      String(localDate.getMinutes()).padStart(2, '0') + ':00.000-05:00';
-
-    return {
+  
+    // Formatear la fecha ISO
+    const isoDate = `${localDate.getFullYear()}-${
+      String(localDate.getMonth() + 1).padStart(2, '0')}-${
+      String(localDate.getDate()).padStart(2, '0')}T${
+      String(localDate.getHours()).padStart(2, '0')}:${
+      String(localDate.getMinutes()).padStart(2, '0')}:00.000-05:00`;
+  
+    const result = {
       isoDate,
-      destinationUbigeo,
+      destinationUbigeo: destinationUbigeo.trim(),
       quantity: parseInt(quantity)
     };
+  
+    // Log del resultado final
+    console.log('Resultado convertido:', result);
+  
+    return result;
   };
-
+  
   const handleConfirmUpload = async () => {
     if (!selectedFile || !previewData.length) return;
-
     setIsUploading(true);
     setUploadProgress(0);
-
+    
     try {
       const validRecords = previewData
         .filter(record => !record.hasError)
-        .map(record => convertToBackendFormat(record.content))
+        .map(record => {
+          const converted = convertToBackendFormat(record.content);
+          console.log('Convirtiendo registro:', {
+            original: record.content,
+            convertido: converted
+          });
+          return converted;
+        })
         .filter(record => record !== null);
-
+      
       if (validRecords.length === 0) {
         throw new Error('No hay registros válidos para procesar');
       }
-
+  
+      // Log para debugging
+      console.log('Payload a enviar:', JSON.stringify({
+        validRecords,
+        uploadType: fileYearMonth ? 'historical' : 'current',
+        yearMonth: fileYearMonth ?
+          `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` :
+          null
+      }, null, 2));
+  
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 95) return 95;
           return prev + Math.random() * 10;
         });
-      }, 500);  
-      
-      // Log de datos antes del envío
-      console.log('Datos a enviar al backend:', {
-        validRecords,
-        uploadType: fileYearMonth ? 'historical' : 'current',
-        yearMonth: fileYearMonth ? 
-          `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` : 
-          null
-      });
-
+      }, 500);
+  
       try {
         const response = await fetch(`${API_BASE_URL}/orders/bulk-upload`, {
           method: 'POST',
@@ -207,34 +260,35 @@ export const useShipmentUpload = () => {
           body: JSON.stringify({
             validRecords,
             uploadType: fileYearMonth ? 'historical' : 'current',
-            yearMonth: fileYearMonth ? 
-              `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` : 
+            yearMonth: fileYearMonth ?
+              `${fileYearMonth.year}-${String(fileYearMonth.month).padStart(2, '0')}` :
               null
           })
         });
-
+  
         clearInterval(progressInterval);
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Error al cargar el archivo');
-        }
-
-        const result = await response.json();
         
-        if (!result.success) {
-          throw new Error(result.error || 'Error en el procesamiento del archivo');
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          console.error('Error en la respuesta:', responseData);
+          throw new Error(responseData.error || 'Error al cargar el archivo');
         }
-
+  
+        if (!responseData.success) {
+          console.error('Detalles del error:', responseData);
+          throw new Error(responseData.error || 'Error en el procesamiento del archivo');
+        }
+  
         setUploadProgress(100);
-        setUploadStatus(result.failedRecords?.length > 0 ? 'partial' : 'success');
+        setUploadStatus(responseData.failedRecords?.length > 0 ? 'partial' : 'success');
         setIsPreviewMode(false);
-        return result;
+        return responseData;
+        
       } catch (error) {
         clearInterval(progressInterval);
         throw error;
       }
-
     } catch (error) {
       console.error('Error en la carga:', error);
       setUploadStatus('error');

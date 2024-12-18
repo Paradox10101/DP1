@@ -34,17 +34,6 @@ const page = () => {
   const [loadedSimulationType, setLoadedSimulationType] = useState(false);
   const {isOpen: isOpenReport, onOpen: onOpenReport, onOpenChange: onOpenChangeReport} = useDisclosure()
   const { metrics } = useSimulationMetrics();
-  const [showControls, setShowControls] = useState(true);
-  const [showBreakdowns, setShowBreakdowns] = useState(true);
-  
-
-  const toggleControls = () => {
-    setShowControls(!showControls);
-  };
-
-  const toggleBreakdowns = () => {
-    setShowBreakdowns(!showBreakdowns);
-  };
 
   const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD
@@ -79,6 +68,30 @@ const page = () => {
       setSimulationStatus('stopped')
   }, [metrics])
 
+  useEffect(() => {
+    const checkAndStopDailySimulation = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/simulation/check-daily`);
+        if (!response.ok) {
+          throw new Error('Error checking daily simulation status');
+        }
+        const data = await response.json();
+        if (data.wasRunning) {
+          console.log('A daily simulation was running and has been stopped');
+          // Optionally update your UI state here
+          setSimulationStatus('stopped');
+          setSimulationType(null);
+        }
+      } catch (error) {
+        console.error('Error checking daily simulation:', error);
+        setError('Error checking simulation status');
+      }
+    };
+
+    // First check and stop any running daily simulation
+    checkAndStopDailySimulation();
+  }, []);
+
   return (
     <>
         {
@@ -101,10 +114,6 @@ const page = () => {
               <BreakdownPanel />
               <MaintenancePanel />
             </div>
-
-            
-
-          
         </div>
     </>
   )

@@ -235,6 +235,31 @@ public class SimulationRouter extends BaseRouter {
             return createSuccessResponse("Simulación detenida.");
         });
 
+        Spark.get("/api/v1/simulation/check-daily", (request, response) -> {
+            response.type("application/json");
+            JsonObject jsonResponse = new JsonObject();
+
+            try {
+                if (isSimulationRunning && simulationType == SimulationType.DAILY) {
+                    // Stop the simulation
+                    stopSimulation();
+                    jsonResponse.addProperty("message", "Daily simulation was running and has been stopped");
+                    jsonResponse.addProperty("wasRunning", true);
+                } else {
+                    jsonResponse.addProperty("message", "No daily simulation was running");
+                    jsonResponse.addProperty("wasRunning", false);
+                }
+                jsonResponse.addProperty("success", true);
+            } catch (Exception e) {
+                logger.severe("Error checking daily simulation: " + e.getMessage());
+                response.status(500);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Error checking daily simulation: " + e.getMessage());
+            }
+
+            return jsonResponse;
+        });
+
         Spark.get("/api/v1/simulation/planning-time", (request, response) -> {
             response.type("application/json");
 
@@ -398,6 +423,39 @@ public class SimulationRouter extends BaseRouter {
             } catch (Exception e) {
                 response.status(500);
                 return createErrorResponse("Error al actualizar la velocidad: " + e.getMessage());
+            }
+        });
+
+        Spark.post("/api/v1/simulation/start-daily", (request, response) -> {
+            JsonObject jsonResponse = new JsonObject();
+
+            try {
+                // Si hay una simulación corriendo, verificar si es diaria
+                if (isSimulationRunning) {
+                    if (simulationType == SimulationType.DAILY) {
+                        // Si es diaria, no hacer nada
+                        jsonResponse.addProperty("success", true);
+                        jsonResponse.addProperty("message", "La simulación diaria ya está en curso");
+                        return jsonResponse;
+                    } else {
+                        // Si no es diaria, detenerla
+                        stopSimulation();
+                    }
+                }
+
+                // Iniciar la simulación diaria
+                initializeDailySimulation();
+
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("message", "Simulación diaria iniciada correctamente");
+                return jsonResponse;
+
+            } catch (Exception e) {
+                logger.severe("Error al iniciar la simulación diaria: " + e.getMessage());
+                response.status(500);
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Error al iniciar la simulación diaria: " + e.getMessage());
+                return jsonResponse;
             }
         });
 
