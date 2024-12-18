@@ -227,7 +227,7 @@ export default function ModalVehiculo({vehicle}){
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-row justify-between w-full">
                     <div className="text-black regular_bold block w-[120px]">Ruta del Camión</div>
-                    {simulationType&&simulationType==='colapso'&&
+                    {simulationType&&simulationType!=='colapso'&&
                     <Button
                         disableRipple={true}
                         className={"focus:outline-none border stroke-black w-[120px] pequenno text-black  rounded-2xl items-center block bg-[#FFA500]"}

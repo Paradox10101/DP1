@@ -12,7 +12,7 @@ import { simulationStatusAtom, simulationTypeAtom } from "@/atoms/simulationAtom
 export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setIsBreakdownModalOpen, setVehicleCodeSelected}) {
 
     const [,setFollowLocation] = useAtom(followLocationAtom)
-    const [simulationType,] = useAtomValue(simulationTypeAtom)
+    const simulationType = useAtom(simulationTypeAtom)
 
     
     return (
@@ -52,7 +52,7 @@ export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setI
                 </span>
             </div>
             <div className="flex flex-row gap-2 items-center justify-between">
-            {simulationType&&simulationType==='colapso'&&
+            {simulationType&&simulationType!=='colapso'&&
             <div
                 onMouseDown={(event) => {
                     event.stopPropagation();
