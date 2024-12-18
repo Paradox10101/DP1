@@ -19,8 +19,7 @@ export const MAP_CONFIG = {
     STYLE_URL: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=i1ya2uBOpNFu9czrsnbD',
     DEFAULT_CENTER: [-76.991, -15],
     DEFAULT_ZOOM: 4,
-    //BOUNDS: [[-91.35, -20.35], [-60.65, 0.15]], // Limita a que solo aparezca el mapa del Peru
-    BOUNDS: [[-95, -20], [-57, 3]],
+    BOUNDS: [[-103.4, -25.1], [-48.6, 8.1]], // Limita a que solo aparezca el mapa del Peru
 
     // Configuración de fuentes
     SOURCES: {

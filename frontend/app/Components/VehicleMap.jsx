@@ -561,18 +561,7 @@ const VehicleMap = ({ simulationStatus }) => {
           });
         }
 
-        // Primero agregar la fuente de ubicaciones
-        /*if (!mapRef.current.getSource('locations')) {
-          mapRef.current.addSource('locations', {
-            type: 'geojson',
-            data: locations || { type: 'FeatureCollection', features: [] },
-            cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: 50,
-          });
-        }*/
-
-          // Agregar fuente de oficinas (con clustering)
+        // Agregar fuente de oficinas (con clustering)
         if (!mapRef.current.getSource('offices')) {
           mapRef.current.addSource('offices', {
             type: 'geojson',
@@ -600,58 +589,59 @@ const VehicleMap = ({ simulationStatus }) => {
         // Luego agregar las capas en orden específico (de abajo hacia arriba) <------CLUSTERES
         // 1. Clusters y conteo
         // Clusters (solo para oficinas)
-        if (!mapRef.current.getLayer('clusters')) {
-          mapRef.current.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'offices', // Cambiar a la fuente de oficinas
-            filter: ['has', 'point_count'],
-            paint: LAYER_STYLES.locations.clusters.paint
-          });
-        }
-
-        if (!mapRef.current.getLayer('cluster-count')) {
-          mapRef.current.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: 'offices', // Cambiar a la fuente de oficinas
-            filter: ['has', 'point_count'],
-            layout: LAYER_STYLES.locations.clusterCount.layout,
-            paint: LAYER_STYLES.locations.clusterCount.paint
-          });
-        }
-
-        // 2. Almacenes y oficinas       
-        /*if (!mapRef.current.getLayer('unclustered-offices')) {
-          mapRef.current.addLayer({
-            id: 'unclustered-offices',
-            type: 'symbol',
-            source: 'offices',
-            filter: ['!', ['has', 'point_count']],
-            layout: {
-              'icon-image': [
-                'case',
-                ['>=', ['get', 'occupiedPercentage'], 81],
-                'office-icon-81',
-                ['>=', ['get', 'occupiedPercentage'], 41],
-                'office-icon-41',
-                'office-icon-0'
-              ],
-              'icon-size': 0.8,
-              'icon-allow-overlap': true,
-              'text-field': ['get', 'name'],
-              'text-font': ['Open Sans Regular'],
-              'text-size': 10,
-              'text-offset': [0, 1.5],
-              'text-anchor': 'top',
-            },
-            paint: {
-              'text-color': '#000000',
-              'text-halo-color': '#FFFFFF',
-              'text-halo-width': 1,
-            }
-          });
-        }*/
+        mapRef.current.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'offices',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#08CA57',
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,    // Radio base aumentado para acomodar el icono
+              10, 25,
+              30, 30,
+            ],
+            'circle-opacity': 0.6,
+          },
+        });
+        
+        // Agregamos una nueva capa para el icono de oficina dentro del círculo
+        mapRef.current.addLayer({
+          id: 'cluster-office-icon',
+          type: 'symbol',
+          source: 'offices',
+          filter: ['has', 'point_count'],
+          layout: {
+            'icon-image': 'office-icon-0', // Usa el mismo icono de oficina que ya tenemos
+            'icon-size': 0.9,              // Tamaño del icono un poco más pequeño
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+          }
+        });
+        
+        // Capa del contador con diseño más moderno y minimalista
+        mapRef.current.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'offices',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}', // Muestra el número de puntos en el cluster
+            'text-font': ['Open Sans Bold'],
+            'text-size': 14,                          // Aumentamos un poco el tamaño
+            'text-anchor': 'top',                     // Alineación superior
+            'text-offset': [0, -1.7],                  // Ajustamos la posición
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#000000',                  // Color negro para el texto
+            'text-halo-color': '#ffffff',             // Borde blanco para mejor legibilidad
+            'text-halo-width': 1.5,                   // Grosor del borde
+          }
+        });
 
         if (!mapRef.current.getLayer('unclustered-warehouses')) {
           mapRef.current.addLayer({
@@ -1209,22 +1199,59 @@ const VehicleMap = ({ simulationStatus }) => {
       // Agregar capas de clusters y conteo de clusters
       if (!mapRef.current.getLayer('clusters')) {
         // Capa de círculos para clusters usando color verde
+        // Primero modificamos la capa del círculo verde base
         mapRef.current.addLayer({
           id: 'clusters',
           type: 'circle',
           source: 'offices',
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#08CA57', // Verde
+            'circle-color': '#08CA57',
             'circle-radius': [
               'step',
               ['get', 'point_count'],
-              15, // Radio base
-              10, 20, // Radio mayor para clusters con más puntos
-              30, 25,
+              30,    // Radio base aumentado para acomodar el icono
+              10, 35,
+              30, 40,
             ],
             'circle-opacity': 0.6,
           },
+        });
+
+        // Agregamos una nueva capa para el icono de oficina dentro del círculo
+        mapRef.current.addLayer({
+          id: 'cluster-office-icon',
+          type: 'symbol',
+          source: 'offices',
+          filter: ['has', 'point_count'],
+          layout: {
+            'icon-image': 'office-icon-0', // Usa el mismo icono de oficina que ya tenemos
+            'icon-size': 0.6,              // Tamaño del icono un poco más pequeño
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+          }
+        });
+
+        // Modificamos la capa del contador para que aparezca arriba del icono
+        mapRef.current.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'offices',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+            'text-anchor': 'center',
+            'text-offset': [0, -1.5],  // Desplaza el texto hacia arriba
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#000000',      // Cambiamos a negro para mejor visibilidad
+            'text-halo-color': '#ffffff', // Agregamos un halo blanco
+            'text-halo-width': 1.5        // para mejor legibilidad
+          }
         });
 
         // Evento de clic en clusters para hacer zoom
@@ -1251,26 +1278,6 @@ const VehicleMap = ({ simulationStatus }) => {
           mapRef.current.getCanvas().style.cursor = '';
         });
         //CLUSTERES
-      }
-
-      if (!mapRef.current.getLayer('cluster-count')) {
-        // Capa de símbolos para el conteo de clusters
-        mapRef.current.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'offices',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-            'text-anchor': 'center',
-            'text-offset': [0, 0],
-          },
-          paint: {
-            'text-color': '#ffffff',
-          },
-        });
       }
       
 
