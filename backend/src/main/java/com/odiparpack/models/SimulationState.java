@@ -1,7 +1,6 @@
 package com.odiparpack.models;
 
 import com.google.gson.*;
-import com.odiparpack.DataModel;
 import com.odiparpack.SimulationRunner;
 import com.odiparpack.api.routers.SimulationRouter;
 import com.odiparpack.routing.model.Route;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.odiparpack.Main.*;
 import static com.odiparpack.Utils.calculateDistance;
-import static com.odiparpack.Utils.calculateDistanceFromNodes;
 import static java.lang.Math.abs;
 
 public class SimulationState {
@@ -36,7 +34,6 @@ public class SimulationState {
     private final Object matrixLock = new Object();
     public static final String[] almacenesPrincipales = {"150101", "040101", "130101"}; // Lima, Arequipa, Trujillo
 
-    private static RouteCache routeCache;
     private static List<Blockage> activeBlockages;
     private static long[][] currentTimeMatrix;
     private List<Maintenance> maintenanceSchedule;
@@ -543,7 +540,7 @@ public class SimulationState {
 
 
     public SimulationState(List<Vehicle> vehicles, LocalDateTime initialSimulationTime,
-                           List<Order> orders, Map<String, Location> locations, RouteCache routeCache,
+                           List<Order> orders, Map<String, Location> locations,
                            long[][] originalTimeMatrix, List<Blockage> blockages,
                            List<Maintenance> maintenanceSchedule,
                            Map<String, Integer> locationIndices,
@@ -554,7 +551,6 @@ public class SimulationState {
         this.orders = orders;
         this.locations = locations;
         this.warehouseManager = new WarehouseManager(locations);
-        this.routeCache = routeCache;
         this.timeMatrix = originalTimeMatrix;
         this.locationIndices = locationIndices;
         this.locationNames = locationNames;
@@ -585,11 +581,6 @@ public class SimulationState {
     public SimulationRouter.SimulationType getSimulationType() {
         return simulationType;
     }
-
-    public RouteCache getRouteCache() {
-        return routeCache;
-    }
-
 
     // Getter para breakdownLogs
     public Map<String, List<String>> getBreakdownLogs() {
@@ -1411,71 +1402,6 @@ public class SimulationState {
         timeMatrix = extendedMatrix;
     }
 
-
-    private DataModel createDataModelForGroup(Set<RouteRequest> routesToCalculate, List<Blockage> blockages) {
-        List<Integer> starts = new ArrayList<>();
-        List<Integer> ends = new ArrayList<>();
-
-        AtomicInteger dummyIndex = new AtomicInteger(currentTimeMatrix.length); // Primer índice para dummy nodes
-        Map<String, Integer> dummyNodes = new HashMap<>();
-
-        for (RouteRequest request : routesToCalculate) {
-            Integer startIndex = locationIndices.get(request.start);
-            Integer endIndex = locationIndices.get(request.end);
-
-            if (startIndex == null || endIndex == null) {
-                logger.warning(String.format("Ubigeo de inicio o fin no encontrado: %s -> %s",
-                        request.start, request.end));
-                continue;
-            }
-
-            // Manejar dummy nodes para el origen
-            int actualStartIndex;
-            if (starts.contains(startIndex)) {
-                // Nodo ya usado, crear un dummy node
-                String dummyKey = "start-" + startIndex;
-                actualStartIndex = dummyNodes.computeIfAbsent(dummyKey, key -> {
-                    extendMatrixForDummy(dummyIndex.get(), startIndex);
-                    return dummyIndex.getAndIncrement();
-                });
-            } else {
-                actualStartIndex = startIndex;
-            }
-
-            // Manejar dummy nodes para el destino
-            int actualEndIndex;
-            if (ends.contains(endIndex)) {
-                // Nodo ya usado, crear un dummy node
-                String dummyKey = "end-" + endIndex;
-                actualEndIndex = dummyNodes.computeIfAbsent(dummyKey, key -> {
-                    extendMatrixForDummy(dummyIndex.get(), endIndex);
-                    return dummyIndex.getAndIncrement();
-                });
-            } else {
-                actualEndIndex = endIndex;
-            }
-
-            // Agregar los índices al conjunto de rutas
-            starts.add(actualStartIndex);
-            ends.add(actualEndIndex);
-        }
-
-        if (starts.isEmpty()) {
-            logger.warning("No hay rutas para calcular en este grupo.");
-            return null; // No hay rutas para este grupo
-        }
-
-        return new DataModel(
-                getCurrentTimeMatrix(),
-                blockages,
-                starts.stream().mapToInt(Integer::intValue).toArray(),
-                ends.stream().mapToInt(Integer::intValue).toArray(),
-                locationNames,
-                locationUbigeos
-        );
-    }
-
-
     private void iniciarProcesoReemplazoAveriados(List<Vehicle> brokenVehicles) throws InterruptedException {
         // Obtener destinos únicos de las órdenes
         Set<String> destinationSet = new HashSet<>();
@@ -1909,40 +1835,43 @@ public class SimulationState {
         }
     }
 
-    public static Map<String, List<WarehouseRouteRequest>> groupWarehouseRouteRequestsByOriginDestination(List<WarehouseRouteRequest> requests) {
-        Map<String, List<WarehouseRouteRequest>> requestGroups = new HashMap<>();
-        for (WarehouseRouteRequest request : requests) {
-            String key = request.getOriginUbigeo() + "-" + request.getDestinationUbigeo();
-            requestGroups.computeIfAbsent(key, k -> new ArrayList<>()).add(request);
-        }
-        return requestGroups;
-    }
-
     public WarehouseManager getWarehouseManager() {
         return this.warehouseManager;
     }
 
-    public enum LocationType {
-        ORIGIN,
-        DESTINATION
+    public void addNewOrder(Order order) {
+        try {
+            // Verificar que la orden sea válida
+            if (order == null) {
+                logger.warning("Se intentó agregar una orden nula");
+                return;
+            }
+
+            // Verificar que la orden tenga un tiempo válido
+            LocalDateTime orderTime = order.getOrderTime();
+            if (orderTime == null) {
+                logger.warning("Orden " + order.getOrderCode() + " tiene tiempo nulo");
+                return;
+            }
+
+            synchronized (orders) {
+                // Agregar la orden a la lista
+                orders.add(order);
+
+                // Ordenar la lista por tiempo de pedido para mantener consistencia
+                Collections.sort(orders, Comparator.comparing(Order::getOrderTime));
+
+                logger.info("Nueva orden agregada: " + order.getOrderCode() +
+                        " para entrega en " + order.getDestinationUbigeo() +
+                        " programada para " + order.getOrderTime());
+            }
+        } catch (Exception e) {
+            logger.severe("Error al agregar nueva orden: " + e.getMessage());
+            throw new RuntimeException("Error al agregar nueva orden", e);
+        }
     }
 
-    /**
-     * Construye la clave de la ruta usando origen y destino
-     */
-    public static String buildRouteKey(String origin, String destination) {
-        return origin + "-" + destination;
-    }
 
-    /**
-     * Agrega un vehículo a una ruta específica
-     */
-    private void addVehicleToRoute(
-            Map<String, List<Vehicle>> groupedVehicles,
-            String routeKey,
-            Vehicle vehicle) {
-        groupedVehicles.computeIfAbsent(routeKey, k -> new ArrayList<>()).add(vehicle);
-    }
 
     private void assignReplacementVehicle(Vehicle replacementVehicle,
                                           Vehicle brokenVehicle,

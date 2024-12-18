@@ -2,14 +2,11 @@ package com.odiparpack.api.controllers;
 
 import com.google.gson.JsonObject;
 import com.odiparpack.DataLoader;
-import com.odiparpack.SimulationRunner;
-import com.odiparpack.models.Location;
+import com.odiparpack.models.*;
 import com.odiparpack.api.routers.*;
-import com.odiparpack.models.SimulationState;
 import com.odiparpack.websocket.*;
 import spark.Spark;
 
-import static com.odiparpack.Main.initializeSimulationState;
 import static spark.Spark.*;
 
 import java.io.BufferedReader;
@@ -19,17 +16,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 public class SimulationController {
     private SimulationState simulationState;
@@ -40,6 +34,11 @@ public class SimulationController {
 
     // Inicializar dotenv para cargar las variables de entorno
     private static final Dotenv dotenv = Dotenv.load();
+
+    public static Map<String, Integer> locationIndices;
+    public static List<String> locationNames;
+    public static List<String> locationUbigeos;
+    public static Map<String, Location> locations;
 
     public SimulationController() {
         this.routers = Arrays.asList(
@@ -59,7 +58,7 @@ public class SimulationController {
 
     public void start() {
         try {
-            int port = Integer.parseInt(dotenv.get("SERVER_PORT", "4567")); // Usa la variable de entorno o el valor por defecto
+            int port = Integer.parseInt(dotenv.get("SERVER_PORT", "8080")); // Usa la variable de entorno o el valor por defecto
             port(port);
             setupWebSocket();
             configureServer();
@@ -70,6 +69,7 @@ public class SimulationController {
             throw new RuntimeException("Error al iniciar el servidor", e);
         }
     }
+
 
     private void configureServer() {
         setupCORS();
@@ -153,17 +153,6 @@ public class SimulationController {
 
             // Actualizar los routers
             routers.forEach(router -> {
-                /*if (router instanceof SimulationRouter) {
-                    ((SimulationRouter) router).setSimulationState(this.simulationState);
-                } else if (router instanceof VehicleRouter) {
-                    ((VehicleRouter) router).setSimulationState(this.simulationState);
-                } else if (router instanceof ReportRouter) {
-                    ((ReportRouter) router).setSimulationState(this.simulationState);
-                } else if (router instanceof ShipmentRouter) {
-                    ((ShipmentRouter) router).setSimulationState(this.simulationState);
-                } else if (router instanceof ReportRouter) {
-                    ((ReportRouter) router).setSimulationState(this.simulationState);
-                }*/
                 router.setSimulationState(this.simulationState);
             });
 
@@ -243,6 +232,157 @@ public class SimulationController {
         }
 
         return null; // Si no se encontró ninguna fecha
+    }
+
+    public void enableLogging() {
+        try {
+            // Configurar el formato de los logs
+            SimpleFormatter formatter = new SimpleFormatter() {
+                private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
+
+                @Override
+                public synchronized String format(LogRecord lr) {
+                    return String.format(format,
+                            new java.util.Date(lr.getMillis()),
+                            lr.getLevel().getLocalizedName(),
+                            lr.getMessage()
+                    );
+                }
+            };
+
+            // Crear el directorio logs si no existe
+            java.nio.file.Path logPath = java.nio.file.Paths.get("logs");
+            if (!java.nio.file.Files.exists(logPath)) {
+                java.nio.file.Files.createDirectories(logPath);
+            }
+
+            // Crear el nombre del archivo con la fecha actual
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String logFileName = "logs/simulation_" + timestamp + ".log";
+
+            // Configurar el manejador de archivo
+            FileHandler fileHandler = new FileHandler(logFileName, true);
+            fileHandler.setFormatter(formatter);
+
+            // Configurar el manejador de consola
+            ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(formatter);
+
+            // Remover los manejadores existentes y agregar los nuevos
+            Logger rootLogger = Logger.getLogger("");
+            Handler[] handlers = rootLogger.getHandlers();
+            for (Handler handler : handlers) {
+                rootLogger.removeHandler(handler);
+            }
+
+            // Agregar ambos manejadores al logger raíz
+            rootLogger.addHandler(fileHandler);
+            rootLogger.addHandler(consoleHandler);
+
+            // Establecer el nivel de logging
+            rootLogger.setLevel(Level.INFO);
+
+            logger.info("Sistema de logs iniciado. Archivo de logs: " + logFileName);
+
+        } catch (IOException e) {
+            System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void disableLogging() {
+        try {
+            // Configurar el logger raíz
+            Logger rootLogger = Logger.getLogger("");
+
+            // Deshabilitar todos los logs
+            rootLogger.setLevel(Level.OFF);
+
+            // Remover todos los manejadores existentes
+            Handler[] handlers = rootLogger.getHandlers();
+            for (Handler handler : handlers) {
+                rootLogger.removeHandler(handler);
+            }
+
+            // No agregamos el logger.info aquí ya que los logs están deshabilitados
+
+        } catch (Exception e) {
+            System.err.println("Error al configurar el sistema de logs: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static SimulationState initializeSimulationState(LocalDateTime startDateTime,
+                                                            LocalDateTime endDateTime,
+                                                            SimulationRouter.SimulationType type,
+                                                            boolean useUploadedOrders) throws IOException {
+        DataLoader dataLoader = new DataLoader();
+
+        // Cargar datos base
+        locations = dataLoader.loadLocationsWithCapacityByRegion("src/main/resources/locations.txt", "6551968"); //Se excluye el ubigeo 160401
+        List<Edge> edges = dataLoader.loadEdges("src/main/resources/edgesv2.txt", locations);
+        List<Vehicle> vehicles = dataLoader.loadVehicles("src/main/resources/vehicles.txt");
+        List<Blockage> blockages = dataLoader.loadBlockages(startDateTime, endDateTime);
+        List<Maintenance> maintenanceSchedule = dataLoader.loadMaintenanceSchedule("src/main/resources/maintenance.txt");
+
+        // Obtener órdenes según el tipo de simulación
+        List<Order> orders;
+        if (type == SimulationRouter.SimulationType.DAILY || useUploadedOrders) {
+            // Para simulación diaria, usar órdenes del registro
+            orders = OrderRegistry.getAllOrders().stream()
+                    .filter(order -> order.getStatus() == Order.OrderStatus.REGISTERED)
+                    .collect(Collectors.toList());
+
+            // Si no hay órdenes registradas, lanzar excepción
+            /*if (orders.isEmpty()) {
+                throw new IllegalStateException("No hay órdenes registradas para simular");
+            }*/
+
+            if (!orders.isEmpty()) {
+                // Actualizar startDateTime basado en las órdenes existentes
+                LocalDateTime earliestOrder = orders.stream()
+                        .map(Order::getOrderTime)
+                        .min(LocalDateTime::compareTo)
+                        .orElseThrow();
+
+                startDateTime = earliestOrder;
+            }
+        } else {
+            // Para otros tipos de simulación, cargar desde archivo
+            orders = dataLoader.loadOrders(startDateTime, endDateTime, locations);
+        }
+
+        // Construir índices y matrices
+        List<Location> locationList = new ArrayList<>(locations.values());
+
+        locationIndices = new HashMap<>();
+        for (int i = 0; i < locationList.size(); i++) {
+            locationIndices.put(locationList.get(i).getUbigeo(), i);
+        }
+
+        long[][] timeMatrix = dataLoader.createTimeMatrix(locationList, edges);
+
+        locationNames = new ArrayList<>();
+        locationUbigeos = new ArrayList<>();
+        for (Location loc : locationList) {
+            locationNames.add(loc.getProvince());
+            locationUbigeos.add(loc.getUbigeo());
+        }
+
+        // Crear una nueva instancia de SimulationState
+        return new com.odiparpack.models.SimulationState(
+                vehicles,
+                startDateTime,
+                orders,
+                locations,
+                timeMatrix,
+                blockages,
+                maintenanceSchedule,
+                locationIndices,
+                locationNames,
+                locationUbigeos,
+                type
+        );
     }
 
 

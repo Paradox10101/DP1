@@ -72,6 +72,14 @@ public class OrderRouter extends BaseRouter {
                     // Register the order
                     OrderRegistry.addOrder(order);
 
+                    // Get SimulationState and add the order if simulation is running
+                    if (simulationState != null && !simulationState.isStopped()) {
+                        simulationState.addNewOrder(order);
+                        logger.info("Nueva orden " + orderCode + " agregada a la simulación en tiempo real");
+                    } else {
+                        logger.warning("No se pudo agregar la orden a la simulación: simulación no está activa");
+                    }
+
                     // Add to successful records
                     successfulRecords.add(orderCode);
 

@@ -7,6 +7,8 @@ import com.odiparpack.routing.model.Route;
 import java.util.*;
 
 import static com.odiparpack.Main.*;
+import static com.odiparpack.api.controllers.SimulationController.locationNames;
+import static com.odiparpack.api.controllers.SimulationController.locationUbigeos;
 
 public class LocalSearchRouter {
     private final long[][] timeMatrix;

@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.odiparpack.DataLoader.getUbigeoFromName;
-import static com.odiparpack.Main.locations;
+import static com.odiparpack.api.controllers.SimulationController.locations;
 import static com.odiparpack.Main.logger;
 import static com.odiparpack.models.SimulationState.addBreakdownLog;
 

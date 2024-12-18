@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Package, MapPin } from 'lucide-react';
+import { Package, MapPin, Search } from 'lucide-react';
 import { Select, SelectItem } from "@nextui-org/select";
 import { Spinner } from "@nextui-org/react";
 import InputField from '../../Components/common/InputField';
@@ -33,7 +33,9 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
         
         const citiesArray = Object.entries(data).map(([ubigeo, location]) => ({
           id: ubigeo,
-          name: location.province
+          name: location.province,
+          ubigeo: ubigeo,  // Agregamos el ubigeo explícitamente
+          naturalRegion: location.naturalRegion // Agregamos la región natural
         }));
         
         setCities(citiesArray);
@@ -51,7 +53,8 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
   // Filtrado de ciudades basado en la búsqueda
   const filteredCities = useMemo(() => {
     return cities.filter((city) =>
-      city.name.toLowerCase().includes(searchQuery.toLowerCase())
+      city.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      city.ubigeo.includes(searchQuery)
     );
   }, [cities, searchQuery]);
 
@@ -119,12 +122,42 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
       formData.destinationCity
     );
 
-    onDataChange?.({
-      data: { ...formData, locations: locationsData },
-      isValid: !hasErrors && isComplete,
-      errors,
-    });
+    if (isComplete && !hasErrors && locationsData) {
+      const orderDateTime = new Date();
+      const dueDate = locationService.calculateDueDate(
+        orderDateTime,
+        formData.destinationCity,
+        locationsData
+      );
+
+      onDataChange?.({
+        data: { 
+          ...formData, 
+          locations: locationsData,
+          dueDate: dueDate,
+        },
+        isValid: true,
+        errors,
+      });
+    } else {
+      onDataChange?.({
+        data: { 
+          ...formData, 
+          locations: locationsData,
+          dueDate: formData.dueDate // Mantener la fecha previa si existe
+        },
+        isValid: !hasErrors && isComplete,
+        errors,
+      });
+    }
   }, [formData, errors, locationsData]);
+
+  // Inicializar con datos previos
+  useEffect(() => {
+    if (safeInitialData?.locations && !locationsData) {
+      setLocationsData(safeInitialData.locations);
+    }
+  }, [safeInitialData, locationsData]);
 
   if (loading) {
     return (
@@ -168,25 +201,33 @@ export const PackageDetailsForm = ({ onDataChange, initialData }) => {
         <label className="text-sm font-medium text-gray-700">
           Ciudad de destino<span className="text-red-500">*</span>
         </label>
+        
+        <InputField
+          icon={Search}
+          type="text"
+          placeholder="Buscar por ciudad o ubigeo..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-2"
+        />
+
         <Select
           isRequired
           variant="bordered"
           placeholder="Selecciona la ciudad de destino"
           selectedKeys={formData.destinationCity ? [formData.destinationCity] : []}
+          value={formData.destinationCity ? cities.find(city => city.id === formData.destinationCity)?.name : ''}
           className="w-full"
           onSelectionChange={handleSelectChange}
           onBlur={() => handleBlur('destinationCity')}
           errorMessage={touched.destinationCity ? errors.destinationCity : ''}
           isInvalid={touched.destinationCity && errors.destinationCity ? true : false}
           startContent={<MapPin className="text-gray-400 h-5 w-5" />}
-          onSearchChange={setSearchQuery}
           items={filteredCities}
-          filterValue={searchQuery}
-          isFilterable={true}
         >
           {(city) => (
-            <SelectItem key={city.id} value={city.id}>
-              {city.name}
+            <SelectItem key={city.id} textValue={`${city.name} (${city.ubigeo})`}>
+              {city.name} ({city.ubigeo})
             </SelectItem>
           )}
         </Select>
