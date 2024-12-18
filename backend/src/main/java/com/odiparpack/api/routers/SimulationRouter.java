@@ -5,12 +5,10 @@ import com.google.gson.JsonParser;
 import com.odiparpack.api.controllers.SimulationController;
 import com.odiparpack.models.Order;
 import com.odiparpack.models.OrderRegistry;
-import com.odiparpack.models.SimulationReport;
 import com.odiparpack.models.SimulationState;
 import com.odiparpack.SimulationRunner;
 
 import com.odiparpack.scheduler.PlanificadorScheduler;
-import com.odiparpack.tasks.PlanificadorTask;
 import spark.Spark;
 
 import java.time.LocalDate;
@@ -19,7 +17,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -403,6 +400,40 @@ public class SimulationRouter extends BaseRouter {
                 return createErrorResponse("Error al actualizar la velocidad: " + e.getMessage());
             }
         });
+
+        // Iniciar simulación diaria al arrancar
+        initializeDailySimulation();
+    }
+
+    private void initializeDailySimulation() {
+        try {
+            // Obtener la fecha actual del servidor
+            LocalDateTime serverStartTime = LocalDateTime.now();
+            logger.info("Iniciando simulación diaria permanente desde: " + serverStartTime);
+
+            // Configurar simulación diaria (1 segundo real = 1 segundo simulación)
+            SimulationRunner.setSimulationParameters(1);
+
+            // Inicializar el estado de la simulación
+            simulationController.initializeSimulation(
+                    serverStartTime,
+                    null,  // Sin fecha de fin para operación continua
+                    SimulationType.DAILY,
+                    true   // Usar órdenes cargadas
+            );
+
+            // Obtener el estado actualizado
+            this.simulationType = SimulationType.DAILY;
+
+            // Iniciar la simulación
+            startSimulation();
+
+            logger.info("Simulación diaria permanente iniciada exitosamente");
+
+        } catch (Exception e) {
+            logger.severe("Error al iniciar la simulación diaria permanente: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     private void startSimulation() {
