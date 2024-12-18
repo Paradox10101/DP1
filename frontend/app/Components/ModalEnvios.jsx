@@ -293,7 +293,7 @@ export default function ModalEnvios({ shipmentVehicles, setSelectedVehicleIndex,
                 </div>
 
                 {/* Tabla */}
-                <div className="overflow-x-auto min-h-[350px] border stroke-black rounded w-full">
+                <div className="overflow-x-auto min-h-[350px] border stroke-black rounded w-full overflow-y-auto h-[365px]  scroll-area">
                     <table className="bg-white border border-gray-200 rounded-lg shadow w-full">
                         <thead>
                             <tr className="bg-gray-50 text-gray-500 uppercase text-sm leading-normal">
