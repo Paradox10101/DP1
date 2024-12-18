@@ -36,6 +36,53 @@ export default function CollapseDashboard({ tiempos }) {
     });
   };
 
+  const downloadReportData = () => {
+    if (!data) return;
+
+    let csvContent = "REPORTE DE PEDIDO\n\n";
+    
+    // Información básica del pedido
+    csvContent += "INFORMACIÓN GENERAL\n";
+    csvContent += `Código del Pedido,${data.codigoPedido}\n`;
+    csvContent += `Ruta del Pedido,${data.rutaPedido}\n`;
+    csvContent += `Cantidad de Paquetes,${data.cantidadPaquetes}\n`;
+    csvContent += `Fecha de Inicio,${formatDate(data.fechaInicioPedido)}\n`;
+    csvContent += `Fecha Límite,${formatDate(data.fechaLimiteEntrega)}\n`;
+    csvContent += `Estado del Pedido,${data.estadoPedido}\n\n`;
+
+    // Información de camiones asignados
+    if (data.camionesAsignados) {
+      csvContent += "DETALLE DE CAMIONES\n";
+      Object.entries(data.camionesAsignados).forEach(([camion, detalles]) => {
+        csvContent += `\nCAMIÓN: ${camion}\n`;
+        csvContent += `Paquetes Asignados,${detalles.paquetes}\n`;
+        csvContent += `Fecha Estimada de Entrega,${formatDate(detalles.fechaEntregaEstimada)}\n`;
+        
+        // Detalles de la ruta
+        csvContent += "\nRUTA DETALLADA\n";
+        csvContent += "Tramo,Origen,Destino,Estado\n";
+        detalles.rutaDelPedido.forEach((ruta, index) => {
+          csvContent += `${index + 1},${ruta.origen},${ruta.destino},${ruta.estadoTramo}\n`;
+        });
+      });
+    }
+
+    // Crear y descargar el archivo
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const fileName = `reporte_pedido_${data.codigoPedido}_${new Date().toISOString().split('T')[0]}.csv`;
+    
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   // Petición para obtener la lista de pedidos disponibles
   useEffect(() => {
     let isMounted = true; // Añadir un flag
@@ -154,7 +201,7 @@ export default function CollapseDashboard({ tiempos }) {
         ))}
       </select>
       <button
-        onClick={downloadCSV}
+        onClick={downloadReportData}
         className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 flex items-center"
       >
         <FaDownload className="mr-2" />
@@ -285,31 +332,42 @@ export default function CollapseDashboard({ tiempos }) {
        {/* Agregar la sección de Periodo */}
       <div className="mb-6">
         {tiempos && (
-          <div className="flex items-center gap-3 py-2 text-sm">
-            <span className="text-gray-500 font-medium">Periodo</span>
-            <div className="flex items-center gap-2">
-              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
-                {formatDateTime(tiempos.inicio)}
-              </span>
-              <svg 
-                width="16" 
-                height="16" 
-                viewBox="0 0 16 16" 
-                fill="none" 
-                className="text-gray-400"
-              >
-                <path 
-                  d="M3 8h10M10 5l3 3-3 3" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
-                {formatDateTime(tiempos.fin)}
-              </span>
-            </div>
+          <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 py-2 text-sm">
+                  <span className="text-gray-500 font-medium">Periodo</span>
+                  <div className="flex items-center gap-2">
+                      <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                          {formatDateTime(tiempos.inicio)}
+                      </span>
+                      <svg 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 16 16" 
+                          fill="none" 
+                          className="text-gray-400"
+                      >
+                          <path 
+                              d="M3 8h10M10 5l3 3-3 3" 
+                              stroke="currentColor" 
+                              strokeWidth="1.5" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                          />
+                      </svg>
+                      <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                          {formatDateTime(tiempos.fin)}
+                      </span>
+                  </div>
+              </div>
+              {data && (
+                  <button
+                      onClick={downloadReportData}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                  >
+                      <FaDownload className="mr-2" />
+                      Exportar CSV
+                  </button>
+              )}
           </div>
         )}
       </div>
