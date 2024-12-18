@@ -8,7 +8,7 @@ import { FixedSizeList as List } from 'react-window';
 import { parseDate } from "@internationalized/date"
 import BreakdownModal from "./VehiclePopUp/BreakdownModal"
 import { simulationTypeAtom } from "@/atoms/simulationAtoms"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 
 export default function ModalVehiculo({vehicle}){
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
@@ -21,7 +21,7 @@ export default function ModalVehiculo({vehicle}){
     const [tiposAveria, setTiposAveria] = useState([])
     const [tipoAveriaSeleccionado, setTipoAveriaSeleccionado] = useState(null)
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
-    const [simulationType,] = useAtomValue(simulationTypeAtom)
+    const simulationType = useAtomValue(simulationTypeAtom)
     const initialStateRef = useRef(
         {
         originCity: "",

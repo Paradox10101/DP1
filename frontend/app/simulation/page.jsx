@@ -91,7 +91,6 @@ const page = () => {
     // First check and stop any running daily simulation
     checkAndStopDailySimulation();
   }, []);
-  
   return (
     <>
         {

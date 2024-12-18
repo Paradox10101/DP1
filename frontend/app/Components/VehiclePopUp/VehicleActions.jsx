@@ -5,10 +5,10 @@ import { simulationTypeAtom } from '@/atoms/simulationAtoms';
 import { useAtom, useAtomValue } from 'jotai';
 
 const VehicleActions = ({ onProvoke, onViewDetail, isInTransit }) => {
-  const simulationType = useAtom(simulationTypeAtom)
+  const simulationType = useAtomValue(simulationTypeAtom)
   return(
   <div className="p-4 bg-gray-50 flex items-center justify-between gap-3">
-    {simulationType&&simulationType!=='colapso'&&
+    {simulationType&&simulationType!="colapso"&&
     <Button
       onClick={onProvoke}
       variant="flat"

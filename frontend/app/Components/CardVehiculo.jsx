@@ -12,7 +12,7 @@ import { simulationStatusAtom, simulationTypeAtom } from "@/atoms/simulationAtom
 export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setIsBreakdownModalOpen, setVehicleCodeSelected}) {
 
     const [,setFollowLocation] = useAtom(followLocationAtom)
-    const simulationType = useAtom(simulationTypeAtom)
+    const simulationType = useAtomValue(simulationTypeAtom)
 
     
     return (
