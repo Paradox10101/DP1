@@ -11,6 +11,8 @@ import {
   Spinner
 } from "@nextui-org/react";
 import { AlertCircle } from 'lucide-react';
+import { useAtom, useAtomValue } from 'jotai';
+import { simulationTypeAtom } from '@/atoms/simulationAtoms';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? process.env.NEXT_PUBLIC_API_BASE_URL_PROD || 'https://fallback-production-url.com' // Optional: Fallback URL for production
@@ -38,6 +40,7 @@ const BreakdownModal = ({ isOpen, onClose, vehicleCode, onSuccess }) => {
   const [selectedType, setSelectedType] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
+  
 
   const handleSubmit = async () => {
     if (!selectedType) {
@@ -120,6 +123,7 @@ const BreakdownModal = ({ isOpen, onClose, vehicleCode, onSuccess }) => {
           >
             Cancelar
           </Button>
+          
           <Button
             color="primary"
             onPress={handleSubmit}
@@ -128,6 +132,7 @@ const BreakdownModal = ({ isOpen, onClose, vehicleCode, onSuccess }) => {
           >
             Provocar Avería
           </Button>
+          
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -7,6 +7,8 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList as List } from 'react-window';
 import { parseDate } from "@internationalized/date"
 import BreakdownModal from "./VehiclePopUp/BreakdownModal"
+import { simulationTypeAtom } from "@/atoms/simulationAtoms"
+import { useAtom, useAtomValue } from "jotai"
 
 export default function ModalVehiculo({vehicle}){
     const [isFilterModalVisible, setFilterModalVisible] = useState(false);
@@ -19,6 +21,7 @@ export default function ModalVehiculo({vehicle}){
     const [tiposAveria, setTiposAveria] = useState([])
     const [tipoAveriaSeleccionado, setTipoAveriaSeleccionado] = useState(null)
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
+    const simulationType = useAtomValue(simulationTypeAtom)
     const initialStateRef = useRef(
         {
         originCity: "",
@@ -224,14 +227,16 @@ export default function ModalVehiculo({vehicle}){
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-row justify-between w-full">
                     <div className="text-black regular_bold block w-[120px]">Ruta del Camión</div>
+                    {simulationType&&simulationType!=='colapso'&&
                     <Button
                         disableRipple={true}
                         className={"focus:outline-none border stroke-black w-[120px] pequenno text-black  rounded-2xl items-center block bg-[#FFA500]"}
                         isDisabled={vehicle.status !== "EN_TRANSITO_ORDEN"}
                         onClick={handleBreakdownClick}
                         >
-                        Reportar Avería
-                        </Button>
+                        Provocar Avería
+                    </Button>
+                    }
                 </div>
                 
                 <div className="flex flex-row border overflow-x-auto stroke-black rounded gap-4 px-2 py-4 w-full" >

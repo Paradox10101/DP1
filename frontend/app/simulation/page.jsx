@@ -91,7 +91,6 @@ const page = () => {
     // First check and stop any running daily simulation
     checkAndStopDailySimulation();
   }, []);
-
   return (
     <>
         {
@@ -102,6 +101,7 @@ const page = () => {
           (loadedSimulationType  && simulationType && simulationStatus === 'stopped') &&
           <SimulationReport simulationType={simulationType} isOpen={isOpenReport} onOpenChange={onOpenChangeReport}/>
         }
+        
         <div className="relative w-screen h-screen">
             <PerformanceMetrics metrics={performanceMetrics} />
             <VehicleMap simulationStatus={simulationStatus} setSimulationStatus={setSimulationStatus} />

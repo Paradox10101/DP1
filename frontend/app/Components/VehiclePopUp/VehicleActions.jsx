@@ -1,9 +1,14 @@
 import React from 'react';
 import { Button } from "@nextui-org/react";
 import { AlertCircle } from 'lucide-react';
+import { simulationTypeAtom } from '@/atoms/simulationAtoms';
+import { useAtom, useAtomValue } from 'jotai';
 
-const VehicleActions = ({ onProvoke, onViewDetail, isInTransit }) => (
+const VehicleActions = ({ onProvoke, onViewDetail, isInTransit }) => {
+  const simulationType = useAtomValue(simulationTypeAtom)
+  return(
   <div className="p-4 bg-gray-50 flex items-center justify-between gap-3">
+    {simulationType&&simulationType!="colapso"&&
     <Button
       onClick={onProvoke}
       variant="flat"
@@ -14,6 +19,7 @@ const VehicleActions = ({ onProvoke, onViewDetail, isInTransit }) => (
     >
       Provocar Avería
     </Button>
+    }
     <Button
       onClick={onViewDetail}
       color="primary"
@@ -22,6 +28,7 @@ const VehicleActions = ({ onProvoke, onViewDetail, isInTransit }) => (
       Ver Detalle
     </Button>
   </div>
-);
+  )
+};
 
 export default VehicleActions;
