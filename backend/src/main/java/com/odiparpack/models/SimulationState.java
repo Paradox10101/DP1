@@ -1241,7 +1241,8 @@ public class SimulationState {
 
     public int getTotalOrdersCount2(){
         return (int) orders.stream()
-                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED)
+                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED 
+                        || order.getStatus() == Order.OrderStatus.PENDING_PICKUP)
                 .count();
     }
 

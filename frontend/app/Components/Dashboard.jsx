@@ -178,7 +178,62 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
     
   }
   
-  
+
+  const downloadDashboardData = () => {
+    if (!data) return;
+
+    let csvContent = "REPORTE GENERAL DE SIMULACIÓN\n\n";
+    
+    // Métricas principales
+    csvContent += "MÉTRICAS PRINCIPALES\n";
+    csvContent += `Capacidad Efectiva,${data.capacidadEfectiva.toFixed(1)}%\n`;
+    csvContent += `Capacidad Efectiva Oficinas,${data?.capacidadEfectivaOficina?.toFixed(1)}%\n`;
+    csvContent += `Pedidos Atendidos,${data.pedidosAtendidos}\n`;
+    csvContent += `Eficiencia de Rutas,${data.eficienciaRutas.toFixed(1)}%\n\n`;
+
+    // Demanda por región
+    csvContent += "DEMANDA POR REGIÓN\n";
+    csvContent += `Costa,${data.regionConMayorDemanda?.COSTA ?? 0}\n`;
+    csvContent += `Sierra,${data.regionConMayorDemanda?.SIERRA ?? 0}\n`;
+    csvContent += `Selva,${data.regionConMayorDemanda?.SELVA ?? 0}\n\n`;
+
+    // Top ciudades
+    csvContent += "TOP CIUDADES\n";
+    Object.entries(data.demandasPorCiudad || {})
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([ciudad, demanda]) => {
+        csvContent += `${ciudad},${demanda}\n`;
+      });
+    csvContent += "\n";
+
+    // Averías por tipo
+    csvContent += "AVERÍAS POR TIPO\n";
+    Object.entries(data.averiasPorTipo || {}).forEach(([tipo, cantidad]) => {
+      csvContent += `${tipo},${cantidad}\n`;
+    });
+    csvContent += "\n";
+
+    // Demanda por almacén
+    csvContent += "DEMANDA POR ALMACÉN\n";
+    Object.entries(data.demandasEnAlmacenes || {}).forEach(([almacen, demanda]) => {
+      csvContent += `${almacen},${demanda}\n`;
+    });
+
+    // Crear y descargar el archivo
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const fileName = `reporte_general_simulacion_${new Date().toISOString().split('T')[0]}.csv`;
+    
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };  
 
   // Data processing
   const allCities = Object.entries(data.demandasPorCiudad)
@@ -222,31 +277,36 @@ export default function Dashboard({ shipment, onClose, tiempos }) {
       <div className="max-w-7xl mx-auto space-y-6">
       <div>
         {tiempos && (
-          <div className="flex items-center gap-3 py-2 text-sm">
-            <span className="text-gray-500 font-medium">Periodo</span>
-            <div className="flex items-center gap-2">
-              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
-                {formatDateTime(tiempos.inicio)}
-              </span>
-              <svg 
-                width="16" 
-                height="16" 
-                viewBox="0 0 16 16" 
-                fill="none" 
-                className="text-gray-400"
-              >
-                <path 
-                  d="M3 8h10M10 5l3 3-3 3" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
-                {formatDateTime(tiempos.fin)}
-              </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 py-2 text-sm">
+              <span className="text-gray-500 font-medium">Periodo</span>
+              <div className="flex items-center gap-2">
+                <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                  {formatDateTime(tiempos.inicio)}
+                </span>
+                <svg 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 16 16" 
+                  fill="none" 
+                  className="text-gray-400"
+                >
+                  <path d="M3 8h10M10 5l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-100">
+                  {formatDateTime(tiempos.fin)}
+                </span>
+              </div>
             </div>
+            {data && (
+              <button
+                onClick={downloadDashboardData}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              >
+                <FaDownload className="mr-2" />
+                Exportar CSV
+              </button>
+            )}
           </div>
         )}
       </div>
