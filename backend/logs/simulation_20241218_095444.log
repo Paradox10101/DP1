@@ -1,0 +1,617 @@
+[2024-12-18 09:54:44] [INFO   ] Sistema de logs iniciado. Archivo de logs: logs/simulation_20241218_095444.log 
+[2024-12-18 09:54:44] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:45 a.m., Duración simulada: 1 segundo, Tiempo real: 18/12/2024 09:54:44 a.m., Duración real: 0 segundos 
+[2024-12-18 09:54:44] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:45 a.m.","simulatedDuration":"1 segundo","realElapsedTime":"18/12/2024 09:54:44 a.m.","realDuration":"0 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:44] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:45.402111 
+[2024-12-18 09:54:44] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:44] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:54:44.701157200"} 
+[2024-12-18 09:54:44] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:54:44] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:54:45.402111 
+[2024-12-18 09:54:45] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:46.402111 
+[2024-12-18 09:54:45] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:46 a.m., Duración simulada: 2 segundos, Tiempo real: 18/12/2024 09:54:45 a.m., Duración real: 1 segundo 
+[2024-12-18 09:54:45] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:46 a.m.","simulatedDuration":"2 segundos","realElapsedTime":"18/12/2024 09:54:45 a.m.","realDuration":"1 segundo","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:45] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:46.402111 
+[2024-12-18 09:54:45] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:46] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:47.402111 
+[2024-12-18 09:54:46] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:47 a.m., Duración simulada: 3 segundos, Tiempo real: 18/12/2024 09:54:46 a.m., Duración real: 2 segundos 
+[2024-12-18 09:54:46] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:47 a.m.","simulatedDuration":"3 segundos","realElapsedTime":"18/12/2024 09:54:46 a.m.","realDuration":"2 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:46] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:47.402111 
+[2024-12-18 09:54:46] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:47] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:48.402111 
+[2024-12-18 09:54:47] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:48 a.m., Duración simulada: 4 segundos, Tiempo real: 18/12/2024 09:54:47 a.m., Duración real: 3 segundos 
+[2024-12-18 09:54:47] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:48 a.m.","simulatedDuration":"4 segundos","realElapsedTime":"18/12/2024 09:54:47 a.m.","realDuration":"3 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:47] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:48.402111 
+[2024-12-18 09:54:47] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:48] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:49.402111 
+[2024-12-18 09:54:48] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:49 a.m., Duración simulada: 5 segundos, Tiempo real: 18/12/2024 09:54:48 a.m., Duración real: 4 segundos 
+[2024-12-18 09:54:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:49 a.m.","simulatedDuration":"5 segundos","realElapsedTime":"18/12/2024 09:54:48 a.m.","realDuration":"4 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:49.402111 
+[2024-12-18 09:54:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:49] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:50.402111 
+[2024-12-18 09:54:49] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:50 a.m., Duración simulada: 6 segundos, Tiempo real: 18/12/2024 09:54:49 a.m., Duración real: 5 segundos 
+[2024-12-18 09:54:49] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:50 a.m.","simulatedDuration":"6 segundos","realElapsedTime":"18/12/2024 09:54:49 a.m.","realDuration":"5 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:49] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:50.402111 
+[2024-12-18 09:54:49] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:49] [INFO   ] Iniciando planificación: 2024-12-18T09:54:50.402111 
+[2024-12-18 09:54:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:54:49.707546600"} 
+[2024-12-18 09:54:49] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:54:49] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:54:50.402111 
+[2024-12-18 09:54:50] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:51.402111 
+[2024-12-18 09:54:50] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:51 a.m., Duración simulada: 7 segundos, Tiempo real: 18/12/2024 09:54:50 a.m., Duración real: 6 segundos 
+[2024-12-18 09:54:50] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:51 a.m.","simulatedDuration":"7 segundos","realElapsedTime":"18/12/2024 09:54:50 a.m.","realDuration":"6 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:50] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:51.402111 
+[2024-12-18 09:54:50] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:51] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:52.402111 
+[2024-12-18 09:54:51] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:52 a.m., Duración simulada: 8 segundos, Tiempo real: 18/12/2024 09:54:51 a.m., Duración real: 7 segundos 
+[2024-12-18 09:54:51] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:52 a.m.","simulatedDuration":"8 segundos","realElapsedTime":"18/12/2024 09:54:51 a.m.","realDuration":"7 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:51] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:52.402111 
+[2024-12-18 09:54:51] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:52] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:53.402111 
+[2024-12-18 09:54:52] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:53 a.m., Duración simulada: 9 segundos, Tiempo real: 18/12/2024 09:54:52 a.m., Duración real: 8 segundos 
+[2024-12-18 09:54:52] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:53 a.m.","simulatedDuration":"9 segundos","realElapsedTime":"18/12/2024 09:54:52 a.m.","realDuration":"8 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:52] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:53.402111 
+[2024-12-18 09:54:52] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:53] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:54.402111 
+[2024-12-18 09:54:53] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:54 a.m., Duración simulada: 10 segundos, Tiempo real: 18/12/2024 09:54:53 a.m., Duración real: 9 segundos 
+[2024-12-18 09:54:53] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:54 a.m.","simulatedDuration":"10 segundos","realElapsedTime":"18/12/2024 09:54:53 a.m.","realDuration":"9 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:53] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:54.402111 
+[2024-12-18 09:54:53] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:54] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:55.402111 
+[2024-12-18 09:54:54] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:55 a.m., Duración simulada: 11 segundos, Tiempo real: 18/12/2024 09:54:54 a.m., Duración real: 10 segundos 
+[2024-12-18 09:54:54] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:55 a.m.","simulatedDuration":"11 segundos","realElapsedTime":"18/12/2024 09:54:54 a.m.","realDuration":"10 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:54] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:55.402111 
+[2024-12-18 09:54:54] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:54] [INFO   ] Iniciando planificación: 2024-12-18T09:54:55.402111 
+[2024-12-18 09:54:54] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:54:54.721273300"} 
+[2024-12-18 09:54:54] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:54:54] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:54:55.402111 
+[2024-12-18 09:54:55] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:56.402111 
+[2024-12-18 09:54:55] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:56 a.m., Duración simulada: 12 segundos, Tiempo real: 18/12/2024 09:54:55 a.m., Duración real: 11 segundos 
+[2024-12-18 09:54:55] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:56 a.m.","simulatedDuration":"12 segundos","realElapsedTime":"18/12/2024 09:54:55 a.m.","realDuration":"11 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:55] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:56.402111 
+[2024-12-18 09:54:55] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:56] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:57.402111 
+[2024-12-18 09:54:56] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:57 a.m., Duración simulada: 13 segundos, Tiempo real: 18/12/2024 09:54:56 a.m., Duración real: 12 segundos 
+[2024-12-18 09:54:56] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:57 a.m.","simulatedDuration":"13 segundos","realElapsedTime":"18/12/2024 09:54:56 a.m.","realDuration":"12 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:56] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:57.402111 
+[2024-12-18 09:54:56] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:57] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:58.402111 
+[2024-12-18 09:54:57] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:58 a.m., Duración simulada: 14 segundos, Tiempo real: 18/12/2024 09:54:57 a.m., Duración real: 13 segundos 
+[2024-12-18 09:54:57] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:58 a.m.","simulatedDuration":"14 segundos","realElapsedTime":"18/12/2024 09:54:57 a.m.","realDuration":"13 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:57] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:58.402111 
+[2024-12-18 09:54:57] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:58] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:54:59.402111 
+[2024-12-18 09:54:58] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:54:59 a.m., Duración simulada: 15 segundos, Tiempo real: 18/12/2024 09:54:58 a.m., Duración real: 14 segundos 
+[2024-12-18 09:54:58] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:54:59 a.m.","simulatedDuration":"15 segundos","realElapsedTime":"18/12/2024 09:54:58 a.m.","realDuration":"14 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:58] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:54:59.402111 
+[2024-12-18 09:54:58] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:59] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:00.402111 
+[2024-12-18 09:54:59] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:00 a.m., Duración simulada: 16 segundos, Tiempo real: 18/12/2024 09:54:59 a.m., Duración real: 15 segundos 
+[2024-12-18 09:54:59] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:00 a.m.","simulatedDuration":"16 segundos","realElapsedTime":"18/12/2024 09:54:59 a.m.","realDuration":"15 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:54:59] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:00.402111 
+[2024-12-18 09:54:59] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:54:59] [INFO   ] Iniciando planificación: 2024-12-18T09:55:00.402111 
+[2024-12-18 09:54:59] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:54:59.731068"} 
+[2024-12-18 09:54:59] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:54:59] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:00.402111 
+[2024-12-18 09:55:00] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:01.402111 
+[2024-12-18 09:55:00] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:01 a.m., Duración simulada: 17 segundos, Tiempo real: 18/12/2024 09:55:00 a.m., Duración real: 16 segundos 
+[2024-12-18 09:55:00] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:01 a.m.","simulatedDuration":"17 segundos","realElapsedTime":"18/12/2024 09:55:00 a.m.","realDuration":"16 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:00] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:01.402111 
+[2024-12-18 09:55:00] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:01] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:02.402111 
+[2024-12-18 09:55:01] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:02 a.m., Duración simulada: 18 segundos, Tiempo real: 18/12/2024 09:55:01 a.m., Duración real: 17 segundos 
+[2024-12-18 09:55:01] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:02 a.m.","simulatedDuration":"18 segundos","realElapsedTime":"18/12/2024 09:55:01 a.m.","realDuration":"17 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:01] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:02.402111 
+[2024-12-18 09:55:01] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:02] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:03.402111 
+[2024-12-18 09:55:02] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:03 a.m., Duración simulada: 19 segundos, Tiempo real: 18/12/2024 09:55:02 a.m., Duración real: 18 segundos 
+[2024-12-18 09:55:02] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:03 a.m.","simulatedDuration":"19 segundos","realElapsedTime":"18/12/2024 09:55:02 a.m.","realDuration":"18 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:02] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:03.402111 
+[2024-12-18 09:55:02] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:03] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:04.402111 
+[2024-12-18 09:55:03] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:04 a.m., Duración simulada: 20 segundos, Tiempo real: 18/12/2024 09:55:03 a.m., Duración real: 19 segundos 
+[2024-12-18 09:55:03] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:04 a.m.","simulatedDuration":"20 segundos","realElapsedTime":"18/12/2024 09:55:03 a.m.","realDuration":"19 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:03] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:04.402111 
+[2024-12-18 09:55:03] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:04] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:05.402111 
+[2024-12-18 09:55:04] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:05 a.m., Duración simulada: 21 segundos, Tiempo real: 18/12/2024 09:55:04 a.m., Duración real: 20 segundos 
+[2024-12-18 09:55:04] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:05 a.m.","simulatedDuration":"21 segundos","realElapsedTime":"18/12/2024 09:55:04 a.m.","realDuration":"20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:04] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:05.402111 
+[2024-12-18 09:55:04] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:04] [INFO   ] Iniciando planificación: 2024-12-18T09:55:05.402111 
+[2024-12-18 09:55:04] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:04.731792"} 
+[2024-12-18 09:55:04] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:04] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:05.402111 
+[2024-12-18 09:55:05] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:06.402111 
+[2024-12-18 09:55:05] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:06 a.m., Duración simulada: 22 segundos, Tiempo real: 18/12/2024 09:55:05 a.m., Duración real: 21 segundos 
+[2024-12-18 09:55:05] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:06 a.m.","simulatedDuration":"22 segundos","realElapsedTime":"18/12/2024 09:55:05 a.m.","realDuration":"21 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:05] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:06.402111 
+[2024-12-18 09:55:05] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:06] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:07.402111 
+[2024-12-18 09:55:06] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:07 a.m., Duración simulada: 23 segundos, Tiempo real: 18/12/2024 09:55:06 a.m., Duración real: 22 segundos 
+[2024-12-18 09:55:06] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:07 a.m.","simulatedDuration":"23 segundos","realElapsedTime":"18/12/2024 09:55:06 a.m.","realDuration":"22 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:06] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:07.402111 
+[2024-12-18 09:55:06] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:07] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:08.402111 
+[2024-12-18 09:55:07] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:08 a.m., Duración simulada: 24 segundos, Tiempo real: 18/12/2024 09:55:07 a.m., Duración real: 23 segundos 
+[2024-12-18 09:55:07] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:08 a.m.","simulatedDuration":"24 segundos","realElapsedTime":"18/12/2024 09:55:07 a.m.","realDuration":"23 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:07] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:08.402111 
+[2024-12-18 09:55:07] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:08] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:09.402111 
+[2024-12-18 09:55:08] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:09 a.m., Duración simulada: 25 segundos, Tiempo real: 18/12/2024 09:55:08 a.m., Duración real: 24 segundos 
+[2024-12-18 09:55:08] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:09 a.m.","simulatedDuration":"25 segundos","realElapsedTime":"18/12/2024 09:55:08 a.m.","realDuration":"24 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:08] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:09.402111 
+[2024-12-18 09:55:08] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:09] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:10.402111 
+[2024-12-18 09:55:09] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:10 a.m., Duración simulada: 26 segundos, Tiempo real: 18/12/2024 09:55:09 a.m., Duración real: 25 segundos 
+[2024-12-18 09:55:09] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:10 a.m.","simulatedDuration":"26 segundos","realElapsedTime":"18/12/2024 09:55:09 a.m.","realDuration":"25 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:09] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:10.402111 
+[2024-12-18 09:55:09] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:09] [INFO   ] Iniciando planificación: 2024-12-18T09:55:10.402111 
+[2024-12-18 09:55:09] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:09.733418"} 
+[2024-12-18 09:55:09] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:09] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:10.402111 
+[2024-12-18 09:55:10] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:11.402111 
+[2024-12-18 09:55:10] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:11 a.m., Duración simulada: 27 segundos, Tiempo real: 18/12/2024 09:55:10 a.m., Duración real: 26 segundos 
+[2024-12-18 09:55:10] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:11 a.m.","simulatedDuration":"27 segundos","realElapsedTime":"18/12/2024 09:55:10 a.m.","realDuration":"26 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:10] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:11.402111 
+[2024-12-18 09:55:10] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:11] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:12.402111 
+[2024-12-18 09:55:11] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:12 a.m., Duración simulada: 28 segundos, Tiempo real: 18/12/2024 09:55:11 a.m., Duración real: 27 segundos 
+[2024-12-18 09:55:11] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:12 a.m.","simulatedDuration":"28 segundos","realElapsedTime":"18/12/2024 09:55:11 a.m.","realDuration":"27 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:11] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:12.402111 
+[2024-12-18 09:55:11] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:12] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:13.402111 
+[2024-12-18 09:55:12] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:13 a.m., Duración simulada: 29 segundos, Tiempo real: 18/12/2024 09:55:12 a.m., Duración real: 28 segundos 
+[2024-12-18 09:55:12] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:13 a.m.","simulatedDuration":"29 segundos","realElapsedTime":"18/12/2024 09:55:12 a.m.","realDuration":"28 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:12] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:13.402111 
+[2024-12-18 09:55:12] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:13] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:14.402111 
+[2024-12-18 09:55:13] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:14 a.m., Duración simulada: 30 segundos, Tiempo real: 18/12/2024 09:55:13 a.m., Duración real: 29 segundos 
+[2024-12-18 09:55:13] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:14 a.m.","simulatedDuration":"30 segundos","realElapsedTime":"18/12/2024 09:55:13 a.m.","realDuration":"29 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:13] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:14.402111 
+[2024-12-18 09:55:13] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:14] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:15.402111 
+[2024-12-18 09:55:14] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:15 a.m., Duración simulada: 31 segundos, Tiempo real: 18/12/2024 09:55:14 a.m., Duración real: 30 segundos 
+[2024-12-18 09:55:14] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:15 a.m.","simulatedDuration":"31 segundos","realElapsedTime":"18/12/2024 09:55:14 a.m.","realDuration":"30 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:14] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:15.402111 
+[2024-12-18 09:55:14] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:14] [INFO   ] Iniciando planificación: 2024-12-18T09:55:15.402111 
+[2024-12-18 09:55:14] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:14.747998"} 
+[2024-12-18 09:55:14] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:14] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:15.402111 
+[2024-12-18 09:55:15] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:16.402111 
+[2024-12-18 09:55:15] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:16 a.m., Duración simulada: 32 segundos, Tiempo real: 18/12/2024 09:55:15 a.m., Duración real: 31 segundos 
+[2024-12-18 09:55:15] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:16 a.m.","simulatedDuration":"32 segundos","realElapsedTime":"18/12/2024 09:55:15 a.m.","realDuration":"31 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:15] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:16.402111 
+[2024-12-18 09:55:15] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:16] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:17.402111 
+[2024-12-18 09:55:16] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:17 a.m., Duración simulada: 33 segundos, Tiempo real: 18/12/2024 09:55:16 a.m., Duración real: 32 segundos 
+[2024-12-18 09:55:16] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:17 a.m.","simulatedDuration":"33 segundos","realElapsedTime":"18/12/2024 09:55:16 a.m.","realDuration":"32 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:16] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:17.402111 
+[2024-12-18 09:55:16] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:17] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:18.402111 
+[2024-12-18 09:55:17] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:18 a.m., Duración simulada: 34 segundos, Tiempo real: 18/12/2024 09:55:17 a.m., Duración real: 33 segundos 
+[2024-12-18 09:55:17] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:18 a.m.","simulatedDuration":"34 segundos","realElapsedTime":"18/12/2024 09:55:17 a.m.","realDuration":"33 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:17] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:18.402111 
+[2024-12-18 09:55:17] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:18] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:19.402111 
+[2024-12-18 09:55:18] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:19 a.m., Duración simulada: 35 segundos, Tiempo real: 18/12/2024 09:55:18 a.m., Duración real: 34 segundos 
+[2024-12-18 09:55:18] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:19 a.m.","simulatedDuration":"35 segundos","realElapsedTime":"18/12/2024 09:55:18 a.m.","realDuration":"34 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:18] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:19.402111 
+[2024-12-18 09:55:18] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:19] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:20.402111 
+[2024-12-18 09:55:19] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:20 a.m., Duración simulada: 36 segundos, Tiempo real: 18/12/2024 09:55:19 a.m., Duración real: 35 segundos 
+[2024-12-18 09:55:19] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:20 a.m.","simulatedDuration":"36 segundos","realElapsedTime":"18/12/2024 09:55:19 a.m.","realDuration":"35 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:19] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:20.402111 
+[2024-12-18 09:55:19] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:19] [INFO   ] Iniciando planificación: 2024-12-18T09:55:20.402111 
+[2024-12-18 09:55:19] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:19.760312800"} 
+[2024-12-18 09:55:19] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:19] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:20.402111 
+[2024-12-18 09:55:20] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:21.402111 
+[2024-12-18 09:55:20] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:21 a.m., Duración simulada: 37 segundos, Tiempo real: 18/12/2024 09:55:20 a.m., Duración real: 36 segundos 
+[2024-12-18 09:55:20] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:21 a.m.","simulatedDuration":"37 segundos","realElapsedTime":"18/12/2024 09:55:20 a.m.","realDuration":"36 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:20] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:21.402111 
+[2024-12-18 09:55:20] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:21] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:22.402111 
+[2024-12-18 09:55:21] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:22 a.m., Duración simulada: 38 segundos, Tiempo real: 18/12/2024 09:55:21 a.m., Duración real: 37 segundos 
+[2024-12-18 09:55:21] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:22 a.m.","simulatedDuration":"38 segundos","realElapsedTime":"18/12/2024 09:55:21 a.m.","realDuration":"37 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:21] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:22.402111 
+[2024-12-18 09:55:21] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:22] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:23.402111 
+[2024-12-18 09:55:22] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:23 a.m., Duración simulada: 39 segundos, Tiempo real: 18/12/2024 09:55:22 a.m., Duración real: 38 segundos 
+[2024-12-18 09:55:22] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:23 a.m.","simulatedDuration":"39 segundos","realElapsedTime":"18/12/2024 09:55:22 a.m.","realDuration":"38 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:22] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:23.402111 
+[2024-12-18 09:55:22] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:23] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:24.402111 
+[2024-12-18 09:55:23] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:24 a.m., Duración simulada: 40 segundos, Tiempo real: 18/12/2024 09:55:23 a.m., Duración real: 39 segundos 
+[2024-12-18 09:55:23] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:24 a.m.","simulatedDuration":"40 segundos","realElapsedTime":"18/12/2024 09:55:23 a.m.","realDuration":"39 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:23] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:24.402111 
+[2024-12-18 09:55:23] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:24] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:25.402111 
+[2024-12-18 09:55:24] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:25 a.m., Duración simulada: 41 segundos, Tiempo real: 18/12/2024 09:55:24 a.m., Duración real: 40 segundos 
+[2024-12-18 09:55:24] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:25 a.m.","simulatedDuration":"41 segundos","realElapsedTime":"18/12/2024 09:55:24 a.m.","realDuration":"40 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:24] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:25.402111 
+[2024-12-18 09:55:24] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:24] [INFO   ] Iniciando planificación: 2024-12-18T09:55:25.402111 
+[2024-12-18 09:55:24] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:24.763336100"} 
+[2024-12-18 09:55:24] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:24] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:25.402111 
+[2024-12-18 09:55:25] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:26.402111 
+[2024-12-18 09:55:25] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:26 a.m., Duración simulada: 42 segundos, Tiempo real: 18/12/2024 09:55:25 a.m., Duración real: 41 segundos 
+[2024-12-18 09:55:25] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:26 a.m.","simulatedDuration":"42 segundos","realElapsedTime":"18/12/2024 09:55:25 a.m.","realDuration":"41 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:25] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:26.402111 
+[2024-12-18 09:55:25] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:26] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:27.402111 
+[2024-12-18 09:55:26] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:27 a.m., Duración simulada: 43 segundos, Tiempo real: 18/12/2024 09:55:26 a.m., Duración real: 42 segundos 
+[2024-12-18 09:55:26] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:27 a.m.","simulatedDuration":"43 segundos","realElapsedTime":"18/12/2024 09:55:26 a.m.","realDuration":"42 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:26] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:27.402111 
+[2024-12-18 09:55:26] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:27] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:28.402111 
+[2024-12-18 09:55:27] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:28 a.m., Duración simulada: 44 segundos, Tiempo real: 18/12/2024 09:55:27 a.m., Duración real: 43 segundos 
+[2024-12-18 09:55:27] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:28 a.m.","simulatedDuration":"44 segundos","realElapsedTime":"18/12/2024 09:55:27 a.m.","realDuration":"43 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:27] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:28.402111 
+[2024-12-18 09:55:27] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:28] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:29.402111 
+[2024-12-18 09:55:28] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:29 a.m., Duración simulada: 45 segundos, Tiempo real: 18/12/2024 09:55:28 a.m., Duración real: 44 segundos 
+[2024-12-18 09:55:28] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:29 a.m.","simulatedDuration":"45 segundos","realElapsedTime":"18/12/2024 09:55:28 a.m.","realDuration":"44 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:28] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:29.402111 
+[2024-12-18 09:55:28] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:29] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:30.402111 
+[2024-12-18 09:55:29] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:30 a.m., Duración simulada: 46 segundos, Tiempo real: 18/12/2024 09:55:29 a.m., Duración real: 45 segundos 
+[2024-12-18 09:55:29] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:30 a.m.","simulatedDuration":"46 segundos","realElapsedTime":"18/12/2024 09:55:29 a.m.","realDuration":"45 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:29] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:30.402111 
+[2024-12-18 09:55:29] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:29] [INFO   ] Iniciando planificación: 2024-12-18T09:55:30.402111 
+[2024-12-18 09:55:29] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:29.763998700"} 
+[2024-12-18 09:55:29] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:29] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:30.402111 
+[2024-12-18 09:55:30] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:31.402111 
+[2024-12-18 09:55:30] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:31 a.m., Duración simulada: 47 segundos, Tiempo real: 18/12/2024 09:55:30 a.m., Duración real: 46 segundos 
+[2024-12-18 09:55:30] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:31 a.m.","simulatedDuration":"47 segundos","realElapsedTime":"18/12/2024 09:55:30 a.m.","realDuration":"46 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:30] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:31.402111 
+[2024-12-18 09:55:30] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:31] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:32.402111 
+[2024-12-18 09:55:31] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:32 a.m., Duración simulada: 48 segundos, Tiempo real: 18/12/2024 09:55:31 a.m., Duración real: 47 segundos 
+[2024-12-18 09:55:31] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:32 a.m.","simulatedDuration":"48 segundos","realElapsedTime":"18/12/2024 09:55:31 a.m.","realDuration":"47 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:31] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:32.402111 
+[2024-12-18 09:55:31] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:32] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:33.402111 
+[2024-12-18 09:55:32] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:33 a.m., Duración simulada: 49 segundos, Tiempo real: 18/12/2024 09:55:32 a.m., Duración real: 48 segundos 
+[2024-12-18 09:55:32] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:33 a.m.","simulatedDuration":"49 segundos","realElapsedTime":"18/12/2024 09:55:32 a.m.","realDuration":"48 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:32] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:33.402111 
+[2024-12-18 09:55:32] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:33] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:34.402111 
+[2024-12-18 09:55:33] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:34 a.m., Duración simulada: 50 segundos, Tiempo real: 18/12/2024 09:55:33 a.m., Duración real: 49 segundos 
+[2024-12-18 09:55:33] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:34 a.m.","simulatedDuration":"50 segundos","realElapsedTime":"18/12/2024 09:55:33 a.m.","realDuration":"49 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:33] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:34.402111 
+[2024-12-18 09:55:33] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:34] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:35.402111 
+[2024-12-18 09:55:34] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:35 a.m., Duración simulada: 51 segundos, Tiempo real: 18/12/2024 09:55:34 a.m., Duración real: 50 segundos 
+[2024-12-18 09:55:34] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:35 a.m.","simulatedDuration":"51 segundos","realElapsedTime":"18/12/2024 09:55:34 a.m.","realDuration":"50 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:34] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:35.402111 
+[2024-12-18 09:55:34] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:34] [INFO   ] Iniciando planificación: 2024-12-18T09:55:35.402111 
+[2024-12-18 09:55:34] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:34.768611300"} 
+[2024-12-18 09:55:34] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:34] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:35.402111 
+[2024-12-18 09:55:35] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:36.402111 
+[2024-12-18 09:55:35] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:36 a.m., Duración simulada: 52 segundos, Tiempo real: 18/12/2024 09:55:35 a.m., Duración real: 51 segundos 
+[2024-12-18 09:55:35] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:36 a.m.","simulatedDuration":"52 segundos","realElapsedTime":"18/12/2024 09:55:35 a.m.","realDuration":"51 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:35] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:36.402111 
+[2024-12-18 09:55:35] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:36] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:37.402111 
+[2024-12-18 09:55:36] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:37 a.m., Duración simulada: 53 segundos, Tiempo real: 18/12/2024 09:55:36 a.m., Duración real: 52 segundos 
+[2024-12-18 09:55:36] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:37 a.m.","simulatedDuration":"53 segundos","realElapsedTime":"18/12/2024 09:55:36 a.m.","realDuration":"52 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:36] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:37.402111 
+[2024-12-18 09:55:36] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:37] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:38.402111 
+[2024-12-18 09:55:37] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:38 a.m., Duración simulada: 54 segundos, Tiempo real: 18/12/2024 09:55:37 a.m., Duración real: 53 segundos 
+[2024-12-18 09:55:37] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:38 a.m.","simulatedDuration":"54 segundos","realElapsedTime":"18/12/2024 09:55:37 a.m.","realDuration":"53 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:37] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:38.402111 
+[2024-12-18 09:55:37] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:38] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:39.402111 
+[2024-12-18 09:55:38] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:39 a.m., Duración simulada: 55 segundos, Tiempo real: 18/12/2024 09:55:38 a.m., Duración real: 54 segundos 
+[2024-12-18 09:55:38] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:39 a.m.","simulatedDuration":"55 segundos","realElapsedTime":"18/12/2024 09:55:38 a.m.","realDuration":"54 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:38] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:39.402111 
+[2024-12-18 09:55:38] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:39] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:40.402111 
+[2024-12-18 09:55:39] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:40 a.m., Duración simulada: 56 segundos, Tiempo real: 18/12/2024 09:55:39 a.m., Duración real: 55 segundos 
+[2024-12-18 09:55:39] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:40 a.m.","simulatedDuration":"56 segundos","realElapsedTime":"18/12/2024 09:55:39 a.m.","realDuration":"55 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:39] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:40.402111 
+[2024-12-18 09:55:39] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:39] [INFO   ] Iniciando planificación: 2024-12-18T09:55:40.402111 
+[2024-12-18 09:55:39] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:39.779054600"} 
+[2024-12-18 09:55:39] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:39] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:40.402111 
+[2024-12-18 09:55:40] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:41.402111 
+[2024-12-18 09:55:40] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:41 a.m., Duración simulada: 57 segundos, Tiempo real: 18/12/2024 09:55:40 a.m., Duración real: 56 segundos 
+[2024-12-18 09:55:40] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:41 a.m.","simulatedDuration":"57 segundos","realElapsedTime":"18/12/2024 09:55:40 a.m.","realDuration":"56 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:40] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:41.402111 
+[2024-12-18 09:55:40] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:41] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:42.402111 
+[2024-12-18 09:55:41] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:42 a.m., Duración simulada: 58 segundos, Tiempo real: 18/12/2024 09:55:41 a.m., Duración real: 57 segundos 
+[2024-12-18 09:55:41] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:42 a.m.","simulatedDuration":"58 segundos","realElapsedTime":"18/12/2024 09:55:41 a.m.","realDuration":"57 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:41] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:42.402111 
+[2024-12-18 09:55:41] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:42] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:43.402111 
+[2024-12-18 09:55:42] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:43 a.m., Duración simulada: 59 segundos, Tiempo real: 18/12/2024 09:55:42 a.m., Duración real: 58 segundos 
+[2024-12-18 09:55:42] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:43 a.m.","simulatedDuration":"59 segundos","realElapsedTime":"18/12/2024 09:55:42 a.m.","realDuration":"58 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:42] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:43.402111 
+[2024-12-18 09:55:42] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:43] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:44.402111 
+[2024-12-18 09:55:43] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:44 a.m., Duración simulada: 1 minuto, Tiempo real: 18/12/2024 09:55:43 a.m., Duración real: 59 segundos 
+[2024-12-18 09:55:43] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:44 a.m.","simulatedDuration":"1 minuto","realElapsedTime":"18/12/2024 09:55:43 a.m.","realDuration":"59 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:43] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:44.402111 
+[2024-12-18 09:55:43] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:44] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:45.402111 
+[2024-12-18 09:55:44] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:45 a.m., Duración simulada: 1 minuto 1 segundo, Tiempo real: 18/12/2024 09:55:44 a.m., Duración real: 1 minuto 
+[2024-12-18 09:55:44] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:45 a.m.","simulatedDuration":"1 minuto 1 segundo","realElapsedTime":"18/12/2024 09:55:44 a.m.","realDuration":"1 minuto","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:44] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:45.402111 
+[2024-12-18 09:55:44] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:44] [INFO   ] Iniciando planificación: 2024-12-18T09:55:45.402111 
+[2024-12-18 09:55:44] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:44.780011"} 
+[2024-12-18 09:55:44] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:44] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:45.402111 
+[2024-12-18 09:55:45] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:46.402111 
+[2024-12-18 09:55:45] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:46 a.m., Duración simulada: 1 minuto 2 segundos, Tiempo real: 18/12/2024 09:55:45 a.m., Duración real: 1 minuto 1 segundo 
+[2024-12-18 09:55:45] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:46 a.m.","simulatedDuration":"1 minuto 2 segundos","realElapsedTime":"18/12/2024 09:55:45 a.m.","realDuration":"1 minuto 1 segundo","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:45] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:46.402111 
+[2024-12-18 09:55:45] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:46] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:47.402111 
+[2024-12-18 09:55:46] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:47 a.m., Duración simulada: 1 minuto 3 segundos, Tiempo real: 18/12/2024 09:55:46 a.m., Duración real: 1 minuto 2 segundos 
+[2024-12-18 09:55:46] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:47 a.m.","simulatedDuration":"1 minuto 3 segundos","realElapsedTime":"18/12/2024 09:55:46 a.m.","realDuration":"1 minuto 2 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:46] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:47.402111 
+[2024-12-18 09:55:46] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:47] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:48.402111 
+[2024-12-18 09:55:47] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:48 a.m., Duración simulada: 1 minuto 4 segundos, Tiempo real: 18/12/2024 09:55:47 a.m., Duración real: 1 minuto 3 segundos 
+[2024-12-18 09:55:47] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:48 a.m.","simulatedDuration":"1 minuto 4 segundos","realElapsedTime":"18/12/2024 09:55:47 a.m.","realDuration":"1 minuto 3 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:47] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:48.402111 
+[2024-12-18 09:55:47] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:48] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:49.402111 
+[2024-12-18 09:55:48] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:49 a.m., Duración simulada: 1 minuto 5 segundos, Tiempo real: 18/12/2024 09:55:48 a.m., Duración real: 1 minuto 4 segundos 
+[2024-12-18 09:55:48] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:49 a.m.","simulatedDuration":"1 minuto 5 segundos","realElapsedTime":"18/12/2024 09:55:48 a.m.","realDuration":"1 minuto 4 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:48] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:49.402111 
+[2024-12-18 09:55:48] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:49] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:50.402111 
+[2024-12-18 09:55:49] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:50 a.m., Duración simulada: 1 minuto 6 segundos, Tiempo real: 18/12/2024 09:55:49 a.m., Duración real: 1 minuto 5 segundos 
+[2024-12-18 09:55:49] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:50 a.m.","simulatedDuration":"1 minuto 6 segundos","realElapsedTime":"18/12/2024 09:55:49 a.m.","realDuration":"1 minuto 5 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:49] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:50.402111 
+[2024-12-18 09:55:49] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:49] [INFO   ] Iniciando planificación: 2024-12-18T09:55:50.402111 
+[2024-12-18 09:55:49] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:49.781492300"} 
+[2024-12-18 09:55:49] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:49] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:50.402111 
+[2024-12-18 09:55:50] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:51.402111 
+[2024-12-18 09:55:50] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:51 a.m., Duración simulada: 1 minuto 7 segundos, Tiempo real: 18/12/2024 09:55:50 a.m., Duración real: 1 minuto 6 segundos 
+[2024-12-18 09:55:50] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:51 a.m.","simulatedDuration":"1 minuto 7 segundos","realElapsedTime":"18/12/2024 09:55:50 a.m.","realDuration":"1 minuto 6 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:50] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:51.402111 
+[2024-12-18 09:55:50] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:51] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:52.402111 
+[2024-12-18 09:55:51] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:52 a.m., Duración simulada: 1 minuto 8 segundos, Tiempo real: 18/12/2024 09:55:51 a.m., Duración real: 1 minuto 7 segundos 
+[2024-12-18 09:55:51] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:52 a.m.","simulatedDuration":"1 minuto 8 segundos","realElapsedTime":"18/12/2024 09:55:51 a.m.","realDuration":"1 minuto 7 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:51] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:52.402111 
+[2024-12-18 09:55:51] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:52] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:53.402111 
+[2024-12-18 09:55:52] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:53 a.m., Duración simulada: 1 minuto 9 segundos, Tiempo real: 18/12/2024 09:55:52 a.m., Duración real: 1 minuto 8 segundos 
+[2024-12-18 09:55:52] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:53 a.m.","simulatedDuration":"1 minuto 9 segundos","realElapsedTime":"18/12/2024 09:55:52 a.m.","realDuration":"1 minuto 8 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:52] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:53.402111 
+[2024-12-18 09:55:52] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:53] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:54.402111 
+[2024-12-18 09:55:53] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:54 a.m., Duración simulada: 1 minuto 10 segundos, Tiempo real: 18/12/2024 09:55:53 a.m., Duración real: 1 minuto 9 segundos 
+[2024-12-18 09:55:53] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:54 a.m.","simulatedDuration":"1 minuto 10 segundos","realElapsedTime":"18/12/2024 09:55:53 a.m.","realDuration":"1 minuto 9 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:53] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:54.402111 
+[2024-12-18 09:55:53] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:54] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:55.402111 
+[2024-12-18 09:55:54] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:55 a.m., Duración simulada: 1 minuto 11 segundos, Tiempo real: 18/12/2024 09:55:54 a.m., Duración real: 1 minuto 10 segundos 
+[2024-12-18 09:55:54] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:55 a.m.","simulatedDuration":"1 minuto 11 segundos","realElapsedTime":"18/12/2024 09:55:54 a.m.","realDuration":"1 minuto 10 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:54] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:55.402111 
+[2024-12-18 09:55:54] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:54] [INFO   ] Iniciando planificación: 2024-12-18T09:55:55.402111 
+[2024-12-18 09:55:54] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:54.790662600"} 
+[2024-12-18 09:55:54] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:54] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:55:55.402111 
+[2024-12-18 09:55:55] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:56.402111 
+[2024-12-18 09:55:55] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:56 a.m., Duración simulada: 1 minuto 12 segundos, Tiempo real: 18/12/2024 09:55:55 a.m., Duración real: 1 minuto 11 segundos 
+[2024-12-18 09:55:55] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:56 a.m.","simulatedDuration":"1 minuto 12 segundos","realElapsedTime":"18/12/2024 09:55:55 a.m.","realDuration":"1 minuto 11 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:55] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:56.402111 
+[2024-12-18 09:55:55] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:56] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:57.402111 
+[2024-12-18 09:55:56] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:57 a.m., Duración simulada: 1 minuto 13 segundos, Tiempo real: 18/12/2024 09:55:56 a.m., Duración real: 1 minuto 12 segundos 
+[2024-12-18 09:55:56] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:57 a.m.","simulatedDuration":"1 minuto 13 segundos","realElapsedTime":"18/12/2024 09:55:56 a.m.","realDuration":"1 minuto 12 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:56] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:57.402111 
+[2024-12-18 09:55:56] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:57] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:58.402111 
+[2024-12-18 09:55:57] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:58 a.m., Duración simulada: 1 minuto 14 segundos, Tiempo real: 18/12/2024 09:55:57 a.m., Duración real: 1 minuto 13 segundos 
+[2024-12-18 09:55:57] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:58 a.m.","simulatedDuration":"1 minuto 14 segundos","realElapsedTime":"18/12/2024 09:55:57 a.m.","realDuration":"1 minuto 13 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:57] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:58.402111 
+[2024-12-18 09:55:57] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:58] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:55:59.402111 
+[2024-12-18 09:55:58] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:55:59 a.m., Duración simulada: 1 minuto 15 segundos, Tiempo real: 18/12/2024 09:55:58 a.m., Duración real: 1 minuto 14 segundos 
+[2024-12-18 09:55:58] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:55:59 a.m.","simulatedDuration":"1 minuto 15 segundos","realElapsedTime":"18/12/2024 09:55:58 a.m.","realDuration":"1 minuto 14 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:58] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:55:59.402111 
+[2024-12-18 09:55:58] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:59] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:00.402111 
+[2024-12-18 09:55:59] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:00 a.m., Duración simulada: 1 minuto 16 segundos, Tiempo real: 18/12/2024 09:55:59 a.m., Duración real: 1 minuto 15 segundos 
+[2024-12-18 09:55:59] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:00 a.m.","simulatedDuration":"1 minuto 16 segundos","realElapsedTime":"18/12/2024 09:55:59 a.m.","realDuration":"1 minuto 15 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:55:59] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:00.402111 
+[2024-12-18 09:55:59] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:55:59] [INFO   ] Iniciando planificación: 2024-12-18T09:56:00.402111 
+[2024-12-18 09:55:59] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:55:59.803056"} 
+[2024-12-18 09:55:59] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:55:59] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:00.402111 
+[2024-12-18 09:56:00] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:01.402111 
+[2024-12-18 09:56:00] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:01 a.m., Duración simulada: 1 minuto 17 segundos, Tiempo real: 18/12/2024 09:56:00 a.m., Duración real: 1 minuto 16 segundos 
+[2024-12-18 09:56:00] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:01 a.m.","simulatedDuration":"1 minuto 17 segundos","realElapsedTime":"18/12/2024 09:56:00 a.m.","realDuration":"1 minuto 16 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:00] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:01.402111 
+[2024-12-18 09:56:00] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:01] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:02.402111 
+[2024-12-18 09:56:01] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:02 a.m., Duración simulada: 1 minuto 18 segundos, Tiempo real: 18/12/2024 09:56:01 a.m., Duración real: 1 minuto 17 segundos 
+[2024-12-18 09:56:01] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:02 a.m.","simulatedDuration":"1 minuto 18 segundos","realElapsedTime":"18/12/2024 09:56:01 a.m.","realDuration":"1 minuto 17 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:01] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:02.402111 
+[2024-12-18 09:56:01] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:02] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:03.402111 
+[2024-12-18 09:56:02] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:03 a.m., Duración simulada: 1 minuto 19 segundos, Tiempo real: 18/12/2024 09:56:02 a.m., Duración real: 1 minuto 18 segundos 
+[2024-12-18 09:56:02] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:03 a.m.","simulatedDuration":"1 minuto 19 segundos","realElapsedTime":"18/12/2024 09:56:02 a.m.","realDuration":"1 minuto 18 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:02] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:03.402111 
+[2024-12-18 09:56:02] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:03] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:04.402111 
+[2024-12-18 09:56:03] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:04 a.m., Duración simulada: 1 minuto 20 segundos, Tiempo real: 18/12/2024 09:56:03 a.m., Duración real: 1 minuto 19 segundos 
+[2024-12-18 09:56:03] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:04 a.m.","simulatedDuration":"1 minuto 20 segundos","realElapsedTime":"18/12/2024 09:56:03 a.m.","realDuration":"1 minuto 19 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:03] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:04.402111 
+[2024-12-18 09:56:03] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:04] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:05.402111 
+[2024-12-18 09:56:04] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:05 a.m., Duración simulada: 1 minuto 21 segundos, Tiempo real: 18/12/2024 09:56:04 a.m., Duración real: 1 minuto 20 segundos 
+[2024-12-18 09:56:04] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:05 a.m.","simulatedDuration":"1 minuto 21 segundos","realElapsedTime":"18/12/2024 09:56:04 a.m.","realDuration":"1 minuto 20 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:04] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:05.402111 
+[2024-12-18 09:56:04] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:04] [INFO   ] Iniciando planificación: 2024-12-18T09:56:05.402111 
+[2024-12-18 09:56:04] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:04.806545300"} 
+[2024-12-18 09:56:04] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:04] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:05.402111 
+[2024-12-18 09:56:05] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:06.402111 
+[2024-12-18 09:56:05] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:06 a.m., Duración simulada: 1 minuto 22 segundos, Tiempo real: 18/12/2024 09:56:05 a.m., Duración real: 1 minuto 21 segundos 
+[2024-12-18 09:56:05] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:06 a.m.","simulatedDuration":"1 minuto 22 segundos","realElapsedTime":"18/12/2024 09:56:05 a.m.","realDuration":"1 minuto 21 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:05] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:06.402111 
+[2024-12-18 09:56:05] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:06] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:07.402111 
+[2024-12-18 09:56:06] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:07 a.m., Duración simulada: 1 minuto 23 segundos, Tiempo real: 18/12/2024 09:56:06 a.m., Duración real: 1 minuto 22 segundos 
+[2024-12-18 09:56:06] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:07 a.m.","simulatedDuration":"1 minuto 23 segundos","realElapsedTime":"18/12/2024 09:56:06 a.m.","realDuration":"1 minuto 22 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:06] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:07.402111 
+[2024-12-18 09:56:06] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:07] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:08.402111 
+[2024-12-18 09:56:07] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:08 a.m., Duración simulada: 1 minuto 24 segundos, Tiempo real: 18/12/2024 09:56:07 a.m., Duración real: 1 minuto 23 segundos 
+[2024-12-18 09:56:07] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:08 a.m.","simulatedDuration":"1 minuto 24 segundos","realElapsedTime":"18/12/2024 09:56:07 a.m.","realDuration":"1 minuto 23 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:07] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:08.402111 
+[2024-12-18 09:56:07] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:08] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:09.402111 
+[2024-12-18 09:56:08] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:09 a.m., Duración simulada: 1 minuto 25 segundos, Tiempo real: 18/12/2024 09:56:08 a.m., Duración real: 1 minuto 24 segundos 
+[2024-12-18 09:56:08] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:09 a.m.","simulatedDuration":"1 minuto 25 segundos","realElapsedTime":"18/12/2024 09:56:08 a.m.","realDuration":"1 minuto 24 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:08] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:09.402111 
+[2024-12-18 09:56:08] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:09] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:10.402111 
+[2024-12-18 09:56:09] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:10 a.m., Duración simulada: 1 minuto 26 segundos, Tiempo real: 18/12/2024 09:56:09 a.m., Duración real: 1 minuto 25 segundos 
+[2024-12-18 09:56:09] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:10 a.m.","simulatedDuration":"1 minuto 26 segundos","realElapsedTime":"18/12/2024 09:56:09 a.m.","realDuration":"1 minuto 25 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:09] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:10.402111 
+[2024-12-18 09:56:09] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:09] [INFO   ] Iniciando planificación: 2024-12-18T09:56:10.402111 
+[2024-12-18 09:56:09] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:09.809959200"} 
+[2024-12-18 09:56:09] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:09] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:10.402111 
+[2024-12-18 09:56:10] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:11.402111 
+[2024-12-18 09:56:10] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:11 a.m., Duración simulada: 1 minuto 27 segundos, Tiempo real: 18/12/2024 09:56:10 a.m., Duración real: 1 minuto 26 segundos 
+[2024-12-18 09:56:10] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:11 a.m.","simulatedDuration":"1 minuto 27 segundos","realElapsedTime":"18/12/2024 09:56:10 a.m.","realDuration":"1 minuto 26 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:10] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:11.402111 
+[2024-12-18 09:56:10] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:11] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:12.402111 
+[2024-12-18 09:56:11] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:12 a.m., Duración simulada: 1 minuto 28 segundos, Tiempo real: 18/12/2024 09:56:11 a.m., Duración real: 1 minuto 27 segundos 
+[2024-12-18 09:56:11] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:12 a.m.","simulatedDuration":"1 minuto 28 segundos","realElapsedTime":"18/12/2024 09:56:11 a.m.","realDuration":"1 minuto 27 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:11] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:12.402111 
+[2024-12-18 09:56:11] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:12] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:13.402111 
+[2024-12-18 09:56:12] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:13 a.m., Duración simulada: 1 minuto 29 segundos, Tiempo real: 18/12/2024 09:56:12 a.m., Duración real: 1 minuto 28 segundos 
+[2024-12-18 09:56:12] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:13 a.m.","simulatedDuration":"1 minuto 29 segundos","realElapsedTime":"18/12/2024 09:56:12 a.m.","realDuration":"1 minuto 28 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:12] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:13.402111 
+[2024-12-18 09:56:12] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:13] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:14.402111 
+[2024-12-18 09:56:13] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:14 a.m., Duración simulada: 1 minuto 30 segundos, Tiempo real: 18/12/2024 09:56:13 a.m., Duración real: 1 minuto 29 segundos 
+[2024-12-18 09:56:13] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:14 a.m.","simulatedDuration":"1 minuto 30 segundos","realElapsedTime":"18/12/2024 09:56:13 a.m.","realDuration":"1 minuto 29 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:13] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:14.402111 
+[2024-12-18 09:56:13] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:14] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:15.402111 
+[2024-12-18 09:56:14] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:15 a.m., Duración simulada: 1 minuto 31 segundos, Tiempo real: 18/12/2024 09:56:14 a.m., Duración real: 1 minuto 30 segundos 
+[2024-12-18 09:56:14] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:15 a.m.","simulatedDuration":"1 minuto 31 segundos","realElapsedTime":"18/12/2024 09:56:14 a.m.","realDuration":"1 minuto 30 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:14] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:15.402111 
+[2024-12-18 09:56:14] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:14] [INFO   ] Iniciando planificación: 2024-12-18T09:56:15.402111 
+[2024-12-18 09:56:14] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:14.811063500"} 
+[2024-12-18 09:56:14] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:14] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:15.402111 
+[2024-12-18 09:56:15] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:16.402111 
+[2024-12-18 09:56:15] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:16 a.m., Duración simulada: 1 minuto 32 segundos, Tiempo real: 18/12/2024 09:56:15 a.m., Duración real: 1 minuto 31 segundos 
+[2024-12-18 09:56:15] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:16 a.m.","simulatedDuration":"1 minuto 32 segundos","realElapsedTime":"18/12/2024 09:56:15 a.m.","realDuration":"1 minuto 31 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:15] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:16.402111 
+[2024-12-18 09:56:15] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:16] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:17.402111 
+[2024-12-18 09:56:16] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:17 a.m., Duración simulada: 1 minuto 33 segundos, Tiempo real: 18/12/2024 09:56:16 a.m., Duración real: 1 minuto 32 segundos 
+[2024-12-18 09:56:16] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:17 a.m.","simulatedDuration":"1 minuto 33 segundos","realElapsedTime":"18/12/2024 09:56:16 a.m.","realDuration":"1 minuto 32 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:16] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:17.402111 
+[2024-12-18 09:56:16] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:17] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:18.402111 
+[2024-12-18 09:56:17] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:18 a.m., Duración simulada: 1 minuto 34 segundos, Tiempo real: 18/12/2024 09:56:17 a.m., Duración real: 1 minuto 33 segundos 
+[2024-12-18 09:56:17] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:18 a.m.","simulatedDuration":"1 minuto 34 segundos","realElapsedTime":"18/12/2024 09:56:17 a.m.","realDuration":"1 minuto 33 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:17] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:18.402111 
+[2024-12-18 09:56:17] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:18] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:19.402111 
+[2024-12-18 09:56:18] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:19 a.m., Duración simulada: 1 minuto 35 segundos, Tiempo real: 18/12/2024 09:56:18 a.m., Duración real: 1 minuto 34 segundos 
+[2024-12-18 09:56:18] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:19 a.m.","simulatedDuration":"1 minuto 35 segundos","realElapsedTime":"18/12/2024 09:56:18 a.m.","realDuration":"1 minuto 34 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:18] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:19.402111 
+[2024-12-18 09:56:18] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:19] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:20.402111 
+[2024-12-18 09:56:19] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:20 a.m., Duración simulada: 1 minuto 36 segundos, Tiempo real: 18/12/2024 09:56:19 a.m., Duración real: 1 minuto 35 segundos 
+[2024-12-18 09:56:19] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:20 a.m.","simulatedDuration":"1 minuto 36 segundos","realElapsedTime":"18/12/2024 09:56:19 a.m.","realDuration":"1 minuto 35 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:19] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:20.402111 
+[2024-12-18 09:56:19] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:19] [INFO   ] Iniciando planificación: 2024-12-18T09:56:20.402111 
+[2024-12-18 09:56:19] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:19.822366300"} 
+[2024-12-18 09:56:19] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:19] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:20.402111 
+[2024-12-18 09:56:20] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:21.402111 
+[2024-12-18 09:56:20] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:21 a.m., Duración simulada: 1 minuto 37 segundos, Tiempo real: 18/12/2024 09:56:20 a.m., Duración real: 1 minuto 36 segundos 
+[2024-12-18 09:56:20] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:21 a.m.","simulatedDuration":"1 minuto 37 segundos","realElapsedTime":"18/12/2024 09:56:20 a.m.","realDuration":"1 minuto 36 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:20] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:21.402111 
+[2024-12-18 09:56:20] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:21] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:22.402111 
+[2024-12-18 09:56:21] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:22 a.m., Duración simulada: 1 minuto 38 segundos, Tiempo real: 18/12/2024 09:56:21 a.m., Duración real: 1 minuto 37 segundos 
+[2024-12-18 09:56:21] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:22 a.m.","simulatedDuration":"1 minuto 38 segundos","realElapsedTime":"18/12/2024 09:56:21 a.m.","realDuration":"1 minuto 37 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:21] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:22.402111 
+[2024-12-18 09:56:21] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:22] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:23.402111 
+[2024-12-18 09:56:22] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:23 a.m., Duración simulada: 1 minuto 39 segundos, Tiempo real: 18/12/2024 09:56:22 a.m., Duración real: 1 minuto 38 segundos 
+[2024-12-18 09:56:22] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:23 a.m.","simulatedDuration":"1 minuto 39 segundos","realElapsedTime":"18/12/2024 09:56:22 a.m.","realDuration":"1 minuto 38 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:22] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:23.402111 
+[2024-12-18 09:56:22] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:23] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:24.402111 
+[2024-12-18 09:56:23] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:24 a.m., Duración simulada: 1 minuto 40 segundos, Tiempo real: 18/12/2024 09:56:23 a.m., Duración real: 1 minuto 39 segundos 
+[2024-12-18 09:56:23] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:24 a.m.","simulatedDuration":"1 minuto 40 segundos","realElapsedTime":"18/12/2024 09:56:23 a.m.","realDuration":"1 minuto 39 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:23] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:24.402111 
+[2024-12-18 09:56:23] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:24] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:25.402111 
+[2024-12-18 09:56:24] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:25 a.m., Duración simulada: 1 minuto 41 segundos, Tiempo real: 18/12/2024 09:56:24 a.m., Duración real: 1 minuto 40 segundos 
+[2024-12-18 09:56:24] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:25 a.m.","simulatedDuration":"1 minuto 41 segundos","realElapsedTime":"18/12/2024 09:56:24 a.m.","realDuration":"1 minuto 40 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:24] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:25.402111 
+[2024-12-18 09:56:24] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:24] [INFO   ] Iniciando planificación: 2024-12-18T09:56:25.402111 
+[2024-12-18 09:56:24] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:24.827017600"} 
+[2024-12-18 09:56:24] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:24] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:25.402111 
+[2024-12-18 09:56:25] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:26.402111 
+[2024-12-18 09:56:25] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:26 a.m., Duración simulada: 1 minuto 42 segundos, Tiempo real: 18/12/2024 09:56:25 a.m., Duración real: 1 minuto 41 segundos 
+[2024-12-18 09:56:25] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:26 a.m.","simulatedDuration":"1 minuto 42 segundos","realElapsedTime":"18/12/2024 09:56:25 a.m.","realDuration":"1 minuto 41 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:25] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:26.402111 
+[2024-12-18 09:56:25] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:26] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:27.402111 
+[2024-12-18 09:56:26] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:27 a.m., Duración simulada: 1 minuto 43 segundos, Tiempo real: 18/12/2024 09:56:26 a.m., Duración real: 1 minuto 42 segundos 
+[2024-12-18 09:56:26] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:27 a.m.","simulatedDuration":"1 minuto 43 segundos","realElapsedTime":"18/12/2024 09:56:26 a.m.","realDuration":"1 minuto 42 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:26] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:27.402111 
+[2024-12-18 09:56:26] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:27] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:28.402111 
+[2024-12-18 09:56:27] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:28 a.m., Duración simulada: 1 minuto 44 segundos, Tiempo real: 18/12/2024 09:56:27 a.m., Duración real: 1 minuto 43 segundos 
+[2024-12-18 09:56:27] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:28 a.m.","simulatedDuration":"1 minuto 44 segundos","realElapsedTime":"18/12/2024 09:56:27 a.m.","realDuration":"1 minuto 43 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:27] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:28.402111 
+[2024-12-18 09:56:27] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:28] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:29.402111 
+[2024-12-18 09:56:28] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:29 a.m., Duración simulada: 1 minuto 45 segundos, Tiempo real: 18/12/2024 09:56:28 a.m., Duración real: 1 minuto 44 segundos 
+[2024-12-18 09:56:28] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:29 a.m.","simulatedDuration":"1 minuto 45 segundos","realElapsedTime":"18/12/2024 09:56:28 a.m.","realDuration":"1 minuto 44 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:28] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:29.402111 
+[2024-12-18 09:56:28] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:29] [INFO   ] Tiempo actualizado - Current Time: 2024-12-18T09:56:30.402111 
+[2024-12-18 09:56:29] [INFO   ] Resumen de simulación - Tiempo simulado: 18/12/2024 09:56:30 a.m., Duración simulada: 1 minuto 46 segundos, Tiempo real: 18/12/2024 09:56:29 a.m., Duración real: 1 minuto 45 segundos 
+[2024-12-18 09:56:29] [INFO   ] Mensaje JSON para WebSocket: {"startTime":"18/12/2024 09:54:44 a.m.","endTime":"25/12/2024 09:54:44 a.m.","simulatedTime":"18/12/2024 09:56:30 a.m.","simulatedDuration":"1 minuto 46 segundos","realElapsedTime":"18/12/2024 09:56:29 a.m.","realDuration":"1 minuto 45 segundos","isPaused":false,"isStopped":false} 
+[2024-12-18 09:56:29] [INFO   ] Verificando cambios en bloqueos para tiempo: 2024-12-18T09:56:30.402111 
+[2024-12-18 09:56:29] [INFO   ] No hay cambios en los bloqueos, matriz de tiempos se mantiene sin cambios 
+[2024-12-18 09:56:29] [INFO   ] Iniciando planificación: 2024-12-18T09:56:30.402111 
+[2024-12-18 09:56:29] [INFO   ] Mensaje JSON para WebSocket: {"phase":"collecting","availableOrders":0,"message":"Procesando 0 órdenes","timestamp":"2024-12-18T09:56:29.835118800"} 
+[2024-12-18 09:56:29] [INFO   ] Órdenes disponibles: 0 
+[2024-12-18 09:56:29] [INFO   ] No hay órdenes disponibles para planificar en: 2024-12-18T09:56:30.402111 

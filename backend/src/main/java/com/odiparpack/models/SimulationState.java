@@ -874,7 +874,7 @@ public class SimulationState {
                     .filter(date -> date != null) // Filtrar fechas nulas
                     .max((d1, d2) -> d1.isAfter(d2) ? 1 : (d2.isAfter(d1) ? -1 : 0)) : null;
             if(deliveryTime!=null&&deliveryTime.isPresent()){
-                Duration timeElapsed = Duration.between(order.getOrderTime(), deliveryTime.get()).abs();
+                Duration timeElapsed = Duration.between(order.getOrderTime(), order.getPendingPickupStartTime()).abs();
                 Duration timeRemaining = Duration.between(deliveryTime.get(), order.getDueTime());
                 builder.append("\"timeElapsedDays\":").append(timeElapsed.toDays()).append(",")
                         .append("\"timeElapsedHours\":").append(timeElapsed.toHours() % 24).append(",")

@@ -4,14 +4,15 @@ import BarraProgreso from "@/app/Components/BarraProgreso";
 import IconoEstado from "./IconoEstado";
 import { useEffect, useState } from "react";
 import { followLocationAtom } from "@/atoms/locationAtoms";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import BreakdownModal from "./VehiclePopUp/BreakdownModal";
 import { el } from "date-fns/locale";
+import { simulationStatusAtom, simulationTypeAtom } from "@/atoms/simulationAtoms";
 
 export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setIsBreakdownModalOpen, setVehicleCodeSelected}) {
 
     const [,setFollowLocation] = useAtom(followLocationAtom)
-    
+    const [simulationType,] = useAtomValue(simulationTypeAtom)
 
     
     return (
@@ -51,6 +52,7 @@ export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setI
                 </span>
             </div>
             <div className="flex flex-row gap-2 items-center justify-between">
+            {simulationType&&simulationType==='colapso'&&
             <div
                 onMouseDown={(event) => {
                     event.stopPropagation();
@@ -63,13 +65,17 @@ export default function CardVehiculo({ vehiculo, RenderStatus, coordinates, setI
                 className={"font-medium flex flex-row justify-center items-center gap-2 rounded-lg  p-1 cursor-pointer " + (vehiculo.status === "EN_TRANSITO_ORDEN"?"text-red-800 bg-red-300":"text-red-800 bg-red-300 bg-opacity-50  text-opacity-50")}
                 //{}
                 >
+                    
                 <div className="flex items-center">
                     <AlertCircle className="w-3 h-3" color="red" />
                 </div>
-                <div className="text-sm">
-                    Provocar Avería
-                </div>
+                
+                    <div className="text-sm">
+                        Provocar Avería
+                    </div>
+                
             </div>
+            }
             <div
                 onMouseDown={(event) => {
                     event.stopPropagation();
