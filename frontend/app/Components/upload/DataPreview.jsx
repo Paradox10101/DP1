@@ -58,6 +58,14 @@ const configColumns = {
   ]
 };
 
+const getCurrentTimeValues = () => {
+  const now = new Date();
+  return {
+    day: String(now.getDate()).padStart(2, '0'),
+    time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+  };
+};
+
 // Función para parsear el contenido según el tipo
 const parseContent = (item, type) => {
   const content = item.content;
@@ -65,18 +73,38 @@ const parseContent = (item, type) => {
   switch(type) {
     case 'shipment': {
       // Formato: "DD HH:MM, ****** => XXXXXX, N"
-      const match = content.match(/^(\d{2})\s+(\d{2}:\d{2}),\s*(\*{6})\s*=>\s*(\d{6}),\s*(\d+)$/);
+      const regex = /^(?:(\d{2}|\bdd\b)\s+(?:(\d{2}:\d{2})|(?:\bhh:mm\b))),\s*\*{6}\s*=>\s*(\d{6}),\s*(\d+)(?:\s+\d+)?$/;
+      const match = content.match(regex);
+      
       if (match) {
-        const [, dia, hora, origen, destino, cantidad] = match;
+        const [, day, time, destino, cantidad] = match;
+        const currentTime = getCurrentTimeValues();
+
+        // Determinar el tiempo final
+        let finalTime;
+        if (time === 'hh:mm') {
+          finalTime = currentTime.time;
+        } else if (time && time.includes(':')) {
+          finalTime = time;
+        } else {
+          finalTime = currentTime.time;
+        }
+
         return {
-          dia,
-          hora,
-          origen,
+          dia: day === 'dd' ? currentTime.day : day,
+          hora: finalTime, // Aseguramos que siempre tenemos un valor para hora
+          origen: '******',
           destino,
           cantidad
         };
       }
-      return {};
+      return {
+        dia: '',
+        hora: '',
+        origen: '',
+        destino: '',
+        cantidad: ''
+      };
     }
     case 'vehiculos': {
       const [codigo, tipo, capacidad, ubigeoVehiculo] = content.split(',');
